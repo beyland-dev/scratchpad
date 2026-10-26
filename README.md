@@ -1,4 +1,4 @@
-# design-tool
+# Agentic design tool
 
 An open-source, local-first workspace for **design prototyping with agents**.
 
