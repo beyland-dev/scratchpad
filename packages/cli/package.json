@@ -1,0 +1,44 @@
+{
+  "name": "@design-tool/cli",
+  "version": "0.0.0",
+  "description": "The `dt` command line for design-tool: init workspaces, serve the app, run the MCP server, and call any core command.",
+  "license": "MIT",
+  "bin": {
+    "dt": "./src/bin.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "bin": {
+      "dt": "./dist/bin.mjs"
+    },
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./package.json": "./package.json"
+    },
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "dev": "node --watch ./src/bin.ts serve --no-open --dev-origin http://localhost:5173 --workspace ../../playground",
+    "test": "vp test"
+  },
+  "dependencies": {
+    "@design-tool/capture": "workspace:*",
+    "@design-tool/core": "workspace:*",
+    "@design-tool/mcp": "workspace:*",
+    "@design-tool/server": "workspace:*"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

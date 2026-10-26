@@ -1,0 +1,29 @@
+{
+  "name": "@design-tool/web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Thin Preact UI for design-tool.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp build",
+    "preview": "vp preview"
+  },
+  "dependencies": {
+    "@preact/signals": "catalog:",
+    "preact": "catalog:",
+    "preact-iso": "catalog:",
+    "preact-render-to-string": "catalog:",
+    "shiki": "catalog:"
+  },
+  "devDependencies": {
+    "@babel/core": "catalog:",
+    "@design-tool/core": "workspace:*",
+    "@preact/preset-vite": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

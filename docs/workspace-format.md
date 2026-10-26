@@ -1,0 +1,93 @@
+# Workspace format (v1)
+
+A design workspace is any folder containing `.design/workspace.json`. Tools find it by walking up
+from the current directory, or from `--workspace <dir>` / `$DT_WORKSPACE`.
+
+```
+<workspace>/
+  AGENTS.md                       # created by `dt init` if missing; points agents at .design/AGENTS.md
+  .design/
+    workspace.json                # workspace config (below)
+    AGENTS.md                     # conventions for agents (also served as MCP resource design-tool://guide)
+    .gitignore                    # ignores .cache/ and .trash/
+    prototypes/
+      <id>/
+        prototype.json            # metadata (below)
+        index.html                # entry file (configurable)
+        ...                       # any other files: pages, CSS, JS, images
+    .trash/                       # soft-deleted prototypes (`<id>-<timestamp>`)
+    .cache/                       # reserved for derived data
+```
+
+## `workspace.json`
+
+```json
+{
+  "version": 1,
+  "name": "My Product",
+  "description": "optional",
+  "sources": [
+    {
+      "id": "web-app",
+      "name": "web-app",
+      "kind": "local",
+      "location": "../web-app",
+      "notes": "tokens in src/theme, components in src/ui",
+      "addedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "server": { "port": 7420, "sandboxPort": 7421, "host": "127.0.0.1" }
+}
+```
+
+- `sources[].kind` is `local` (path, absolute or relative to the workspace root) or `git` (URL).
+  Sources are **read-only references**. design-tool never writes to them.
+- `server` is optional and overrides the default ports and host for `dt serve`.
+
+## Prototype ids
+
+The folder name is the id. Ids match `^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$`. Generated ids are
+lowercase slugs of the title, made unique with `-2`, `-3`, and so on. Variants default to `<source-id>-v<n>`.
+
+## `prototype.json`
+
+```json
+{
+  "title": "Checkout — single page",
+  "description": "What this explores and why",
+  "status": "draft",
+  "tags": ["checkout"],
+  "group": "checkout-redesign",
+  "variantOf": "checkout-stepper",
+  "entry": "index.html",
+  "createdBy": { "kind": "agent", "name": "copilot" },
+  "sourceRefs": ["web-app"],
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+| Field                    | Required | Notes                                                                                                                                                      |
+| ------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`                  | yes      | Inferred from the entry's `<title>` or the folder name if missing.                                                                                         |
+| `status`                 | no       | `draft` (default), `review`, `approved`, or `archived`.                                                                                                    |
+| `tags`                   | no       | Free-form strings.                                                                                                                                         |
+| `group`                  | no       | Exploration name used to cluster prototypes.                                                                                                               |
+| `variantOf`              | no       | Id of the prototype this is an alternative of. A prototype and all its variants form a family, ordered by `createdAt`; the newest is the "Latest" version. |
+| `entry`                  | no       | Entry file, default `index.html`.                                                                                                                          |
+| `createdBy`              | no       | `{ kind: "agent" \| "human", name? }`.                                                                                                                     |
+| `sourceRefs`             | no       | Ids of workspace sources used as references.                                                                                                               |
+| `createdAt`, `updatedAt` | yes      | ISO timestamps. Inferred from the filesystem if missing.                                                                                                   |
+
+### Lenient loading
+
+Workspaces get edited by hand and by agents, so loading is forgiving:
+
+- A folder with files but **no `prototype.json`** is still a prototype. Its metadata is inferred.
+- **Invalid fields** are dropped individually, and the problem is reported in the prototype's `issues`
+  (shown in the UI). The rest of the metadata is kept.
+- A **missing entry file** is reported as an issue.
+
+## Versioning
+
+`workspace.json` carries `version`. Future format changes will bump it and ship a migration.
