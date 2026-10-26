@@ -1,0 +1,80 @@
+/*
+ * Resolved theme variables for the default VS Code themes, "Dark 2026" and
+ * "Light 2026" (extensions/theme-defaults/themes/2026-*.json + color registry
+ * defaults), read from the running workbench. Unset variables keep their
+ * fallbacks, exactly like the workbench.
+ */
+
+.monaco-workbench.vs-dark {
+  --chat-input-control-height: 22px;
+  --vscode-button-background: #297aa0;
+  --vscode-button-foreground: #ffffff;
+  --vscode-button-hoverBackground: #2b7da3;
+  --vscode-chat-inputWorkingBorderColor1: #297aa0;
+  --vscode-codiconFontSize-compact: 12px;
+  --vscode-cornerRadius-circle: 9999px;
+  --vscode-cornerRadius-large: 8px;
+  --vscode-cornerRadius-medium: 6px;
+  --vscode-cornerRadius-small: 4px;
+  --vscode-descriptionForeground: #8c8c8c;
+  --vscode-disabledForeground: #555555;
+  --vscode-editor-foreground: #bbbebf;
+  --vscode-editor-inactiveSelectionBackground: rgba(39, 103, 130, 0.38);
+  --vscode-editor-placeholder-foreground: rgba(255, 255, 255, 0.34);
+  --vscode-editor-selectionBackground: rgba(39, 103, 130, 0.87);
+  --vscode-editorCursor-foreground: #bbbebf;
+  --vscode-editorWidget-border: #2a2b2c;
+  --vscode-focusBorder: rgba(57, 148, 188, 0.7);
+  --vscode-foreground: #bfbfbf;
+  --vscode-icon-foreground: #8c8c8c;
+  --vscode-input-background: #191a1b;
+  --vscode-input-border: #333536;
+  --vscode-scrollbarSlider-activeBackground: rgba(168, 169, 170, 0.61);
+  --vscode-scrollbarSlider-background: rgba(168, 169, 170, 0.52);
+  --vscode-scrollbarSlider-hoverBackground: rgba(168, 169, 170, 0.56);
+  --vscode-sideBar-background: #191a1b;
+  --vscode-spacing-size120: 12px;
+  --vscode-spacing-size20: 2px;
+  --vscode-spacing-size40: 4px;
+  --vscode-spacing-size60: 6px;
+  --vscode-strokeThickness: 1px;
+  --vscode-toolbar-hoverBackground: rgba(90, 93, 94, 0.31);
+  --vscode-widget-border: #2a2b2c;
+}
+
+.monaco-workbench.vs {
+  --chat-input-control-height: 22px;
+  --vscode-button-background: #0069cc;
+  --vscode-button-foreground: #ffffff;
+  --vscode-button-hoverBackground: #0063c1;
+  --vscode-chat-inputWorkingBorderColor1: #0069cc;
+  --vscode-codiconFontSize-compact: 12px;
+  --vscode-cornerRadius-circle: 9999px;
+  --vscode-cornerRadius-large: 8px;
+  --vscode-cornerRadius-medium: 6px;
+  --vscode-cornerRadius-small: 4px;
+  --vscode-descriptionForeground: #606060;
+  --vscode-disabledForeground: #bbbbbb;
+  --vscode-editor-foreground: #202020;
+  --vscode-editor-inactiveSelectionBackground: rgba(0, 105, 204, 0.1);
+  --vscode-editor-placeholder-foreground: rgba(0, 0, 0, 0.47);
+  --vscode-editor-selectionBackground: rgba(0, 105, 204, 0.25);
+  --vscode-editorCursor-foreground: #202020;
+  --vscode-editorWidget-border: #e4e5e6;
+  --vscode-focusBorder: #0069cc;
+  --vscode-foreground: #202020;
+  --vscode-icon-foreground: #606060;
+  --vscode-input-background: #ffffff;
+  --vscode-input-border: rgba(216, 216, 216, 0.4);
+  --vscode-scrollbarSlider-activeBackground: rgba(100, 100, 100, 0.88);
+  --vscode-scrollbarSlider-background: rgba(100, 100, 100, 0.75);
+  --vscode-scrollbarSlider-hoverBackground: rgba(100, 100, 100, 0.82);
+  --vscode-sideBar-background: #fafafd;
+  --vscode-spacing-size120: 12px;
+  --vscode-spacing-size20: 2px;
+  --vscode-spacing-size40: 4px;
+  --vscode-spacing-size60: 6px;
+  --vscode-strokeThickness: 1px;
+  --vscode-toolbar-hoverBackground: rgba(0, 0, 0, 0.12);
+  --vscode-widget-border: #e2e2e5;
+}

@@ -1,0 +1,416 @@
+{
+  "label": "tab-active-dark",
+  "url": "http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=dark",
+  "selector": ".part.editor .tabs-container .tab.active",
+  "theme": "dark-2026",
+  "capturedAt": "2026-10-22T20:41:29.560Z",
+  "rect": {
+    "x": 487.265625,
+    "y": 36,
+    "w": 135.28125,
+    "h": 31
+  },
+  "parentWidth": 602,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "tabs-container",
+      "w": 602,
+      "h": 32,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 602,
+      "h": 32,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "tabs-and-actions-container tabs-border-bottom",
+      "w": 658,
+      "h": 32,
+      "display": "flex",
+      "bg": "rgb(32, 33, 34)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "title tab-actions-reserve-space tabs show-file-icons connected-tabs-labels",
+      "w": 658,
+      "h": 54,
+      "display": "block",
+      "bg": "rgb(18, 19, 20)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "editor-group-container active",
+      "w": 658,
+      "h": 831,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 658,
+      "h": 831,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 658,
+      "h": 831,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 658,
+      "h": 831,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 vertical separator-border",
+      "w": 658,
+      "h": 831,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 658,
+      "h": 831,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-view",
+      "w": 658,
+      "h": 831,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "grid-view-container",
+      "w": 658,
+      "h": 831,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "content",
+      "w": 658,
+      "h": 831,
+      "display": "block",
+      "bg": "rgb(18, 19, 20)"
+    },
+    {
+      "tag": "div",
+      "id": "workbench.parts.editor",
+      "classes": "part editor editor-tabs-multiple floating-editor-outer-top floating-editor-outer-bottom",
+      "w": 660,
+      "h": 833,
+      "display": "block",
+      "bg": "rgb(18, 19, 20)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 664,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 664,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 664,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 vertical",
+      "w": 664,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 664,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 664,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 horizontal",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 vertical",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-view",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(25, 26, 27)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-enable-motion modern-ui modern-ui-tabs modern-ui-connected-editor-tabs modern-ui-notifications-dialogs monaco-workbench linux web chromium nopanel fullscreen floating-panels panel-position-bottom panel-alignment-center file-icons-enabled vs-dark vscode-theme-defaults-themes-2026-dark-json",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(25, 26, 27)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "agent-status-enabled unified-agents-bar",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(191, 191, 191)",
+    "font-family": "system-ui, Ubuntu, \"Droid Sans\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-cornerRadius-medium": "6px",
+    "--vscode-disabledForeground": "#555555",
+    "--editor-group-tab-height": "24px",
+    "--vscode-strokeThickness": "1px",
+    "--vscode-spacing-size160": "16px",
+    "--vscode-tab-divider": "#2a2b2c",
+    "--vscode-tab-unfocusedInactiveBackground": "#191a1b",
+    "--vscode-tab-inactiveBackground": "#191a1b",
+    "--vscode-tab-unfocusedActiveBackground": "#121314",
+    "--vscode-tab-activeBackground": "#121314",
+    "--vscode-tab-unfocusedInactiveForeground": "#444444",
+    "--vscode-tab-inactiveForeground": "#8c8c8c",
+    "--vscode-tab-unfocusedActiveForeground": "#8c8c8c",
+    "--vscode-tab-activeForeground": "#bfbfbf",
+    "--vscode-tab-selectedBackground": "#37373d",
+    "--vscode-tab-selectedForeground": "#ffffff",
+    "--vscode-shadow-active-tab": "0 0 0 0 transparent",
+    "--vscode-shadow-sm": "0 0 0 0 transparent",
+    "--editor-tab-border-indicator-display": "block",
+    "--tab-border-top-color": "#3994bc",
+    "--tab-border-bottom-color": "#121314",
+    "--vscode-fontSize-body1": "13px",
+    "--vscode-spacing-size80": "8px",
+    "--vscode-fontSize-label2": "11px",
+    "--vscode-cornerRadius-small": "4px",
+    "--vscode-fontWeight-regular": "400",
+    "--vscode-spacing-size60": "6px",
+    "--vscode-spacing-size20": "2px",
+    "--modern-ui-editor-tab-border": "transparent",
+    "--modern-ui-tab-action-padding": "calc(calc((calc(24px + 4px * 2 - 1px) - calc(-1 * 1px) + 1px - 20px) / 2) + 24px)",
+    "--vscode-spacing-size280": "28px",
+    "--vscode-spacing-size40": "4px",
+    "--modern-ui-editor-tab-inactive-background": "#202122",
+    "--modern-ui-editor-tab-unfocused-inactive-background": "#202122",
+    "--modern-ui-editor-tab-hover-background": "color-mix(in srgb, #bfbfbf 6%, #202122)",
+    "--modern-ui-editor-tab-hover-border": "transparent",
+    "--modern-ui-editor-tab-unfocused-hover-background": "color-mix(in srgb, #bfbfbf 6%, #202122)",
+    "--modern-ui-editor-tab-unfocused-hover-border": "transparent",
+    "--modern-ui-editor-tab-active-border-top": "transparent",
+    "--modern-ui-editor-tab-active-border": "transparent",
+    "--modern-ui-editor-tab-active-background": "#2c2d2e",
+    "--modern-ui-editor-tab-unfocused-active-border-top": "transparent",
+    "--modern-ui-editor-tab-unfocused-active-border": "transparent",
+    "--modern-ui-editor-tab-unfocused-active-background": "#2c2d2e",
+    "--modern-ui-editor-tab-active-hover-background": "rgba(255, 255, 255, 0.08)",
+    "--modern-ui-editor-tab-unfocused-active-hover-background": "rgba(255, 255, 255, 0.08)",
+    "--vscode-tab-selectedBorderTop": "#6caddf",
+    "--modern-ui-editor-tab-action-hover-background": "color-mix(in srgb, #bfbfbf 6%, #202122)",
+    "--modern-ui-editor-tab-action-unfocused-hover-background": "color-mix(in srgb, #bfbfbf 6%, #202122)",
+    "--modern-ui-editor-tab-action-overlay-background": "transparent",
+    "--modern-ui-editor-tab-action-active-background": "#2c2d2e",
+    "--modern-ui-editor-tab-action-unfocused-active-background": "#2c2d2e",
+    "--modern-ui-editor-tab-action-active-hover-background": "#242526",
+    "--modern-ui-editor-tab-action-unfocused-active-hover-background": "#242526",
+    "--vscode-modernEditorTab-selectedActionBackground": "#37373d",
+    "--vscode-toolbar-hoverBackground": "rgba(90, 93, 94, 0.31)",
+    "--modern-ui-editor-tab-inactive-foreground": "#8c8c8c",
+    "--modern-ui-editor-tab-unfocused-inactive-foreground": "#8c8c8c",
+    "--modern-ui-editor-tab-hover-foreground": "#bfbfbf",
+    "--modern-ui-editor-tab-unfocused-hover-foreground": "#bfbfbf",
+    "--modern-ui-editor-tab-active-foreground": "#ededed",
+    "--modern-ui-editor-tab-unfocused-active-foreground": "#ededed",
+    "--modern-ui-connected-tab-active-background": "#121314",
+    "--modern-ui-connected-tab-active-hover-background": "#121314",
+    "--modern-ui-connected-tab-row-height": "calc(24px + 4px * 2 - 1px)",
+    "--modern-ui-connected-tab-fill-block-inset": "calc(-1 * 1px)",
+    "--vscode-spacing-size200": "20px",
+    "--vscode-spacing-size240": "24px",
+    "--modern-ui-connected-tab-fill-inline-inset": "0px",
+    "--modern-ui-connected-tab-border": "#2a2b2c",
+    "--modern-ui-connected-tab-current-background": "#121314",
+    "--modern-ui-connected-tab-cap-radius": "calc(6px + 1px)",
+    "--modern-ui-connected-tab-shoulder-radius": "calc(6px + 1px)",
+    "--modern-ui-connected-tab-radius": "6px",
+    "--modern-ui-connected-tab-action-inset": "calc((calc(24px + 4px * 2 - 1px) - calc(-1 * 1px) + 1px - 20px) / 2)",
+    "--vscode-icon-foreground": "#8c8c8c",
+    "--vscode-focusBorder": "rgba(57, 148, 188, 0.7)",
+    "--vscode-toolbar-activeBackground": "rgba(255, 255, 255, 0.2)"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"../../../../media/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "http://127.0.0.1:8457/insider-58173d0ebc1838579e3c331e0a47e365904a6456/static/out/media/codicon.ttf"
+      ]
+    },
+    {
+      "family": "seti",
+      "css": "@font-face { src: url(\"http://127.0.0.1:8457/insider-58173d0ebc1838579e3c331e0a47e365904a6456/vscode-remote-resource?path=%2Ftmp%2Fdt-vsc%2Fcli%2Fserve-web%2F58173d0ebc1838579e3c331e0a47e365904a6456%2Fextensions%2Ftheme-seti%2Ficons%2Fseti.woff&tkn=\") format(\"woff\"); font-family: seti; font-weight: normal; font-style: normal; font-display: block; }",
+      "urls": [
+        "http://127.0.0.1:8457/insider-58173d0ebc1838579e3c331e0a47e365904a6456/vscode-remote-resource?path=%2Ftmp%2Fdt-vsc%2Fcli%2Fserve-web%2F58173d0ebc1838579e3c331e0a47e365904a6456%2Fextensions%2Ftheme-seti%2Ficons%2Fseti.woff&tkn="
+      ]
+    }
+  ],
+  "rules": 172,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

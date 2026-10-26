@@ -1,0 +1,17 @@
+{
+  "title": "Checkout — single page",
+  "description": "Everything on one page: fewer steps, more scanning.",
+  "status": "draft",
+  "tags": [
+    "checkout"
+  ],
+  "group": "checkout-redesign",
+  "entry": "index.html",
+  "createdBy": {
+    "kind": "agent",
+    "name": "copilot"
+  },
+  "sourceRefs": [],
+  "createdAt": "2026-10-22T03:21:27.868Z",
+  "updatedAt": "2026-10-22T03:21:27.868Z"
+}

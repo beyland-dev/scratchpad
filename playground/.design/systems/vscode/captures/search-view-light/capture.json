@@ -1,0 +1,263 @@
+{
+  "label": "search-view-light",
+  "url": "http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light",
+  "selector": ".search-view",
+  "theme": "light-2026",
+  "capturedAt": "2026-10-22T20:52:59.105Z",
+  "rect": {
+    "x": 49,
+    "y": 68,
+    "w": 297,
+    "h": 794
+  },
+  "parentWidth": 297,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "pane-body",
+      "w": 297,
+      "h": 794,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "pane expanded vertical merged-header",
+      "w": 297,
+      "h": 794,
+      "display": "flex",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 297,
+      "h": 794,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 vertical",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-pane-view",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "workbench.view.search",
+      "classes": "composite viewlet",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "content",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "workbench.parts.sidebar",
+      "classes": "part sidebar left pane-composite-part floating-part-outer-top floating-part-outer-bottom",
+      "w": 300,
+      "h": 833,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 300,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 horizontal",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 vertical",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-view",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-enable-motion modern-ui modern-ui-tabs modern-ui-connected-editor-tabs modern-ui-notifications-dialogs monaco-workbench linux web chromium nopanel fullscreen floating-panels panel-position-bottom panel-alignment-center file-icons-enabled vs vscode-theme-defaults-themes-2026-light-json sash-grippers-hidden",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "agent-status-enabled unified-agents-bar",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(32, 32, 32)",
+    "font-family": "system-ui, Ubuntu, \"Droid Sans\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-strokeThickness": "1px",
+    "--vscode-inputOption-hoverBackground": "rgba(184, 184, 184, 0.31)",
+    "--vscode-focusBorder": "#0069cc",
+    "--vscode-cornerRadius-small": "4px",
+    "--vscode-toolbar-hoverBackground": "rgba(0, 0, 0, 0.12)",
+    "--vscode-toolbar-activeBackground": "#d6d6d8",
+    "--vscode-search-resultsInfoForeground": "#202020",
+    "--vscode-textLink-foreground": "#0069cc",
+    "--vscode-textLink-activeForeground": "#0069cc",
+    "--vscode-spacing-size80": "8px",
+    "--vscode-spacing-size20": "2px",
+    "--vscode-input-placeholderForeground": "#999999",
+    "--vscode-icon-foreground": "#606060"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"../../../../media/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "http://127.0.0.1:8457/insider-58173d0ebc1838579e3c331e0a47e365904a6456/static/out/media/codicon.ttf"
+      ]
+    }
+  ],
+  "rules": 50,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "label": "sidebar-dark",
+  "url": "http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=dark",
+  "selector": ".part.sidebar",
+  "theme": "dark-2026",
+  "capturedAt": "2026-10-22T20:41:29.899Z",
+  "rect": {
+    "x": 48,
+    "y": 35,
+    "w": 300,
+    "h": 833
+  },
+  "parentWidth": 300,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 300,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 horizontal",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 vertical",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-view",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(25, 26, 27)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-enable-motion modern-ui modern-ui-tabs modern-ui-connected-editor-tabs modern-ui-notifications-dialogs monaco-workbench linux web chromium nopanel fullscreen floating-panels panel-position-bottom panel-alignment-center file-icons-enabled vs-dark vscode-theme-defaults-themes-2026-dark-json",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(25, 26, 27)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "agent-status-enabled unified-agents-bar",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(191, 191, 191)",
+    "font-family": "system-ui, Ubuntu, \"Droid Sans\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-scrollbarSlider-background": "rgba(168, 169, 170, 0.52)",
+    "--vscode-scrollbarSlider-hoverBackground": "rgba(168, 169, 170, 0.56)",
+    "--vscode-scrollbarSlider-activeBackground": "rgba(168, 169, 170, 0.61)",
+    "--vscode-sash-size": "4px",
+    "--vscode-sash-hoverBorder": "rgba(57, 148, 188, 0.7)",
+    "--vscode-sash-hover-size": "4px",
+    "--vscode-surface-border": "#2a2b2c",
+    "--vscode-widget-border": "#2a2b2c",
+    "--modern-ui-floating-card-inner-margin": "0px",
+    "--modern-ui-floating-card-margin": "4px",
+    "--vscode-cornerRadius-large": "8px",
+    "--vscode-surface-foreground": "#bfbfbf",
+    "--modern-ui-floating-card-seam-left-color": "transparent",
+    "--modern-ui-floating-card-edge-color": "#2a2b2c",
+    "--vscode-surface-background": "#191a1b",
+    "--vscode-sideBarTitle-background": "#191a1b",
+    "--vscode-spacing-size40": "4px",
+    "--vscode-spacing-size20": "2px",
+    "--vscode-strokeThickness": "1px",
+    "--vscode-sideBarSectionHeader-border": "#2a2b2c",
+    "--vscode-sideBar-background": "#191a1b",
+    "--vscode-cornerRadius-small": "4px",
+    "--vscode-spacing-size280": "28px",
+    "--vscode-list-hoverBackground": "rgba(255, 255, 255, 0.08)",
+    "--vscode-modernSash-gripForeground": "rgba(191, 191, 191, 0.4)",
+    "--vscode-focusBorder": "rgba(57, 148, 188, 0.7)"
+  },
+  "fontFaces": [],
+  "rules": 76,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

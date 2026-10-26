@@ -1,0 +1,46 @@
+{
+  "tag": "vsc-editor",
+  "kind": "context",
+  "title": "Editor area",
+  "category": "workbench",
+  "description": "The editor part and active editor group (`.part.editor > .content > .editor-group-container`).",
+  "usage": "Wrap <vsc-tabs> and editor content, or a <vsc-watermark> for an empty group.",
+  "attributes": [
+    {
+      "name": "empty",
+      "type": "boolean",
+      "description": "Empty editor group (set automatically when it contains a <vsc-watermark>)"
+    }
+  ],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "editor-part-dark",
+    "editor-part-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/workbench/browser/parts/editor/editorPart.ts"
+    },
+    {
+      "path": "src/vs/workbench/browser/parts/editor/editorGroupView.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Empty group",
+      "html": "<vsc-editor style=\"height: 300px;\"><vsc-watermark><vsc-watermark-entry icon=\"watermark-chat\" label=\"Open Chat\" keys=\"Ctrl+Alt+I\"></vsc-watermark-entry></vsc-watermark></vsc-editor>"
+    }
+  ],
+  "references": [],
+  "status": "draft",
+  "createdAt": "2026-10-22T21:42:49.647Z",
+  "updatedAt": "2026-10-22T21:42:49.647Z"
+}

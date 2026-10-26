@@ -1,0 +1,106 @@
+{
+  "tag": "vsc-quick-input",
+  "kind": "pattern",
+  "title": "Quick input (Command Palette / Quick Open)",
+  "category": "overlays",
+  "description": "The quick input widget: filter box above a list of <vsc-quick-pick-item>s. Used by the Command Palette (Ctrl+Shift+P) and Quick Open (Ctrl+P).",
+  "usage": "Inside <vsc-workbench> (it floats 6px below the top, centered). Set position=\"static\" to lay it out inline. Children: <vsc-quick-pick-item>.",
+  "attributes": [
+    {
+      "name": "placeholder",
+      "type": "string",
+      "default": "Type the name of a command to run."
+    },
+    {
+      "name": "value",
+      "type": "string",
+      "description": "Filter text, e.g. '>toggle'"
+    },
+    {
+      "name": "position",
+      "type": "enum",
+      "values": [
+        "top",
+        "static"
+      ],
+      "default": "top"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "<vsc-quick-pick-item> rows"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "quick-open-dark",
+    "quick-open-light",
+    "quick-input-dark",
+    "quick-input-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [
+    "--vscode-quickInput-background",
+    "--vscode-quickInput-foreground",
+    "--vscode-quickInputList-focusBackground",
+    "--vscode-pickerGroup-foreground"
+  ],
+  "uses": [
+    "vsc-quick-pick-item",
+    "vsc-count-badge"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/platform/quickinput/browser/quickInputController.ts"
+    },
+    {
+      "path": "src/vs/platform/quickinput/browser/quickInputList.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Quick Open (recent files)",
+      "html": "<vsc-quick-input position=\"static\" placeholder=\"Search files by name (append : to go to line or @ to go to symbol), or paste a link\"><vsc-quick-pick-item label=\"package.json\" file description=\"\" separator=\"recently opened\" focused><vsc-action slot=\"actions\" icon=\"split-horizontal\" label=\"Open to the Side\"></vsc-action><vsc-action slot=\"actions\" icon=\"close\" label=\"Remove from Recently Opened\" focusable=\"false\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"README.md\" file description=\"\"><vsc-action slot=\"actions\" icon=\"split-horizontal\" label=\"Open to the Side\"></vsc-action><vsc-action slot=\"actions\" icon=\"close\" label=\"Remove from Recently Opened\" focusable=\"false\"></vsc-action></vsc-quick-pick-item></vsc-quick-input>"
+    },
+    {
+      "title": "Command Palette",
+      "html": "<vsc-quick-input position=\"static\" value=\">toggle\"><vsc-quick-pick-item label=\"Chat Agent Sessions: Toggle Agent Sessions Sidebar\" highlight=\"Toggle\" focused><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Chat: Toggle Thinking Content in Accessible View\" highlight=\"Toggle\" keys=\"Alt+T\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Debug: Toggle Auto Attach\" highlight=\"Toggle\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Debug: Toggle Breakpoint\" highlight=\"Toggle\" keys=\"F9\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Debug: Toggle Exception Breakpoints\" highlight=\"Toggle\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Debug: Toggle Skipping this File\" highlight=\"Toggle\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Emmet: Toggle Comment\" highlight=\"Toggle\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"File: Toggle Active Editor Read-only in Session\" highlight=\"Toggle\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"File: Toggle Auto Save\" highlight=\"Toggle\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Git: Toggle Git Blame Editor Decoration\" highlight=\"Toggle\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Git: Toggle Git Blame Status Bar Item\" highlight=\"Toggle\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Notifications: Toggle Do Not Disturb Mode\" highlight=\"Toggle\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Notifications: Toggle Do Not Disturb Mode By Source...\" highlight=\"Toggle\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Preferences: Toggle between Light/Dark Themes\" highlight=\"Toggle\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Terminal: Toggle Find Using Case Sensitive\" highlight=\"Toggle\" keys=\"Alt+C\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Terminal: Toggle Find Using Regex\" highlight=\"Toggle\" keys=\"Alt+R\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item><vsc-quick-pick-item label=\"Terminal: Toggle Find Using Whole Word\" highlight=\"Toggle\" keys=\"Alt+W\"><vsc-action slot=\"actions\" icon=\"gear\" label=\"Configure Keybinding\"></vsc-action></vsc-quick-pick-item></vsc-quick-input>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "quick-open-dark",
+      "example": 0,
+      "width": 1440,
+      "ignore": [
+        ".quick-input-visible-count"
+      ]
+    },
+    {
+      "capture": "quick-open-light",
+      "example": 0,
+      "width": 1440,
+      "ignore": [
+        ".quick-input-visible-count"
+      ]
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:45:39.627Z",
+    "compared": 122,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": [
+      "[quick-open-light] extra (not in reference): quick-input-header > quick-input-and-message > quick-input-filter > quick-input-box > monaco-findInput > idle.monaco-inputbox.synthetic-focus > monaco-action-bar, quick-input-header > quick-input-and-message > quick-input-filter > quick-input-box > monaco-findInput > idle.monaco-inputbox.synthetic-focus > monaco-action-bar > actions-container, quick-input-list > element-focused.list_id_5.monaco-list.mouse-support.selection-none > monaco-scrollable-element > monaco-list-rows > focused.monaco-list-row > monaco-tl-row > monaco-tl-contents > has-actions.quick-input-list-entry.quick-input-list-separator-border > quick-input-list-label > quick-input-list-rows > quick-input-list-row[0] > ext-file-icon.file-icon.json-ext-file-icon.json-lang-file-icon.monaco-icon-label.name-file-icon.package.json-name-file-icon.ws-name-dir-icon > monaco-icon-label-container > monaco-icon-description-container, quick-input-list > element-focused.list_id_5.monaco-list.mouse-support.selection-none > monaco-scrollable-element > monaco-list-rows > focused.monaco-list-row > monaco-tl-row > monaco-tl-contents > has-actions.quick-input-list-entry.quick-input-list-separator-border > quick-input-list-label > quick-input-list-rows > quick-input-list-row[0] > ext-file-icon.file-icon.json-ext-file-icon.json-lang-file-icon.monaco-icon-label.name-file-icon.package.json-name-file-icon.ws-name-dir-icon > monaco-icon-label-container > monaco-icon-description-container > label-description, quick-input-list > element-focused.list_id_5.monaco-list.mouse-support.selection-none > monaco-scrollable-element > monaco-list-rows > focused.monaco-list-row > monaco-tl-row > monaco-tl-contents > has-actions.quick-input-list-entry.quick-input-list-separator-border > quick-input-list-label > quick-input-list-rows > quick-input-list-row[0] > ext-file-icon.file-icon.json-ext-file-icon.json-lang-file-icon.monaco-icon-label.name-file-icon.package.json-name-file-icon.ws-name-dir-icon > monaco-icon-label-container > monaco-icon-description-container > label-description > monaco-highlighted-label, quick-input-list > element-focused.list_id_5.monaco-list.mouse-support.selection-none > monaco-scrollable-element > monaco-list-rows > monaco-list-row > monaco-tl-row > monaco-tl-contents > has-actions.quick-input-list-entry > quick-input-list-label > quick-input-list-rows > quick-input-list-row[0] > ext-file-icon.file-icon.markdown-lang-file-icon.md-ext-file-icon.monaco-icon-label.name-file-icon.readme.md-name-file-icon.ws-name-dir-icon > monaco-icon-label-container > monaco-icon-description-container, quick-input-list > element-focused.list_id_5.monaco-list.mouse-support.selection-none > monaco-scrollable-element > monaco-list-rows > monaco-list-row > monaco-tl-row > monaco-tl-contents > has-actions.quick-input-list-entry > quick-input-list-label > quick-input-list-rows > quick-input-list-row[0] > ext-file-icon.file-icon.markdown-lang-file-icon.md-ext-file-icon.monaco-icon-label.name-file-icon.readme.md-name-file-icon.ws-name-dir-icon > monaco-icon-label-container > monaco-icon-description-container > label-description, quick-input-list > element-focused.list_id_5.monaco-list.mouse-support.selection-none > monaco-scrollable-element > monaco-list-rows > monaco-list-row > monaco-tl-row > monaco-tl-contents > has-actions.quick-input-list-entry > quick-input-list-label > quick-input-list-rows > quick-input-list-row[0] > ext-file-icon.file-icon.markdown-lang-file-icon.md-ext-file-icon.monaco-icon-label.name-file-icon.readme.md-name-file-icon.ws-name-dir-icon > monaco-icon-label-container > monaco-icon-description-container > label-description > monaco-highlighted-label"
+    ]
+  },
+  "createdAt": "2026-10-22T21:45:38.831Z",
+  "updatedAt": "2026-10-22T21:45:39.627Z"
+}

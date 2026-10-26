@@ -1,0 +1,14 @@
+/* Icon fonts, served from this system's assets/ (codicon: @vscode/codicons, CC-BY-4.0; seti: vscode theme-seti, MIT). */
+@font-face {
+  font-family: codicon;
+  font-display: block;
+  src: url("assets/codicon.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: seti;
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+  src: url("assets/seti.woff") format("woff");
+}

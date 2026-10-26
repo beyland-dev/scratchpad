@@ -1,0 +1,982 @@
+/*
+ * VS Code chat composer: workbench CSS rules that apply to the composer.
+ *
+ * Captured verbatim (in cascade order) from a running VS Code - Insiders
+ * 1.144.0 build, commit c8f3fd17f6b3 (2026-10-22), via the CSSOM. Only rules
+ * whose selectors match an element of the composer are kept, including their
+ * :hover/:focus/::before variants and the .focused/.disabled states.
+ *
+ * Source: microsoft/vscode (MIT), mainly
+ *   src/vs/workbench/contrib/chat/browser/widget/media/chat.css
+ *   src/vs/workbench/contrib/chat/browser/widget/input/media/*.css
+ *   src/vs/base/browser/ui/{actionbar,toolbar,dropdown,codicons}/*.css
+ * Codicon glyph rules come from the runtime-generated codicon stylesheet.
+ */
+
+@font-face {
+  font-family: "codicon";
+  font-display: block;
+  /* @vscode/codicons 0.0.46-48 (CC BY 4.0), byte-identical to the font served by the build. */
+  src: url("../fonts/codicon.ttf") format("truetype");
+}
+
+/* workbench.css #5 */
+.monaco-action-bar {
+  white-space: nowrap;
+  height: 100%;
+}
+
+/* workbench.css #6 */
+.monaco-action-bar .actions-container {
+  display: flex;
+  margin: 0px auto;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+/* workbench.css #7 */
+.monaco-action-bar .action-item {
+  display: block;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+/* workbench.css #8 */
+.monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+/* workbench.css #9 */
+.monaco-action-bar .action-item .codicon {
+  display: block;
+}
+
+/* workbench.css #10 */
+.monaco-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* workbench.css #11 */
+.monaco-action-bar .action-label {
+  display: flex;
+  font-size: 11px;
+  padding: 3px;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* workbench.css #12 */
+.monaco-action-bar .action-item.disabled .action-label:not(.icon),
+.monaco-action-bar .action-item.disabled .action-label:not(.icon)::before,
+.monaco-action-bar .action-item.disabled .action-label:not(.icon):hover {
+  color: var(--vscode-disabledForeground);
+}
+
+/* workbench.css #13 */
+.monaco-dropdown {
+  height: 100%;
+  padding: 0px;
+}
+
+/* workbench.css #14 */
+.monaco-dropdown > .dropdown-label {
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* workbench.css #15 */
+.monaco-dropdown > .dropdown-label > .action-label.disabled {
+  cursor: default;
+}
+
+/* workbench.css #16 */
+.monaco-toolbar {
+  height: 100%;
+}
+
+/* workbench.css #17 */
+:is(.monaco-toolbar.responsive.responsive-all) .monaco-action-bar > .actions-container > .action-item {
+  flex-shrink: 1;
+  min-width: var(--vscode-toolbar-action-min-width, 20px);
+}
+
+/* workbench.css #18 */
+:is(.monaco-toolbar.responsive.responsive-last) .monaco-action-bar > .actions-container > .action-item {
+  flex-shrink: 0;
+}
+
+/* workbench.css #19 */
+:is(.monaco-toolbar.responsive.responsive-last) .monaco-action-bar > .actions-container > .action-item.toolbar-shrinkable-item {
+  flex-shrink: 1;
+  min-width: var(--vscode-toolbar-action-min-width, 20px);
+}
+
+/* workbench.css #23 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* workbench.css #24 */
+.interactive-session .interactive-input-part {
+  --chat-input-radius: var(--vscode-cornerRadius-large);
+}
+
+/* workbench.css #25 */
+.monaco-workbench .interactive-session .chat-input-container {
+  box-sizing: border-box;
+  cursor: text;
+  background-color: var(--vscode-input-background);
+  border: var(--vscode-strokeThickness) solid var(--vscode-input-border, transparent);
+  --chat-input-own-radius: var(--chat-input-radius, var(--vscode-cornerRadius-large));
+  border-radius: var(--chat-input-stack-radius-top, var(--chat-input-own-radius)) var(--chat-input-stack-radius-top, var(--chat-input-own-radius)) var(--chat-input-own-radius) var(--chat-input-own-radius);
+  padding: 0px 6px 6px;
+  width: 100%;
+  position: relative;
+  transition: box-shadow 0.35s;
+  --chat-input-anim-duration: 4s;
+  --chat-input-working-border-color1: var(--vscode-chat-inputWorkingBorderColor1);
+}
+
+/* workbench.css #26 */
+.interactive-session .interactive-input-part:not(.compact) .chat-input-container {
+  overflow: hidden;
+}
+
+/* workbench.css #27 */
+.monaco-workbench .interactive-session .chat-input-container > .chat-input-working-border {
+  --chat-input-working-border-width: var(--vscode-strokeThickness);
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: var(--chat-input-working-border-width);
+  container-type: size;
+  overflow: clip;
+  mask: linear-gradient(rgb(0, 0, 0) 0px, rgb(0, 0, 0) 0px) content-box exclude, linear-gradient(rgb(0, 0, 0) 0px, rgb(0, 0, 0) 0px);
+  opacity: 0;
+  transition: opacity 0.35s;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* workbench.css #28 */
+.monaco-workbench .interactive-session .chat-input-container > .chat-input-working-border::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: hypot(calc(100cqw + 2 * var(--chat-input-working-border-width)),calc(100cqh + 2 * var(--chat-input-working-border-width)));
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(from 135deg,transparent 0deg,color-mix(in srgb,var(--chat-input-working-border-color1) 90%,transparent) 20deg,var(--chat-input-working-border-color1) 30deg,color-mix(in srgb,var(--chat-input-working-border-color1) 60%,transparent) 50deg,transparent 90deg,transparent 360deg);
+}
+
+/* workbench.css #29 */
+.monaco-workbench .interactive-session .chat-input-container > .chat-input-working-border-glow {
+  --chat-input-working-border-width: 2px;
+  filter: blur(1.5px);
+  z-index: 1;
+}
+
+/* workbench.css #30 */
+.monaco-workbench .interactive-session .chat-input-container > .chat-input-working-border-glow::before {
+  background: conic-gradient(from 135deg,transparent 0deg,color-mix(in srgb,var(--chat-input-working-border-color1) 60%,transparent) 25deg,color-mix(in srgb,var(--chat-input-working-border-color1) 35%,transparent) 50deg,transparent 90deg,transparent 360deg);
+}
+
+/* workbench.css #31 */
+.interactive-session .chat-secondary-toolbar .chat-context-usage-container {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  order: 1;
+}
+
+/* workbench.css #32 */
+.interactive-session .chat-secondary-toolbar .chat-input-status-container {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  order: 2;
+}
+
+/* workbench.css #33 */
+.interactive-session .chat-secondary-toolbar .chat-input-status-container.has-no-actions {
+  display: none;
+}
+
+/* workbench.css #34 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar {
+  order: 2;
+  flex-shrink: 0;
+}
+
+/* workbench.css #35 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .actions-container {
+  gap: var(--vscode-spacing-size40);
+}
+
+/* workbench.css #36 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button {
+  position: relative;
+  border-radius: var(--vscode-cornerRadius-circle);
+}
+
+/* workbench.css #37 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button > .action-label {
+  box-sizing: border-box;
+  width: var(--chat-input-control-height);
+  height: var(--chat-input-control-height);
+  justify-content: center;
+  font-size: var(--vscode-codiconFontSize-compact);
+  border-radius: var(--vscode-cornerRadius-circle);
+  transition: background-color 0.25s, color 0.25s;
+}
+
+/* workbench.css #38 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button > .action-label.codicon-arrow-up-compact::before {
+  display: inline-block;
+  transform: translateY(0.5px);
+}
+
+/* workbench.css #39 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button:not(.disabled):has(> .action-label:focus-visible) {
+  outline: var(--vscode-strokeThickness) solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+  border-radius: var(--vscode-cornerRadius-circle);
+}
+
+/* workbench.css #40 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button > .action-label:focus,
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button > .action-label:focus-visible {
+  outline: none;
+}
+
+/* workbench.css #41 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button:not(.disabled) > .action-label {
+  background: var(--vscode-button-background);
+  transition: background-color 0.12s;
+  color: var(--vscode-button-foreground) !important;
+}
+
+/* workbench.css #42 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button:not(.disabled) > .action-label:hover,
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button:not(.disabled) > .action-label:focus-visible {
+  background: var(--vscode-button-hoverBackground);
+}
+
+/* workbench.css #43 */
+.interactive-session .chat-editing-session {
+  width: 100%;
+  position: relative;
+}
+
+/* workbench.css #44 */
+.chat-attachments-container {
+  display: flex;
+  flex-flow: wrap;
+  gap: 4px;
+  margin-top: 6px;
+  cursor: default;
+}
+
+/* workbench.css #45 */
+.interactive-session .interactive-input-part .chat-artifacts-widget-container,
+.interactive-session .interactive-input-part .chat-todo-list-widget-container {
+  width: 100%;
+  position: relative;
+}
+
+/* workbench.css #59 */
+.interactive-session .interactive-input-and-side-toolbar {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  position: relative;
+}
+
+/* workbench.css #60 */
+.interactive-session .chat-input-container.focused {
+  border-color: var(--vscode-focusBorder);
+}
+
+/* workbench.css #61 */
+.chat-editor-container {
+  padding: 0px 0px 0px 4px;
+}
+
+/* workbench.css #62 */
+.interactive-session .interactive-input-part:not(.compact) .chat-editor-container {
+  container-type: inline-size;
+}
+
+/* workbench.css #63 */
+.interactive-session .chat-input-toolbars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+/* workbench.css #64 */
+.interactive-session .chat-secondary-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0px 4px;
+}
+
+/* workbench.css #65 */
+.interactive-session .chat-secondary-toolbar .chat-responsive-picker-container {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0px;
+  min-width: 0px;
+  gap: 2px;
+}
+
+/* workbench.css #66 */
+.interactive-session .chat-secondary-toolbar .chat-secondary-generic-chips {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 2px;
+}
+
+/* workbench.css #67 */
+.interactive-session .chat-secondary-toolbar .chat-secondary-generic-chips:empty {
+  display: none;
+}
+
+/* workbench.css #68 */
+.interactive-session .chat-secondary-toolbar .action-label,
+.interactive-session .chat-secondary-toolbar .chat-context-usage-widget {
+  box-sizing: border-box;
+  height: var(--chat-input-control-height);
+  align-items: center;
+}
+
+/* workbench.css #69 */
+.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar {
+  overflow: hidden;
+  min-width: 0px;
+  flex: 0 1 auto;
+  color: var(--vscode-icon-foreground);
+}
+
+/* workbench.css #70 */
+:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .monaco-action-bar .action-item .codicon {
+  color: var(--vscode-icon-foreground);
+  font-size: var(--vscode-codiconFontSize-compact);
+  width: auto;
+  height: auto;
+}
+
+/* workbench.css #71 */
+:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item {
+  min-width: 0px;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+/* workbench.css #72 */
+:is(:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item) .action-label {
+  min-width: 0px;
+  overflow: visible;
+  position: relative;
+}
+
+/* workbench.css #73 */
+:is(:is(:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item) .action-label) .chat-input-picker-label {
+  flex-shrink: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+/* workbench.css #74 */
+:is(:is(:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item) .action-label) .codicon + .chat-input-picker-label {
+  margin-left: 6px;
+}
+
+/* workbench.css #75 */
+:is(:is(:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item) .action-label) .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* workbench.css #76 */
+:is(:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item) .codicon {
+  flex-shrink: 0;
+}
+
+/* workbench.css #77 */
+.interactive-session .chat-secondary-toolbar .chat-input-picker-item .action-label {
+  box-sizing: border-box;
+  height: var(--chat-input-control-height);
+  padding: 0 var(--vscode-spacing-size60);
+  border-radius: var(--vscode-cornerRadius-small);
+  display: flex;
+  align-items: center;
+  color: var(--vscode-icon-foreground);
+}
+
+/* workbench.css #78 */
+.interactive-session .chat-input-toolbars :not(.responsive.chat-input-toolbar) .actions-container:first-child {
+  margin-right: auto;
+}
+
+/* workbench.css #79 */
+.interactive-session .chat-input-toolbars > .chat-input-toolbar .actions-container:first-child {
+  margin-right: 0px;
+}
+
+/* workbench.css #80 */
+.interactive-session .chat-input-toolbars > .chat-input-toolbar {
+  order: 0;
+  overflow: hidden;
+  min-width: 0px;
+  flex: 1 1 0px;
+  color: var(--vscode-icon-foreground);
+}
+
+/* workbench.css #81 */
+:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .monaco-action-bar .action-item .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* workbench.css #82 */
+:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item {
+  min-width: 0px;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+/* workbench.css #83 */
+:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label {
+  min-width: 0px;
+  overflow: visible;
+  position: relative;
+}
+
+/* workbench.css #84 */
+:is(:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label) .chat-input-picker-label {
+  flex-shrink: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+/* workbench.css #85 */
+:is(:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label) .model-picker-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  flex-shrink: 0;
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* workbench.css #86 */
+:is(:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label) .codicon + .chat-input-picker-label {
+  margin-left: var(--vscode-spacing-size60);
+}
+
+/* workbench.css #87 */
+:is(:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label) .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* workbench.css #88 */
+:is(:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label.disabled) .codicon {
+  color: var(--vscode-disabledForeground);
+}
+
+/* workbench.css #89 */
+:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .codicon {
+  flex-shrink: 0;
+}
+
+/* workbench.css #90 */
+.interactive-session .chat-input-toolbar .chat-input-picker-item .action-label {
+  box-sizing: border-box;
+  height: var(--chat-input-control-height);
+  padding: 0 var(--vscode-spacing-size60);
+  border-radius: var(--vscode-cornerRadius-small);
+  display: flex;
+  align-items: center;
+  color: var(--vscode-icon-foreground);
+}
+
+/* workbench.css #91 */
+.monaco-workbench .interactive-session .chat-input-toolbar .monaco-action-bar .action-item > .action-label.codicon[class*="codicon-"] {
+  justify-content: center;
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* workbench.css #92 */
+.interactive-session .chat-input-toolbars .monaco-action-bar .actions-container {
+  display: flex;
+  gap: var(--vscode-spacing-size40);
+}
+
+/* workbench.css #93 */
+.interactive-session .chat-secondary-toolbar .monaco-action-bar .actions-container {
+  display: flex;
+  gap: 2px;
+}
+
+/* workbench.css #94 */
+.monaco-workbench .interactive-session .chat-input-toolbars .monaco-action-bar .action-item .codicon,
+.monaco-workbench .interactive-session .chat-input-toolbars .action-label .codicon {
+  color: var(--vscode-icon-foreground) !important;
+}
+
+/* workbench.css #95 */
+.monaco-workbench .interactive-session .chat-input-toolbars .monaco-action-bar .action-item.disabled .codicon,
+.monaco-workbench .interactive-session .chat-input-toolbars .action-label.disabled .codicon {
+  color: var(--vscode-disabledForeground) !important;
+}
+
+/* workbench.css #96 */
+.interactive-session :is(.chat-input-toolbars, .chat-secondary-toolbar) .monaco-action-bar .action-item .action-label .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+  width: var(--vscode-codiconFontSize-compact);
+  height: var(--vscode-codiconFontSize-compact);
+  line-height: var(--vscode-codiconFontSize-compact);
+}
+
+/* workbench.css #97 */
+.interactive-session .interactive-input-part {
+  margin: 0px 12px;
+  padding: 4px 0px;
+  position: relative;
+}
+
+/* workbench.css #98 */
+.interactive-session .chat-input-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+/* workbench.css #99 */
+.interactive-session:not(.chat-floating-persistent-content) .interactive-input-part:not(.chat-input-hidden) > .chat-input-persistent-content {
+  display: contents;
+}
+
+/* workbench.css #100 */
+.interactive-session .chat-input-container .chat-attached-context {
+  display: contents;
+}
+
+/* workbench.css #101 */
+.interactive-session .chat-attached-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* workbench.css #102 */
+.chat-input-overlay {
+  display: none;
+}
+
+/* workbench.css #103 */
+.chat-input-overlay.disabled {
+  position: absolute;
+  inset: 0px;
+  background-color: var(--vscode-sideBar-background);
+  opacity: 0.6;
+  display: flex;
+  z-index: 101;
+  user-select: none;
+  cursor: default;
+}
+
+/* workbench.css #104 */
+.chat-input-overlay.disabled {
+  top: calc(-1 * var(--vscode-chat-persistent-content-height, 0px));
+}
+
+/* workbench.css #116 */
+.chat-input-surface-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vscode-spacing-size40);
+}
+
+/* workbench.css #117 */
+.interactive-session .chat-input-surface-stack > .chat-input-surface-stack-slot:empty {
+  display: none;
+}
+
+/* workbench.css #118 */
+.chat-input-stack {
+  gap: 0px;
+  --chat-input-stack-radius-outer: var(--chat-input-radius, var(--vscode-cornerRadius-large));
+}
+
+/* workbench.css #119 */
+.chat-input-stack > * {
+  --chat-input-stack-radius-top: var(--chat-input-stack-radius-outer);
+}
+
+/* workbench.css #120 */
+.chat-input-stack-slot:not(.chat-input-stack-docked):not(.chat-input-stack-standalone) {
+  display: none;
+}
+
+/* workbench.css #121 */
+.voice-glow-slot {
+  position: absolute;
+  inset: 0px;
+  pointer-events: none;
+  opacity: 0;
+  border-radius: inherit;
+  will-change: opacity;
+}
+
+/* workbench.css #122 */
+.chat-input-picker-split > .chat-input-picker-split-button {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: var(--chat-input-control-height, 22px);
+  min-width: 0px;
+  padding: 0 var(--vscode-spacing-size60);
+  border-radius: var(--vscode-cornerRadius-small);
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  white-space: nowrap;
+}
+
+/* workbench.css #123 */
+.chat-input-picker-split > .chat-input-picker-split-secondary {
+  position: relative;
+  margin-left: var(--vscode-spacing-size20);
+}
+
+/* workbench.css #124 */
+.chat-input-picker-split > .chat-input-picker-split-secondary::before {
+  position: absolute;
+  left: calc(-1 * var(--vscode-spacing-size20) / 2);
+  top: 50%;
+  width: var(--vscode-strokeThickness);
+  height: var(--vscode-spacing-size120);
+  background-color: var(--vscode-widget-border, var(--vscode-editorWidget-border, transparent));
+  content: "";
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* workbench.css #125 */
+.monaco-workbench .chat-input-picker-split-button:focus-visible,
+.monaco-workbench .chat-input-picker-focus-scope :is(.action-label, .monaco-button):focus-visible {
+  outline: var(--vscode-strokeThickness) solid var(--vscode-focusBorder);
+  outline-offset: calc(-1 * var(--vscode-strokeThickness));
+}
+
+/* workbench.css #126 */
+.monaco-workbench .chat-input-picker-split-button:focus:not(:focus-visible),
+.monaco-workbench .chat-input-picker-focus-scope :is(.action-label, .monaco-button):focus:not(:focus-visible),
+.monaco-workbench .chat-input-picker-focus-scope.pointer-focus :is(.action-label, .chat-input-picker-split-button, .monaco-button):focus {
+  outline: none;
+}
+
+/* workbench.css #127 */
+.chat-input-picker-item.model-picker-item {
+  overflow: visible;
+}
+
+/* workbench.css #128 */
+.interactive-session .chat-input-toolbar .chat-input-picker-item.model-picker-item .action-label.model-picker-split {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0px;
+}
+
+/* workbench.css #129 */
+.interactive-session .chat-input-toolbar.monaco-toolbar.responsive .monaco-action-bar > .actions-container > .action-item.model-picker-item {
+  flex-shrink: 1;
+}
+
+/* workbench.css #130 */
+.interactive-session .chat-input-toolbar .chat-input-picker-item .action-label.model-picker-split {
+  padding: 0px;
+  overflow: visible;
+  position: relative;
+  cursor: default;
+}
+
+/* workbench.css #131 */
+.chat-input-picker-item .action-label.model-picker-split .model-picker-name {
+  flex: 0 1 auto;
+  min-width: 0px;
+  overflow: hidden;
+}
+
+/* workbench.css #132 */
+.chat-input-picker-item .action-label.model-picker-split .model-picker-name .chat-input-picker-label {
+  flex: 0 1 auto;
+  min-width: 0px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* workbench.css #133 */
+.interactive-session .chat-input-toolbars > .chat-input-toolbar .chat-input-picker-item.model-picker-item .action-label.model-picker-split .model-picker-name .chat-input-picker-label {
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* workbench.css #134 */
+.chat-input-picker-item .action-label.model-picker-split .model-picker-config-summary {
+  flex: 0 0 auto;
+  color: var(--vscode-descriptionForeground);
+  white-space: nowrap;
+}
+
+/* workbench.css #135 */
+.chat-input-picker-item .action-label.model-picker-split .model-picker-config {
+  flex-shrink: 0;
+}
+
+/* workbench.css #136 */
+.chat-input-picker-item .action-label.model-picker-split.disabled .model-picker-section {
+  cursor: default;
+}
+
+/* workbench.css #137 */
+.chat-input-picker-item .action-label.model-picker-split.disabled .model-picker-section:hover {
+  background-color: transparent;
+}
+
+/* workbench.css #138 */
+.agent-host-chat-input-picker-host {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* workbench.css #139 */
+.monaco-action-bar .action-item.agent-host-chat-input-picker-host {
+  display: inline-flex;
+}
+
+/* workbench.css #140 */
+.agent-host-chat-input-picker-host:empty {
+  display: none;
+}
+
+/* workbench.css #141 */
+.agent-host-chat-input-picker-slot {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* workbench.css #142 */
+.agent-host-chat-input-picker-slot .action-label .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* workbench.css #143 */
+.chat-secondary-generic-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* workbench.css #144 */
+:is(.chat-secondary-generic-chips):empty {
+  display: none;
+}
+
+/* workbench.css #145 */
+.agent-host-chat-input-picker-label {
+  flex-shrink: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+/* workbench.css #146 */
+.agent-host-chat-input-picker-slot .action-label .codicon + .agent-host-chat-input-picker-label {
+  margin-left: 6px;
+}
+
+/* workbench.css #147 */
+.agent-host-mode-permission-summary {
+  min-width: 0px;
+  margin-left: var(--vscode-spacing-size60);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* workbench.css #148 */
+.agent-host-mode-permission-summary {
+  color: var(--vscode-descriptionForeground);
+  opacity: 0.85;
+}
+
+/* workbench.css #149 */
+.agent-host-chat-input-picker-slot .action-label.agent-host-mode-permissions-trigger {
+  display: flex;
+  height: var(--chat-input-control-height);
+  padding: 0px;
+  border-radius: var(--vscode-cornerRadius-small);
+  overflow: visible;
+  background: transparent;
+  color: var(--vscode-icon-foreground);
+}
+
+/* workbench.css #150 */
+.action-label.agent-host-mode-permissions-trigger .agent-host-mode-picker-button > .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+  width: var(--vscode-codiconFontSize-compact);
+  height: var(--vscode-codiconFontSize-compact);
+  line-height: var(--vscode-codiconFontSize-compact);
+  flex-shrink: 0;
+}
+
+/* workbench.css #151 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item .action-label.agent-host-mode-permissions-trigger:hover:not(.disabled) {
+  outline: none;
+}
+
+/* workbench.css #152 */
+.agent-host-permissions-button .agent-host-mode-permission-summary {
+  margin-left: 0px;
+}
+
+/* workbench.css #153 */
+.interactive-session .interactive-input-part > .chat-plan-review-widget-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* workbench.css #154 */
+.interactive-session .interactive-input-part > .chat-question-carousel-widget-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* workbench.css #155 */
+.interactive-session .interactive-input-part > .chat-tool-confirmation-carousel-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* workbench.css #198 */
+.chat-getting-started-tip-container {
+  width: 100%;
+}
+
+/* workbench.css #201 */
+.modern-ui.monaco-workbench .interactive-session .interactive-input-part {
+  padding-bottom: 0px;
+}
+
+/* workbench.css #202 */
+.modern-ui .monaco-action-bar .action-label {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* workbench.css #205 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* workbench.css #206 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* workbench.css #207 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* workbench.css #208 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* workbench.css #209 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench [tabindex="-1"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* workbench.css #210 */
+.monaco-workbench [tabindex="0"]:active,
+.monaco-workbench [tabindex="-1"]:active {
+  outline: 0px !important;
+}
+
+/* workbench.css #212 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-label:not(.disabled):hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+/* workbench.css #213 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item .action-label:hover:not(.disabled) {
+  outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+  outline-offset: -1px;
+}
+
+/* codicons #217 */
+.codicon-copilot-compact::before {
+  content: "\ec8a";
+}
+
+/* codicons #218 */
+.codicon-add-compact::before {
+  content: "\ec9f";
+}
+
+/* codicons #219 */
+.codicon-comment-compact::before {
+  content: "\ecac";
+}
+
+/* codicons #220 */
+.codicon-agent-compact::before {
+  content: "\ecc0";
+}
+
+/* codicons #221 */
+.codicon-arrow-up-compact::before {
+  content: "\eceb";
+}

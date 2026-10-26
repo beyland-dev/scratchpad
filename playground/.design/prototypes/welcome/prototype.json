@@ -1,0 +1,16 @@
+{
+  "title": "Welcome",
+  "description": "An example prototype showing the workspace conventions.",
+  "status": "draft",
+  "tags": [
+    "example"
+  ],
+  "entry": "index.html",
+  "createdBy": {
+    "kind": "human",
+    "name": "design-tool"
+  },
+  "sourceRefs": [],
+  "createdAt": "2026-10-22T03:21:01.389Z",
+  "updatedAt": "2026-10-22T03:21:01.389Z"
+}

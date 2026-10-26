@@ -1,0 +1,82 @@
+{
+  "tag": "vsc-chat-view",
+  "kind": "context",
+  "title": "Chat view",
+  "category": "chat",
+  "description": "The chat view pane (secondary side bar): `.chat-viewpane > .chat-controls-container > .interactive-session`. Chat widgets render inside it.",
+  "usage": "Wrap chat widgets (<vsc-chat-input>, …). Give it a height to lay out a full panel; the composer sits at the bottom.",
+  "attributes": [],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "chat-viewpane-dark",
+    "chat-viewpane-light",
+    "chat-controls-dark",
+    "chat-controls-light",
+    "chat-session-dark",
+    "chat-session-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widgetHosts/viewPane/chatViewPane.ts"
+    },
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/chatWidget.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Panel",
+      "html": "<vsc-chat-view style=\"height: 794px;\"></vsc-chat-view>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "chat-viewpane-dark",
+      "example": 0,
+      "width": 417,
+      "ignore": []
+    },
+    {
+      "capture": "chat-viewpane-light",
+      "example": 0,
+      "width": 417,
+      "ignore": []
+    },
+    {
+      "capture": "chat-session-dark",
+      "example": 0,
+      "width": 417,
+      "root": ".interactive-session",
+      "ignore": []
+    },
+    {
+      "capture": "chat-session-light",
+      "example": 0,
+      "width": 417,
+      "root": ".interactive-session",
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:42:51.437Z",
+    "compared": 4,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": [
+      "[chat-viewpane-dark] extra (not in reference): chat-controls-container, chat-controls-container > interactive-session",
+      "[chat-viewpane-light] extra (not in reference): chat-controls-container, chat-controls-container > interactive-session"
+    ]
+  },
+  "createdAt": "2026-10-22T21:42:49.641Z",
+  "updatedAt": "2026-10-22T21:42:51.437Z"
+}

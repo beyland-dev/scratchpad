@@ -1,0 +1,65 @@
+{
+  "tag": "vsc-activity-item",
+  "kind": "component",
+  "title": "Activity bar item",
+  "category": "workbench",
+  "description": "A view icon in the activity bar, with active indicator and optional count badge.",
+  "attributes": [
+    {
+      "name": "icon",
+      "type": "string",
+      "description": "Codicon id, e.g. explorer-view-icon, search-view-icon, source-control-view-icon, run-view-icon, extensions-view-icon"
+    },
+    {
+      "name": "label",
+      "type": "string",
+      "description": "Tooltip, e.g. 'Explorer (Ctrl+Shift+E)'"
+    },
+    {
+      "name": "checked",
+      "type": "boolean",
+      "description": "Active view"
+    },
+    {
+      "name": "badge",
+      "type": "string",
+      "description": "Badge count"
+    },
+    {
+      "name": "kind",
+      "type": "enum",
+      "values": [
+        "",
+        "menu"
+      ],
+      "description": "menu = Accounts/Manage style button"
+    }
+  ],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "hostTag": "li",
+  "cssCaptures": [],
+  "requires": [
+    "vsc-workbench",
+    "vsc-activitybar"
+  ],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/workbench/browser/parts/compositeBarActions.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Items",
+      "html": "<vsc-activity-item icon=\"explorer-view-icon\" label=\"Explorer (Ctrl+Shift+E)\" checked></vsc-activity-item><vsc-activity-item icon=\"source-control-view-icon\" label=\"Source Control (Ctrl+Shift+G)\" badge=\"3\"></vsc-activity-item>"
+    }
+  ],
+  "references": [],
+  "status": "draft",
+  "createdAt": "2026-10-22T21:42:49.678Z",
+  "updatedAt": "2026-10-22T21:42:49.678Z"
+}

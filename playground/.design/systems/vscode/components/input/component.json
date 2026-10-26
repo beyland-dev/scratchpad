@@ -1,0 +1,99 @@
+{
+  "tag": "vsc-input",
+  "kind": "component",
+  "title": "Input box",
+  "category": "widgets",
+  "description": "Single-line text input (`.monaco-inputbox`).",
+  "attributes": [
+    {
+      "name": "value",
+      "type": "string"
+    },
+    {
+      "name": "placeholder",
+      "type": "string"
+    },
+    {
+      "name": "type",
+      "type": "enum",
+      "values": [
+        "text",
+        "number"
+      ],
+      "default": "text"
+    },
+    {
+      "name": "focused",
+      "type": "boolean"
+    },
+    {
+      "name": "variant",
+      "type": "enum",
+      "values": [
+        "",
+        "settings"
+      ]
+    }
+  ],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "inputbox-dark",
+    "inputbox-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [
+    "--vscode-input-background",
+    "--vscode-input-foreground",
+    "--vscode-input-border",
+    "--vscode-input-placeholderForeground",
+    "--vscode-focusBorder"
+  ],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/base/browser/ui/inputbox/inputBox.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Settings text input",
+      "html": "<vsc-settings-editor style=\"height: 300px;\"><vsc-setting type=\"text\" category=\"Editor: \" label=\"Font Family\" key=\"editor.fontFamily\" value=\"'Droid Sans Mono', monospace\">Controls the font family.</vsc-setting></vsc-settings-editor>"
+    },
+    {
+      "title": "Plain",
+      "html": "<div style=\"padding: 12px; width: 320px;\"><vsc-input placeholder=\"Branch name\"></vsc-input></div>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "inputbox-dark",
+      "example": 0,
+      "width": 1150,
+      "root": ".setting-item-text vsc-input",
+      "ignore": []
+    },
+    {
+      "capture": "inputbox-light",
+      "example": 0,
+      "width": 1150,
+      "root": ".setting-item-text vsc-input",
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:43:08.129Z",
+    "compared": 6,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.702Z",
+  "updatedAt": "2026-10-22T21:43:08.129Z"
+}

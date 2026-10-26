@@ -1,0 +1,344 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=dark
+ * Selector: .notifications-center
+ * On: 2026-10-22T21:03:48.005Z
+ */
+
+/* @capture workbench.css@23 */
+.monaco-scrollable-element > .invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* @capture workbench.css@26 */
+.monaco-scrollable-element > .shadow {
+  position: absolute;
+  display: none;
+}
+
+/* @capture workbench.css@31 */
+.monaco-scrollable-element > .scrollbar {
+  background: var(--vscode-scrollbar-background);
+}
+
+/* @capture workbench.css@32 */
+.monaco-scrollable-element > .scrollbar > .slider {
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+/* @capture workbench.css@33 */
+.monaco-scrollable-element > .scrollbar > .slider:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* @capture workbench.css@34 */
+.monaco-scrollable-element > .scrollbar > .slider.active {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+/* @capture workbench.css@124 */
+.monaco-list {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@125 */
+.monaco-list.mouse-support {
+  user-select: none;
+}
+
+/* @capture workbench.css@126 */
+.monaco-list > .monaco-scrollable-element {
+  height: 100%;
+}
+
+/* @capture workbench.css@127 */
+.monaco-list-rows {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* @capture workbench.css@131 */
+.monaco-list .monaco-scrollable-element > .scrollbar.vertical {
+  z-index: 14;
+}
+
+/* @capture workbench.css@201 */
+.monaco-action-bar {
+  white-space: nowrap;
+  height: 100%;
+}
+
+/* @capture workbench.css@202 */
+.monaco-action-bar .actions-container {
+  display: flex;
+  margin: 0px auto;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+/* @capture workbench.css@204 */
+.monaco-action-bar .action-item {
+  display: block;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+/* @capture workbench.css@205 */
+.monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@206 */
+.monaco-action-bar .action-item .codicon {
+  display: block;
+}
+
+/* @capture workbench.css@207 */
+.monaco-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* @capture workbench.css@208 */
+.monaco-action-bar .action-label {
+  display: flex;
+  font-size: 11px;
+  padding: 3px;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture workbench.css@209 */
+.monaco-action-bar .action-item.disabled .action-label:not(.icon),
+.monaco-action-bar .action-item.disabled .action-label:not(.icon)::before,
+.monaco-action-bar .action-item.disabled .action-label:not(.icon):hover {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture workbench.css@250 */
+.monaco-dropdown {
+  height: 100%;
+  padding: 0px;
+}
+
+/* @capture workbench.css@251 */
+.monaco-dropdown > .dropdown-label {
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* @capture workbench.css@252 */
+.monaco-dropdown > .dropdown-label > .action-label.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@527 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture workbench.css@8157 */
+.monaco-workbench > .notifications-center > .notifications-center-header > .notifications-center-header-toolbar .action-item {
+  margin-right: 4px;
+}
+
+/* @capture workbench.css@8158 */
+.monaco-workbench > .notifications-center > .notifications-center-header > .notifications-center-header-toolbar .action-item:first-child {
+  margin-left: 4px;
+}
+
+/* @capture workbench.css@8229 */
+.modern-ui.monaco-workbench > .notifications-center > .notifications-center-header > .notifications-center-header-title {
+  text-transform: capitalize;
+  font-size: var(--vscode-fontSize-label1);
+}
+
+/* @capture workbench.css@8230 */
+.modern-ui.monaco-workbench > .notifications-center > .notifications-center-header > .notifications-center-header-title {
+  font-weight: var(--vscode-fontWeight-semiBold);
+}
+
+/* @capture workbench.css@8245 */
+.modern-ui-notifications-dialogs.monaco-workbench > .notifications-center {
+  right: var(--modern-ui-notifications-inline-inset, var(--vscode-spacing-size80));
+  bottom: var(--modern-ui-notifications-block-end-inset, var(--vscode-spacing-size360));
+  border-radius: var(--vscode-cornerRadius-large);
+}
+
+/* @capture workbench.css@8254 */
+.modern-ui-notifications-dialogs.monaco-workbench > .notifications-center > .notifications-center-header {
+  padding-right: var(--vscode-spacing-size20);
+}
+
+/* @capture workbench.css@8341 */
+.modern-ui .monaco-action-bar .action-label {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8350 */
+.modern-ui .monaco-scrollable-element > .scrollbar > .slider {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@9620 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture workbench.css@9624 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture workbench.css@9637 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture workbench.css@9638 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture workbench.css@9646 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench [tabindex="-1"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture workbench.css@9649 */
+.monaco-workbench [tabindex="0"]:active,
+.monaco-workbench [tabindex="-1"]:active {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9656 */
+.monaco-workbench .monaco-list:focus {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9658 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-label:not(.disabled):hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+/* @capture workbench.css@9659 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item.active .action-label:not(.disabled),
+.monaco-workbench .monaco-action-bar:not(.vertical) .monaco-dropdown.active .action-label:not(.disabled) {
+  background-color: var(--vscode-toolbar-activeBackground);
+}
+
+/* @capture workbench.css@9660 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item .action-label:hover:not(.disabled) {
+  outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+  outline-offset: -1px;
+}
+
+/* @capture workbench.css@9661 */
+.monaco-workbench > .notifications-center {
+  position: absolute;
+  z-index: 2545;
+  right: 7px;
+  bottom: 29px;
+  display: none;
+  overflow: hidden;
+  border: 1px solid var(--vscode-editorWidget-border);
+  border-radius: var(--vscode-cornerRadius-small);
+  box-shadow: var(--vscode-shadow-lg);
+}
+
+/* @capture workbench.css@9665 */
+.monaco-workbench > .notifications-center.visible {
+  display: block;
+}
+
+/* @capture workbench.css@9666 */
+.monaco-workbench > .notifications-center > .notifications-center-header {
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  padding-right: 5px;
+  height: 35px;
+}
+
+/* @capture workbench.css@9667 */
+.monaco-workbench > .notifications-center > .notifications-center-header > .notifications-center-header-title {
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+/* @capture workbench.css@9668 */
+.monaco-workbench > .notifications-center > .notifications-center-header > .notifications-center-header-toolbar {
+  flex: 1 1 0%;
+}
+
+/* @capture workbench.css@9669 */
+.monaco-workbench > .notifications-center > .notifications-center-header > .notifications-center-header-toolbar .actions-container {
+  justify-content: flex-end;
+}
+
+/* @capture workbench.css@9675 */
+.monaco-workbench .notifications-list-container {
+  color: var(--vscode-notifications-foreground);
+  background: var(--vscode-notifications-background);
+  outline-color: var(--vscode-contrastBorder);
+}
+
+/* @capture workbench.css@9677 */
+.monaco-workbench .notifications-list-container .notification-offset-helper {
+  opacity: 0;
+  position: absolute;
+  line-height: 22px;
+  overflow-wrap: break-word;
+}
+
+/* @capture codiconStyles@1120 */
+.codicon-notifications-clear-all::before {
+  content: "\eabf";
+}
+
+/* @capture codiconStyles@1121 */
+.codicon-notifications-hide::before {
+  content: "\eab4";
+}
+
+/* @capture codiconStyles@1128 */
+.codicon-notifications-do-not-disturb::before {
+  content: "\ec08";
+}
+
+/* @capture codiconStyles@1129 */
+.codicon-notifications-position::before {
+  content: "\ebcb";
+}
+
+/* @capture inline-32@0 */
+.monaco-list.list_id_11 .monaco-list-rows {
+  background: var(--vscode-notifications-background);
+}

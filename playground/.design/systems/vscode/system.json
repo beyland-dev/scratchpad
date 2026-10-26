@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "name": "VS Code",
+  "description": "The VS Code workbench design system (2026 themes): theme tokens, codicons, core widgets and chat UI, codified from the running product.",
+  "sourceId": "vscode",
+  "prefix": "vsc",
+  "themes": [
+    {
+      "id": "dark-2026",
+      "label": "Dark 2026",
+      "kind": "dark",
+      "classes": "vs-dark vscode-theme-defaults-themes-2026-dark-json"
+    },
+    {
+      "id": "light-2026",
+      "label": "Light 2026",
+      "kind": "light",
+      "classes": "vs vscode-theme-defaults-themes-2026-light-json"
+    }
+  ],
+  "defaultTheme": "dark-2026",
+  "rootContext": "vsc-workbench",
+  "themeSelector": ".monaco-workbench{classes}",
+  "sheetOrder": [
+    "workbench.css",
+    "contributedColorTheme",
+    "codiconStyles",
+    "contributedFileIconTheme"
+  ],
+  "themeSheets": [
+    "contributedColorTheme"
+  ],
+  "capturedFrom": {
+    "product": "VS Code - Insiders (web, serve-web)",
+    "version": "1.144.0-insider",
+    "commit": "58173d0ebc1838579e3c331e0a47e365904a6456",
+    "date": "2026-10-22T18:58:04+02:00",
+    "url": "http://127.0.0.1:8457"
+  },
+  "notes": "## Capture runtime\n\nValues were captured from VS Code Insiders running as a web app (`code-insiders serve-web`), driven through a headless Chromium with CDP:\n\n```sh\ncode-insiders serve-web --port 8457 --host 127.0.0.1 --without-connection-token \\\n  --accept-server-license-terms --server-data-dir /tmp/dt-vsc/server \\\n  --cli-data-dir /tmp/dt-vsc/cli --default-folder /tmp/dt-vsc/ws\n```\n\nOpen one page per theme (`?folder=/tmp/dt-vsc/ws&dt-theme=dark` / `dt-theme=light`) and target them with `{ cdp: \"http://127.0.0.1:9333\", page: \"dt-theme=dark\" }`.\n\n- serve-web downloads the newest Insiders build when a page loads, so `capturedFrom.commit` is the build that was served.\n- The web default theme is Light 2026 regardless of `prefers-color-scheme`; pick **Dark 2026** with Ctrl+K Ctrl+T on the dark page.\n- Trust the folder, then close the Workspace Trust modal editor (\"Close Modal Editor\"): `.monaco-modal-editor-block` intercepts pointer events.\n- Widen the secondary side bar (chat) to 420px by dragging its sash; the chat composer is then 393px wide like the desktop default.\n- Captures use the 1440×900 window at 2× scale. Rules from `contributedColorTheme` are theme-scoped (`themeSheets`); `--modern-ui-*` variables are theme rules, not tokens.\n\n## Conventions\n\n- Every component's host *is* the captured root element (light DOM); `hostTag` widens type selectors (`a`, `li`, `div`) to match hosts.\n- `<vsc-workbench theme=\"dark-2026|light-2026\">` is the root context; surface contexts (`<vsc-chat-view>`, `<vsc-sidebar>`, `<vsc-editor>`) recreate the ancestor classes that captured rules depend on.\n- Icons are codicons: `<vsc-icon name=\"…\">` or `ds.icon(name)`; file icons use the Seti file icon theme classes.\n- `<vsc-workbench>` carries the body classes VS Code uses for the agent status pill (`agent-status-enabled unified-agents-bar`) and the default layout flags (`nopanel floating-panels …`).\n- For a full window, see the \"Full window layout\" example of `<vsc-workbench>`: parts are positioned like the default 1440×900 window (activity bar 48px, side bar 300px, secondary side bar 428px).\n\n## Capture conventions\n\n- Runtime list ids (`list_id_N`) differ per page; light captures are normalized to the dark capture's ids so both themes share CSS (components use the dark ids, e.g. quick input = `list_id_5`).\n- Overlays (quick input, menus, dialog, hover, notifications) were captured while open; verification finishes their fade/scale animations first.\n- Watermark shortcuts rotate between page loads, so dark and light references use different examples.\n- Some states depend on focus (e.g. pane header actions only show while the pane has focus); references ignore those parts.",
+  "attribution": [
+    {
+      "name": "Visual Studio Code (microsoft/vscode) CSS and markup",
+      "license": "MIT",
+      "url": "https://github.com/microsoft/vscode/blob/main/LICENSE.txt",
+      "note": "Copyright (c) Microsoft Corporation"
+    },
+    {
+      "name": "Codicons (@vscode/codicons 0.0.46-48)",
+      "license": "CC-BY-4.0",
+      "url": "https://github.com/microsoft/vscode-codicons"
+    }
+  ],
+  "createdAt": "2026-10-22T19:22:04.156Z",
+  "updatedAt": "2026-10-22T21:49:55.675Z"
+}

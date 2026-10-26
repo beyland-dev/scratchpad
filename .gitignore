@@ -32,7 +32,6 @@ dist-ssr
 # AI agent worktrees
 .claude/worktrees/
 
-# Local design workspaces used for development
-/playground/
+# Design workspace caches
 .design/.cache/
 .design/.trash/

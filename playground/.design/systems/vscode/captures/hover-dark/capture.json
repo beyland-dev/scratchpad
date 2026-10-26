@@ -1,0 +1,81 @@
+{
+  "label": "hover-dark",
+  "url": "http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=dark",
+  "selector": ".workbench-hover-container .workbench-hover, .monaco-hover:not(.hidden)",
+  "theme": "dark-2026",
+  "capturedAt": "2026-10-22T21:03:54.289Z",
+  "rect": {
+    "x": 47,
+    "y": 82.5,
+    "w": 141.453125,
+    "h": 25
+  },
+  "parentWidth": 144.453125,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "workbench-hover-container",
+      "w": 144.453125,
+      "h": 25,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "context-view monaco-component top left",
+      "w": 141.453125,
+      "h": 25,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-enable-motion modern-ui modern-ui-tabs modern-ui-connected-editor-tabs modern-ui-notifications-dialogs monaco-workbench linux web chromium nopanel fullscreen floating-panels panel-position-bottom panel-alignment-center file-icons-enabled vs-dark vscode-theme-defaults-themes-2026-dark-json",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(25, 26, 27)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "agent-status-enabled unified-agents-bar",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(191, 191, 191)",
+    "font-family": "system-ui, Ubuntu, \"Droid Sans\", sans-serif",
+    "font-size": "12px",
+    "font-weight": "400",
+    "line-height": "19px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "text"
+  },
+  "vars": {
+    "--vscode-scrollbarSlider-background": "rgba(168, 169, 170, 0.52)",
+    "--vscode-scrollbarSlider-hoverBackground": "rgba(168, 169, 170, 0.56)",
+    "--vscode-scrollbarSlider-activeBackground": "rgba(168, 169, 170, 0.61)",
+    "--vscode-editorHoverWidget-background": "#202122",
+    "--vscode-editorHoverWidget-border": "#2a2b2c",
+    "--vscode-editorHoverWidget-foreground": "#bfbfbf",
+    "--vscode-shadow-lg": "0 0 12px rgba(0, 0, 0, .14)",
+    "--vscode-cornerRadius-small": "4px",
+    "--vscode-cornerRadius-large": "8px",
+    "--vscode-focusBorder": "rgba(57, 148, 188, 0.7)"
+  },
+  "fontFaces": [],
+  "rules": 18,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

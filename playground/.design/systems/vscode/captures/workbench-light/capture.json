@@ -1,0 +1,76 @@
+{
+  "label": "workbench-light",
+  "url": "http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light",
+  "selector": ".monaco-workbench",
+  "theme": "light-2026",
+  "capturedAt": "2026-10-22T19:28:01.709Z",
+  "rect": {
+    "x": 0,
+    "y": 0,
+    "w": 1440,
+    "h": 900
+  },
+  "parentWidth": 1440,
+  "ancestors": [
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "agent-status-enabled unified-agents-bar",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(32, 32, 32)",
+    "font-family": "system-ui, Ubuntu, \"Droid Sans\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-spacing-size40": "4px",
+    "--vscode-spacing-sizeNone": "0px",
+    "--modern-ui-shell-background": "#fafafd",
+    "--vscode-modernUI-shellBackground": "#fafafd",
+    "--vscode-titleBar-activeBackground": "#fafafd",
+    "--vscode-fontSize-body1": "13px",
+    "--vscode-modernTab-activeBackground": "rgba(218, 218, 218, 0.6)",
+    "--vscode-modernTab-hoverBackground": "rgba(0, 0, 0, 0.08)",
+    "--vscode-modernEditorTab-activeBackground": "rgba(218, 218, 218, 0.6)",
+    "--modern-ui-editor-tab-active-background": "rgba(218, 218, 218, 0.6)",
+    "--vscode-modernEditorTab-inactiveBackground": "rgba(0, 0, 0, 0)",
+    "--modern-ui-editor-tab-inactive-background": "rgba(0, 0, 0, 0)",
+    "--vscode-modernEditorTab-hoverBackground": "rgba(0, 0, 0, 0.08)",
+    "--modern-ui-editor-tab-hover-background": "rgba(0, 0, 0, 0.08)",
+    "--vscode-modernEditorTab-activeHoverBackground": "rgba(0, 0, 0, 0.08)",
+    "--modern-ui-editor-tab-active-hover-background": "rgba(0, 0, 0, 0.08)",
+    "--vscode-modernEditorTab-activeForeground": "#202020",
+    "--modern-ui-editor-tab-active-foreground": "#202020",
+    "--vscode-foreground": "#202020",
+    "--modern-ui-editor-tab-inactive-foreground": "#606060",
+    "--vscode-modernEditorTab-hoverForeground": "#202020",
+    "--modern-ui-editor-tab-hover-foreground": "#202020",
+    "--modern-ui-editor-tab-active-border": "transparent",
+    "--modern-ui-editor-tab-active-border-top": "transparent",
+    "--modern-ui-editor-tab-hover-border": "transparent",
+    "--vscode-modernEditorTab-activeActionBackground": "#e8e8e8",
+    "--modern-ui-editor-tab-action-active-background": "#e8e8e8",
+    "--vscode-modernEditorTab-hoverActionBackground": "#ebebeb",
+    "--modern-ui-editor-tab-action-hover-background": "#ebebeb",
+    "--vscode-modernEditorTab-activeHoverActionBackground": "#ebebeb",
+    "--modern-ui-editor-tab-action-active-hover-background": "#ebebeb",
+    "--vscode-tab-inactiveForeground": "#606060"
+  },
+  "fontFaces": [],
+  "rules": 21,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

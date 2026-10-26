@@ -1,0 +1,534 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light
+ * Selector: .settings-editor .settings-header
+ * On: 2026-10-22T21:22:18.949Z
+ */
+
+/* @capture workbench.css@201 */
+.monaco-action-bar {
+  white-space: nowrap;
+  height: 100%;
+}
+
+/* @capture workbench.css@202 */
+.monaco-action-bar .actions-container {
+  display: flex;
+  margin: 0px auto;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+/* @capture workbench.css@204 */
+.monaco-action-bar .action-item {
+  display: block;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+/* @capture workbench.css@205 */
+.monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@206 */
+.monaco-action-bar .action-item .codicon {
+  display: block;
+}
+
+/* @capture workbench.css@207 */
+.monaco-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* @capture workbench.css@208 */
+.monaco-action-bar .action-label {
+  display: flex;
+  font-size: 11px;
+  padding: 3px;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture workbench.css@209 */
+.monaco-action-bar .action-item.disabled .action-label:not(.icon),
+.monaco-action-bar .action-item.disabled .action-label:not(.icon)::before,
+.monaco-action-bar .action-item.disabled .action-label:not(.icon):hover {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture workbench.css@250 */
+.monaco-dropdown {
+  height: 100%;
+  padding: 0px;
+}
+
+/* @capture workbench.css@251 */
+.monaco-dropdown > .dropdown-label {
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* @capture workbench.css@252 */
+.monaco-dropdown > .dropdown-label > .action-label.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@382 */
+.monaco-text-button {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--vscode-button-border, transparent);
+  line-height: 16px;
+  font-size: 12px;
+  overflow-wrap: normal;
+}
+
+/* @capture workbench.css@385 */
+.monaco-text-button:focus {
+  outline-offset: 2px !important;
+}
+
+/* @capture workbench.css@386 */
+.monaco-text-button:hover {
+  text-decoration: none !important;
+}
+
+/* @capture workbench.css@387 */
+.monaco-button.disabled:focus,
+.monaco-button.disabled {
+  opacity: 0.4 !important;
+  cursor: default;
+}
+
+/* @capture workbench.css@527 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture workbench.css@784 */
+.monaco-count-badge {
+  padding: 3px 5px;
+  border-radius: 11px;
+  font-size: 11px;
+  min-width: 18px;
+  min-height: 18px;
+  line-height: 11px;
+  font-weight: 400;
+  text-align: center;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+/* @capture workbench.css@785 */
+.monaco-count-badge.long {
+  padding: 2px 3px;
+  border-radius: 2px;
+  min-height: auto;
+  line-height: normal;
+}
+
+/* @capture workbench.css@2136 */
+.suggest-input-container {
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* @capture workbench.css@2138 */
+.suggest-input-container .suggest-input-placeholder {
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  margin-top: 1px;
+}
+
+/* @capture workbench.css@2144 */
+.settings-editor > .settings-header {
+  box-sizing: border-box;
+  margin: 11px auto auto;
+  overflow: hidden;
+  padding-top: 3px;
+  padding-left: 24px;
+  padding-right: 24px;
+  max-width: 1400px;
+}
+
+/* @capture workbench.css@2145 */
+.settings-editor > .settings-header > .search-container {
+  position: relative;
+}
+
+/* @capture workbench.css@2146 */
+.monaco-workbench.vs .settings-editor > .settings-header > .search-container > .suggest-input-container {
+  border: 1px solid rgb(221, 221, 221);
+}
+
+/* @capture workbench.css@2147 */
+.settings-editor > .settings-header > .search-container > .search-container-widgets {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  height: 100%;
+  margin-right: 1px;
+}
+
+/* @capture workbench.css@2148 */
+.settings-editor > .settings-header > .search-container > .search-container-widgets .action-label {
+  padding: 3px;
+  margin-left: 0px;
+  box-sizing: content-box;
+}
+
+/* @capture workbench.css@2150 */
+.settings-editor > .settings-header > .search-container > .search-container-widgets > .settings-count-widget {
+  margin-right: 3px;
+  padding-bottom: 3px;
+  color: var(--vscode-descriptionForeground);
+}
+
+/* @capture workbench.css@2151 */
+.settings-editor > .settings-header > .search-container > .search-container-widgets > .settings-count-widget:empty {
+  visibility: hidden;
+}
+
+/* @capture workbench.css@2152 */
+.settings-editor > .settings-header > .settings-header-controls {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid;
+  margin-top: 10px;
+}
+
+/* @capture workbench.css@2155 */
+.settings-editor > .settings-header > .settings-header-controls .settings-target-container {
+  flex: 1 1 auto;
+}
+
+/* @capture workbench.css@2156 */
+.settings-editor > .settings-header > .settings-header-controls .settings-tabs-widget .action-label {
+  opacity: 0.9;
+  border-radius: 0px;
+  color: var(--vscode-foreground);
+}
+
+/* @capture workbench.css@2157 */
+.settings-editor > .settings-header > .settings-header-controls .last-synced-label {
+  opacity: 0.9;
+}
+
+/* @capture workbench.css@2158 */
+.settings-editor .settings-tabs-widget > .monaco-action-bar .action-item .action-details {
+  opacity: 0.9;
+}
+
+/* @capture workbench.css@2159 */
+.settings-editor > .settings-header > .settings-header-controls .settings-tabs-widget .action-label:hover {
+  opacity: 1;
+}
+
+/* @capture workbench.css@2160 */
+.settings-editor > .settings-header > .settings-header-controls .settings-tabs-widget .action-label.checked {
+  opacity: 1;
+  color: var(--vscode-settings-headerForeground);
+}
+
+/* @capture workbench.css@2161 */
+.settings-editor > .settings-header > .settings-header-controls .settings-tabs-widget .action-label.checked:not(:focus) {
+  border-bottom-color: var(--vscode-settings-headerForeground);
+}
+
+/* @capture workbench.css@2162 */
+.settings-editor > .settings-header .settings-tabs-widget > .monaco-action-bar .action-item .action-label {
+  margin-right: 0px;
+}
+
+/* @capture workbench.css@2163 */
+.settings-editor > .settings-header .settings-tabs-widget .monaco-action-bar .action-item .dropdown-icon {
+  padding-top: 3px;
+}
+
+/* @capture workbench.css@2164 */
+.settings-editor > .settings-header > .settings-header-controls .settings-tabs-widget > .monaco-action-bar .action-item {
+  padding: 0px;
+}
+
+/* @capture workbench.css@2165 */
+.settings-editor > .settings-header > .settings-header-controls .settings-tabs-widget > .monaco-action-bar .action-item .action-label {
+  text-transform: none;
+  font-size: 13px;
+  padding: 7px 8px 6.5px;
+}
+
+/* @capture workbench.css@2166 */
+.settings-editor > .settings-header > .settings-header-controls .settings-tabs-widget > .monaco-action-bar .action-item .action-label .dropdown-icon {
+  padding-top: 2px;
+}
+
+/* @capture workbench.css@2167 */
+.settings-editor > .settings-header > .settings-header-controls .settings-tabs-widget > .monaco-action-bar .action-item .action-label:not(.checked):not(:focus) {
+  border-bottom: 1px solid transparent;
+}
+
+/* @capture workbench.css@2189 */
+.settings-editor > .settings-header .search-container .search-container-widgets .action-label {
+  opacity: 1;
+}
+
+/* @capture workbench.css@2324 */
+.settings-tabs-widget > .monaco-action-bar .action-item.disabled {
+  display: none;
+}
+
+/* @capture workbench.css@2325 */
+.settings-tabs-widget > .monaco-action-bar .action-item {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* @capture workbench.css@2326 */
+.settings-tabs-widget > .monaco-action-bar .action-item .action-label {
+  text-transform: uppercase;
+  font-size: 11px;
+  margin-right: 5px;
+  cursor: pointer;
+  display: flex;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* @capture workbench.css@2327 */
+.settings-tabs-widget > .monaco-action-bar .action-item .action-label {
+  display: block;
+  padding: 0px;
+  border-radius: initial;
+  background: none !important;
+}
+
+/* @capture workbench.css@2328 */
+.settings-tabs-widget > .monaco-action-bar .action-item .action-label.folder-settings {
+  display: flex;
+}
+
+/* @capture workbench.css@2329 */
+.settings-tabs-widget > .monaco-action-bar .action-item {
+  padding: 3px 0px;
+}
+
+/* @capture workbench.css@2330 */
+.settings-tabs-widget > .monaco-action-bar .action-item .action-title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@2331 */
+.settings-tabs-widget > .monaco-action-bar .action-item .action-details {
+  text-transform: none;
+  margin-left: 0.5em;
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* @capture workbench.css@2332 */
+.settings-tabs-widget .monaco-action-bar .action-item .dropdown-icon {
+  padding-left: 0.3em;
+  padding-top: 8px;
+  font-size: 12px;
+}
+
+/* @capture workbench.css@2333 */
+.settings-tabs-widget .monaco-action-bar .action-item .dropdown-icon.hide {
+  display: none;
+}
+
+/* @capture workbench.css@2334 */
+.settings-tabs-widget > .monaco-action-bar .action-item .action-label {
+  color: var(--vscode-panelTitle-inactiveForeground);
+}
+
+/* @capture workbench.css@2335 */
+.settings-tabs-widget > .monaco-action-bar .action-item .action-label.checked,
+.settings-tabs-widget > .monaco-action-bar .action-item .action-label:hover {
+  color: var(--vscode-panelTitle-activeForeground);
+  border-bottom: 1px solid var(--vscode-panelTitle-activeBorder);
+  outline: 1px solid var(--vscode-contrastActiveBorder, transparent);
+  outline-offset: -1px;
+}
+
+/* @capture workbench.css@2336 */
+.settings-tabs-widget > .monaco-action-bar .action-item .action-label:focus {
+  border-bottom: 1px solid var(--vscode-focusBorder);
+  outline: transparent solid 1px;
+  outline-offset: -1px;
+}
+
+/* @capture workbench.css@2337 */
+.settings-tabs-widget > .monaco-action-bar .action-item .action-label:not(.checked):hover {
+  outline-style: dashed;
+}
+
+/* @capture workbench.css@8227 */
+.modern-ui .monaco-count-badge {
+  font-size: var(--vscode-fontSize-label3);
+}
+
+/* @capture workbench.css@8314 */
+.modern-ui.monaco-workbench .monaco-count-badge {
+  padding: var(--vscode-spacing-size40) var(--vscode-spacing-size60);
+  min-width: 19px;
+  min-height: 19px;
+}
+
+/* @capture workbench.css@8320 */
+.modern-ui.monaco-workbench .monaco-count-badge.long {
+  padding: var(--vscode-spacing-size20) var(--vscode-spacing-size40);
+  min-height: 18px;
+}
+
+/* @capture workbench.css@8341 */
+.modern-ui .monaco-action-bar .action-label {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8368 */
+.modern-ui.monaco-workbench .monaco-count-badge.long {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8592 */
+.modern-ui-tabs .settings-editor .settings-tabs-widget > .monaco-action-bar .action-item .action-label {
+  font-size: var(--vscode-fontSize-body1);
+  font-weight: var(--vscode-fontWeight-semiBold);
+  border-radius: var(--vscode-cornerRadius-small) !important;
+  border-bottom-width: medium !important;
+  border-bottom-style: none !important;
+  border-bottom-color: currentcolor !important;
+  padding: 2px 8px !important;
+}
+
+/* @capture workbench.css@8593 */
+.modern-ui-tabs .settings-editor .settings-tabs-widget > .monaco-action-bar .action-item .action-label.checked {
+  background-color: var(--vscode-modernTab-activeBackground) !important;
+  color: var(--vscode-modernTab-activeForeground) !important;
+}
+
+/* @capture workbench.css@8594 */
+.modern-ui-tabs .settings-editor .settings-tabs-widget > .monaco-action-bar .action-item .action-label:not(.checked):hover {
+  background-color: var(--vscode-modernTab-hoverBackground) !important;
+  color: var(--vscode-modernTab-hoverForeground) !important;
+}
+
+/* @capture workbench.css@8595 */
+.modern-ui-tabs .settings-editor .settings-tabs-widget > .monaco-action-bar .action-item .action-label.checked:not(:focus) {
+  border-bottom-color: transparent !important;
+}
+
+/* @capture workbench.css@8596 */
+.modern-ui-tabs .settings-editor > .settings-header > .settings-header-controls {
+  border-bottom-width: medium !important;
+  border-bottom-style: none !important;
+  border-bottom-color: currentcolor !important;
+}
+
+/* @capture workbench.css@9620 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture workbench.css@9624 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture workbench.css@9637 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture workbench.css@9638 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture workbench.css@9646 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench [tabindex="-1"]:focus,
+.monaco-workbench .synthetic-focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture workbench.css@9649 */
+.monaco-workbench [tabindex="0"]:active,
+.monaco-workbench [tabindex="-1"]:active {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9654 */
+.monaco-workbench .synthetic-focus :focus {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9658 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-label:not(.disabled):hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+/* @capture workbench.css@9659 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item.active .action-label:not(.disabled),
+.monaco-workbench .monaco-action-bar:not(.vertical) .monaco-dropdown.active .action-label:not(.disabled) {
+  background-color: var(--vscode-toolbar-activeBackground);
+}
+
+/* @capture workbench.css@9660 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item .action-label:hover:not(.disabled) {
+  outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+  outline-offset: -1px;
+}
+
+/* @capture codiconStyles@901 */
+.codicon-settings-folder-dropdown::before {
+  content: "\eab4";
+}
+
+/* @capture codiconStyles@910 */
+.codicon-preferences-clear-input::before {
+  content: "\eabf";
+}
+
+/* @capture codiconStyles@912 */
+.codicon-preferences-filter::before {
+  content: "\eaf1";
+}

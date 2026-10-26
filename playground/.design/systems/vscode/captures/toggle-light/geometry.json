@@ -1,0 +1,20 @@
+[
+ {
+  "path": "ROOT",
+  "x": 0,
+  "y": 0,
+  "w": 20,
+  "h": 20,
+  "color": "rgb(32, 32, 32)",
+  "bg": "rgba(0, 0, 0, 0)",
+  "border": "1px solid rgba(0, 0, 0, 0)",
+  "radius": "3px",
+  "font": "16px 400 16px",
+  "padding": "1px",
+  "display": "block",
+  "opacity": "1",
+  "before": "\"\"",
+  "text": "",
+  "hidden": false
+ }
+]

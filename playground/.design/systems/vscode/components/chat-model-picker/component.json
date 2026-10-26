@@ -1,0 +1,72 @@
+{
+  "tag": "vsc-chat-model-picker",
+  "kind": "component",
+  "title": "Model picker",
+  "category": "chat",
+  "description": "Language model picker in the chat input toolbar (split button: model name + configuration).",
+  "attributes": [
+    {
+      "name": "label",
+      "type": "string",
+      "default": "Models",
+      "description": "Model name"
+    },
+    {
+      "name": "badge",
+      "type": "string"
+    }
+  ],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "hostTag": "li",
+  "cssCaptures": [
+    "chat-model-picker-dark",
+    "chat-model-picker-light"
+  ],
+  "requires": [
+    "vsc-workbench",
+    "vsc-chat-view"
+  ],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/input/modelPicker"
+    }
+  ],
+  "examples": [
+    {
+      "title": "In the chat input",
+      "html": "<vsc-chat-input></vsc-chat-input>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "chat-model-picker-dark",
+      "example": 0,
+      "width": 417,
+      "root": "vsc-chat-model-picker",
+      "ignore": []
+    },
+    {
+      "capture": "chat-model-picker-light",
+      "example": 0,
+      "width": 417,
+      "root": "vsc-chat-model-picker",
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:43:17.580Z",
+    "compared": 8,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.714Z",
+  "updatedAt": "2026-10-22T21:43:17.580Z"
+}

@@ -1,0 +1,309 @@
+{
+  "label": "list-row-folder-light",
+  "url": "http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light",
+  "selector": ".explorer-folders-view .monaco-list-row[aria-label=\"src\"]",
+  "theme": "light-2026",
+  "capturedAt": "2026-10-22T20:41:37.993Z",
+  "rect": {
+    "x": 53,
+    "y": 96,
+    "w": 289,
+    "h": 22
+  },
+  "parentWidth": 297,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-list-rows",
+      "w": 297,
+      "h": 66,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 297,
+      "h": 710,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-list list_id_3 mouse-support last-focused element-focused selection-single",
+      "w": 297,
+      "h": 710,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "explorer-folders-view file-icon-themable-tree show-file-icons align-icons-and-twisties",
+      "w": 297,
+      "h": 710,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "pane-body",
+      "w": 297,
+      "h": 710,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "pane expanded vertical preserve-workspace-name-case",
+      "w": 297,
+      "h": 738,
+      "display": "flex",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 297,
+      "h": 738,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 vertical",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-pane-view",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "workbench.view.explorer",
+      "classes": "composite viewlet explorer-viewlet",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "content",
+      "w": 297,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "workbench.parts.sidebar",
+      "classes": "part sidebar left pane-composite-part floating-part-outer-top floating-part-outer-bottom",
+      "w": 300,
+      "h": 833,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 300,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 horizontal",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 vertical",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-view",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-enable-motion modern-ui modern-ui-tabs modern-ui-connected-editor-tabs modern-ui-notifications-dialogs monaco-workbench linux web chromium nopanel fullscreen floating-panels panel-position-bottom panel-alignment-center file-icons-enabled vs vscode-theme-defaults-themes-2026-light-json sash-grippers-hidden",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "agent-status-enabled unified-agents-bar",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(32, 32, 32)",
+    "font-family": "system-ui, Ubuntu, \"Droid Sans\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "22px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-disabledForeground": "#bbbbbb",
+    "--vscode-spacing-size80": "8px",
+    "--vscode-fontSize-label2": "11px",
+    "--vscode-spacing-size40": "4px",
+    "--vscode-cornerRadius-small": "4px",
+    "--vscode-icon-foreground": "#606060",
+    "--vscode-focusBorder": "#0069cc",
+    "--vscode-list-focusBackground": "rgba(0, 0, 0, 0.14)",
+    "--vscode-list-focusForeground": "#202020",
+    "--vscode-list-activeSelectionBackground": "rgba(0, 0, 0, 0.14)",
+    "--vscode-list-activeSelectionForeground": "#202020",
+    "--vscode-list-activeSelectionIconForeground": "#000000",
+    "--vscode-list-inactiveSelectionBackground": "rgba(218, 218, 218, 0.6)",
+    "--vscode-list-inactiveSelectionForeground": "#202020",
+    "--vscode-list-focusAndSelectionOutline": "#005fb8",
+    "--vscode-list-focusOutline": "#0069cc"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"../../../../media/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "http://127.0.0.1:8457/insider-58173d0ebc1838579e3c331e0a47e365904a6456/static/out/media/codicon.ttf"
+      ]
+    },
+    {
+      "family": "seti",
+      "css": "@font-face { src: url(\"http://127.0.0.1:8457/insider-58173d0ebc1838579e3c331e0a47e365904a6456/vscode-remote-resource?path=%2Ftmp%2Fdt-vsc%2Fcli%2Fserve-web%2F58173d0ebc1838579e3c331e0a47e365904a6456%2Fextensions%2Ftheme-seti%2Ficons%2Fseti.woff&tkn=\") format(\"woff\"); font-family: seti; font-weight: normal; font-style: normal; font-display: block; }",
+      "urls": [
+        "http://127.0.0.1:8457/insider-58173d0ebc1838579e3c331e0a47e365904a6456/vscode-remote-resource?path=%2Ftmp%2Fdt-vsc%2Fcli%2Fserve-web%2F58173d0ebc1838579e3c331e0a47e365904a6456%2Fextensions%2Ftheme-seti%2Ficons%2Fseti.woff&tkn="
+      ]
+    }
+  ],
+  "rules": 52,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

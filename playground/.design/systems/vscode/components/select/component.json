@@ -1,0 +1,66 @@
+{
+  "tag": "vsc-select",
+  "kind": "component",
+  "title": "Select box",
+  "category": "widgets",
+  "description": "Native select styled as a VS Code dropdown (`select.monaco-select-box`).",
+  "attributes": [
+    {
+      "name": "options",
+      "type": "string",
+      "description": "Comma-separated options"
+    },
+    {
+      "name": "value",
+      "type": "string"
+    },
+    {
+      "name": "label",
+      "type": "string"
+    },
+    {
+      "name": "variant",
+      "type": "enum",
+      "values": [
+        "",
+        "settings"
+      ]
+    }
+  ],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "contents",
+  "cssCaptures": [
+    "select-box-dark",
+    "select-box-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [
+    "--vscode-dropdown-background",
+    "--vscode-dropdown-foreground",
+    "--vscode-dropdown-border",
+    "--vscode-settings-dropdownBackground"
+  ],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/base/browser/ui/selectBox/selectBoxNative.ts"
+    },
+    {
+      "path": "src/vs/base/browser/ui/selectBox/selectBox.css"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Dropdown",
+      "html": "<div style=\"padding: 12px; width: 320px;\"><vsc-select options=\"off,afterDelay,onFocusChange,onWindowChange\" value=\"afterDelay\" label=\"Auto Save\"></vsc-select></div>"
+    }
+  ],
+  "references": [],
+  "status": "draft",
+  "createdAt": "2026-10-22T21:42:49.701Z",
+  "updatedAt": "2026-10-22T21:42:49.701Z"
+}

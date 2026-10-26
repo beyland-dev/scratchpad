@@ -1,0 +1,825 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light
+ * Selector: .part.titlebar
+ * On: 2026-10-22T20:54:04.745Z
+ */
+
+/* @capture workbench.css@201 */
+.monaco-action-bar {
+  white-space: nowrap;
+  height: 100%;
+}
+
+/* @capture workbench.css@202 */
+.monaco-action-bar .actions-container {
+  display: flex;
+  margin: 0px auto;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+/* @capture workbench.css@204 */
+.monaco-action-bar .action-item {
+  display: block;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+/* @capture workbench.css@205 */
+.monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@206 */
+.monaco-action-bar .action-item .codicon {
+  display: block;
+}
+
+/* @capture workbench.css@207 */
+.monaco-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* @capture workbench.css@208 */
+.monaco-action-bar .action-label {
+  display: flex;
+  font-size: 11px;
+  padding: 3px;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture workbench.css@209 */
+.monaco-action-bar .action-item.disabled .action-label:not(.icon),
+.monaco-action-bar .action-item.disabled .action-label:not(.icon)::before,
+.monaco-action-bar .action-item.disabled .action-label:not(.icon):hover {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture workbench.css@250 */
+.monaco-dropdown {
+  height: 100%;
+  padding: 0px;
+}
+
+/* @capture workbench.css@251 */
+.monaco-dropdown > .dropdown-label {
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* @capture workbench.css@252 */
+.monaco-dropdown > .dropdown-label > .action-label.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@254 */
+.monaco-dropdown-with-primary {
+  flex-direction: row;
+  border-radius: 5px;
+  display: flex !important;
+}
+
+/* @capture workbench.css@255 */
+.monaco-dropdown-with-primary > .action-container > .action-label {
+  margin-right: 0px;
+}
+
+/* @capture workbench.css@256 */
+.monaco-dropdown-with-primary > .dropdown-action-container > .monaco-dropdown > .dropdown-label .codicon[class*="codicon-"] {
+  font-size: 12px;
+  padding-left: 0px;
+  padding-right: 0px;
+  line-height: 16px;
+  margin-left: -3px;
+}
+
+/* @capture workbench.css@257 */
+.monaco-dropdown-with-primary > .dropdown-action-container > .monaco-dropdown > .dropdown-label > .action-label {
+  display: block;
+  background-size: 16px auto;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+/* @capture workbench.css@258 */
+.monaco-toolbar {
+  height: 100%;
+}
+
+/* @capture workbench.css@527 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture workbench.css@1460 */
+.monaco-workbench .part {
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@5239 */
+.unified-agents-bar .command-center .action-item.command-center-center {
+  display: none !important;
+}
+
+/* @capture workbench.css@5240 */
+.agent-status-enabled .command-center,
+.unified-agents-bar .command-center {
+  overflow: visible !important;
+}
+
+/* @capture workbench.css@5241 */
+.unified-agents-bar .command-center .action-item.agent-status-container {
+  width: 38vw;
+  max-width: 600px;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* @capture workbench.css@5243 */
+.agent-status-container {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  app-region: no-drag;
+  overflow: visible;
+  color: var(--vscode-commandCenter-foreground);
+}
+
+/* @capture workbench.css@5244 */
+.agent-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0px 10px;
+  height: 22px;
+  border-radius: 6px;
+  flex: 1 1 0%;
+  min-width: 0px;
+  app-region: no-drag;
+  background-color: var(--vscode-agentStatusIndicator-background);
+  border: 1px solid var(--vscode-commandCenter-border, transparent);
+}
+
+/* @capture workbench.css@5245 */
+.agent-status-pill:hover {
+  background-color: var(--vscode-commandCenter-activeBackground);
+  border-color: var(--vscode-commandCenter-activeBorder, transparent);
+}
+
+/* @capture workbench.css@5246 */
+.agent-status-pill.compact-mode {
+  padding: 0px;
+  gap: 0px;
+  background-color: transparent;
+  --vscode-agentStatusIndicator-background: var(--vscode-commandCenter-background);
+}
+
+/* @capture workbench.css@5247 */
+.agent-status-pill.compact-mode:hover {
+  background-color: transparent;
+  border-color: var(--vscode-commandCenter-border, transparent);
+}
+
+/* @capture workbench.css@5249 */
+.agent-status-pill.chat-input-mode .agent-status-input-area {
+  cursor: pointer;
+}
+
+/* @capture workbench.css@5254 */
+.agent-status-label {
+  flex: 1 1 0%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.6;
+}
+
+/* @capture workbench.css@5255 */
+.agent-status-pill.compact-mode .agent-status-label {
+  text-align: left;
+}
+
+/* @capture workbench.css@5256 */
+.agent-status-pill.compact-mode .agent-status-badge-section {
+  flex-shrink: 0;
+}
+
+/* @capture workbench.css@5257 */
+.agent-status-pill .agent-status-input-area {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0%;
+  min-width: 0px;
+  overflow: hidden;
+  cursor: pointer;
+  gap: 6px;
+  border-radius: 5px 0px 0px 5px;
+  height: 100%;
+  padding: 0px 10px;
+  background-color: var(--vscode-agentStatusIndicator-background);
+}
+
+/* @capture workbench.css@5259 */
+.agent-status-pill .agent-status-input-area:hover {
+  color: var(--vscode-commandCenter-activeForeground);
+  background-color: var(--vscode-commandCenter-activeBackground);
+}
+
+/* @capture workbench.css@5260 */
+.agent-status-pill .agent-status-input-area:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* @capture workbench.css@5282 */
+.agent-status-badge-section {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0px 8px;
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+  background-color: var(--vscode-agentStatusIndicator-background);
+}
+
+/* @capture workbench.css@5284 */
+.agent-status-badge-section:last-child {
+  border-radius: 0px 5px 5px 0px;
+}
+
+/* @capture workbench.css@5286 */
+.agent-status-badge-section:hover {
+  background-color: var(--vscode-commandCenter-activeBackground);
+}
+
+/* @capture workbench.css@5287 */
+.agent-status-badge-section:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* @capture workbench.css@5294 */
+.agent-status-input-area + .agent-status-badge-section::before {
+  content: "";
+  position: absolute;
+  left: 0px;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background-color: var(--vscode-commandCenter-border, rgba(128, 128, 128, .35));
+}
+
+/* @capture workbench.css@5295 */
+.agent-status-badge-section.sparkle {
+  gap: 0px;
+  padding: 0px;
+}
+
+/* @capture workbench.css@5296 */
+.agent-status-badge-section.sparkle:hover {
+  background-color: transparent;
+}
+
+/* @capture workbench.css@5298 */
+.agent-status-badge-section.sparkle .action-container,
+.agent-status-badge-section.sparkle .dropdown-action-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@5299 */
+.agent-status-badge-section.sparkle .action-container {
+  padding: 0px 5px;
+  border-radius: 5px 0px 0px 5px;
+}
+
+/* @capture workbench.css@5300 */
+.agent-status-pill.compact-mode .agent-status-badge-section.sparkle .action-container {
+  border-radius: 0px;
+  padding: 0px 5px 0px 6px;
+}
+
+/* @capture workbench.css@5301 */
+.agent-status-badge-section.sparkle .dropdown-action-container {
+  width: 18px;
+  padding: 0px;
+  border-radius: 0px;
+}
+
+/* @capture workbench.css@5302 */
+.agent-status-badge-section.sparkle:last-child .dropdown-action-container {
+  border-radius: 0px 5px 5px 0px;
+}
+
+/* @capture workbench.css@5303 */
+.agent-status-badge-section.sparkle .action-container:hover,
+.agent-status-badge-section.sparkle .dropdown-action-container:hover {
+  background-color: var(--vscode-commandCenter-activeBackground);
+}
+
+/* @capture workbench.css@5304 */
+.agent-status-badge-section.sparkle .action-container:focus-within,
+.agent-status-badge-section.sparkle .dropdown-action-container:focus-within {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* @capture workbench.css@5305 */
+.agent-status-badge-section.sparkle .action-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  background: none !important;
+}
+
+/* @capture workbench.css@5306 */
+.agent-status-badge-section.sparkle .action-container .action-label {
+  width: 16px;
+  height: 16px;
+}
+
+/* @capture workbench.css@5307 */
+.agent-status-badge-section.sparkle .dropdown-action-container .action-label {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+/* @capture workbench.css@5308 */
+.agent-status-badge-section.sparkle .dropdown-action-container .codicon {
+  transform: translateY(1px);
+}
+
+/* @capture workbench.css@5309 */
+.agent-status-badge-section.sparkle .action-label:hover,
+.agent-status-badge-section.sparkle .action-label:active,
+.agent-status-badge-section.sparkle .monaco-dropdown.active .action-label {
+  background-color: transparent !important;
+}
+
+/* @capture workbench.css@5310 */
+.agent-status-badge-section.sparkle .action-label:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* @capture workbench.css@8205 */
+.modern-ui.monaco-workbench .part.titlebar .command-center > .monaco-toolbar > .monaco-action-bar > .actions-container > .action-item > .action-label:is(.codicon-arrow-left, .codicon-arrow-right) {
+  color: var(--vscode-commandCenter-foreground);
+}
+
+/* @capture workbench.css@8206 */
+.modern-ui .agent-status-pill:not(.session-mode),
+.modern-ui .agent-status-pill .agent-status-input-area {
+  background-color: transparent !important;
+}
+
+/* @capture workbench.css@8207 */
+.modern-ui .agent-status-badge-section:not(.filtered) {
+  background-color: transparent !important;
+}
+
+/* @capture workbench.css@8341 */
+.modern-ui .monaco-action-bar .action-label {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8346 */
+.modern-ui .agent-status-pill {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8347 */
+.modern-ui .agent-status-pill .agent-status-input-area,
+.modern-ui .agent-status-badge-section.sparkle .action-container {
+  border-radius: var(--vscode-cornerRadius-small) 0 0 var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8348 */
+.modern-ui .agent-status-badge-section:last-child,
+.modern-ui .agent-status-badge-section.sparkle:last-child .dropdown-action-container {
+  border-radius: 0 var(--vscode-cornerRadius-small) var(--vscode-cornerRadius-small) 0;
+}
+
+/* @capture workbench.css@8349 */
+.modern-ui .agent-status-pill.compact-mode .agent-status-badge-section.sparkle .action-container {
+  border-radius: 0px;
+}
+
+/* @capture workbench.css@8379 */
+.modern-ui.monaco-workbench .part.titlebar {
+  box-shadow: none !important;
+}
+
+/* @capture workbench.css@9620 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture workbench.css@9624 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture workbench.css@9637 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture workbench.css@9638 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture workbench.css@9646 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench [tabindex="-1"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture workbench.css@9649 */
+.monaco-workbench [tabindex="0"]:active,
+.monaco-workbench [tabindex="-1"]:active {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9658 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-label:not(.disabled):hover,
+.monaco-workbench .monaco-action-bar:not(.vertical) .monaco-dropdown-with-primary:not(.disabled):hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+/* @capture workbench.css@9659 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item.active .action-label:not(.disabled),
+.monaco-workbench .monaco-action-bar:not(.vertical) .monaco-dropdown.active .action-label:not(.disabled) {
+  background-color: var(--vscode-toolbar-activeBackground);
+}
+
+/* @capture workbench.css@9660 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item .action-label:hover:not(.disabled) {
+  outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+  outline-offset: -1px;
+}
+
+/* @capture workbench.css@9712 */
+.monaco-workbench .part.titlebar {
+  display: flex;
+  flex-direction: row;
+  box-shadow: var(--vscode-shadow-md);
+}
+
+/* @capture workbench.css@9714 */
+.monaco-workbench .part.titlebar > .titlebar-container {
+  box-sizing: border-box;
+  overflow: hidden;
+  flex-shrink: 1;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+/* @capture workbench.css@9717 */
+.monaco-workbench.web .part.titlebar > .titlebar-container,
+.monaco-workbench.linux .part.titlebar > .titlebar-container {
+  line-height: 22px;
+  justify-content: left;
+}
+
+/* @capture workbench.css@9719 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-drag-region {
+  top: 0px;
+  left: 0px;
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  app-region: drag;
+}
+
+/* @capture workbench.css@9720 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-left,
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center,
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right {
+  display: flex;
+  height: 100%;
+  align-items: center;
+}
+
+/* @capture workbench.css@9721 */
+.monaco-workbench .part.titlebar > .titlebar-container.has-center > .titlebar-left {
+  order: 0;
+  width: 20%;
+  flex-grow: 2;
+  justify-content: flex-start;
+}
+
+/* @capture workbench.css@9722 */
+.monaco-workbench .part.titlebar > .titlebar-container.has-center > .titlebar-center {
+  order: 1;
+  width: 60%;
+  max-width: fit-content;
+  min-width: 0px;
+  margin: 0px 10px;
+  justify-content: center;
+}
+
+/* @capture workbench.css@9723 */
+.monaco-workbench .part.titlebar > .titlebar-container.has-center > .titlebar-right {
+  order: 2;
+  width: 20%;
+  min-width: min-content;
+  flex-grow: 2;
+  justify-content: flex-end;
+}
+
+/* @capture workbench.css@9727 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title {
+  flex: 0 1 auto;
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* @capture workbench.css@9728 */
+.monaco-workbench.web .part.titlebar > .titlebar-container > .titlebar-center > .window-title,
+.monaco-workbench.linux .part.titlebar > .titlebar-container > .titlebar-center > .window-title {
+  cursor: default;
+}
+
+/* @capture workbench.css@9729 */
+.monaco-workbench.linux .part.titlebar > .titlebar-container > .titlebar-center > .window-title {
+  font-size: inherit;
+}
+
+/* @capture workbench.css@9730 */
+.monaco-workbench .part.titlebar > .titlebar-container .monaco-toolbar .actions-container {
+  gap: 4px;
+}
+
+/* @capture workbench.css@9731 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title > .command-center {
+  z-index: 2500;
+  app-region: no-drag;
+}
+
+/* @capture workbench.css@9735 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title > .command-center > .monaco-toolbar > .monaco-action-bar > .actions-container > .action-item > .action-label {
+  color: var(--vscode-titleBar-activeForeground);
+}
+
+/* @capture workbench.css@9737 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title > .command-center > .monaco-toolbar > .monaco-action-bar > .actions-container > .action-item > .action-label {
+  color: inherit;
+}
+
+/* @capture workbench.css@9738 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title > .command-center .action-item.command-center-center {
+  display: flex;
+  align-items: stretch;
+  color: var(--vscode-commandCenter-foreground);
+  background-color: var(--vscode-commandCenter-background);
+  border: 1px solid var(--vscode-commandCenter-border);
+  overflow: hidden;
+  margin: 0px 6px;
+  border-radius: var(--vscode-cornerRadius-medium);
+  height: 22px;
+  width: 38vw;
+  max-width: 600px;
+}
+
+/* @capture workbench.css@9739 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title > .command-center .action-item.command-center-center .action-item.command-center-quick-pick {
+  display: flex;
+  justify-content: start;
+  overflow: hidden;
+  margin: auto;
+  max-width: 600px;
+}
+
+/* @capture workbench.css@9742 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title > .command-center .action-item.command-center-center .action-item.command-center-quick-pick .search-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* @capture workbench.css@9743 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title > .command-center .action-item.command-center-center .action-item.command-center-quick-pick.compact-mode {
+  margin: auto auto auto 0px;
+  padding-left: 8px;
+  flex: 1 1 0%;
+}
+
+/* @capture workbench.css@9744 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title > .command-center .action-item.command-center-center:has(.compact-mode) > .monaco-toolbar > .monaco-action-bar > .actions-container {
+  margin: 0px;
+}
+
+/* @capture workbench.css@9745 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title > .command-center .action-item.command-center-center:has(.compact-mode) > .monaco-toolbar {
+  flex: 1 1 0%;
+}
+
+/* @capture workbench.css@9746 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title > .command-center .action-item.command-center-center:has(.compact-mode) > .monaco-toolbar > .monaco-action-bar {
+  width: 100%;
+}
+
+/* @capture workbench.css@9751 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-center > .window-title > .command-center .action-item.command-center-center:hover {
+  color: var(--vscode-commandCenter-activeForeground);
+  background-color: var(--vscode-commandCenter-activeBackground);
+  border-color: var(--vscode-commandCenter-activeBorder);
+}
+
+/* @capture workbench.css@9757 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-left > .window-appicon {
+  width: 35px;
+  height: 100%;
+  position: relative;
+  z-index: 2500;
+  flex-shrink: 0;
+  order: 1;
+}
+
+/* @capture workbench.css@9758 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-left > .window-appicon:not(.codicon) {
+  background-image: url("../../../../media/code-icon.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 16px auto;
+}
+
+/* @capture workbench.css@9760 */
+.monaco-workbench.fullscreen .part.titlebar > .titlebar-container > .titlebar-left > .window-appicon {
+  display: none;
+}
+
+/* @capture workbench.css@9761 */
+.monaco-workbench .part.titlebar .window-controls-container {
+  display: flex;
+  flex-grow: 0;
+  flex-shrink: 0;
+  text-align: center;
+  z-index: 3000;
+  app-region: no-drag;
+  width: 0px;
+  height: 100%;
+}
+
+/* @capture workbench.css@9762 */
+.monaco-workbench.fullscreen .part.titlebar .window-controls-container {
+  display: none;
+  background-color: transparent;
+}
+
+/* @capture workbench.css@9763 */
+.monaco-workbench.web .part.titlebar .titlebar-right .window-controls-container {
+  width: calc(100vw - env(titlebar-area-width,100vw) - env(titlebar-area-x,0px));
+  height: env(titlebar-area-height,35px);
+}
+
+/* @capture workbench.css@9764 */
+.monaco-workbench.web .part.titlebar .titlebar-left .window-controls-container {
+  width: env(titlebar-area-x,0px);
+  height: env(titlebar-area-height,35px);
+}
+
+/* @capture workbench.css@9778 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .center-adjacent-toolbar-container,
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .update-toolbar-container {
+  z-index: 2500;
+  app-region: no-drag;
+}
+
+/* @capture workbench.css@9779 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .center-adjacent-toolbar-container {
+  margin-right: auto;
+}
+
+/* @capture workbench.css@9780 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .update-toolbar-container {
+  margin-left: auto;
+  margin-right: var(--vscode-spacing-size40);
+}
+
+/* @capture workbench.css@9782 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .center-adjacent-toolbar-container.has-no-actions,
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .update-toolbar-container.has-no-actions {
+  display: none;
+}
+
+/* @capture workbench.css@9784 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container {
+  display: none;
+  padding-right: 4px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  color: var(--vscode-titleBar-activeForeground);
+  text-align: center;
+  position: relative;
+  z-index: 2500;
+  app-region: no-drag;
+  height: 100%;
+}
+
+/* @capture workbench.css@9786 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container {
+  margin-left: auto;
+}
+
+/* @capture workbench.css@9788 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container:not(.has-no-actions) {
+  display: flex;
+  justify-content: center;
+}
+
+/* @capture workbench.css@9789 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .codicon {
+  color: inherit;
+}
+
+/* @capture workbench.css@9790 */
+.monaco-workbench .part.titlebar > .titlebar-container > .titlebar-right > .action-toolbar-container .monaco-action-bar .action-item {
+  display: flex;
+}
+
+/* @capture codiconStyles@130 */
+.codicon-arrow-left::before {
+  content: "\ea9b";
+}
+
+/* @capture codiconStyles@131 */
+.codicon-arrow-right::before {
+  content: "\ea9c";
+}
+
+/* @capture codiconStyles@158 */
+.codicon-chevron-down::before {
+  content: "\eab4";
+}
+
+/* @capture codiconStyles@592 */
+.codicon-chat-sparkle::before {
+  content: "\ec4f";
+}
+
+/* @capture codiconStyles@834 */
+.codicon-auxiliarybar-right-layout-icon::before {
+  content: "\ebf4";
+}
+
+/* @capture codiconStyles@841 */
+.codicon-panel-layout-icon-off::before {
+  content: "\ec01";
+}
+
+/* @capture codiconStyles@845 */
+.codicon-panel-left::before {
+  content: "\ebf3";
+}
+
+/* @capture codiconStyles@862 */
+.codicon-configure-layout-icon::before {
+  content: "\ebeb";
+}

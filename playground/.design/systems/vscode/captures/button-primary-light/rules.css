@@ -1,0 +1,70 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light
+ * Selector: .scm-viewlet .welcome-view-content .button-container .monaco-button
+ * On: 2026-10-22T19:28:12.552Z
+ */
+
+/* @capture workbench.css@382 */
+.monaco-text-button {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--vscode-button-border, transparent);
+  line-height: 16px;
+  font-size: 12px;
+  overflow-wrap: normal;
+}
+
+/* @capture workbench.css@385 */
+.monaco-text-button:focus {
+  outline-offset: 2px !important;
+}
+
+/* @capture workbench.css@386 */
+.monaco-text-button:hover {
+  text-decoration: none !important;
+}
+
+/* @capture workbench.css@387 */
+.monaco-button.disabled:focus,
+.monaco-button.disabled {
+  opacity: 0.4 !important;
+  cursor: default;
+}
+
+/* @capture workbench.css@1374 */
+.monaco-workbench .pane > .pane-body .welcome-view-content > .button-container > .monaco-button {
+  max-width: 300px;
+}
+
+/* @capture workbench.css@9620 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture workbench.css@9624 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture workbench.css@9646 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture workbench.css@9649 */
+.monaco-workbench [tabindex="0"]:active {
+  outline: 0px !important;
+}

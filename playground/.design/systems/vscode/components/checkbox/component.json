@@ -1,0 +1,89 @@
+{
+  "tag": "vsc-checkbox",
+  "kind": "component",
+  "title": "Checkbox",
+  "category": "widgets",
+  "description": "Checkbox (`.monaco-custom-toggle.codicon-check`). Toggles on click.",
+  "attributes": [
+    {
+      "name": "checked",
+      "type": "boolean"
+    },
+    {
+      "name": "disabled",
+      "type": "boolean"
+    },
+    {
+      "name": "label",
+      "type": "string",
+      "description": "Accessible label"
+    },
+    {
+      "name": "variant",
+      "type": "enum",
+      "values": [
+        "",
+        "settings"
+      ],
+      "description": "settings = Settings editor checkbox"
+    }
+  ],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "inline-block",
+  "hostTag": "div",
+  "cssCaptures": [
+    "checkbox-dark",
+    "checkbox-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [
+    "--vscode-checkbox-background",
+    "--vscode-checkbox-foreground",
+    "--vscode-checkbox-border",
+    "--vscode-settings-checkboxBackground"
+  ],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/base/browser/ui/toggle/toggle.ts",
+      "note": "Checkbox"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Settings checkbox",
+      "html": "<vsc-settings-editor style=\"height: 300px;\"><vsc-setting type=\"bool\" category=\"Editor: \" label=\"Format On Save\" key=\"editor.formatOnSave\">Format a file on save.</vsc-setting></vsc-settings-editor>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "checkbox-dark",
+      "example": 0,
+      "width": 1150,
+      "root": ".setting-item-bool vsc-checkbox",
+      "ignore": []
+    },
+    {
+      "capture": "checkbox-light",
+      "example": 0,
+      "width": 1150,
+      "root": ".setting-item-bool vsc-checkbox",
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:43:07.578Z",
+    "compared": 2,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.700Z",
+  "updatedAt": "2026-10-22T21:43:07.578Z"
+}

@@ -1,0 +1,73 @@
+{
+  "tag": "vsc-welcome-view",
+  "kind": "pattern",
+  "title": "Welcome view",
+  "category": "workbench",
+  "description": "Empty-state content of a view: paragraphs, links and full-width buttons (`.welcome-view-content`).",
+  "usage": "Use inside <vsc-sidebar> for empty states. Children: <p> text (links as <a class=\"monaco-link\">) and <vsc-button>s (wrapped in .button-container automatically).",
+  "attributes": [],
+  "slots": [
+    {
+      "name": "",
+      "description": "<p> paragraphs and <vsc-button> buttons"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "welcome-view-dark",
+    "welcome-view-light"
+  ],
+  "requires": [
+    "vsc-workbench",
+    "vsc-sidebar"
+  ],
+  "tokens": [],
+  "uses": [
+    "vsc-button"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/workbench/browser/parts/views/viewPane.ts",
+      "note": "ViewWelcomeController"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Source Control (no repository)",
+      "html": "<vsc-welcome-view style=\"height: 794px;\"><p>The folder currently open doesn't have a Git repository. You can initialize a repository which will enable source control features powered by Git.</p><vsc-button>Initialize Repository</vsc-button><p>To learn more about how to use Git and source control in VS Code <a class=\"monaco-link\" tabindex=\"0\" href=\"https://aka.ms/vscode-scm\" role=\"button\">read our docs</a>.</p><p>You can directly publish this folder to a GitHub repository. Once published, you'll have access to source control features powered by Git and GitHub.</p><vsc-button icon=\"github\">Publish to GitHub</vsc-button></vsc-welcome-view>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "welcome-view-dark",
+      "example": 0,
+      "width": 300,
+      "ignore": [
+        ".scrollbar",
+        ".shadow"
+      ]
+    },
+    {
+      "capture": "welcome-view-light",
+      "example": 0,
+      "width": 300,
+      "ignore": [
+        ".scrollbar",
+        ".shadow"
+      ]
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:42:54.104Z",
+    "compared": 28,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.651Z",
+  "updatedAt": "2026-10-22T21:42:54.104Z"
+}

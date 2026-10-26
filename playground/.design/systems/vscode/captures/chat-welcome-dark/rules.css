@@ -1,0 +1,142 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=dark
+ * Selector: .part.auxiliarybar .chat-welcome-view-container
+ * On: 2026-10-22T21:34:31.607Z
+ */
+
+/* @capture workbench.css@527 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture workbench.css@3395 */
+.interactive-session .chat-welcome-view-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: 1 1 0%;
+  position: relative;
+}
+
+/* @capture workbench.css@3405 */
+div.chat-welcome-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+}
+
+/* @capture workbench.css@3405.0 */
+:is(div.chat-welcome-view) > .chat-welcome-view-icon {
+  min-height: 40px;
+}
+
+/* @capture workbench.css@3405.1 */
+:is(div.chat-welcome-view) > .chat-welcome-view-icon .codicon {
+  color: var(--vscode-descriptionForeground);
+  font-size: 40px;
+  margin-bottom: 24px;
+}
+
+/* @capture workbench.css@3405.6 */
+:is(div.chat-welcome-view) > .chat-welcome-view-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vscode-foreground);
+  margin-top: 5px;
+  text-align: center;
+  line-height: normal;
+  padding: 0px 8px;
+}
+
+/* @capture workbench.css@3405.7 */
+:is(div.chat-welcome-view) > .chat-welcome-view-message {
+  position: relative;
+  text-align: center;
+  max-width: 280px;
+  padding: 0px 20px;
+  margin: 8px auto 0px;
+  color: var(--vscode-descriptionForeground);
+  font-size: 12px;
+}
+
+/* @capture workbench.css@3405.7.2 */
+:is(:is(div.chat-welcome-view) > .chat-welcome-view-message) p {
+  margin: 0px;
+}
+
+/* @capture workbench.css@3405.10 */
+:is(div.chat-welcome-view) > .chat-welcome-view-disclaimer {
+  color: var(--vscode-descriptionForeground);
+  text-align: center;
+  margin: 0px;
+  max-width: 256px;
+  padding: 0px 12px;
+  font-size: 12px;
+}
+
+/* @capture workbench.css@3405.10.0 */
+:is(:is(div.chat-welcome-view) > .chat-welcome-view-disclaimer) p {
+  margin: 0px;
+}
+
+/* @capture workbench.css@3405.10.1 */
+:is(:is(div.chat-welcome-view) > .chat-welcome-view-disclaimer) a {
+  color: var(--vscode-textLink-foreground);
+}
+
+/* @capture workbench.css@3405.10.2 */
+:is(:is(div.chat-welcome-view) > .chat-welcome-view-disclaimer) a:hover,
+:is(:is(div.chat-welcome-view) > .chat-welcome-view-disclaimer) a:focus {
+  text-decoration: underline;
+  outline: 1px solid var(--vscode-focusBorder);
+}
+
+/* @capture workbench.css@9620 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture workbench.css@9621 */
+.monaco-workbench p > a {
+  text-decoration: var(--text-link-decoration);
+}
+
+/* @capture workbench.css@9624 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture workbench.css@9637 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture workbench.css@9638 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture workbench.css@9646 */
+.monaco-workbench a:focus-visible {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture codiconStyles@592 */
+.codicon-chat-sparkle::before {
+  content: "\ec4f";
+}

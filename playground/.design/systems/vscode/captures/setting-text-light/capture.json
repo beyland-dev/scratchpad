@@ -1,0 +1,307 @@
+{
+  "label": "setting-text-light",
+  "url": "http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light",
+  "selector": ".settings-tree-container .monaco-list-row:has(.setting-item-text)",
+  "theme": "light-2026",
+  "capturedAt": "2026-10-22T21:22:20.487Z",
+  "rect": {
+    "x": 345,
+    "y": 710,
+    "w": 950,
+    "h": 109
+  },
+  "parentWidth": 950,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-list-rows",
+      "w": 950,
+      "h": 1270,
+      "display": "block",
+      "bg": "rgb(255, 255, 255)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 950,
+      "h": 560,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-list list_id_19 mouse-support settings-editor-tree selection-none",
+      "w": 950,
+      "h": 560,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "settings-tree-container",
+      "w": 950,
+      "h": 560,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 950,
+      "h": 560,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1150,
+      "h": 560,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1150,
+      "h": 560,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 horizontal separator-border",
+      "w": 1150,
+      "h": 560,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "settings-body",
+      "w": 1150,
+      "h": 560,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "settings-editor",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "editor-instance",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "editor-container",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgb(255, 255, 255)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "editor-group-container active",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 vertical separator-border",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-view",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "grid-view-container",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "content",
+      "w": 1150,
+      "h": 657,
+      "display": "block",
+      "bg": "rgb(255, 255, 255)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "part editor modal-editor-part",
+      "w": 1152,
+      "h": 692,
+      "display": "grid",
+      "bg": "rgb(255, 255, 255)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "modal-editor-shadow",
+      "w": 1152,
+      "h": 692,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "modal-editor-resizable",
+      "w": 1152,
+      "h": 692,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-modal-editor-block",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0.5)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-enable-motion modern-ui modern-ui-tabs modern-ui-connected-editor-tabs modern-ui-notifications-dialogs monaco-workbench linux web chromium nopanel fullscreen floating-panels panel-position-bottom panel-alignment-center file-icons-enabled vs vscode-theme-defaults-themes-2026-light-json sash-grippers-hidden",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "agent-status-enabled unified-agents-bar",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(32, 32, 32)",
+    "font-family": "system-ui, Ubuntu, \"Droid Sans\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-cornerRadius-medium": "6px",
+    "--vscode-disabledForeground": "#bbbbbb",
+    "--vscode-settings-headerForeground": "#1f1f1f",
+    "--vscode-settings-focusedRowBackground": "rgba(0, 0, 0, 0.05)",
+    "--vscode-settings-rowHoverBackground": "rgba(0, 0, 0, 0.02)",
+    "--vscode-settings-focusedRowBorder": "#0069cc",
+    "--vscode-settings-modifiedItemIndicator": "rgba(187, 128, 9, 0.4)",
+    "--vscode-errorForeground": "#ad0707",
+    "--vscode-foreground": "#202020",
+    "--vscode-inputValidation-errorBackground": "#fdeded",
+    "--vscode-inputValidation-errorForeground": "#202020",
+    "--vscode-inputValidation-errorBorder": "#ad0707",
+    "--vscode-cornerRadius-small": "4px",
+    "--vscode-input-placeholderForeground": "#999999",
+    "--vscode-icon-foreground": "#606060",
+    "--vscode-focusBorder": "#0069cc",
+    "--vscode-toolbar-hoverBackground": "rgba(0, 0, 0, 0.12)",
+    "--vscode-toolbar-activeBackground": "#d6d6d8",
+    "--vscode-editor-background": "#ffffff",
+    "--vscode-list-activeSelectionIconForeground": "#000000",
+    "--vscode-list-focusAndSelectionOutline": "#005fb8"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"../../../../media/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "http://127.0.0.1:8457/insider-58173d0ebc1838579e3c331e0a47e365904a6456/static/out/media/codicon.ttf"
+      ]
+    }
+  ],
+  "rules": 95,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

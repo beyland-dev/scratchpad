@@ -1,0 +1,68 @@
+{
+  "tag": "vsc-notifications-center",
+  "kind": "component",
+  "title": "Notifications center",
+  "category": "overlays",
+  "description": "Notification center panel (bottom right) with header actions and a list of notifications.",
+  "attributes": [
+    {
+      "name": "heading",
+      "type": "string",
+      "description": "Header title (default depends on content)"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "Notification rows"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "notifications-center-dark",
+    "notifications-center-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/workbench/browser/parts/notifications/notificationsCenter.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Empty",
+      "html": "<vsc-notifications-center></vsc-notifications-center>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "notifications-center-dark",
+      "example": 0,
+      "width": 1440,
+      "ignore": []
+    },
+    {
+      "capture": "notifications-center-light",
+      "example": 0,
+      "width": 1440,
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:43:07.029Z",
+    "compared": 48,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.698Z",
+  "updatedAt": "2026-10-22T21:43:07.029Z"
+}

@@ -1,0 +1,93 @@
+{
+  "tag": "vsc-extension-item",
+  "kind": "component",
+  "title": "Extension item",
+  "category": "workbench",
+  "description": "An extension row: icon, name, kind indicator, description, publisher and actions (Manage, or Install when installable).",
+  "attributes": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "description",
+      "type": "string"
+    },
+    {
+      "name": "icon",
+      "type": "string",
+      "description": "Icon URL (default: generic extension icon); /s/vscode/assets/extension-language-icon.svg is bundled"
+    },
+    {
+      "name": "kind",
+      "type": "string",
+      "description": "e.g. 'Local Extension'"
+    },
+    {
+      "name": "version",
+      "type": "string"
+    },
+    {
+      "name": "publisher",
+      "type": "string"
+    },
+    {
+      "name": "installable",
+      "type": "boolean",
+      "description": "Not installed: shows the Install button"
+    }
+  ],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "extension-item-dark",
+    "extension-item-light"
+  ],
+  "requires": [
+    "vsc-workbench",
+    "vsc-sidebar",
+    "vsc-extension-list"
+  ],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/workbench/contrib/extensions/browser/extensionsList.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Installed",
+      "html": "<vsc-sidebar viewlet=\"extensions-viewlet\" style=\"height: 200px;\"><vsc-extension-list><vsc-extension-item name=\"JSON Language Basics\" description=\"Provides syntax highlighting &amp; bracket matching in JSON files.\" kind=\"Local Extension\" icon=\"/s/vscode/assets/extension-language-icon.svg\" version=\"10.0.0\" publisher=\"vscode\"></vsc-extension-item></vsc-extension-list></vsc-sidebar>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "extension-item-dark",
+      "example": 0,
+      "width": 300,
+      "root": "vsc-extension-item",
+      "ignore": []
+    },
+    {
+      "capture": "extension-item-light",
+      "example": 0,
+      "width": 300,
+      "root": "vsc-extension-item",
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:49:05.634Z",
+    "compared": 40,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:49:04.887Z",
+  "updatedAt": "2026-10-22T21:49:05.634Z"
+}

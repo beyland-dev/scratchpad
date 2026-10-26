@@ -1,0 +1,85 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=dark
+ * Selector: .settings-tree-container .setting-item-text .monaco-inputbox
+ * On: 2026-10-22T21:22:14.212Z
+ */
+
+/* @capture workbench.css@649 */
+.monaco-inputbox {
+  position: relative;
+  display: block;
+  padding: 0px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  font-size: inherit;
+}
+
+/* @capture workbench.css@650 */
+.monaco-inputbox > .ibwrapper > .input {
+  padding: 4px 6px;
+}
+
+/* @capture workbench.css@651 */
+.monaco-inputbox > .ibwrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* @capture workbench.css@652 */
+.monaco-inputbox > .ibwrapper > .input {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  line-height: inherit;
+  border-width: medium;
+  border-style: none;
+  border-color: currentcolor;
+  border-image: none;
+  font-family: inherit;
+  font-size: inherit;
+  resize: none;
+  color: inherit;
+}
+
+/* @capture workbench.css@653 */
+.monaco-inputbox > .ibwrapper > input {
+  text-overflow: ellipsis;
+}
+
+/* @capture workbench.css@8339 */
+.modern-ui .monaco-inputbox {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@9626 */
+.monaco-workbench input {
+  color: inherit;
+  font-family: inherit;
+  font-size: 100%;
+}
+
+/* @capture workbench.css@9628 */
+.monaco-workbench input::placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+/* @capture workbench.css@9629 */
+.monaco-workbench input::-webkit-input-placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+/* @capture workbench.css@9646 */
+.monaco-workbench [tabindex="-1"]:focus,
+.monaco-workbench input[type="text"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture workbench.css@9649 */
+.monaco-workbench [tabindex="-1"]:active {
+  outline: 0px !important;
+}

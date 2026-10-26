@@ -1,0 +1,13 @@
+{
+  "title": "Checkout — express",
+  "status": "review",
+  "tags": [
+    "checkout"
+  ],
+  "group": "checkout-redesign",
+  "variantOf": "checkout-single",
+  "entry": "index.html",
+  "sourceRefs": [],
+  "createdAt": "2026-10-22T03:21:28.299Z",
+  "updatedAt": "2026-10-22T03:23:27.807Z"
+}

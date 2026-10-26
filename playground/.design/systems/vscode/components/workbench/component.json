@@ -1,0 +1,73 @@
+{
+  "tag": "vsc-workbench",
+  "kind": "context",
+  "title": "Workbench",
+  "category": "foundations",
+  "description": "Root of every VS Code UI: the `.monaco-workbench` element. Applies the theme (token values), platform font, modern-UI flags and the shell background.",
+  "usage": "Wrap every prototype in exactly one <vsc-workbench theme=\"dark-2026|light-2026\">. Give it a size (e.g. style=\"width: 1440px; height: 900px\") for full-window layouts.",
+  "attributes": [
+    {
+      "name": "theme",
+      "type": "enum",
+      "values": [
+        "dark-2026",
+        "light-2026"
+      ],
+      "default": "dark-2026",
+      "description": "Color theme"
+    }
+  ],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "workbench-dark",
+    "workbench-light"
+  ],
+  "requires": [],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/workbench/browser/workbench.ts"
+    },
+    {
+      "path": "src/vs/workbench/browser/media/style.css"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Window",
+      "html": "<vsc-workbench style=\"width: 1440px; height: 900px;\"></vsc-workbench>"
+    },
+    {
+      "title": "Full window layout",
+      "html": "<vsc-workbench style=\"position: relative; width: 1440px; height: 900px;\">\n  <vsc-titlebar label=\"ws\" style=\"position: absolute; left: 0; top: 0; width: 1440px;\"></vsc-titlebar>\n  <div style=\"position: absolute; left: 0; top: 35px; width: 48px; height: 837px;\"><vsc-activitybar style=\"height: 833px;\"></vsc-activitybar></div>\n  <div style=\"position: absolute; left: 48px; top: 35px; width: 300px; height: 837px;\">\n    <vsc-sidebar heading=\"Explorer\" style=\"height: 833px;\">\n      <vsc-action slot=\"actions\" icon=\"toolbar-more\" label=\"Views and More Actions...\" dropdown></vsc-action>\n      <vsc-pane heading=\"ws\" expanded>\n        <vsc-tree><vsc-tree-item kind=\"folder\" label=\"src\"></vsc-tree-item><vsc-tree-item label=\"package.json\" selected focused></vsc-tree-item><vsc-tree-item label=\"README.md\"></vsc-tree-item></vsc-tree>\n      </vsc-pane>\n      <vsc-pane heading=\"Outline\"></vsc-pane>\n      <vsc-pane heading=\"Timeline\"></vsc-pane>\n    </vsc-sidebar>\n  </div>\n  <div style=\"position: absolute; left: 348px; top: 35px; width: 664px; height: 837px;\">\n    <vsc-editor style=\"height: 833px;\">\n      <vsc-watermark style=\"height: 831px;\"><vsc-watermark-entry icon=\"watermark-chat\" label=\"Open Chat\" keys=\"Ctrl+Alt+I\"></vsc-watermark-entry><vsc-watermark-entry icon=\"watermark-commands\" label=\"Show All Commands\" keys=\"Ctrl+Shift+P\"></vsc-watermark-entry><vsc-watermark-entry icon=\"watermark-settings\" label=\"Open Settings\" keys=\"Ctrl+,\"></vsc-watermark-entry></vsc-watermark>\n    </vsc-editor>\n  </div>\n  <div style=\"position: absolute; left: 1012px; top: 35px; width: 428px; height: 837px;\">\n    <vsc-sidebar position=\"right\" style=\"height: 833px;\">\n      <vsc-chat-view style=\"height: 794px;\"><vsc-chat-welcome></vsc-chat-welcome><vsc-chat-input></vsc-chat-input></vsc-chat-view>\n    </vsc-sidebar>\n  </div>\n  <vsc-statusbar style=\"position: absolute; left: 0; top: 872px; width: 1440px;\"><vsc-status-item text=\"$(remote)\" label=\"remote\"></vsc-status-item><vsc-status-item text=\"$(error) 0 $(warning) 0\" label=\"No Problems\"></vsc-status-item><vsc-status-item align=\"right\" text=\"Layout: us\"></vsc-status-item><vsc-status-item align=\"right\" text=\"$(copilot)\" label=\"Copilot status\"></vsc-status-item><vsc-status-item align=\"right\" text=\"$(bell)\" label=\"Notifications\"></vsc-status-item></vsc-statusbar>\n</vsc-workbench>",
+      "description": "Title bar, activity bar, Explorer, empty editor, chat in the secondary side bar and status bar, positioned like the default 1440×900 window."
+    }
+  ],
+  "references": [
+    {
+      "capture": "workbench-dark",
+      "example": 0,
+      "ignore": []
+    },
+    {
+      "capture": "workbench-light",
+      "example": 0,
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:42:50.415Z",
+    "compared": 2,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.637Z",
+  "updatedAt": "2026-10-22T21:42:50.415Z"
+}

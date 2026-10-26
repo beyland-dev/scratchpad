@@ -1,0 +1,78 @@
+{
+  "tag": "vsc-hover",
+  "kind": "component",
+  "title": "Hover (tooltip)",
+  "category": "overlays",
+  "description": "Workbench hover / tooltip, e.g. over activity bar items and actions.",
+  "attributes": [
+    {
+      "name": "text",
+      "type": "string"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "Rich content (when text is not set)"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "inline-block",
+  "cssCaptures": [
+    "hover-dark",
+    "hover-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [
+    "--vscode-editorHoverWidget-background",
+    "--vscode-editorHoverWidget-border",
+    "--vscode-editorHoverWidget-foreground"
+  ],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/editor/browser/services/hoverService/hoverWidget.ts"
+    },
+    {
+      "path": "src/vs/base/browser/ui/hover/hoverWidget.css"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Tooltip",
+      "html": "<vsc-hover text=\"Explorer (Ctrl+Shift+E)\"></vsc-hover>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "hover-dark",
+      "example": 0,
+      "width": 144,
+      "ignore": [
+        ".scrollbar"
+      ]
+    },
+    {
+      "capture": "hover-light",
+      "example": 0,
+      "width": 144,
+      "ignore": [
+        ".scrollbar"
+      ]
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:43:06.414Z",
+    "compared": 10,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.697Z",
+  "updatedAt": "2026-10-22T21:43:06.414Z"
+}

@@ -1,0 +1,17 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=dark
+ * Selector: .part.auxiliarybar .pane-body.chat-viewpane
+ * On: 2026-10-22T19:54:37.553Z
+ */
+
+/* @capture workbench.css@1103 */
+.monaco-pane-view .pane > .pane-body {
+  overflow: hidden;
+  flex: 1 1 0%;
+}
+
+/* @capture workbench.css@6685 */
+.chat-viewpane {
+  display: flex;
+  flex-direction: column;
+}

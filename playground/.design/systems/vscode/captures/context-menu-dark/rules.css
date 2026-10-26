@@ -1,0 +1,504 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=dark
+ * Selector: .context-view.monaco-menu-container:not(.chat-response-selection-menu)
+ * On: 2026-10-22T21:03:44.260Z
+ */
+
+/* @capture workbench.css@23 */
+.monaco-scrollable-element > .invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* @capture workbench.css@26 */
+.monaco-scrollable-element > .shadow {
+  position: absolute;
+  display: none;
+}
+
+/* @capture workbench.css@31 */
+.monaco-scrollable-element > .scrollbar {
+  background: var(--vscode-scrollbar-background);
+}
+
+/* @capture workbench.css@32 */
+.monaco-scrollable-element > .scrollbar > .slider {
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+/* @capture workbench.css@33 */
+.monaco-scrollable-element > .scrollbar > .slider:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* @capture workbench.css@34 */
+.monaco-scrollable-element > .scrollbar > .slider.active {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+/* @capture workbench.css@178 */
+.context-view {
+  position: absolute;
+}
+
+/* @capture workbench.css@201 */
+.monaco-action-bar {
+  white-space: nowrap;
+  height: 100%;
+}
+
+/* @capture workbench.css@202 */
+.monaco-action-bar .actions-container {
+  display: flex;
+  margin: 0px auto;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+/* @capture workbench.css@203 */
+.monaco-action-bar.vertical .actions-container {
+  display: inline-block;
+}
+
+/* @capture workbench.css@204 */
+.monaco-action-bar .action-item {
+  display: block;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+/* @capture workbench.css@205 */
+.monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@206 */
+.monaco-action-bar .action-item .codicon {
+  display: block;
+}
+
+/* @capture workbench.css@207 */
+.monaco-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* @capture workbench.css@208 */
+.monaco-action-bar .action-label,
+.monaco-action-bar .action-item .keybinding {
+  display: flex;
+  font-size: 11px;
+  padding: 3px;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture workbench.css@209 */
+.monaco-action-bar .action-item.disabled .action-label:not(.icon),
+.monaco-action-bar .action-item.disabled .action-label:not(.icon)::before,
+.monaco-action-bar .action-item.disabled .action-label:not(.icon):hover {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture workbench.css@211 */
+.monaco-action-bar.vertical {
+  text-align: left;
+}
+
+/* @capture workbench.css@212 */
+.monaco-action-bar.vertical .action-item {
+  display: block;
+}
+
+/* @capture workbench.css@213 */
+.monaco-action-bar.vertical .action-item .action-label.separator {
+  display: block;
+  border-bottom: 1px solid var(--vscode-menu-separatorBackground, var(--vscode-disabledForeground));
+  padding-top: 1px;
+  margin: 4px 0.8em;
+  width: 100%;
+  height: 0px;
+  background-color: transparent;
+}
+
+/* @capture workbench.css@214 */
+.monaco-action-bar .action-item .action-label.separator {
+  width: 1px;
+  height: 16px;
+  cursor: default;
+  min-width: 1px;
+  padding: 0px;
+  background-color: var(--vscode-disabledForeground);
+  margin: 5px 4px !important;
+}
+
+/* @capture workbench.css@435 */
+.context-view-block {
+  position: fixed;
+  cursor: initial;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+/* @capture workbench.css@527 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture workbench.css@8341 */
+.modern-ui .monaco-action-bar .action-label,
+.modern-ui .monaco-action-bar .action-item .keybinding {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8350 */
+.modern-ui .monaco-scrollable-element > .scrollbar > .slider {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8358 */
+.modern-ui .monaco-menu .monaco-action-bar.vertical {
+  border-radius: var(--vscode-cornerRadius-large);
+}
+
+/* @capture workbench.css@9620 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture workbench.css@9624 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture workbench.css@9636 */
+.monaco-workbench .context-view {
+  app-region: no-drag;
+}
+
+/* @capture workbench.css@9637 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture workbench.css@9638 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture workbench.css@9646 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench [tabindex="-1"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture workbench.css@9649 */
+.monaco-workbench [tabindex="0"]:active,
+.monaco-workbench [tabindex="-1"]:active {
+  outline: 0px !important;
+}
+
+/* @capture codiconStyles@773 */
+.codicon-menu-selection::before {
+  content: "\eab2";
+}
+
+/* @capture inline-8@0 */
+.monaco-menu {
+  font-size: 13px;
+  border-radius: var(--vscode-cornerRadius-large);
+  border: var(--vscode-strokeThickness) solid var(--vscode-menu-border, editorWidget.border);
+  min-width: 160px;
+}
+
+/* @capture inline-8@1 */
+.codicon-menu-selection::before {
+  content: "\eab2";
+}
+
+/* @capture inline-8@3 */
+.monaco-menu .monaco-action-bar {
+  text-align: right;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* @capture inline-8@4 */
+.monaco-menu .monaco-action-bar .actions-container {
+  display: flex;
+  margin: 0px auto;
+  padding: 0px;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+/* @capture inline-8@5 */
+.monaco-menu .monaco-action-bar.vertical .actions-container {
+  display: inline-block;
+}
+
+/* @capture inline-8@7 */
+.monaco-menu .monaco-action-bar .action-item {
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 50ms;
+  position: relative;
+}
+
+/* @capture inline-8@8 */
+.monaco-menu .monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+/* @capture inline-8@9 */
+.monaco-menu .monaco-action-bar .action-item .codicon {
+  display: inline-block;
+}
+
+/* @capture inline-8@10 */
+.monaco-menu .monaco-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+}
+
+/* @capture inline-8@11 */
+.monaco-menu .monaco-action-bar .action-label {
+  font-size: 11px;
+  margin-right: 4px;
+}
+
+/* @capture inline-8@12 */
+.monaco-menu .monaco-action-bar .action-item.disabled .action-label,
+.monaco-menu .monaco-action-bar .action-item.disabled .action-label:hover {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture inline-8@13 */
+.monaco-menu .monaco-action-bar.vertical {
+  text-align: left;
+}
+
+/* @capture inline-8@14 */
+.monaco-menu .monaco-action-bar.vertical .action-item {
+  display: block;
+}
+
+/* @capture inline-8@15 */
+.monaco-menu .monaco-action-bar.vertical .action-label.separator {
+  display: block;
+  border-bottom: 1px solid var(--vscode-menu-separatorBackground);
+  padding: 30px;
+}
+
+/* @capture inline-8@18 */
+.monaco-menu .monaco-action-bar.vertical {
+  margin-left: 0px;
+  overflow: visible;
+}
+
+/* @capture inline-8@19 */
+.monaco-menu .monaco-action-bar.vertical .actions-container {
+  display: block;
+}
+
+/* @capture inline-8@20 */
+.monaco-menu .monaco-action-bar.vertical .action-item {
+  padding: 0px;
+  transform: none;
+  display: flex;
+}
+
+/* @capture inline-8@21 */
+.monaco-menu .monaco-action-bar.vertical .action-item.active {
+  transform: none;
+}
+
+/* @capture inline-8@22 */
+.monaco-menu .monaco-action-bar.vertical .action-menu-item {
+  flex: 1 1 auto;
+  display: flex;
+  height: 24px;
+  align-items: center;
+  position: relative;
+  margin: 0px 4px;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture inline-8@23 */
+.monaco-menu .monaco-action-bar.vertical .action-menu-item:hover .keybinding,
+.monaco-menu .monaco-action-bar.vertical .action-menu-item:focus .keybinding {
+  opacity: unset;
+}
+
+/* @capture inline-8@24 */
+.monaco-menu .monaco-action-bar.vertical .action-label {
+  flex: 1 1 auto;
+  text-decoration: none;
+  padding: 0px 1em;
+  background: none;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* @capture inline-8@25 */
+.monaco-menu .monaco-action-bar.vertical .keybinding {
+  display: inline-block;
+  flex: 2 1 auto;
+  padding: 0px 1em;
+  text-align: right;
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+/* @capture inline-8@29 */
+.monaco-menu .monaco-action-bar.vertical .action-item.disabled .keybinding {
+  opacity: 0.4;
+}
+
+/* @capture inline-8@30 */
+.monaco-menu .monaco-action-bar.vertical .action-label:not(.separator) {
+  display: inline-block;
+  box-sizing: border-box;
+  margin: 0px;
+}
+
+/* @capture inline-8@31 */
+.monaco-menu .monaco-action-bar.vertical .action-item {
+  position: static;
+  overflow: visible;
+}
+
+/* @capture inline-8@33 */
+.monaco-menu .monaco-action-bar.vertical .action-label.separator {
+  width: 100%;
+  opacity: 1;
+  height: 0px !important;
+}
+
+/* @capture inline-8@35 */
+.monaco-menu .monaco-action-bar.vertical .action-label:hover {
+  color: inherit;
+}
+
+/* @capture inline-8@36 */
+.monaco-menu .monaco-action-bar.vertical .menu-item-check {
+  position: absolute;
+  visibility: hidden;
+  width: 1em;
+  height: 100%;
+}
+
+/* @capture inline-8@37 */
+.monaco-menu .monaco-action-bar.vertical .action-menu-item.checked .menu-item-check {
+  visibility: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* @capture inline-8@38 */
+.monaco-menu-container {
+  border-radius: var(--vscode-cornerRadius-large);
+}
+
+/* @capture inline-8@39 */
+.context-view.monaco-menu-container {
+  --vscode-context-view-menu-motion-shadow: var(--vscode-shadow-lg, 0 0 12px var(--vscode-widget-shadow));
+  outline: 0px;
+  border-width: medium;
+  border-style: none;
+  border-color: currentcolor;
+  border-image: none;
+  app-region: no-drag;
+  box-shadow: var(--vscode-context-view-menu-motion-shadow);
+  overflow: hidden;
+}
+
+/* @capture inline-8@40 */
+.context-view.monaco-menu-container:not(.monaco-submenu) {
+  animation: 0.083s linear 0s 1 normal none running fadeIn;
+}
+
+/* @capture inline-8@42 */
+.context-view.monaco-menu-container :focus,
+.context-view.monaco-menu-container .monaco-action-bar.vertical:focus,
+.context-view.monaco-menu-container .monaco-action-bar.vertical :focus {
+  outline: 0px;
+}
+
+/* @capture inline-8@45 */
+.monaco-menu .monaco-action-bar.vertical .action-menu-item:focus:not(:focus-visible) {
+  outline: none !important;
+  outline-offset: 0px !important;
+}
+
+/* @capture inline-8@48 */
+.monaco-menu .monaco-action-bar.vertical {
+  padding: 4px 0px;
+}
+
+/* @capture inline-8@49 */
+.monaco-menu .monaco-action-bar.vertical .action-menu-item {
+  height: 24px;
+}
+
+/* @capture inline-8@50 */
+.monaco-menu .monaco-action-bar.vertical .action-label:not(.separator),
+.monaco-menu .monaco-action-bar.vertical .keybinding {
+  font-size: inherit;
+  padding: 0px 2em;
+  max-height: 100%;
+}
+
+/* @capture inline-8@51 */
+.monaco-menu .monaco-action-bar.vertical .menu-item-check {
+  font-size: inherit;
+  width: 2em;
+}
+
+/* @capture inline-8@52 */
+.monaco-menu .monaco-action-bar.vertical .action-label.separator {
+  font-size: inherit;
+  padding: 0px;
+  border-radius: 0px;
+  margin: 5px 0px !important;
+}
+
+/* @capture inline-8@53 */
+.linux .monaco-menu .monaco-action-bar.vertical .action-label.separator {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+/* @capture inline-8@56 */
+.monaco-menu .action-item {
+  cursor: default;
+}
+
+/* @capture workbench.css@9588 */
+@keyframes fadeIn { 
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}

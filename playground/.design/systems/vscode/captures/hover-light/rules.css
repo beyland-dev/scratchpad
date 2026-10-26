@@ -1,0 +1,125 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light
+ * Selector: .workbench-hover-container .workbench-hover, .monaco-hover:not(.hidden)
+ * On: 2026-10-22T21:04:13.886Z
+ */
+
+/* @capture workbench.css@23 */
+.monaco-scrollable-element > .invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* @capture workbench.css@26 */
+.monaco-scrollable-element > .shadow {
+  position: absolute;
+  display: none;
+}
+
+/* @capture workbench.css@31 */
+.monaco-scrollable-element > .scrollbar {
+  background: var(--vscode-scrollbar-background);
+}
+
+/* @capture workbench.css@32 */
+.monaco-scrollable-element > .scrollbar > .slider {
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+/* @capture workbench.css@33 */
+.monaco-scrollable-element > .scrollbar > .slider:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* @capture workbench.css@34 */
+.monaco-scrollable-element > .scrollbar > .slider.active {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+/* @capture workbench.css@142 */
+.monaco-hover {
+  cursor: default;
+  position: absolute;
+  overflow: hidden;
+  user-select: text;
+  box-sizing: border-box;
+  line-height: 1.5em;
+  white-space: var(--vscode-hover-whiteSpace, normal);
+}
+
+/* @capture workbench.css@143 */
+.monaco-hover.fade-in {
+  animation: 0.1s linear 0s 1 normal none running fadein;
+}
+
+/* @capture workbench.css@146 */
+.monaco-hover .hover-contents:not(.html-hover-contents) {
+  padding: 4px 8px;
+}
+
+/* @capture workbench.css@147 */
+.monaco-hover .markdown-hover > .hover-contents:not(.code-hover-contents) {
+  max-width: var(--vscode-hover-maxWidth, 500px);
+  overflow-wrap: break-word;
+}
+
+/* @capture workbench.css@2050 */
+.monaco-hover.workbench-hover {
+  position: relative;
+  font-size: 13px;
+  line-height: 19px;
+  z-index: 40;
+  overflow: hidden;
+  max-width: 700px;
+  background: var(--vscode-editorHoverWidget-background);
+  border: 1px solid var(--vscode-editorHoverWidget-border);
+  border-radius: 5px;
+  color: var(--vscode-editorHoverWidget-foreground);
+  box-shadow: var(--vscode-shadow-lg);
+}
+
+/* @capture workbench.css@2051 */
+.monaco-hover.workbench-hover.with-pointer {
+  border-radius: 3px;
+}
+
+/* @capture workbench.css@2054 */
+.monaco-hover.workbench-hover.compact {
+  font-size: 12px;
+}
+
+/* @capture workbench.css@2056 */
+.monaco-hover.workbench-hover.compact .hover-contents {
+  padding: 2px 8px;
+}
+
+/* @capture workbench.css@8350 */
+.modern-ui .monaco-scrollable-element > .scrollbar > .slider {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8357 */
+.modern-ui .monaco-hover {
+  border-radius: var(--vscode-cornerRadius-large);
+  overflow: hidden;
+}
+
+/* @capture workbench.css@9646 */
+.monaco-workbench [tabindex="0"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture workbench.css@9649 */
+.monaco-workbench [tabindex="0"]:active {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@583 */
+@keyframes fadein { 
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}

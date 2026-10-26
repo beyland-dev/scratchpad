@@ -1,0 +1,29 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light
+ * Selector: .part.auxiliarybar .interactive-session
+ * On: 2026-10-22T19:28:01.910Z
+ */
+
+/* @capture workbench.css@2816 */
+.interactive-session {
+  display: flex;
+  flex-direction: column;
+  max-width: 950px;
+  height: 100%;
+  margin: auto;
+  position: relative;
+  --vscode-chat-font-size-body-xs: .846em;
+  --vscode-chat-font-size-body-s: .923em;
+  --vscode-chat-font-size-body-m: 1em;
+  --vscode-chat-font-size-body-l: 1.077em;
+  --vscode-chat-font-size-body-xl: 1.231em;
+  --vscode-chat-font-size-body-xxl: 1.538em;
+}
+
+/* @capture workbench.css@6685.3.0 */
+:is(:is(.chat-viewpane) .chat-controls-container) .interactive-session {
+  flex: 1 1 0%;
+  width: 100%;
+  min-height: 0px;
+  min-width: 0px;
+}

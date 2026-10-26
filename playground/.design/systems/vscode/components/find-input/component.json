@@ -1,0 +1,84 @@
+{
+  "tag": "vsc-find-input",
+  "kind": "component",
+  "title": "Find input",
+  "category": "widgets",
+  "description": "Search box with inline option toggles (`.monaco-findInput`): Match Case, Match Whole Word, Use Regular Expression by default.",
+  "usage": "Inside <vsc-search-view> (Search) or anywhere a find box is needed. Pass <vsc-toggle> children to replace the default toggles.",
+  "attributes": [
+    {
+      "name": "placeholder",
+      "type": "string"
+    },
+    {
+      "name": "value",
+      "type": "string"
+    },
+    {
+      "name": "focused",
+      "type": "boolean",
+      "description": "Show the focused border"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "Custom <vsc-toggle> controls"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "find-input-dark",
+    "find-input-light"
+  ],
+  "requires": [
+    "vsc-workbench",
+    "vsc-sidebar",
+    "vsc-search-view"
+  ],
+  "tokens": [],
+  "uses": [
+    "vsc-toggle"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/base/browser/ui/findinput/findInput.ts"
+    },
+    {
+      "path": "src/vs/base/browser/ui/inputbox/inputBox.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Search",
+      "html": "<vsc-find-input placeholder=\"Search\" value=\"app\" focused></vsc-find-input>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "find-input-dark",
+      "example": 0,
+      "width": 300,
+      "ignore": []
+    },
+    {
+      "capture": "find-input-light",
+      "example": 0,
+      "width": 300,
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:42:56.346Z",
+    "compared": 26,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.658Z",
+  "updatedAt": "2026-10-22T21:42:56.346Z"
+}

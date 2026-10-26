@@ -1,0 +1,14 @@
+{
+  "title": "VS Code window (from design system)",
+  "description": "Built only from <vsc-*> components of the VS Code design system: title bar, activity bar, Explorer, empty editor, chat and status bar.",
+  "status": "draft",
+  "tags": [
+    "design-system",
+    "vscode"
+  ],
+  "group": "vscode",
+  "entry": "index.html",
+  "sourceRefs": [],
+  "createdAt": "2026-10-22T21:49:30.090Z",
+  "updatedAt": "2026-10-22T21:49:30.090Z"
+}

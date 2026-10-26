@@ -1,0 +1,47 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light
+ * Selector: .search-view .results .monaco-count-badge
+ * On: 2026-10-22T19:28:11.117Z
+ */
+
+/* @capture workbench.css@784 */
+.monaco-count-badge {
+  padding: 3px 5px;
+  border-radius: 11px;
+  font-size: 11px;
+  min-width: 18px;
+  min-height: 18px;
+  line-height: 11px;
+  font-weight: 400;
+  text-align: center;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+/* @capture workbench.css@6951 */
+.search-view .monaco-count-badge {
+  margin-right: 12px;
+}
+
+/* @capture workbench.css@6952 */
+.pane-body:not(.wide) .search-view > .results > .monaco-list .monaco-list-row:hover .filematch .monaco-count-badge,
+.pane-body:not(.wide) .search-view > .results > .monaco-list .monaco-list-row.focused .filematch .monaco-count-badge {
+  display: none;
+}
+
+/* @capture workbench.css@8227 */
+.modern-ui .monaco-count-badge {
+  font-size: var(--vscode-fontSize-label3);
+}
+
+/* @capture workbench.css@8314 */
+.modern-ui.monaco-workbench .monaco-count-badge {
+  padding: var(--vscode-spacing-size40) var(--vscode-spacing-size60);
+  min-width: 19px;
+  min-height: 19px;
+}
+
+/* @capture workbench.css@8367 */
+.modern-ui.monaco-workbench .monaco-count-badge:not(.long) {
+  border-radius: var(--vscode-cornerRadius-circle);
+}

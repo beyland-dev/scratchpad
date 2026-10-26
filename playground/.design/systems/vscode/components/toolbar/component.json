@@ -1,0 +1,53 @@
+{
+  "tag": "vsc-toolbar",
+  "kind": "component",
+  "title": "Toolbar",
+  "category": "widgets",
+  "description": "Horizontal (or vertical) action bar: `.monaco-toolbar > .monaco-action-bar > ul.actions-container`.",
+  "attributes": [
+    {
+      "name": "vertical",
+      "type": "boolean"
+    },
+    {
+      "name": "label",
+      "type": "string",
+      "description": "Accessible name"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "<vsc-action> items"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [],
+  "uses": [
+    "vsc-action"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/base/browser/ui/toolbar/toolbar.ts"
+    },
+    {
+      "path": "src/vs/base/browser/ui/actionbar/actionbar.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Actions",
+      "html": "<vsc-toolbar><vsc-action icon=\"new-file\" label=\"New File...\"></vsc-action><vsc-action icon=\"new-folder\" label=\"New Folder...\"></vsc-action><vsc-action icon=\"refresh\" label=\"Refresh Explorer\"></vsc-action><vsc-action icon=\"collapse-all\" label=\"Collapse Folders in Explorer\"></vsc-action></vsc-toolbar>"
+    }
+  ],
+  "references": [],
+  "status": "draft",
+  "createdAt": "2026-10-22T21:42:49.662Z",
+  "updatedAt": "2026-10-22T21:42:49.662Z"
+}

@@ -1,0 +1,420 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light
+ * Selector: .interactive-input-part .chat-secondary-toolbar
+ * On: 2026-10-22T20:21:14.907Z
+ */
+
+/* @capture workbench.css@201 */
+.monaco-action-bar {
+  white-space: nowrap;
+  height: 100%;
+}
+
+/* @capture workbench.css@202 */
+.monaco-action-bar .actions-container {
+  display: flex;
+  margin: 0px auto;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+/* @capture workbench.css@204 */
+.monaco-action-bar .action-item {
+  display: block;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+/* @capture workbench.css@205 */
+.monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@206 */
+.monaco-action-bar .action-item .codicon {
+  display: block;
+}
+
+/* @capture workbench.css@207 */
+.monaco-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* @capture workbench.css@208 */
+.monaco-action-bar .action-label {
+  display: flex;
+  font-size: 11px;
+  padding: 3px;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture workbench.css@209 */
+.monaco-action-bar .action-item.disabled .action-label:not(.icon),
+.monaco-action-bar .action-item.disabled .action-label:not(.icon)::before,
+.monaco-action-bar .action-item.disabled .action-label:not(.icon):hover {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture workbench.css@250 */
+.monaco-dropdown {
+  height: 100%;
+  padding: 0px;
+}
+
+/* @capture workbench.css@251 */
+.monaco-dropdown > .dropdown-label {
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* @capture workbench.css@252 */
+.monaco-dropdown > .dropdown-label > .action-label.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@258 */
+.monaco-toolbar {
+  height: 100%;
+}
+
+/* @capture workbench.css@260.0 */
+:is(.monaco-toolbar.responsive.responsive-all) .monaco-action-bar > .actions-container > .action-item {
+  flex-shrink: 1;
+  min-width: var(--vscode-toolbar-action-min-width, 20px);
+}
+
+/* @capture workbench.css@527 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture workbench.css@2995 */
+.interactive-session .chat-secondary-toolbar .chat-context-usage-container {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  order: 1;
+}
+
+/* @capture workbench.css@2996 */
+.interactive-session .chat-secondary-toolbar .chat-input-status-container {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  order: 2;
+}
+
+/* @capture workbench.css@2997 */
+.interactive-session .chat-secondary-toolbar .chat-input-status-container.has-no-actions {
+  display: none;
+}
+
+/* @capture workbench.css@3073 */
+.interactive-session .chat-secondary-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0px 4px;
+}
+
+/* @capture workbench.css@3075 */
+.interactive-session .chat-secondary-toolbar .chat-responsive-picker-container {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0px;
+  min-width: 0px;
+  gap: 2px;
+}
+
+/* @capture workbench.css@3076 */
+.interactive-session .chat-secondary-toolbar .chat-secondary-generic-chips {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 2px;
+}
+
+/* @capture workbench.css@3077 */
+.interactive-session .chat-secondary-toolbar .chat-secondary-generic-chips:empty {
+  display: none;
+}
+
+/* @capture workbench.css@3078 */
+.interactive-session .chat-secondary-toolbar .action-label,
+.interactive-session .chat-secondary-toolbar .chat-context-usage-widget {
+  box-sizing: border-box;
+  height: var(--chat-input-control-height);
+  align-items: center;
+}
+
+/* @capture workbench.css@3079 */
+.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar {
+  overflow: hidden;
+  min-width: 0px;
+  flex: 0 1 auto;
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture workbench.css@3079.0 */
+:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .monaco-action-bar .action-item .codicon {
+  color: var(--vscode-icon-foreground);
+  font-size: var(--vscode-codiconFontSize-compact);
+  width: auto;
+  height: auto;
+}
+
+/* @capture workbench.css@3079.1 */
+:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item {
+  min-width: 0px;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+/* @capture workbench.css@3079.1.0 */
+:is(:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item) .action-label {
+  min-width: 0px;
+  overflow: visible;
+  position: relative;
+}
+
+/* @capture workbench.css@3079.1.0.0 */
+:is(:is(:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item) .action-label) .chat-input-picker-label {
+  flex-shrink: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+/* @capture workbench.css@3079.1.0.1 */
+:is(:is(:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item) .action-label) .codicon + .chat-input-picker-label {
+  margin-left: 6px;
+}
+
+/* @capture workbench.css@3079.1.0.2 */
+:is(:is(:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item) .action-label) .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture workbench.css@3079.1.1 */
+:is(:is(.interactive-session .chat-secondary-toolbar .chat-secondary-input-toolbar) .chat-input-picker-item) .codicon {
+  flex-shrink: 0;
+}
+
+/* @capture workbench.css@3080 */
+.interactive-session .chat-secondary-toolbar .chat-input-picker-item .action-label {
+  box-sizing: border-box;
+  height: var(--chat-input-control-height);
+  padding: 0 var(--vscode-spacing-size60);
+  border-radius: var(--vscode-cornerRadius-small);
+  display: flex;
+  align-items: center;
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture workbench.css@3096 */
+.interactive-session .chat-secondary-toolbar .monaco-action-bar .actions-container {
+  display: flex;
+  gap: 2px;
+}
+
+/* @capture workbench.css@3100 */
+.interactive-session :is(.chat-input-toolbars, .chat-secondary-toolbar) .monaco-action-bar .action-item .action-label .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+  width: var(--vscode-codiconFontSize-compact);
+  height: var(--vscode-codiconFontSize-compact);
+  line-height: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture workbench.css@3791 */
+.monaco-workbench .chat-input-picker-focus-scope :is(.action-label, .monaco-button):focus-visible {
+  outline: var(--vscode-strokeThickness) solid var(--vscode-focusBorder);
+  outline-offset: calc(-1 * var(--vscode-strokeThickness));
+}
+
+/* @capture workbench.css@3792 */
+.monaco-workbench .chat-input-picker-focus-scope :is(.action-label, .monaco-button):focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* @capture workbench.css@4052 */
+.chat-secondary-generic-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* @capture workbench.css@4052.0 */
+:is(.chat-secondary-generic-chips):empty {
+  display: none;
+}
+
+/* @capture workbench.css@4386 */
+.chat-context-usage-widget {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* @capture workbench.css@4387 */
+.chat-context-usage-widget .icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* @capture workbench.css@4388 */
+.chat-context-usage-widget:hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+  outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+  outline-offset: -1px;
+}
+
+/* @capture workbench.css@4389 */
+.chat-context-usage-widget:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* @capture workbench.css@4390 */
+.chat-context-usage-widget:active {
+  background-color: var(--vscode-toolbar-activeBackground);
+}
+
+/* @capture workbench.css@4391 */
+.chat-context-usage-widget .circular-progress {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* @capture workbench.css@4392 */
+.chat-context-usage-widget .progress-bg {
+  fill: none;
+  stroke: var(--vscode-disabledForeground);
+  stroke-width: 4;
+  opacity: 0.5;
+}
+
+/* @capture workbench.css@4393 */
+.chat-context-usage-widget .progress-arc {
+  fill: none;
+  stroke: var(--vscode-icon-foreground);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+/* @capture workbench.css@4396 */
+.chat-context-usage-widget .percentage-label {
+  font-size: 11px;
+  line-height: 1;
+  color: var(--vscode-descriptionForeground);
+  white-space: nowrap;
+  max-width: 0px;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-width 0.1s ease-out, opacity 0.1s ease-out;
+}
+
+/* @capture workbench.css@4397 */
+.chat-context-usage-widget:hover .percentage-label,
+.chat-context-usage-widget:focus .percentage-label {
+  max-width: 4em;
+  opacity: 1;
+}
+
+/* @capture workbench.css@8341 */
+.modern-ui .monaco-action-bar .action-label {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@9620 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture workbench.css@9624 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture workbench.css@9637 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture workbench.css@9638 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture workbench.css@9646 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture workbench.css@9649 */
+.monaco-workbench [tabindex="0"]:active {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9658 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-label:not(.disabled):hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+/* @capture workbench.css@9659 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item.active .action-label:not(.disabled),
+.monaco-workbench .monaco-action-bar:not(.vertical) .monaco-dropdown.active .action-label:not(.disabled) {
+  background-color: var(--vscode-toolbar-activeBackground);
+}
+
+/* @capture workbench.css@9660 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item .action-label:hover:not(.disabled) {
+  outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+  outline-offset: -1px;
+}
+
+/* @capture codiconStyles@662 */
+.codicon-shield-compact::before {
+  content: "\ec94";
+}
+
+/* @capture codiconStyles@709 */
+.codicon-vm-compact::before {
+  content: "\ecc3";
+}

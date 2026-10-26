@@ -1,0 +1,298 @@
+{
+  "label": "chat-secondary-toolbar-light",
+  "url": "http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light",
+  "selector": ".interactive-input-part .chat-secondary-toolbar",
+  "theme": "light-2026",
+  "capturedAt": "2026-10-22T20:21:14.909Z",
+  "rect": {
+    "x": 1029,
+    "y": 840,
+    "w": 393,
+    "h": 22
+  },
+  "parentWidth": 393,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "interactive-input-part chat-input-surface-stack chat-input-picker-focus-scope chat-pet-host",
+      "w": 393,
+      "h": 108,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "interactive-session",
+      "w": 417,
+      "h": 794,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "chat-controls-container",
+      "w": 417,
+      "h": 794,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "voice-agent-controls-wrapper",
+      "w": 417,
+      "h": 794,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "pane-body chat-viewpane activity-bar-location-default chat-view-location-auxiliarybar chat-view-position-right sessions-control-orientation-stacked",
+      "w": 417,
+      "h": 794,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "pane chat-viewpane-container expanded vertical merged-header",
+      "w": 417,
+      "h": 794,
+      "display": "flex",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 417,
+      "h": 794,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 417,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 417,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 vertical",
+      "w": 417,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-pane-view",
+      "w": 417,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "workbench.panel.chat",
+      "classes": "composite auxiliarybar",
+      "w": 417,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "content",
+      "w": 417,
+      "h": 799,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "workbench.parts.auxiliarybar",
+      "classes": "part auxiliarybar basepanel right pane-composite-part floating-part-outer-right floating-part-outer-top floating-part-outer-bottom",
+      "w": 420,
+      "h": 833,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 428,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 horizontal",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-view visible",
+      "w": 1440,
+      "h": 837,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "split-view-container",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-split-view2 vertical",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-branch-node",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-grid-view",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-enable-motion modern-ui modern-ui-tabs modern-ui-connected-editor-tabs modern-ui-notifications-dialogs monaco-workbench linux web chromium nopanel fullscreen floating-panels panel-position-bottom panel-alignment-center file-icons-enabled vs vscode-theme-defaults-themes-2026-light-json sash-grippers-hidden",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "agent-status-enabled unified-agents-bar",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(32, 32, 32)",
+    "font-family": "system-ui, Ubuntu, \"Droid Sans\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-cornerRadius-medium": "6px",
+    "--vscode-disabledForeground": "#bbbbbb",
+    "--chat-input-control-height": "22px",
+    "--vscode-icon-foreground": "#606060",
+    "--vscode-codiconFontSize-compact": "12px",
+    "--vscode-spacing-size60": "6px",
+    "--vscode-cornerRadius-small": "4px",
+    "--vscode-strokeThickness": "1px",
+    "--vscode-focusBorder": "#0069cc",
+    "--vscode-toolbar-hoverBackground": "rgba(0, 0, 0, 0.12)",
+    "--vscode-toolbar-activeBackground": "#d6d6d8",
+    "--vscode-descriptionForeground": "#606060"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"../../../../media/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "http://127.0.0.1:8457/insider-58173d0ebc1838579e3c331e0a47e365904a6456/static/out/media/codicon.ttf"
+      ]
+    }
+  ],
+  "rules": 59,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

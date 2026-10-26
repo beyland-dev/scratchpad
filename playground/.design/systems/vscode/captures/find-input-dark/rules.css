@@ -1,0 +1,421 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=dark
+ * Selector: .search-view .search-widget .monaco-findInput
+ * On: 2026-10-22T19:27:58.802Z
+ */
+
+/* @capture workbench.css@23 */
+.monaco-scrollable-element > .invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* @capture workbench.css@26 */
+.monaco-scrollable-element > .shadow {
+  position: absolute;
+  display: none;
+}
+
+/* @capture workbench.css@31 */
+.monaco-scrollable-element > .scrollbar {
+  background: var(--vscode-scrollbar-background);
+}
+
+/* @capture workbench.css@32 */
+.monaco-scrollable-element > .scrollbar > .slider {
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+/* @capture workbench.css@33 */
+.monaco-scrollable-element > .scrollbar > .slider:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* @capture workbench.css@34 */
+.monaco-scrollable-element > .scrollbar > .slider.active {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+/* @capture workbench.css@201 */
+.monaco-action-bar {
+  white-space: nowrap;
+  height: 100%;
+}
+
+/* @capture workbench.css@202 */
+.monaco-action-bar .actions-container {
+  display: flex;
+  margin: 0px auto;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+/* @capture workbench.css@204 */
+.monaco-action-bar .action-item {
+  display: block;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+/* @capture workbench.css@205 */
+.monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@206 */
+.monaco-action-bar .action-item .codicon {
+  display: block;
+}
+
+/* @capture workbench.css@207 */
+.monaco-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* @capture workbench.css@208 */
+.monaco-action-bar .action-label {
+  display: flex;
+  font-size: 11px;
+  padding: 3px;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture workbench.css@209 */
+.monaco-action-bar .action-item.disabled .action-label:not(.icon),
+.monaco-action-bar .action-item.disabled .action-label:not(.icon)::before,
+.monaco-action-bar .action-item.disabled .action-label:not(.icon):hover {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture workbench.css@250 */
+.monaco-dropdown {
+  height: 100%;
+  padding: 0px;
+}
+
+/* @capture workbench.css@251 */
+.monaco-dropdown > .dropdown-label {
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* @capture workbench.css@252 */
+.monaco-dropdown > .dropdown-label > .action-label.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@527 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture workbench.css@592 */
+.monaco-custom-toggle {
+  margin-left: 2px;
+  float: left;
+  cursor: pointer;
+  overflow: hidden;
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  border: var(--vscode-strokeThickness, 1px) solid var(--monaco-custom-toggle-border-color, transparent);
+  padding: 1px;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+/* @capture workbench.css@593 */
+.monaco-custom-toggle:hover {
+  background-color: var(--vscode-inputOption-hoverBackground);
+}
+
+/* @capture workbench.css@594 */
+div.monaco-custom-toggle:not(.monaco-checkbox):focus {
+  outline: none;
+}
+
+/* @capture workbench.css@595 */
+div.monaco-custom-toggle:not(.monaco-checkbox):focus-visible {
+  border: var(--vscode-strokeThickness, 1px) dashed var(--vscode-focusBorder);
+}
+
+/* @capture workbench.css@596 */
+.monaco-custom-toggle.disabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* @capture workbench.css@649 */
+.monaco-inputbox {
+  position: relative;
+  display: block;
+  padding: 0px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  font-size: inherit;
+}
+
+/* @capture workbench.css@650 */
+.monaco-inputbox > .ibwrapper > .input,
+.monaco-inputbox > .ibwrapper > .mirror {
+  padding: 4px 6px;
+}
+
+/* @capture workbench.css@651 */
+.monaco-inputbox > .ibwrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* @capture workbench.css@652 */
+.monaco-inputbox > .ibwrapper > .input {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  line-height: inherit;
+  border-width: medium;
+  border-style: none;
+  border-color: currentcolor;
+  border-image: none;
+  font-family: inherit;
+  font-size: inherit;
+  resize: none;
+  color: inherit;
+}
+
+/* @capture workbench.css@654 */
+.monaco-inputbox > .ibwrapper > textarea.input {
+  display: block;
+  scrollbar-width: none;
+  outline: none;
+}
+
+/* @capture workbench.css@655 */
+.monaco-inputbox > .ibwrapper > textarea.input::-webkit-scrollbar {
+  display: none;
+}
+
+/* @capture workbench.css@657 */
+.monaco-inputbox > .ibwrapper > .mirror {
+  position: absolute;
+  display: inline-block;
+  width: 100%;
+  top: 0px;
+  left: 0px;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  visibility: hidden;
+  overflow-wrap: break-word;
+}
+
+/* @capture workbench.css@663 */
+.monaco-findInput {
+  position: relative;
+}
+
+/* @capture workbench.css@664 */
+.monaco-findInput .monaco-inputbox {
+  font-size: 13px;
+  width: 100%;
+}
+
+/* @capture workbench.css@665 */
+.monaco-findInput > .controls {
+  position: absolute;
+  top: 3px;
+  right: 2px;
+}
+
+/* @capture workbench.css@667 */
+.vs-dark .monaco-findInput.disabled {
+  background-color: rgb(51, 51, 51);
+}
+
+/* @capture workbench.css@5100 */
+.find-filter-button .monaco-action-bar .action-label {
+  padding: 0px;
+}
+
+/* @capture workbench.css@6904 */
+.search-view .search-widget .monaco-inputbox > .ibwrapper {
+  height: 100%;
+}
+
+/* @capture workbench.css@6905 */
+.search-view .search-widget .monaco-inputbox > .ibwrapper > .mirror,
+.search-view .search-widget .monaco-inputbox > .ibwrapper > textarea.input {
+  padding: 3px 0px 3px 6px;
+}
+
+/* @capture workbench.css@6906 */
+.search-view .search-widget .monaco-inputbox > .ibwrapper > textarea.input {
+  overflow: initial;
+  height: 26px;
+}
+
+/* @capture workbench.css@6907 */
+.search-view .search-widget .monaco-findInput .monaco-scrollable-element .scrollbar {
+  opacity: 0;
+}
+
+/* @capture workbench.css@6908 */
+.search-view .monaco-inputbox > .ibwrapper > textarea.input {
+  scrollbar-width: none;
+}
+
+/* @capture workbench.css@6909 */
+.search-view .monaco-inputbox > .ibwrapper > textarea.input::-webkit-scrollbar {
+  display: none;
+}
+
+/* @capture workbench.css@6910 */
+.search-view .monaco-findInput {
+  display: inline-block;
+  vertical-align: middle;
+  width: 100%;
+}
+
+/* @capture workbench.css@6967 */
+.monaco-workbench .search-container .monaco-custom-toggle.disabled {
+  opacity: 0.3;
+  cursor: default;
+  user-select: none;
+  pointer-events: none;
+  background-color: inherit !important;
+}
+
+/* @capture workbench.css@6968 */
+.monaco-workbench .search-container .find-filter-button {
+  color: inherit;
+  margin-left: 2px;
+  float: left;
+  cursor: pointer;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+/* @capture workbench.css@8339 */
+.modern-ui .monaco-inputbox,
+.modern-ui .monaco-findInput,
+.modern-ui .monaco-findInput .monaco-inputbox {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8341 */
+.modern-ui .monaco-action-bar .action-label {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8350 */
+.modern-ui .monaco-scrollable-element > .scrollbar > .slider {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@9620 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture workbench.css@9624 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture workbench.css@9630 */
+.monaco-workbench textarea::placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+/* @capture workbench.css@9631 */
+.monaco-workbench textarea::-webkit-input-placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+/* @capture workbench.css@9637 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture workbench.css@9638 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture workbench.css@9646 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench .synthetic-focus,
+.monaco-workbench textarea:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture workbench.css@9649 */
+.monaco-workbench [tabindex="0"]:active {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9654 */
+.monaco-workbench .synthetic-focus :focus {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9658 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-label:not(.disabled):hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+/* @capture workbench.css@9659 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item.active .action-label:not(.disabled),
+.monaco-workbench .monaco-action-bar:not(.vertical) .monaco-dropdown.active .action-label:not(.disabled) {
+  background-color: var(--vscode-toolbar-activeBackground);
+}
+
+/* @capture workbench.css@9660 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item .action-label:hover:not(.disabled) {
+  outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+  outline-offset: -1px;
+}
+
+/* @capture codiconStyles@155 */
+.codicon-case-sensitive::before {
+  content: "\eab1";
+}
+
+/* @capture codiconStyles@294 */
+.codicon-regex::before {
+  content: "\eb38";
+}
+
+/* @capture codiconStyles@365 */
+.codicon-whole-word::before {
+  content: "\eb7e";
+}
+
+/* @capture codiconStyles@947 */
+.codicon-extensions-filter::before {
+  content: "\eaf1";
+}

@@ -1,0 +1,140 @@
+{
+  "tag": "vsc-chat-input",
+  "kind": "pattern",
+  "title": "Chat input",
+  "category": "chat",
+  "description": "The chat composer: input editor, primary toolbar (add context, agent, model, tools), send button and secondary toolbar (session target, permissions).",
+  "usage": "Inside <vsc-chat-view>. Without children it renders the default toolbars; pass items with slot=\"toolbar\" / slot=\"secondary\" to customize. Typing enables send.",
+  "attributes": [
+    {
+      "name": "placeholder",
+      "type": "string",
+      "default": "Describe what to build"
+    },
+    {
+      "name": "value",
+      "type": "string"
+    },
+    {
+      "name": "no-secondary",
+      "type": "boolean",
+      "description": "Hide the default secondary toolbar items"
+    }
+  ],
+  "slots": [
+    {
+      "name": "toolbar",
+      "description": "Primary toolbar items (<vsc-action menu>, <vsc-chat-picker>, <vsc-chat-model-picker>)"
+    },
+    {
+      "name": "secondary",
+      "description": "Secondary toolbar items (<vsc-chat-picker>)"
+    }
+  ],
+  "states": [
+    {
+      "name": "focused",
+      "trigger": "focus the editor"
+    },
+    {
+      "name": "can send",
+      "trigger": "non-empty value"
+    }
+  ],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "chat-input-dark",
+    "chat-input-light",
+    "chat-toolbars-dark",
+    "chat-toolbars-light",
+    "chat-secondary-toolbar-dark",
+    "chat-secondary-toolbar-light"
+  ],
+  "requires": [
+    "vsc-workbench",
+    "vsc-chat-view"
+  ],
+  "tokens": [],
+  "uses": [
+    "vsc-action",
+    "vsc-chat-picker",
+    "vsc-chat-model-picker",
+    "vsc-chat-submit"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/input/chatInputPart.ts"
+    },
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/media/chat.css"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Default",
+      "html": "<vsc-chat-input></vsc-chat-input>"
+    },
+    {
+      "title": "With text",
+      "html": "<vsc-chat-input value=\"Summarize the open pull requests\"></vsc-chat-input>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "chat-input-dark",
+      "example": 0,
+      "width": 417,
+      "ignore": [
+        ".interactive-input-editor > *"
+      ]
+    },
+    {
+      "capture": "chat-input-light",
+      "example": 0,
+      "width": 417,
+      "ignore": [
+        ".interactive-input-editor > *"
+      ]
+    },
+    {
+      "capture": "chat-toolbars-dark",
+      "example": 0,
+      "width": 417,
+      "root": ".chat-input-toolbars",
+      "ignore": []
+    },
+    {
+      "capture": "chat-toolbars-light",
+      "example": 0,
+      "width": 417,
+      "root": ".chat-input-toolbars",
+      "ignore": []
+    },
+    {
+      "capture": "chat-secondary-toolbar-dark",
+      "example": 0,
+      "width": 417,
+      "root": ".chat-secondary-toolbar",
+      "ignore": []
+    },
+    {
+      "capture": "chat-secondary-toolbar-light",
+      "example": 0,
+      "width": 417,
+      "root": ".chat-secondary-toolbar",
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:43:19.747Z",
+    "compared": 184,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.717Z",
+  "updatedAt": "2026-10-22T21:43:19.747Z"
+}

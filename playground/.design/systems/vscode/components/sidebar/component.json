@@ -1,0 +1,94 @@
+{
+  "tag": "vsc-sidebar",
+  "kind": "context",
+  "title": "Side bar",
+  "category": "workbench",
+  "description": "The primary side bar part with an optional view title (`.composite.title`) and a single pane body for view content.",
+  "usage": "Wrap side bar views: <vsc-tree>, <vsc-search-view>, <vsc-welcome-view>. Set heading for the title; put title actions in slot=\"actions\".",
+  "attributes": [
+    {
+      "name": "heading",
+      "type": "string",
+      "description": "View title, e.g. 'Explorer'"
+    },
+    {
+      "name": "position",
+      "type": "enum",
+      "values": [
+        "left",
+        "right"
+      ],
+      "default": "left",
+      "description": "right = secondary side bar (e.g. chat)"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "View content, or <vsc-pane> sections"
+    },
+    {
+      "name": "actions",
+      "description": "<vsc-action> items in the title bar"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "sidebar-dark",
+    "sidebar-light",
+    "sidebar-title-dark",
+    "sidebar-title-light",
+    "extensions-search-dark",
+    "extensions-search-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [],
+  "uses": [
+    "vsc-action"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/workbench/browser/parts/sidebar/sidebarPart.ts"
+    },
+    {
+      "path": "src/vs/workbench/browser/parts/compositePart.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Explorer title",
+      "html": "<vsc-sidebar heading=\"Explorer\" style=\"height: 833px;\"><vsc-action slot=\"actions\" icon=\"toolbar-more\" label=\"Views and More Actions...\" dropdown></vsc-action></vsc-sidebar>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "sidebar-title-dark",
+      "example": 0,
+      "width": 300,
+      "root": ".composite.title",
+      "ignore": []
+    },
+    {
+      "capture": "sidebar-title-light",
+      "example": 0,
+      "width": 300,
+      "root": ".composite.title",
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:48:45.117Z",
+    "compared": 30,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:48:44.377Z",
+  "updatedAt": "2026-10-22T21:48:45.117Z"
+}

@@ -1,0 +1,38 @@
+[
+ {
+  "path": "ROOT",
+  "x": 0,
+  "y": 0,
+  "w": 22,
+  "h": 22,
+  "color": "rgb(140, 140, 140)",
+  "bg": "rgba(0, 0, 0, 0)",
+  "border": "0px none rgb(140, 140, 140)",
+  "radius": "0px",
+  "font": "13px 400 18.2px",
+  "padding": "0px",
+  "display": "block",
+  "opacity": "1",
+  "before": "",
+  "text": "",
+  "hidden": false
+ },
+ {
+  "path": "action-label.codicon.codicon-add-compact",
+  "x": 0,
+  "y": 0,
+  "w": 22,
+  "h": 22,
+  "color": "rgb(140, 140, 140)",
+  "bg": "rgba(0, 0, 0, 0)",
+  "border": "0px none rgb(140, 140, 140)",
+  "radius": "4px",
+  "font": "12px 400 12px",
+  "padding": "3px",
+  "display": "flex",
+  "opacity": "1",
+  "before": "\"\"",
+  "text": "",
+  "hidden": false
+ }
+]

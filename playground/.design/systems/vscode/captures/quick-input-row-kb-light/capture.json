@@ -1,0 +1,136 @@
+{
+  "label": "quick-input-row-kb-light",
+  "url": "http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light",
+  "selector": ".quick-input-list .monaco-list-row:not(.focused):has(.monaco-keybinding)",
+  "theme": "light-2026",
+  "capturedAt": "2026-10-22T21:03:59.290Z",
+  "rect": {
+    "x": 427,
+    "y": 69,
+    "w": 588,
+    "h": 22
+  },
+  "parentWidth": 588,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-list-rows",
+      "w": 588,
+      "h": 1518,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element ",
+      "w": 600,
+      "h": 1518,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "quickInput_list",
+      "classes": "monaco-list list_id_5 mouse-support selection-none element-focused",
+      "w": 600,
+      "h": 365,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "quick-input-list",
+      "w": 600,
+      "h": 365,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "quick-input-widget show-file-icons",
+      "w": 602,
+      "h": 407,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-enable-motion modern-ui modern-ui-tabs modern-ui-connected-editor-tabs modern-ui-notifications-dialogs monaco-workbench linux web chromium nopanel fullscreen floating-panels panel-position-bottom panel-alignment-center file-icons-enabled vs vscode-theme-defaults-themes-2026-light-json",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "agent-status-enabled unified-agents-bar",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(32, 32, 32)",
+    "font-family": "system-ui, Ubuntu, \"Droid Sans\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "22px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-cornerRadius-medium": "6px",
+    "--vscode-disabledForeground": "#bbbbbb",
+    "--vscode-list-highlightForeground": "#0069cc",
+    "--vscode-quickInputList-focusHighlightForeground": "#ffffff",
+    "--vscode-bodyFontSize-xSmall": "11px",
+    "--vscode-descriptionForeground": "#606060",
+    "--vscode-list-focusOutline": "#0069cc",
+    "--vscode-widget-shadow": "rgba(0, 0, 0, 0)",
+    "--vscode-spacing-size80": "8px",
+    "--vscode-fontSize-label2": "11px",
+    "--vscode-spacing-size40": "4px",
+    "--vscode-cornerRadius-small": "4px",
+    "--vscode-icon-foreground": "#606060",
+    "--vscode-focusBorder": "#0069cc",
+    "--vscode-list-focusHighlightForeground": "#0069cc",
+    "--vscode-toolbar-hoverBackground": "rgba(0, 0, 0, 0.12)",
+    "--vscode-toolbar-activeBackground": "#d6d6d8",
+    "--vscode-pickerGroup-border": "#eeeef1",
+    "--vscode-pickerGroup-foreground": "#202020",
+    "--vscode-keybindingLabel-background": "rgba(221, 221, 221, 0.4)",
+    "--vscode-keybindingLabel-bottomBorder": "rgba(187, 187, 187, 0.4)",
+    "--vscode-keybindingLabel-foreground": "#3b3b3b",
+    "--vscode-quickInputList-focusBackground": "#0069cc",
+    "--vscode-quickInputList-focusForeground": "#ffffff",
+    "--vscode-list-activeSelectionBackground": "rgba(0, 0, 0, 0.14)",
+    "--vscode-list-activeSelectionForeground": "#202020",
+    "--vscode-list-activeSelectionIconForeground": "#000000",
+    "--vscode-quickInputList-focusIconForeground": "#ffffff",
+    "--vscode-list-focusAndSelectionOutline": "#005fb8",
+    "--vscode-keybindingLabel-border": "rgba(204, 204, 204, 0.4)"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"../../../../media/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "http://127.0.0.1:8457/insider-58173d0ebc1838579e3c331e0a47e365904a6456/static/out/media/codicon.ttf"
+      ]
+    }
+  ],
+  "rules": 101,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "tag": "vsc-tab",
+  "kind": "component",
+  "title": "Editor tab",
+  "category": "workbench",
+  "description": "One editor tab: file icon, label (italic when preview) and close action; the active tab connects to the editor.",
+  "attributes": [
+    {
+      "name": "label",
+      "type": "string",
+      "description": "File name (drives the file icon)"
+    },
+    {
+      "name": "active",
+      "type": "boolean"
+    },
+    {
+      "name": "preview",
+      "type": "boolean",
+      "description": "Preview (italic) tab"
+    },
+    {
+      "name": "dirty",
+      "type": "boolean"
+    }
+  ],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "tab-active-dark",
+    "tab-active-light"
+  ],
+  "requires": [
+    "vsc-workbench",
+    "vsc-editor",
+    "vsc-tabs"
+  ],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/workbench/browser/parts/editor/multiEditorTabsControl.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Pinned and active preview tab",
+      "html": "<vsc-tab label=\"README.md\"></vsc-tab><vsc-tab label=\"package.json\" active preview></vsc-tab>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "tab-active-dark",
+      "example": 0,
+      "width": 658,
+      "root": "vsc-tab[active]",
+      "ignore": []
+    },
+    {
+      "capture": "tab-active-light",
+      "example": 0,
+      "width": 658,
+      "root": "vsc-tab[active]",
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:43:00.479Z",
+    "compared": 26,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.670Z",
+  "updatedAt": "2026-10-22T21:43:00.479Z"
+}

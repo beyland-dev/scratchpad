@@ -1,0 +1,125 @@
+{
+  "tag": "vsc-pane",
+  "kind": "component",
+  "title": "View pane (collapsible section)",
+  "category": "workbench",
+  "description": "A collapsible section of a side bar view (e.g. Explorer's folder, Outline, Timeline): header with twistie, title and actions, and a body.",
+  "usage": "Children of <vsc-sidebar>; several panes stack and the expanded ones share the height. Header actions go in slot=\"actions\". Click the header to toggle.",
+  "attributes": [
+    {
+      "name": "heading",
+      "type": "string",
+      "description": "Section title, e.g. 'Outline'"
+    },
+    {
+      "name": "section",
+      "type": "string",
+      "description": "Accessible section name (default: heading)"
+    },
+    {
+      "name": "icon",
+      "type": "string",
+      "description": "View icon (shown when the view is moved to the panel)"
+    },
+    {
+      "name": "expanded",
+      "type": "boolean"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "Body (e.g. <vsc-tree>)"
+    },
+    {
+      "name": "actions",
+      "description": "<vsc-action> header actions"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "pane-header-expanded-dark",
+    "pane-header-expanded-light",
+    "pane-header-dark",
+    "pane-header-light"
+  ],
+  "requires": [
+    "vsc-workbench",
+    "vsc-sidebar"
+  ],
+  "tokens": [
+    "--vscode-sideBarSectionHeader-background",
+    "--vscode-sideBarSectionHeader-foreground",
+    "--vscode-sideBarSectionHeader-border"
+  ],
+  "uses": [
+    "vsc-action"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/base/browser/ui/splitview/paneview.ts"
+    },
+    {
+      "path": "src/vs/workbench/browser/parts/views/viewPane.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Explorer sections",
+      "html": "<vsc-sidebar heading=\"Explorer\" style=\"height: 833px;\"><vsc-action slot=\"actions\" icon=\"toolbar-more\" label=\"Views and More Actions...\" dropdown></vsc-action><vsc-pane heading=\"ws\" section=\"Explorer Section: ws\" icon=\"explorer-view-icon\" expanded><vsc-action slot=\"actions\" menu icon=\"new-file\" label=\"New File...\"></vsc-action><vsc-action slot=\"actions\" menu icon=\"new-folder\" label=\"New Folder...\" focusable=\"false\"></vsc-action><vsc-action slot=\"actions\" menu icon=\"refresh\" label=\"Refresh Explorer\" focusable=\"false\"></vsc-action><vsc-action slot=\"actions\" menu icon=\"collapse-all\" label=\"Collapse Folders in Explorer\" focusable=\"false\"></vsc-action><vsc-tree><vsc-tree-item kind=\"folder\" label=\"src\"></vsc-tree-item><vsc-tree-item label=\"package.json\"></vsc-tree-item><vsc-tree-item label=\"README.md\"></vsc-tree-item></vsc-tree></vsc-pane><vsc-pane heading=\"Outline\" icon=\"outline-view-icon\"><vsc-action slot=\"actions\" menu icon=\"collapse-all\" label=\"Collapse All\"></vsc-action><vsc-action slot=\"actions\" icon=\"toolbar-more\" label=\"More Actions...\" dropdown focusable=\"false\"></vsc-action></vsc-pane><vsc-pane heading=\"Timeline\" icon=\"timeline-view-icon\"></vsc-pane></vsc-sidebar>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "pane-header-expanded-dark",
+      "example": 0,
+      "width": 300,
+      "root": "vsc-pane[expanded] .pane-header",
+      "ignore": [
+        ".icon",
+        ".actions"
+      ]
+    },
+    {
+      "capture": "pane-header-expanded-light",
+      "example": 0,
+      "width": 300,
+      "root": "vsc-pane[expanded] .pane-header",
+      "ignore": [
+        ".icon",
+        ".actions"
+      ]
+    },
+    {
+      "capture": "pane-header-dark",
+      "example": 0,
+      "width": 300,
+      "root": "vsc-pane[heading=\"Outline\"] .pane-header",
+      "ignore": [
+        ".icon"
+      ]
+    },
+    {
+      "capture": "pane-header-light",
+      "example": 0,
+      "width": 300,
+      "root": "vsc-pane[heading=\"Outline\"] .pane-header",
+      "ignore": [
+        ".icon"
+      ]
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:43:13.778Z",
+    "compared": 12,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.708Z",
+  "updatedAt": "2026-10-22T21:43:13.779Z"
+}

@@ -1,0 +1,1250 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=dark
+ * Selector: .quick-input-widget
+ * On: 2026-10-22T21:03:42.258Z
+ */
+
+/* @capture workbench.css@23 */
+.monaco-scrollable-element > .invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* @capture workbench.css@26 */
+.monaco-scrollable-element > .shadow {
+  position: absolute;
+  display: none;
+}
+
+/* @capture workbench.css@31 */
+.monaco-scrollable-element > .scrollbar {
+  background: var(--vscode-scrollbar-background);
+}
+
+/* @capture workbench.css@32 */
+.monaco-scrollable-element > .scrollbar > .slider {
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+/* @capture workbench.css@33 */
+.monaco-scrollable-element > .scrollbar > .slider:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* @capture workbench.css@34 */
+.monaco-scrollable-element > .scrollbar > .slider.active {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+/* @capture workbench.css@124 */
+.monaco-list {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@125 */
+.monaco-list.mouse-support {
+  user-select: none;
+}
+
+/* @capture workbench.css@126 */
+.monaco-list > .monaco-scrollable-element {
+  height: 100%;
+}
+
+/* @capture workbench.css@127 */
+.monaco-list-rows {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* @capture workbench.css@129 */
+.monaco-list-row {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* @capture workbench.css@130 */
+.monaco-list.mouse-support .monaco-list-row {
+  cursor: pointer;
+  touch-action: none;
+}
+
+/* @capture workbench.css@131 */
+.monaco-list .monaco-scrollable-element > .scrollbar.vertical {
+  z-index: 14;
+}
+
+/* @capture workbench.css@133 */
+.monaco-list.element-focused {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@201 */
+.monaco-action-bar {
+  white-space: nowrap;
+  height: 100%;
+}
+
+/* @capture workbench.css@202 */
+.monaco-action-bar .actions-container {
+  display: flex;
+  margin: 0px auto;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+/* @capture workbench.css@204 */
+.monaco-action-bar .action-item {
+  display: block;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+/* @capture workbench.css@205 */
+.monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@206 */
+.monaco-action-bar .action-item .codicon {
+  display: block;
+}
+
+/* @capture workbench.css@207 */
+.monaco-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* @capture workbench.css@208 */
+.monaco-action-bar .action-label {
+  display: flex;
+  font-size: 11px;
+  padding: 3px;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture workbench.css@209 */
+.monaco-action-bar .action-item.disabled .action-label:not(.icon),
+.monaco-action-bar .action-item.disabled .action-label:not(.icon)::before,
+.monaco-action-bar .action-item.disabled .action-label:not(.icon):hover {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture workbench.css@258 */
+.monaco-toolbar {
+  height: 100%;
+}
+
+/* @capture workbench.css@382 */
+.monaco-text-button {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--vscode-button-border, transparent);
+  line-height: 16px;
+  font-size: 12px;
+  overflow-wrap: normal;
+}
+
+/* @capture workbench.css@385 */
+.monaco-text-button:focus {
+  outline-offset: 2px !important;
+}
+
+/* @capture workbench.css@386 */
+.monaco-text-button:hover {
+  text-decoration: none !important;
+}
+
+/* @capture workbench.css@387 */
+.monaco-button.disabled:focus,
+.monaco-button.disabled {
+  opacity: 0.4 !important;
+  cursor: default;
+}
+
+/* @capture workbench.css@414 */
+.monaco-keybinding {
+  display: flex;
+  align-items: center;
+  line-height: 10px;
+}
+
+/* @capture workbench.css@527 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture workbench.css@592 */
+.monaco-custom-toggle {
+  margin-left: 2px;
+  float: left;
+  cursor: pointer;
+  overflow: hidden;
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  border: var(--vscode-strokeThickness, 1px) solid var(--monaco-custom-toggle-border-color, transparent);
+  padding: 1px;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+/* @capture workbench.css@593 */
+.monaco-custom-toggle:hover {
+  background-color: var(--vscode-inputOption-hoverBackground);
+}
+
+/* @capture workbench.css@596 */
+.monaco-custom-toggle.disabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* @capture workbench.css@599 */
+.monaco-custom-toggle.monaco-checkbox {
+  height: 18px;
+  width: 18px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  margin-right: 9px;
+  margin-left: 0px;
+  padding: 0px;
+  opacity: 1;
+  background-size: 16px auto !important;
+}
+
+/* @capture workbench.css@649 */
+.monaco-inputbox {
+  position: relative;
+  display: block;
+  padding: 0px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  font-size: inherit;
+}
+
+/* @capture workbench.css@650 */
+.monaco-inputbox > .ibwrapper > .input {
+  padding: 4px 6px;
+}
+
+/* @capture workbench.css@651 */
+.monaco-inputbox > .ibwrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* @capture workbench.css@652 */
+.monaco-inputbox > .ibwrapper > .input {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  line-height: inherit;
+  border-width: medium;
+  border-style: none;
+  border-color: currentcolor;
+  border-image: none;
+  font-family: inherit;
+  font-size: inherit;
+  resize: none;
+  color: inherit;
+}
+
+/* @capture workbench.css@653 */
+.monaco-inputbox > .ibwrapper > input {
+  text-overflow: ellipsis;
+}
+
+/* @capture workbench.css@660 */
+.monaco-inputbox .monaco-action-bar {
+  position: absolute;
+  right: 2px;
+  top: 4px;
+}
+
+/* @capture workbench.css@663 */
+.monaco-findInput {
+  position: relative;
+}
+
+/* @capture workbench.css@664 */
+.monaco-findInput .monaco-inputbox {
+  font-size: 13px;
+  width: 100%;
+}
+
+/* @capture workbench.css@665 */
+.monaco-findInput > .controls {
+  position: absolute;
+  top: 3px;
+  right: 2px;
+}
+
+/* @capture workbench.css@667 */
+.vs-dark .monaco-findInput.disabled {
+  background-color: rgb(51, 51, 51);
+}
+
+/* @capture workbench.css@742 */
+.monaco-tl-row {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  position: relative;
+}
+
+/* @capture workbench.css@743 */
+.monaco-tl-row.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@744 */
+.monaco-tl-indent {
+  height: 100%;
+  position: absolute;
+  top: 0px;
+  left: 16px;
+  pointer-events: none;
+}
+
+/* @capture workbench.css@748 */
+.monaco-tl-twistie,
+.monaco-tl-contents {
+  height: 100%;
+}
+
+/* @capture workbench.css@749 */
+.monaco-tl-twistie {
+  font-size: 10px;
+  text-align: right;
+  padding-right: 6px;
+  flex-shrink: 0;
+  width: 16px;
+  align-items: center;
+  justify-content: center;
+  transform: translate(3px);
+  display: flex !important;
+}
+
+/* @capture workbench.css@750 */
+.monaco-tl-contents {
+  flex: 1 1 0%;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@751 */
+.monaco-tl-twistie::before {
+  border-radius: 20px;
+}
+
+/* @capture workbench.css@752 */
+.monaco-tl-twistie.collapsed::before {
+  transform: rotate(-90deg);
+}
+
+/* @capture workbench.css@763 */
+.monaco-list .monaco-scrollable-element .monaco-tree-sticky-container {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 0px;
+  z-index: 13;
+  background-color: var(--vscode-sideBar-background);
+}
+
+/* @capture workbench.css@766 */
+.monaco-list .monaco-scrollable-element .monaco-tree-sticky-container.empty,
+.monaco-list .monaco-scrollable-element .monaco-tree-sticky-container.empty .monaco-tree-sticky-container-shadow {
+  display: none;
+}
+
+/* @capture workbench.css@767 */
+.monaco-list .monaco-scrollable-element .monaco-tree-sticky-container .monaco-tree-sticky-container-shadow {
+  position: absolute;
+  bottom: -3px;
+  left: 0px;
+  height: 0px;
+  width: 100%;
+}
+
+/* @capture workbench.css@784 */
+.monaco-count-badge {
+  padding: 3px 5px;
+  border-radius: 11px;
+  font-size: 11px;
+  min-width: 18px;
+  min-height: 18px;
+  line-height: 11px;
+  font-weight: 400;
+  text-align: center;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+/* @capture workbench.css@786 */
+.monaco-icon-label {
+  display: flex;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* @capture workbench.css@787 */
+.monaco-icon-label::before {
+  background-size: 16px auto;
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-right: 6px;
+  width: 16px;
+  height: 22px;
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  vertical-align: top;
+  flex-shrink: 0;
+  line-height: inherit !important;
+}
+
+/* @capture workbench.css@789 */
+.monaco-icon-label-container.disabled {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture workbench.css@790 */
+.monaco-icon-label > .monaco-icon-label-container {
+  min-width: 0px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 0%;
+}
+
+/* @capture workbench.css@791 */
+.monaco-icon-label > .monaco-icon-label-container > .monaco-icon-name-container > .label-name {
+  color: inherit;
+  white-space: pre;
+}
+
+/* @capture workbench.css@794 */
+.monaco-icon-label > .monaco-icon-label-container > .monaco-icon-description-container > .label-description {
+  opacity: 0.7;
+  margin-left: 0.5em;
+  font-size: 0.9em;
+  white-space: pre;
+}
+
+/* @capture workbench.css@801 */
+.monaco-icon-label::after {
+  opacity: 0.75;
+  font-size: 90%;
+  font-weight: 600;
+  margin: auto 16px 0px 5px;
+  text-align: center;
+}
+
+/* @capture workbench.css@802 */
+.monaco-list:focus .selected .monaco-icon-label,
+.monaco-list:focus .selected .monaco-icon-label::after {
+  color: inherit !important;
+}
+
+/* @capture workbench.css@803 */
+.monaco-list-row.focused .monaco-icon-label > .monaco-icon-label-container > .monaco-icon-description-container > .label-description,
+.monaco-list-row.selected .monaco-icon-label > .monaco-icon-label-container > .monaco-icon-description-container > .label-description {
+  opacity: 1;
+}
+
+/* @capture workbench.css@1111 */
+.monaco-progress-container {
+  width: 100%;
+  height: 2px;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@1112 */
+.monaco-progress-container .progress-bit {
+  width: 2%;
+  height: 2px;
+  position: absolute;
+  left: 0px;
+  display: none;
+}
+
+/* @capture workbench.css@1113 */
+.monaco-progress-container.active .progress-bit {
+  display: inherit;
+}
+
+/* @capture workbench.css@1249 */
+.quick-input-widget {
+  position: absolute;
+  width: 600px;
+  z-index: 2550;
+  left: 50%;
+  app-region: no-drag;
+  border-radius: var(--vscode-cornerRadius-xLarge);
+  box-shadow: var(--vscode-shadow-xl);
+}
+
+/* @capture workbench.css@1250 */
+.modern-ui.monaco-enable-motion .quick-input-widget:not(.quick-input-widget-overlay) {
+  animation: 0.25s cubic-bezier(0.22, 1, 0.36, 1) 0s 1 normal both running quick-input-widget-open;
+  transform-origin: center top;
+  will-change: transform, opacity;
+}
+
+/* @capture workbench.css@1254 */
+.quick-input-titlebar {
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+}
+
+/* @capture workbench.css@1256 */
+.quick-input-widget .monaco-inputbox .monaco-action-bar {
+  top: 0px;
+}
+
+/* @capture workbench.css@1258 */
+.quick-input-left-action-bar {
+  display: flex;
+  margin-left: 4px;
+}
+
+/* @capture workbench.css@1261 */
+.quick-input-title {
+  cursor: grab;
+  padding: 3px 0px;
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex: 1 1 0%;
+}
+
+/* @capture workbench.css@1262 */
+.quick-input-right-action-bar {
+  display: flex;
+  margin-right: 4px;
+}
+
+/* @capture workbench.css@1263 */
+.quick-input-right-action-bar .actions-container {
+  justify-content: flex-end;
+}
+
+/* @capture workbench.css@1267 */
+.quick-input-description {
+  margin: 6px 6px 6px 11px;
+}
+
+/* @capture workbench.css@1268 */
+.quick-input-header .quick-input-description {
+  margin: 4px 2px;
+  flex: 1 1 0%;
+}
+
+/* @capture workbench.css@1269 */
+.quick-input-header {
+  cursor: grab;
+  display: flex;
+  padding: 6px 6px 4px;
+}
+
+/* @capture workbench.css@1270 */
+.quick-input-widget .quick-input-filter .monaco-inputbox {
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture workbench.css@1272 */
+.quick-input-and-message {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0px;
+  position: relative;
+}
+
+/* @capture workbench.css@1274 */
+.quick-input-widget .quick-input-header .monaco-checkbox {
+  margin-top: 6px;
+}
+
+/* @capture workbench.css@1275 */
+.quick-input-filter {
+  flex-grow: 1;
+  display: flex;
+  position: relative;
+}
+
+/* @capture workbench.css@1276 */
+.quick-input-box {
+  flex-grow: 1;
+}
+
+/* @capture workbench.css@1278 */
+.quick-input-visible-count {
+  position: absolute;
+  left: -10000px;
+}
+
+/* @capture workbench.css@1279 */
+.quick-input-count {
+  align-self: center;
+  position: absolute;
+  right: 4px;
+  display: flex;
+  align-items: center;
+}
+
+/* @capture workbench.css@1280 */
+.quick-input-count .monaco-count-badge {
+  vertical-align: middle;
+  padding: 2px 4px;
+  border-radius: 2px;
+  min-height: auto;
+  line-height: normal;
+}
+
+/* @capture workbench.css@1281 */
+.quick-input-action {
+  margin-left: 6px;
+}
+
+/* @capture workbench.css@1282 */
+.quick-input-message {
+  margin-top: -1px;
+  padding: 5px;
+  overflow-wrap: break-word;
+}
+
+/* @capture workbench.css@1285 */
+.quick-input-progress.monaco-progress-container {
+  position: relative;
+}
+
+/* @capture workbench.css@1286 */
+.quick-input-list {
+  line-height: 22px;
+}
+
+/* @capture workbench.css@1288 */
+.quick-input-list .monaco-list {
+  overflow: hidden;
+  max-height: 440px;
+  padding-bottom: 7px;
+}
+
+/* @capture workbench.css@1289 */
+.quick-input-list .monaco-scrollable-element {
+  padding: 0px 6px;
+}
+
+/* @capture workbench.css@1290 */
+.quick-input-list .quick-input-list-entry {
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  padding: 0px 6px;
+}
+
+/* @capture workbench.css@1291 */
+.quick-input-list .quick-input-list-entry.quick-input-list-separator-border {
+  border-top-width: 1px;
+  border-top-style: solid;
+}
+
+/* @capture workbench.css@1292 */
+.quick-input-list .monaco-list-row {
+  border-radius: 3px;
+}
+
+/* @capture workbench.css@1293 */
+.quick-input-list .monaco-list-row[data-index="0"] .quick-input-list-entry.quick-input-list-separator-border {
+  border-top-style: none;
+}
+
+/* @capture workbench.css@1294 */
+.quick-input-list .quick-input-list-label {
+  overflow: hidden;
+  display: flex;
+  height: 100%;
+  flex: 1 1 0%;
+}
+
+/* @capture workbench.css@1295 */
+.quick-input-widget .monaco-checkbox {
+  margin-right: 0px;
+}
+
+/* @capture workbench.css@1298 */
+.quick-input-list .quick-input-list-rows {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1 1 0%;
+  margin-left: 5px;
+}
+
+/* @capture workbench.css@1299 */
+.quick-input-list .quick-input-list-rows > .quick-input-list-row {
+  display: flex;
+  align-items: center;
+}
+
+/* @capture workbench.css@1300 */
+.quick-input-list .quick-input-list-rows > .quick-input-list-row .monaco-icon-label,
+.quick-input-list .quick-input-list-rows > .quick-input-list-row .monaco-icon-label .monaco-icon-label-container > .monaco-icon-name-container {
+  flex: 1 1 0%;
+}
+
+/* @capture workbench.css@1303 */
+.quick-input-list .quick-input-list-entry .quick-input-list-entry-keybinding {
+  margin-right: 8px;
+}
+
+/* @capture workbench.css@1304 */
+.quick-input-list .quick-input-list-label-meta {
+  opacity: 0.7;
+  line-height: normal;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@1305 */
+.quick-input-list .monaco-list-row.focused .quick-input-list-label-meta {
+  opacity: 1;
+}
+
+/* @capture workbench.css@1308 */
+.quick-input-list .quick-input-list-entry .quick-input-list-separator {
+  margin-right: 4px;
+  font-size: var(--vscode-bodyFontSize-xSmall);
+  color: var(--vscode-descriptionForeground);
+}
+
+/* @capture workbench.css@1309 */
+.quick-input-list .quick-input-list-entry-action-bar {
+  display: flex;
+  flex: 0 1 0%;
+  overflow: visible;
+}
+
+/* @capture workbench.css@1310 */
+.quick-input-list .quick-input-list-entry .quick-input-list-entry-action-bar .action-label {
+  display: none;
+}
+
+/* @capture workbench.css@1311 */
+.quick-input-list .quick-input-list-entry-action-bar .action-label.codicon {
+  margin-right: 4px;
+  padding: 2px;
+}
+
+/* @capture workbench.css@1313 */
+.quick-input-list .quick-input-list-entry-action-bar {
+  margin-top: 1px;
+}
+
+/* @capture workbench.css@1314 */
+.quick-input-list .quick-input-list-entry-action-bar {
+  margin-right: 4px;
+}
+
+/* @capture workbench.css@1315 */
+.quick-input-list .quick-input-list-entry:hover .quick-input-list-entry-action-bar .action-label,
+.quick-input-list .monaco-list-row.focused .quick-input-list-entry-action-bar .action-label {
+  display: flex;
+}
+
+/* @capture workbench.css@1316 */
+.quick-input-list > .monaco-list:focus .monaco-list-row.focused {
+  outline-offset: -1px;
+  outline: 1px solid var(--vscode-list-focusOutline) !important;
+}
+
+/* @capture workbench.css@1317 */
+.quick-input-list > .monaco-list:focus .monaco-list-row.focused .quick-input-list-entry.quick-input-list-separator-border {
+  border-color: transparent;
+}
+
+/* @capture workbench.css@1318 */
+.quick-input-list .monaco-list-row.focused .quick-input-list-entry .quick-input-list-separator {
+  color: inherit;
+}
+
+/* @capture workbench.css@1326 */
+.quick-input-list .monaco-tl-twistie {
+  display: none !important;
+}
+
+/* @capture workbench.css@1327 */
+.quick-input-tree .monaco-list {
+  overflow: hidden;
+  max-height: 440px;
+  padding-bottom: 5px;
+}
+
+/* @capture workbench.css@8227 */
+.modern-ui .monaco-count-badge {
+  font-size: var(--vscode-fontSize-label3);
+}
+
+/* @capture workbench.css@8238 */
+.modern-ui.monaco-workbench .monaco-icon-label::after {
+  margin-right: var(--vscode-spacing-size80);
+  font-size: var(--vscode-fontSize-label2);
+}
+
+/* @capture workbench.css@8303 */
+.modern-ui.monaco-workbench .quick-input-titlebar {
+  padding: var(--vscode-spacing-size20) 0 0;
+}
+
+/* @capture workbench.css@8305 */
+.modern-ui.monaco-workbench .quick-input-list .quick-input-list-entry-action-bar {
+  margin-right: 0px;
+}
+
+/* @capture workbench.css@8306 */
+.modern-ui.monaco-workbench .quick-input-list .quick-input-list-entry {
+  padding: 0 var(--vscode-spacing-size40);
+}
+
+/* @capture workbench.css@8307 */
+.modern-ui.monaco-workbench .quick-input-list .quick-input-list-entry .quick-input-list-entry-keybinding {
+  margin-right: 0px;
+}
+
+/* @capture workbench.css@8308 */
+.modern-ui.monaco-workbench .quick-input-list .quick-input-list-entry-action-bar .action-label:last-child {
+  margin-right: 0px;
+  margin-left: var(--vscode-spacing-size40);
+}
+
+/* @capture workbench.css@8309 */
+.modern-ui.monaco-workbench .quick-input-list .quick-input-list-entry .quick-input-list-separator {
+  margin-right: 0px;
+  margin-left: var(--vscode-spacing-size40);
+}
+
+/* @capture workbench.css@8314 */
+.modern-ui.monaco-workbench .monaco-count-badge {
+  padding: var(--vscode-spacing-size40) var(--vscode-spacing-size60);
+  min-width: 19px;
+  min-height: 19px;
+}
+
+/* @capture workbench.css@8339 */
+.modern-ui .monaco-inputbox,
+.modern-ui .monaco-findInput,
+.modern-ui .monaco-findInput .monaco-inputbox {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8340 */
+.modern-ui .monaco-list .monaco-list-row:not(.separator) {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8341 */
+.modern-ui .monaco-action-bar .action-label {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8350 */
+.modern-ui .monaco-scrollable-element > .scrollbar > .slider {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8357 */
+.modern-ui .quick-input-widget {
+  border-radius: var(--vscode-cornerRadius-large);
+  overflow: hidden;
+}
+
+/* @capture workbench.css@8367 */
+.modern-ui.monaco-workbench .monaco-count-badge:not(.long) {
+  border-radius: var(--vscode-cornerRadius-circle);
+}
+
+/* @capture workbench.css@9619 */
+.monaco-workbench label {
+  cursor: pointer;
+}
+
+/* @capture workbench.css@9620 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture workbench.css@9624 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture workbench.css@9626 */
+.monaco-workbench input {
+  color: inherit;
+  font-family: inherit;
+  font-size: 100%;
+}
+
+/* @capture workbench.css@9628 */
+.monaco-workbench input::placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+/* @capture workbench.css@9629 */
+.monaco-workbench input::-webkit-input-placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+/* @capture workbench.css@9637 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture workbench.css@9638 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture workbench.css@9646 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench [tabindex="-1"]:focus,
+.monaco-workbench .synthetic-focus,
+.monaco-workbench input[type="text"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture workbench.css@9649 */
+.monaco-workbench [tabindex="0"]:active,
+.monaco-workbench [tabindex="-1"]:active {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9654 */
+.monaco-workbench .synthetic-focus :focus {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9656 */
+.monaco-workbench .monaco-list:focus {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9658 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-label:not(.disabled):hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+/* @capture workbench.css@9659 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item.active .action-label:not(.disabled) {
+  background-color: var(--vscode-toolbar-activeBackground);
+}
+
+/* @capture workbench.css@9660 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item .action-label:hover:not(.disabled) {
+  outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+  outline-offset: -1px;
+}
+
+/* @capture contributedColorTheme@182 */
+.monaco-workbench .monaco-list-row.selected {
+  --vscode-debug-ansi-terminal-ansiBlack: #939393;
+  --vscode-debug-ansi-terminal-ansiRed: #db6a6a;
+  --vscode-debug-ansi-terminal-ansiGreen: #0dbc79;
+  --vscode-debug-ansi-terminal-ansiYellow: #e5e510;
+  --vscode-debug-ansi-terminal-ansiBlue: #4e8ed3;
+  --vscode-debug-ansi-terminal-ansiMagenta: #c965c9;
+  --vscode-debug-ansi-terminal-ansiCyan: #11a8cd;
+  --vscode-debug-ansi-terminal-ansiWhite: #e5e5e5;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #919191;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #f35e5e;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #23d18b;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #f5f543;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #3b8eea;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #d670d6;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #29b8db;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #e5e5e5;
+}
+
+/* @capture contributedColorTheme@183 */
+.monaco-workbench .monaco-list-row.focused {
+  --vscode-debug-ansi-terminal-ansiBlack: #000000;
+  --vscode-debug-ansi-terminal-ansiRed: #cd3131;
+  --vscode-debug-ansi-terminal-ansiGreen: #0dbc79;
+  --vscode-debug-ansi-terminal-ansiYellow: #e5e510;
+  --vscode-debug-ansi-terminal-ansiBlue: #2472c8;
+  --vscode-debug-ansi-terminal-ansiMagenta: #bc3fbc;
+  --vscode-debug-ansi-terminal-ansiCyan: #11a8cd;
+  --vscode-debug-ansi-terminal-ansiWhite: #e5e5e5;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #666666;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #f14c4c;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #23d18b;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #f5f543;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #3b8eea;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #d670d6;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #29b8db;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #e5e5e5;
+}
+
+/* @capture contributedColorTheme@184 */
+.monaco-workbench .monaco-list:focus .monaco-list-row.focused {
+  --vscode-debug-ansi-terminal-ansiBlack: #000000;
+  --vscode-debug-ansi-terminal-ansiRed: #cd3131;
+  --vscode-debug-ansi-terminal-ansiGreen: #088857;
+  --vscode-debug-ansi-terminal-ansiYellow: #787807;
+  --vscode-debug-ansi-terminal-ansiBlue: #2472c8;
+  --vscode-debug-ansi-terminal-ansiMagenta: #bc3fbc;
+  --vscode-debug-ansi-terminal-ansiCyan: #0d87a5;
+  --vscode-debug-ansi-terminal-ansiWhite: #787878;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #666666;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #d84444;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #15885a;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #818122;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #357fd2;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #ac5aac;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #1c859f;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #787878;
+}
+
+/* @capture contributedColorTheme@185 */
+.monaco-workbench .monaco-list:focus .monaco-list-row.selected {
+  --vscode-debug-ansi-terminal-ansiBlack: #000000;
+  --vscode-debug-ansi-terminal-ansiRed: #cd3131;
+  --vscode-debug-ansi-terminal-ansiGreen: #088857;
+  --vscode-debug-ansi-terminal-ansiYellow: #787807;
+  --vscode-debug-ansi-terminal-ansiBlue: #2472c8;
+  --vscode-debug-ansi-terminal-ansiMagenta: #bc3fbc;
+  --vscode-debug-ansi-terminal-ansiCyan: #0d87a5;
+  --vscode-debug-ansi-terminal-ansiWhite: #787878;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #666666;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #d84444;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #15885a;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #818122;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #357fd2;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #ac5aac;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #1c859f;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #787878;
+}
+
+/* @capture codiconStyles@58 */
+.codicon-close::before {
+  content: "\ea76";
+}
+
+/* @capture codiconStyles@323 */
+.codicon-split-horizontal::before {
+  content: "\eb56";
+}
+
+/* @capture contributedFileIconTheme@1 */
+.show-file-icons .file-icon::before {
+  font-family: seti;
+  font-size: 150%;
+}
+
+/* @capture contributedFileIconTheme@2 */
+.show-file-icons .file-icon::before {
+  color: rgb(212, 215, 214);
+  content: "\e023";
+  background-image: unset;
+}
+
+/* @capture contributedFileIconTheme@6 */
+.show-file-icons .json-lang-file-icon.file-icon::before {
+  color: rgb(203, 203, 65);
+  content: "\e055";
+  background-image: unset;
+}
+
+/* @capture contributedFileIconTheme@30 */
+.show-file-icons .markdown-lang-file-icon.file-icon::before {
+  color: rgb(81, 154, 186);
+  content: "\e060";
+  background-image: unset;
+}
+
+/* @capture contributedFileIconTheme@170 */
+.show-file-icons .readme\.md-name-file-icon.name-file-icon.md-ext-file-icon.ext-file-icon.file-icon::before {
+  color: rgb(81, 154, 186);
+  content: "\e04d";
+  background-image: unset;
+}
+
+/* @capture inline-27@0 */
+.quick-input-list .quick-input-list-entry {
+  border-top-color: var(--vscode-pickerGroup-border);
+}
+
+/* @capture inline-27@1 */
+.quick-input-list .quick-input-list-separator {
+  color: var(--vscode-pickerGroup-foreground);
+}
+
+/* @capture inline-28@0 */
+.monaco-list.list_id_5 .monaco-list-rows {
+  background: var(--vscode-quickInput-background);
+}
+
+/* @capture inline-28@1 */
+.monaco-list.list_id_5:focus .monaco-list-row.focused {
+  background-color: var(--vscode-quickInputList-focusBackground);
+}
+
+/* @capture inline-28@3 */
+.monaco-list.list_id_5:focus .monaco-list-row.focused {
+  color: var(--vscode-quickInputList-focusForeground);
+}
+
+/* @capture inline-28@4 */
+.monaco-list.list_id_5:focus .monaco-list-row.selected {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+/* @capture inline-28@6 */
+.monaco-list.list_id_5:focus .monaco-list-row.selected {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+/* @capture inline-28@7 */
+.monaco-list.list_id_5:focus .monaco-list-row.selected .codicon {
+  color: var(--vscode-list-activeSelectionIconForeground);
+}
+
+/* @capture inline-28@8 */
+.monaco-list.list_id_5:focus .monaco-list-row.selected.focused {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+/* @capture inline-28@9 */
+.monaco-list.list_id_5:focus .monaco-list-row.selected.focused {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+/* @capture inline-28@10 */
+.monaco-list.list_id_5 .monaco-list-row.focused {
+  color: var(--vscode-quickInputList-focusForeground);
+}
+
+/* @capture inline-28@12 */
+.monaco-list.list_id_5 .monaco-list-row.focused .codicon {
+  color: var(--vscode-quickInputList-focusIconForeground);
+}
+
+/* @capture inline-28@13 */
+.monaco-list.list_id_5 .monaco-list-row.focused {
+  background-color: var(--vscode-quickInputList-focusBackground);
+}
+
+/* @capture inline-28@15 */
+.monaco-list.list_id_5 .monaco-list-row.selected {
+  background-color: var(--vscode-quickInputList-focusBackground);
+}
+
+/* @capture inline-28@17 */
+.monaco-list.list_id_5 .monaco-list-row.selected {
+  color: var(--vscode-quickInputList-focusForeground);
+}
+
+/* @capture inline-28@20 */
+.monaco-list.list_id_5:focus .monaco-list-row.focused.selected {
+  outline: 1px solid var(--vscode-list-focusAndSelectionOutline, var(--vscode-contrastActiveBorder, var(--vscode-contrastActiveBorder)));
+  outline-offset: -1px;
+}
+
+/* @capture inline-28@21 */
+.monaco-list.list_id_5:focus .monaco-list-row.focused {
+  outline: 1px solid var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+/* @capture inline-28@22 */
+.monaco-list.list_id_5 .monaco-list-row.focused.selected {
+  outline: 1px dotted var(--vscode-contrastActiveBorder, var(--vscode-contrastActiveBorder));
+  outline-offset: -1px;
+}
+
+/* @capture inline-28@23 */
+.monaco-list.list_id_5 .monaco-list-row.selected {
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+/* @capture inline-28@24 */
+.monaco-list.list_id_5 .monaco-list-row.focused {
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+/* @capture inline-29@2 */
+.monaco-list.list_id_5 .monaco-scrollable-element .monaco-tree-sticky-container {
+  background-color: var(--vscode-quickInput-background);
+}
+
+/* @capture inline-29@4 */
+.monaco-list.list_id_5 .monaco-scrollable-element .monaco-tree-sticky-container .monaco-tree-sticky-container-shadow {
+  box-shadow: var(--vscode-scrollbar-shadow) 0 6px 6px -6px inset;
+  height: 3px;
+}
+
+/* @capture inline-30@0 */
+.monaco-list.list_id_6 .monaco-list-rows {
+  background: var(--vscode-quickInput-background);
+}
+
+/* @capture inline-31@2 */
+.monaco-list.list_id_6 .monaco-scrollable-element .monaco-tree-sticky-container {
+  background-color: var(--vscode-quickInput-background);
+}
+
+/* @capture inline-31@4 */
+.monaco-list.list_id_6 .monaco-scrollable-element .monaco-tree-sticky-container .monaco-tree-sticky-container-shadow {
+  box-shadow: var(--vscode-scrollbar-shadow) 0 6px 6px -6px inset;
+  height: 3px;
+}
+
+/* @capture workbench.css@1252 */
+@keyframes quick-input-widget-open { 
+  0% { opacity: 0; transform: scale(0.97); }
+  100% { opacity: 1; transform: scale(1); }
+}

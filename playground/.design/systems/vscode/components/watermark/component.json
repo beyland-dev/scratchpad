@@ -1,0 +1,81 @@
+{
+  "tag": "vsc-watermark",
+  "kind": "pattern",
+  "title": "Editor watermark",
+  "category": "workbench",
+  "description": "Empty editor group: VS Code letterpress and shortcut hints.",
+  "usage": "Inside <vsc-editor> when no editor is open. Children: <vsc-watermark-entry>.",
+  "attributes": [],
+  "slots": [
+    {
+      "name": "",
+      "description": "<vsc-watermark-entry> rows"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "watermark-dark",
+    "watermark-light",
+    "watermark-shortcuts-dark",
+    "watermark-shortcuts-light"
+  ],
+  "requires": [
+    "vsc-workbench",
+    "vsc-editor"
+  ],
+  "tokens": [],
+  "uses": [
+    "vsc-watermark-entry",
+    "vsc-keybinding"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/workbench/browser/parts/editor/editorGroupWatermark.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Empty editor",
+      "html": "<vsc-watermark style=\"height: 831px;\"><vsc-watermark-entry icon=\"watermark-chat\" label=\"Open Chat\" keys=\"Ctrl+Alt+I\"></vsc-watermark-entry><vsc-watermark-entry icon=\"watermark-commands\" label=\"Show All Commands\" keys=\"Ctrl+Shift+P\"></vsc-watermark-entry><vsc-watermark-entry icon=\"watermark-settings\" label=\"Open Settings\" keys=\"Ctrl+,\"></vsc-watermark-entry></vsc-watermark>"
+    },
+    {
+      "title": "Shortcuts rotate",
+      "html": "<vsc-watermark style=\"height: 831px;\"><vsc-watermark-entry icon=\"watermark-chat\" label=\"Open Chat\" keys=\"Ctrl+Alt+I\"></vsc-watermark-entry><vsc-watermark-entry icon=\"watermark-commands\" label=\"Show All Commands\" keys=\"Ctrl+Shift+P\"></vsc-watermark-entry><vsc-watermark-entry icon=\"watermark-find-in-files\" label=\"Find in Files\" keys=\"Ctrl+Shift+F\"></vsc-watermark-entry></vsc-watermark>",
+      "description": "VS Code shows a rotating subset of shortcuts."
+    }
+  ],
+  "references": [
+    {
+      "capture": "watermark-dark",
+      "example": 0,
+      "width": 658,
+      "ignore": []
+    },
+    {
+      "capture": "watermark-light",
+      "example": 1,
+      "width": 658,
+      "ignore": []
+    },
+    {
+      "capture": "watermark-shortcuts-dark",
+      "example": 0,
+      "width": 658,
+      "root": ".shortcuts .monaco-action-bar",
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:43:01.279Z",
+    "compared": 121,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.672Z",
+  "updatedAt": "2026-10-22T21:43:01.279Z"
+}

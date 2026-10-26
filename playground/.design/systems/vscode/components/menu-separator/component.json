@@ -1,0 +1,35 @@
+{
+  "tag": "vsc-menu-separator",
+  "kind": "component",
+  "title": "Menu separator",
+  "category": "overlays",
+  "description": "Horizontal rule between menu groups.",
+  "attributes": [],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "hostTag": "li",
+  "cssCaptures": [],
+  "requires": [
+    "vsc-workbench",
+    "vsc-menu"
+  ],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/base/browser/ui/menu/menu.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Separator",
+      "html": "<vsc-menu-item label=\"Cut\"></vsc-menu-item><vsc-menu-separator></vsc-menu-separator><vsc-menu-item label=\"Copy\"></vsc-menu-item>"
+    }
+  ],
+  "references": [],
+  "status": "draft",
+  "createdAt": "2026-10-22T21:42:49.689Z",
+  "updatedAt": "2026-10-22T21:42:49.689Z"
+}

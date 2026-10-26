@@ -1,0 +1,115 @@
+{
+  "tag": "vsc-panel",
+  "kind": "component",
+  "title": "Panel",
+  "category": "workbench",
+  "description": "The bottom panel: view tabs (Problems, Output, Debug Console, Terminal), view actions, maximize/close, and the active view's content.",
+  "usage": "Below the editor in a full-window layout. tabs/active pick the tabs; view actions go in slot=\"actions\"; children render in the view body.",
+  "attributes": [
+    {
+      "name": "tabs",
+      "type": "string",
+      "default": "Problems,Output,Debug Console,Terminal"
+    },
+    {
+      "name": "active",
+      "type": "string",
+      "description": "Active tab (default: last)"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "View content"
+    },
+    {
+      "name": "actions",
+      "description": "<vsc-action> view actions"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [
+    "panel-dark",
+    "panel-light",
+    "panel-title-dark",
+    "panel-title-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [
+    "--vscode-panel-background",
+    "--vscode-panel-border",
+    "--vscode-panelTitle-activeForeground",
+    "--vscode-panelTitle-inactiveForeground",
+    "--vscode-panelTitle-activeBorder"
+  ],
+  "uses": [
+    "vsc-action"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/workbench/browser/parts/panel/panelPart.ts"
+    },
+    {
+      "path": "src/vs/workbench/browser/parts/paneCompositePart.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Terminal",
+      "html": "<vsc-panel style=\"height: 292px;\"><vsc-action slot=\"actions\" menu icon=\"plus\" label=\"New Terminal (Ctrl+Shift+C)\"></vsc-action><vsc-action slot=\"actions\" icon=\"split-horizontal\" label=\"Split Terminal (Ctrl+Shift+5)\" focusable=\"false\"></vsc-action><vsc-action slot=\"actions\" menu icon=\"trash\" label=\"Kill Terminal\" focusable=\"false\"></vsc-action><vsc-action slot=\"actions\" icon=\"toolbar-more\" label=\"Views and More Actions...\" dropdown focusable=\"false\"></vsc-action></vsc-panel>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "panel-dark",
+      "example": 0,
+      "width": 664,
+      "ignore": [
+        ".title-actions",
+        ".pane-body"
+      ]
+    },
+    {
+      "capture": "panel-light",
+      "example": 0,
+      "width": 664,
+      "ignore": [
+        ".title-actions",
+        ".pane-body"
+      ]
+    },
+    {
+      "capture": "panel-title-dark",
+      "example": 0,
+      "width": 664,
+      "root": ".composite.title",
+      "ignore": [
+        ".title-actions"
+      ]
+    },
+    {
+      "capture": "panel-title-light",
+      "example": 0,
+      "width": 664,
+      "root": ".composite.title",
+      "ignore": [
+        ".title-actions"
+      ]
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:43:14.847Z",
+    "compared": 126,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.709Z",
+  "updatedAt": "2026-10-22T21:43:14.847Z"
+}

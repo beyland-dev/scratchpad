@@ -1,0 +1,63 @@
+{
+  "tag": "vsc-count-badge",
+  "kind": "component",
+  "title": "Count badge",
+  "category": "widgets",
+  "description": "Small rounded count (`.monaco-count-badge`), e.g. result counts in Search.",
+  "attributes": [],
+  "slots": [
+    {
+      "name": "",
+      "description": "The count"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "inline-block",
+  "cssCaptures": [
+    "count-badge-dark",
+    "count-badge-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [
+    "--vscode-badge-background",
+    "--vscode-badge-foreground"
+  ],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/base/browser/ui/countBadge/countBadge.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Count",
+      "html": "<vsc-count-badge>1</vsc-count-badge>"
+    }
+  ],
+  "references": [
+    {
+      "capture": "count-badge-dark",
+      "example": 0,
+      "ignore": []
+    },
+    {
+      "capture": "count-badge-light",
+      "example": 0,
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-22T21:42:54.613Z",
+    "compared": 2,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-22T21:42:49.652Z",
+  "updatedAt": "2026-10-22T21:42:54.613Z"
+}

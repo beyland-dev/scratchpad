@@ -1,0 +1,108 @@
+{
+  "label": "quick-input-light",
+  "url": "http://127.0.0.1:8457/?folder=%2Ftmp%2Fdt-vsc%2Fws&dt-theme=light",
+  "selector": ".quick-input-widget",
+  "theme": "light-2026",
+  "capturedAt": "2026-10-22T21:03:58.672Z",
+  "rect": {
+    "x": 420,
+    "y": 6,
+    "w": 602,
+    "h": 407
+  },
+  "parentWidth": 1440,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-enable-motion modern-ui modern-ui-tabs modern-ui-connected-editor-tabs modern-ui-notifications-dialogs monaco-workbench linux web chromium nopanel fullscreen floating-panels panel-position-bottom panel-alignment-center file-icons-enabled vs vscode-theme-defaults-themes-2026-light-json",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "agent-status-enabled unified-agents-bar",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(32, 32, 32)",
+    "font-family": "system-ui, Ubuntu, \"Droid Sans\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-scrollbarSlider-background": "rgba(100, 100, 100, 0.75)",
+    "--vscode-scrollbarSlider-hoverBackground": "rgba(100, 100, 100, 0.82)",
+    "--vscode-scrollbarSlider-activeBackground": "rgba(100, 100, 100, 0.88)",
+    "--vscode-cornerRadius-medium": "6px",
+    "--vscode-disabledForeground": "#bbbbbb",
+    "--vscode-button-border": "#0069cc",
+    "--vscode-strokeThickness": "1px",
+    "--vscode-inputOption-hoverBackground": "rgba(184, 184, 184, 0.31)",
+    "--vscode-sideBar-background": "#fafafd",
+    "--vscode-cornerRadius-xLarge": "12px",
+    "--vscode-shadow-xl": "0 0 20px rgba(0, 0, 0, .15)",
+    "--vscode-list-highlightForeground": "#0069cc",
+    "--vscode-quickInputList-focusHighlightForeground": "#ffffff",
+    "--vscode-bodyFontSize-xSmall": "11px",
+    "--vscode-descriptionForeground": "#606060",
+    "--vscode-list-focusOutline": "#0069cc",
+    "--vscode-widget-shadow": "rgba(0, 0, 0, 0)",
+    "--vscode-fontSize-label3": "10px",
+    "--vscode-spacing-size80": "8px",
+    "--vscode-fontSize-label2": "11px",
+    "--vscode-spacing-size20": "2px",
+    "--vscode-spacing-size40": "4px",
+    "--vscode-spacing-size60": "6px",
+    "--vscode-cornerRadius-small": "4px",
+    "--vscode-cornerRadius-large": "8px",
+    "--vscode-cornerRadius-circle": "9999px",
+    "--vscode-input-placeholderForeground": "#999999",
+    "--vscode-icon-foreground": "#606060",
+    "--vscode-focusBorder": "#0069cc",
+    "--vscode-list-focusHighlightForeground": "#0069cc",
+    "--vscode-toolbar-hoverBackground": "rgba(0, 0, 0, 0.12)",
+    "--vscode-toolbar-activeBackground": "#d6d6d8",
+    "--vscode-pickerGroup-border": "#eeeef1",
+    "--vscode-pickerGroup-foreground": "#202020",
+    "--vscode-keybindingLabel-background": "rgba(221, 221, 221, 0.4)",
+    "--vscode-keybindingLabel-bottomBorder": "rgba(187, 187, 187, 0.4)",
+    "--vscode-keybindingLabel-foreground": "#3b3b3b",
+    "--vscode-quickInput-background": "#fafafd",
+    "--vscode-quickInputList-focusBackground": "#0069cc",
+    "--vscode-quickInputList-focusForeground": "#ffffff",
+    "--vscode-list-activeSelectionBackground": "rgba(0, 0, 0, 0.14)",
+    "--vscode-list-activeSelectionForeground": "#202020",
+    "--vscode-list-activeSelectionIconForeground": "#000000",
+    "--vscode-quickInputList-focusIconForeground": "#ffffff",
+    "--vscode-list-focusAndSelectionOutline": "#005fb8",
+    "--vscode-scrollbar-shadow": "rgba(0, 0, 0, 0)",
+    "--vscode-keybindingLabel-border": "rgba(204, 204, 204, 0.4)"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"../../../../media/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "http://127.0.0.1:8457/insider-58173d0ebc1838579e3c331e0a47e365904a6456/static/out/media/codicon.ttf"
+      ]
+    }
+  ],
+  "rules": 182,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}
