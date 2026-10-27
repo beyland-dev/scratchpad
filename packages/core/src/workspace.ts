@@ -12,6 +12,7 @@ import {
 export const DESIGN_DIR = ".design";
 export const WORKSPACE_FILE = "workspace.json";
 export const PROTOTYPES_DIR = "prototypes";
+export const PROJECTS_DIR = "projects";
 export const TRASH_DIR = ".trash";
 export const CACHE_DIR = ".cache";
 
@@ -66,6 +67,7 @@ export class Workspace {
   readonly root: string;
   readonly designDir: string;
   readonly prototypesDir: string;
+  readonly projectsDir: string;
   readonly trashDir: string;
   readonly cacheDir: string;
   #config: WorkspaceConfig;
@@ -74,6 +76,7 @@ export class Workspace {
     this.root = root;
     this.designDir = designDirOf(root);
     this.prototypesDir = path.join(this.designDir, PROTOTYPES_DIR);
+    this.projectsDir = path.join(this.designDir, PROJECTS_DIR);
     this.trashDir = path.join(this.designDir, TRASH_DIR);
     this.cacheDir = path.join(this.designDir, CACHE_DIR);
     this.#config = config;

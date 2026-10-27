@@ -1,5 +1,5 @@
 {
-  "title": "VS Code Chat Composer",
+  "title": "Chat Composer",
   "description": "Pixel-precise recreation of the VS Code chat input (Copilot harness, signed in, Dark 2026). Workbench CSS is captured verbatim from a live VS Code Insiders 1.144 build (commit c8f3fd1, matching vscode main) and verified element-by-element against it. Light 2026: add ?theme=light to the raw URL or press Ctrl/Cmd+K Ctrl/Cmd+T.",
   "status": "draft",
   "tags": [
@@ -7,6 +7,7 @@
     "chat",
     "composer"
   ],
+  "project": "vscode",
   "group": "vscode-chat",
   "entry": "index.html",
   "createdBy": {
@@ -17,5 +18,5 @@
     "vscode"
   ],
   "createdAt": "2026-10-22T18:04:48.500Z",
-  "updatedAt": "2026-10-22T18:18:22.705Z"
+  "updatedAt": "2026-10-27T16:22:25.315Z"
 }

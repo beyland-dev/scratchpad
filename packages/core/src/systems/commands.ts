@@ -21,6 +21,10 @@ import {
   SourceRefSchema,
   StateSchema,
   SystemIdSchema,
+  ComponentTagSchema,
+  FrameworkSchema,
+  LibrarySchema,
+  SystemKindSchema,
   TagSchema,
   ThemeSchema,
   TokenSchema,
@@ -58,6 +62,7 @@ function summarize(c: DesignComponent) {
     summary: (sentence ? sentence[1]! : c.description).trim(),
     requires: c.requires,
     uses: c.uses,
+    story: c.story,
     issues: c.issues,
   };
 }
@@ -79,23 +84,32 @@ export const systemList = defineCommand({
   name: "system.list",
   title: "List design systems",
   description:
-    "List the design systems (codified component and token libraries) in this workspace.",
+    "List the design systems (codified component and token libraries) in this workspace, optionally only those of one project.",
   kind: "query",
-  input: z.object({}),
-  handler: async (_input, core) => ({
+  input: z.object({
+    project: SystemIdSchema.optional().describe("Only systems that belong to this project"),
+  }),
+  handler: async (input, core) => ({
     systems: await Promise.all(
-      core.systems.list().map(async (s) => ({
-        id: s.id,
-        name: s.name,
-        description: s.description,
-        sourceId: s.sourceId,
-        prefix: s.prefix,
-        components: core.systems.components(s.id).length,
-        tokens: (await core.systems.tokens(s.id).catch(() => [])).length,
-        skill: skillName(s.id),
-        urls: systemUrls(core, s.id),
-        issues: s.issues,
-      })),
+      core.systems
+        .list()
+        .filter((s) => input.project === undefined || s.project === input.project)
+        .map(async (s) => ({
+          id: s.id,
+          name: s.name,
+          description: s.description,
+          sourceId: s.sourceId,
+          project: s.project,
+          kind: s.kind,
+          framework: s.framework,
+          library: s.library,
+          prefix: s.prefix,
+          components: core.systems.components(s.id).length,
+          tokens: (await core.systems.tokens(s.id).catch(() => [])).length,
+          skill: skillName(s.id),
+          urls: systemUrls(core, s.id),
+          issues: s.issues,
+        })),
     ),
   }),
   format: (out) =>
@@ -125,7 +139,10 @@ export const systemGet = defineCommand({
     return {
       system,
       urls: systemUrls(core, id),
-      include: `<link rel="stylesheet" href="/s/${id}/system.css" />\n<script type="module" src="/s/${id}/system.js"></script>`,
+      include:
+        system.kind === "package"
+          ? `prototype.create { framework: "react", system: "${id}" }\n// main.tsx\nimport "@/${(system.styles ?? "src/index.css").replace(/^src\//, "")}";`
+          : `<link rel="stylesheet" href="/s/${id}/system.css" />\n<script type="module" src="/s/${id}/system.js"></script>`,
       components,
       tokens: { total: tokens.length, groups },
       skill: skillName(id),
@@ -151,8 +168,12 @@ const SystemFields = {
   description: z.string().optional(),
   sourceId: z
     .string()
+    .nullable()
     .optional()
-    .describe("Workspace source (codebase) this system is audited from"),
+    .describe("Workspace source (codebase) this system is audited from (null to unset)"),
+  project: SystemIdSchema.nullable()
+    .optional()
+    .describe("Project this system belongs to (null to unassign)"),
   prefix: z
     .string()
     .regex(/^[a-z][a-z0-9]*$/)
@@ -180,6 +201,13 @@ const SystemFields = {
       "Captured stylesheets holding theme-specific rules (e.g. a generated color-theme sheet); their rules are scoped to the capture's theme",
     ),
   capturedFrom: CapturedFromSchema.optional(),
+  library: LibrarySchema.optional().describe("Package systems: the library it's based on"),
+  styles: z
+    .string()
+    .optional()
+    .describe(
+      "Package systems: global stylesheet with the theme variables (default src/index.css)",
+    ),
   notes: z
     .string()
     .optional()
@@ -191,25 +219,53 @@ export const systemCreate = defineCommand({
   name: "system.create",
   title: "Create design system",
   description:
-    "Create a new, empty design system (tokens + components library) for a source codebase.",
+    "Create a new, empty design system. kind 'captured' (default): components codified from a running product as custom elements (follow the design-system-audit skill). kind 'package': an existing library such as shadcn/ui or Primer, configured in the system's folder (a Vite + React project scaffolded for you: package.json, vite.config.ts, src/index.css); run `npm install` there, add the library and its customizations, then describe components with stories.",
   kind: "mutation",
   input: z.object({
     id: SystemRef,
     ...SystemFields,
+    kind: SystemKindSchema.default("captured"),
+    framework: FrameworkSchema.optional().describe("Package systems: defaults to react"),
     name: z.string().min(1),
-    prefix: z.string().regex(/^[a-z][a-z0-9]*$/),
-    themes: z
-      .array(ThemeSchema)
-      .min(1)
-      .default([
-        { id: "light", label: "Light", kind: "light", classes: "" },
-        { id: "dark", label: "Dark", kind: "dark", classes: "" },
-      ]),
+    prefix: z
+      .string()
+      .regex(/^[a-z][a-z0-9]*$/)
+      .optional()
+      .describe("Captured systems: custom element tag prefix, e.g. 'vsc' (required)"),
+    themes: z.array(ThemeSchema).min(1).optional(),
   }),
-  handler: async ({ id, ...input }, core) => {
-    if (input.sourceId) core.workspace.getSource(input.sourceId);
+  handler: async ({ id, project, sourceId, kind, framework, prefix, themes, ...rest }, core) => {
+    if (sourceId) core.workspace.getSource(sourceId);
+    if (kind === "captured" && !prefix)
+      throw new CoreError(
+        "INVALID_INPUT",
+        "Captured design systems need a tag prefix, e.g. 'acme'",
+      );
+    const input = {
+      ...rest,
+      kind,
+      ...(kind === "package"
+        ? { framework: framework ?? "react", styles: rest.styles ?? "src/index.css" }
+        : {}),
+      prefix: prefix ?? id.toLowerCase().match(/[a-z][a-z0-9]*/)?.[0] ?? "ds",
+      // Package systems: shadcn-style theming, light variables on :root and dark ones under .dark.
+      themes:
+        themes ??
+        (kind === "package"
+          ? [
+              { id: "light", label: "Light", kind: "light" as const, classes: "" },
+              { id: "dark", label: "Dark", kind: "dark" as const, classes: "dark" },
+            ]
+          : [
+              { id: "light", label: "Light", kind: "light" as const, classes: "" },
+              { id: "dark", label: "Dark", kind: "dark" as const, classes: "" },
+            ]),
+      ...(sourceId ? { sourceId } : {}),
+    };
+    const projectId = core.resolveProject(project);
     const system = await core.systems.create(id, {
       ...input,
+      ...(projectId ? { project: projectId } : {}),
       defaultTheme: input.defaultTheme ?? input.themes[0]!.id,
       themeSelector: input.themeSelector ?? '[data-theme="{theme}"]',
       sheetOrder: input.sheetOrder ?? [],
@@ -228,12 +284,20 @@ export const systemUpdate = defineCommand({
   kind: "mutation",
   positional: ["id"],
   input: z.object({ id: SystemRef, ...SystemFields }),
-  handler: async ({ id, ...patch }, core) => ({
-    system: await core.systems.update(
-      id,
-      Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined)),
-    ),
-  }),
+  handler: async ({ id, ...patch }, core) => {
+    if (patch.project) core.projects.get(patch.project);
+    if (patch.sourceId) core.workspace.getSource(patch.sourceId);
+    return {
+      system: await core.systems.update(
+        id,
+        Object.fromEntries(
+          Object.entries(patch)
+            .filter(([, v]) => v !== undefined)
+            .map(([k, v]) => [k, v === null ? undefined : v]),
+        ),
+      ),
+    };
+  },
   format: (out) => `Updated ${out.system.id}`,
 });
 
@@ -249,8 +313,14 @@ export const systemBuild = defineCommand({
   format: (out) =>
     [
       `Built ${out.system}: ${out.components} components, ${out.tokens} tokens`,
-      `  system.css ${(out.css.bytes / 1024).toFixed(1)} KB (${out.css.captured} captured rules, ${out.css.duplicates} duplicates merged)`,
-      `  system.js  ${(out.js.bytes / 1024).toFixed(1)} KB`,
+      ...(out.files.includes("system.css")
+        ? [
+            `  system.css ${(out.css.bytes / 1024).toFixed(1)} KB (${out.css.captured} captured rules, ${out.css.duplicates} duplicates merged)`,
+            `  system.js  ${(out.js.bytes / 1024).toFixed(1)} KB`,
+          ]
+        : [
+            `  specimen   ${(out.js.bytes / 1024).toFixed(1)} KB JS, ${(out.css.bytes / 1024).toFixed(1)} KB CSS`,
+          ]),
       ...out.warnings.map((w) => `  ⚠ ${w}`),
     ].join("\n"),
 });
@@ -445,7 +515,7 @@ export const componentGet = defineCommand({
   input: z.object({
     system: SystemRef,
     name: z.string().optional().describe("Component name"),
-    tag: TagSchema.optional().describe("Or the custom element tag"),
+    tag: ComponentTagSchema.optional().describe("Or the custom element tag"),
     includeCode: z.boolean().default(false).describe("Include component.css and component.js"),
   }),
   handler: async ({ system, name, tag, includeCode }, core) => {
@@ -458,6 +528,10 @@ export const componentGet = defineCommand({
     if (!component)
       throw new CoreError("NOT_FOUND", `No component ${JSON.stringify(name ?? tag)} in ${system}`);
     const example = component.examples[0]?.html ?? `<${component.tag}></${component.tag}>`;
+    const snippet =
+      sys.kind === "package"
+        ? [component.import, example.trim()].filter(Boolean).join("\n\n")
+        : wrapInContexts(sys, component, example);
     const files = await core.systems.componentFiles(system, component.name);
     const code = includeCode
       ? {
@@ -474,7 +548,7 @@ export const componentGet = defineCommand({
     const base = `${core.urls.sandbox}/s/${encodeURIComponent(system)}/specimen.html?component=${encodeURIComponent(component.name)}`;
     return {
       component,
-      snippet: wrapInContexts(sys, component, example),
+      snippet,
       specimens: sys.themes.map((t) => ({ theme: t.id, url: `${base}&theme=${t.id}` })),
       files,
       ...(code ? { code } : {}),
@@ -490,7 +564,7 @@ export const componentGet = defineCommand({
 });
 
 const ComponentFields = {
-  tag: TagSchema.optional(),
+  tag: ComponentTagSchema.optional(),
   kind: ComponentKindSchema.optional(),
   title: z.string().min(1).optional(),
   category: z.string().optional(),
@@ -528,11 +602,11 @@ const ComponentFields = {
       "Capture labels whose captured rules form this component's CSS (pulled in at build time, so no need to paste them into component.css). List every theme's capture.",
     ),
   requires: z
-    .array(TagSchema)
+    .array(ComponentTagSchema)
     .optional()
     .describe("Context elements that must wrap this one, outermost first"),
   tokens: z.array(z.string()).optional(),
-  uses: z.array(TagSchema).optional(),
+  uses: z.array(ComponentTagSchema).optional(),
   sources: z.array(SourceRefSchema).optional(),
   examples: z.array(ExampleSchema).optional(),
   references: z
@@ -541,6 +615,17 @@ const ComponentFields = {
     .describe("Captures to verify against: [{capture, example?, theme?, width?, root?, ignore?}]"),
   status: z.enum(["draft", "stable", "deprecated"]).optional(),
   verification: VerificationSchema.optional(),
+  import: z
+    .string()
+    .optional()
+    .describe('Package systems: import line, e.g. import { Button } from "@/components/ui/button"'),
+  story: z
+    .string()
+    .optional()
+    .describe(
+      "Package systems: module (relative to the system folder, e.g. stories/button.stories.tsx) exporting one React component per example; examples[].story names the export",
+    ),
+  docsUrl: z.string().url().optional().describe("Official documentation for this component"),
 };
 
 const defined = <T extends Record<string, unknown>>(obj: T) =>
@@ -555,7 +640,7 @@ export const componentCreate = defineCommand({
   input: z.object({
     ...ComponentRef,
     ...ComponentFields,
-    tag: TagSchema,
+    tag: ComponentTagSchema,
     title: z.string().min(1),
     css: z.string().optional().describe("Contents of component.css"),
     js: z.string().optional().describe("Contents of component.js"),
@@ -622,10 +707,27 @@ export const componentReadFile = defineCommand({
   format: (out) => out.content,
 });
 
+export const systemDelete = defineCommand({
+  name: "system.delete",
+  title: "Delete design system",
+  description:
+    "Move a design system folder (components, tokens, captures, build) to the workspace trash. Prototypes that include its system.css/system.js stop rendering it.",
+  kind: "mutation",
+  positional: ["id"],
+  input: z.object({ id: SystemRef }),
+  handler: async ({ id }, core) => {
+    const result = await core.systems.remove(id);
+    core.events.emit("system.changed", { id, exists: false, paths: [] });
+    return result;
+  },
+  format: (out) => `Moved ${out.id} to ${out.trashedTo}`,
+});
+
 export const componentRemove = defineCommand({
   name: "component.remove",
   title: "Remove component",
-  description: "Delete a component from a design system.",
+  description:
+    "Remove a component from a design system (moved to the workspace trash, so it's recoverable).",
   kind: "mutation",
   positional: ["system", "name"],
   input: z.object(ComponentRef),
@@ -763,6 +865,7 @@ export const systemCommands = [
   captureList,
   systemCreate,
   systemUpdate,
+  systemDelete,
   systemBuild,
   systemExportSkill,
   systemWriteFile,

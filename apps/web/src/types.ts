@@ -1,4 +1,6 @@
 import type {
+  Project,
+  ProjectUrls,
   Prototype,
   PrototypeFileEntry,
   PrototypeUrls,
@@ -15,6 +17,8 @@ export type {
 } from "@design-tool/core";
 
 export type PrototypeWithUrls = Prototype & { urls: PrototypeUrls };
+
+export type ProjectSummary = Project & { prototypes: number; systems: number; urls: ProjectUrls };
 
 export interface WorkspaceInfo {
   name: string;
@@ -47,6 +51,8 @@ export interface ComponentSummary {
   summary: string;
   requires: string[];
   uses: string[];
+  /** Package systems: the module with its examples. */
+  story?: string;
   issues?: string[];
 }
 

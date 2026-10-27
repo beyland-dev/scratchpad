@@ -222,6 +222,260 @@ describe("prototypes", () => {
   });
 });
 
+describe("projects", () => {
+  const SVG =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><rect width="1" height="1"/></svg>';
+
+  test("init creates a default project holding the example", () => {
+    expect(core.projects.list().map((p) => [p.id, p.name])).toEqual([["test", "Test"]]);
+    expect(core.prototypes.get("welcome").project).toBe("test");
+  });
+
+  test("create, update and delete with color and icon", async () => {
+    const { project } = await core.run<{
+      project: { id: string; icon?: string; urls: { icon?: string } };
+    }>("project.create", {
+      name: "Web App",
+      color: "#112233",
+      icon: { format: "svg", content: SVG },
+    });
+    expect(project).toMatchObject({ id: "web-app", icon: "icon.svg" });
+    expect(project.urls.icon).toMatch(/\/projects\/web-app\/icon\?v=/);
+    expect(await readFile(core.projects.iconPathOf("web-app")!, "utf8")).toContain("<svg");
+
+    const png = Buffer.from([0x89, 0x50, 0x4e, 0x47]).toString("base64");
+    await core.run("project.update", {
+      id: "web-app",
+      name: "Web",
+      color: null,
+      icon: { format: "png", content: png },
+    });
+    expect(core.projects.get("web-app")).toMatchObject({ name: "Web", icon: "icon.png" });
+    expect(core.projects.get("web-app").color).toBeUndefined();
+    await core.run("project.update", { id: "web-app", icon: null });
+    expect(core.projects.get("web-app").icon).toBeUndefined();
+
+    await expect(
+      core.run("project.create", { name: "Bad", icon: { format: "svg", content: "<p>no</p>" } }),
+    ).rejects.toMatchObject({ code: "INVALID_INPUT" });
+    await core.projects.load();
+    expect(core.projects.has("bad")).toBe(false);
+
+    // A rejected icon update keeps the current icon.
+    await core.run("project.update", { id: "web-app", icon: { format: "svg", content: SVG } });
+    await expect(
+      core.run("project.update", { id: "web-app", icon: { format: "svg", content: "nope" } }),
+    ).rejects.toMatchObject({ code: "INVALID_INPUT" });
+    expect(core.projects.get("web-app").icon).toBe("icon.svg");
+
+    // Editing the icon file directly changes its URL, so the app refetches it.
+    const before = core.projectUrls("web-app").icon;
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    await writeFile(core.projects.iconPathOf("web-app")!, SVG.replace("<rect", "<circle"));
+    await core.projects.reloadOne("web-app");
+    expect(core.projectUrls("web-app").icon).not.toBe(before);
+    await expect(core.run("project.create", { name: "x", id: "web-app" })).rejects.toMatchObject({
+      code: "CONFLICT",
+    });
+
+    const result = await core.run<{ trashedTo: string }>("project.delete", { id: "web-app" });
+    expect(result.trashedTo).toMatch(/^\.design\/\.trash\/project-web-app-\d+$/);
+    expect(core.projects.has("web-app")).toBe(false);
+  });
+
+  test("new prototypes and systems default to the only project", async () => {
+    const one = await core.run<{ prototype: { project?: string } }>("prototype.create", {
+      title: "One",
+    });
+    expect(one.prototype.project).toBe("test");
+    const none = await core.run<{ prototype: { project?: string } }>("prototype.create", {
+      title: "None",
+      project: null,
+    });
+    expect(none.prototype.project).toBeUndefined();
+    await core.run("system.create", { id: "ds", name: "DS", prefix: "ds" });
+    expect(core.systems.get("ds").project).toBe("test");
+
+    await core.run("project.create", { name: "Second" });
+    const ambiguous = await core.run<{ prototype: { project?: string } }>("prototype.create", {
+      title: "Ambiguous",
+    });
+    expect(ambiguous.prototype.project).toBeUndefined();
+    await expect(
+      core.run("prototype.create", { title: "Typo", project: "nope" }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
+  });
+
+  test("prototypes and systems move between projects; lists filter by project", async () => {
+    await core.run("project.create", { name: "Other" });
+    await core.run("prototype.update", { id: "welcome", project: "other" });
+    expect(core.prototypes.get("welcome").project).toBe("other");
+    expect(core.prototypes.list({ project: "test" })).toEqual([]);
+    await expect(
+      core.run("prototype.update", { id: "welcome", project: "nope" }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
+
+    await core.run("system.create", { id: "ds", name: "DS", prefix: "ds", project: "other" });
+    const listed = await core.run<{ systems: { id: string }[] }>("system.list", {
+      project: "other",
+    });
+    expect(listed.systems.map((s) => s.id)).toEqual(["ds"]);
+    await core.run("system.update", { id: "ds", project: null });
+    expect(core.systems.get("ds").project).toBeUndefined();
+
+    const { projects } = await core.run<{
+      projects: { id: string; prototypes: number; systems: number }[];
+    }>("project.list");
+    expect(projects).toEqual([
+      expect.objectContaining({ id: "other", prototypes: 1, systems: 0 }),
+      expect.objectContaining({ id: "test", prototypes: 0, systems: 0 }),
+    ]);
+    const info = await core.run<{ projects: { id: string }[] }>("workspace.info");
+    expect(info.projects.map((p) => p.id)).toEqual(["other", "test"]);
+  });
+
+  test("design systems and components are deleted to the trash", async () => {
+    await core.run("system.create", { id: "ds", name: "DS", prefix: "ds" });
+    await core.run("component.create", { system: "ds", name: "x", tag: "ds-x", title: "X" });
+    const removed = await core.run<{ trashedTo: string }>("component.remove", {
+      system: "ds",
+      name: "x",
+    });
+    expect(removed.trashedTo).toMatch(/^\.design\/\.trash\/component-ds-x-\d+$/);
+    expect(core.systems.components("ds")).toEqual([]);
+    const deleted = await core.run<{ trashedTo: string }>("system.delete", { id: "ds" });
+    expect(deleted.trashedTo).toMatch(/^\.design\/\.trash\/system-ds-\d+$/);
+    expect(core.systems.has("ds")).toBe(false);
+  });
+
+  test("folders written by hand are picked up, and the watcher reports changes", async () => {
+    await core.startWatching();
+    const events: CoreEvent[] = [];
+    core.events.subscribe((e) => events.push(e));
+    const dir = path.join(root, ".design/projects/hand-made");
+    await mkdir(dir, { recursive: true });
+    await writeFile(path.join(dir, "icon.svg"), SVG);
+
+    await expect.poll(() => core.projects.has("hand-made"), { timeout: 3000 }).toBe(true);
+    expect(core.projects.get("hand-made")).toMatchObject({
+      name: "Hand Made",
+      icon: "icon.svg",
+      issues: ["Missing project.json"],
+    });
+    await expect
+      .poll(() => events.find((e) => e.type === "project.changed" && e.data.id === "hand-made"), {
+        timeout: 3000,
+      })
+      .toMatchObject({ data: { exists: true } });
+  });
+});
+
+describe("package design systems", () => {
+  const THEME = `@import "tailwindcss";
+@theme inline { --color-primary: var(--primary); }
+:root { --radius: 0.75rem; --primary: oklch(0.54 0.25 293); --background: #fff; }
+.dark { --primary: oklch(0.7 0.18 293); --background: #000; }
+@layer base { body { background: var(--background); } }
+`;
+
+  test("create scaffolds a Vite + React project and needs no tag prefix", async () => {
+    await core.run("system.create", {
+      id: "acme-ui",
+      name: "Acme UI",
+      kind: "package",
+      library: { name: "shadcn/ui", package: "shadcn", docsUrl: "https://ui.shadcn.com/docs" },
+    });
+    const system = core.systems.get("acme-ui");
+    expect(system).toMatchObject({ kind: "package", framework: "react", styles: "src/index.css" });
+    expect(system.themes.map((t) => [t.id, t.classes])).toEqual([
+      ["light", ""],
+      ["dark", "dark"],
+    ]);
+    const dir = core.systems.dirOf("acme-ui");
+    for (const f of ["package.json", "vite.config.ts", "tsconfig.json", "src/index.css"])
+      expect(await readFile(path.join(dir, f), "utf8")).toBeTruthy();
+    expect(await readFile(path.join(dir, ".gitignore"), "utf8")).toContain("node_modules/");
+    await expect(
+      core.run("system.create", { id: "cap", name: "Cap", kind: "captured" }),
+    ).rejects.toMatchObject({ code: "INVALID_INPUT" });
+  });
+
+  test("tokens come from the theme stylesheet, per theme, merged with tokens.json", async () => {
+    await core.run("system.create", { id: "acme-ui", name: "Acme UI", kind: "package" });
+    await core.run("system.writeFile", { id: "acme-ui", path: "src/index.css", content: THEME });
+    await core.systems.reloadSystem("acme-ui");
+    await core.run("token.import", {
+      system: "acme-ui",
+      tokens: [{ name: "primary", type: "color", cssVar: "--primary", description: "Brand" }],
+    });
+    const tokens = await core.systems.tokens("acme-ui");
+    expect(tokens.map((t) => t.cssVar)).toEqual(["--background", "--primary", "--radius"]);
+    expect(tokens.find((t) => t.cssVar === "--primary")).toMatchObject({
+      type: "color",
+      description: "Brand",
+      values: { light: "oklch(0.54 0.25 293)", dark: "oklch(0.7 0.18 293)" },
+    });
+    expect(tokens.find((t) => t.cssVar === "--radius")).toMatchObject({
+      type: "dimension",
+      values: { light: "0.75rem", dark: "0.75rem" },
+    });
+  });
+
+  test("components use JSX names, imports, stories and docs links", async () => {
+    await core.run("system.create", { id: "acme-ui", name: "Acme UI", kind: "package" });
+    await core.run("component.create", {
+      system: "acme-ui",
+      name: "button",
+      tag: "Button",
+      title: "Button",
+      import: 'import { Button } from "@/components/ui/button";',
+      story: "stories/button.stories.tsx",
+      docsUrl: "https://ui.shadcn.com/docs/components/button",
+      examples: [{ title: "Default", html: "<Button>Save</Button>", story: "Default" }],
+    });
+    const out = await core.run<{ snippet: string; component: { tag: string } }>("component.get", {
+      system: "acme-ui",
+      name: "button",
+    });
+    expect(out.component.tag).toBe("Button");
+    expect(out.snippet).toBe(
+      'import { Button } from "@/components/ui/button";\n\n<Button>Save</Button>',
+    );
+  });
+
+  test("React prototypes scaffold a shell and main.tsx, and resolve their system", async () => {
+    await expect(
+      core.run("prototype.create", { title: "No system", framework: "react" }),
+    ).rejects.toMatchObject({ code: "INVALID_INPUT" });
+    await core.run("system.create", { id: "acme-ui", name: "Acme UI", kind: "package" });
+    const { prototype } = await core.run<{ prototype: { id: string; system?: string } }>(
+      "prototype.create",
+      { title: "Settings", framework: "react" },
+    );
+    expect(prototype.system).toBe("acme-ui");
+    const files = (await core.prototypes.listFiles(prototype.id)).map((f) => f.path).sort();
+    expect(files).toEqual(["index.html", "main.tsx"]);
+    expect((await core.prototypes.readFile(prototype.id, "index.html")).content).toContain(
+      'src="./main.tsx"',
+    );
+    await expect(
+      core.run("prototype.create", { title: "Plain", system: "acme-ui" }),
+    ).rejects.toMatchObject({ code: "INVALID_INPUT" });
+  });
+
+  test("building without installed dependencies explains how to fix it", async () => {
+    await core.run("system.create", { id: "acme-ui", name: "Acme UI", kind: "package" });
+    // The system itself isn't "failed" before `npm install`, just not built yet.
+    const built = await core.buildSystem("acme-ui");
+    expect(built.files).toEqual([]);
+    expect(built.warnings.join()).toMatch(/npm install/);
+    await core.run("prototype.create", { title: "Settings", framework: "react" });
+    await expect(core.buildPrototype("settings")).rejects.toThrow(/npm install/);
+    // The failure is cached until something changes, so repeated requests don't rebuild.
+    await expect(core.buildPrototype("settings")).rejects.toThrow(/npm install/);
+  });
+});
+
 describe("registry", () => {
   test("validates input with readable errors", async () => {
     await expect(core.run("prototype.create", { title: "" })).rejects.toMatchObject({

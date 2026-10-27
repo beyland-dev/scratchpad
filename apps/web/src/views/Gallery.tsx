@@ -1,128 +1,166 @@
-import { useMemo, useState } from "preact/hooks";
-import { EmptyState } from "../components/EmptyState.tsx";
+import { groupFamilies } from "@design-tool/core/family";
+import { useEffect, useMemo, useState } from "preact/hooks";
+import { useRoute } from "preact-iso";
+import { PrototypeDialog } from "../components/Dialogs.tsx";
+import { Icon } from "../components/Icon.tsx";
 import { PrototypeCard, familyUpdatedAt } from "../components/PrototypeCard.tsx";
+import { SearchInput } from "../components/SearchInput.tsx";
 import { STATUSES } from "../components/StatusBadge.tsx";
-import { families, loadError, loaded, prototypes, selection, workspace } from "../store.ts";
+import { loadError, loaded, projectEntries, projectIdOf, prototypes, selection } from "../store.ts";
 import type { PrototypeStatus, PrototypeWithUrls } from "../types.ts";
 
 export function Gallery() {
+  const { params } = useRoute();
+  const projectId = params.project ?? "";
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<PrototypeStatus | "">("");
-  const [tag, setTag] = useState("");
   const [group, setGroup] = useState("");
-  const all = prototypes.value;
-  const info = workspace.value;
+  const [creating, setCreating] = useState(false);
+  const project = projectEntries.value.find((p) => p.id === projectId);
+  const all = useMemo(
+    () => prototypes.value.filter((p) => projectIdOf(p) === projectId),
+    [prototypes.value, projectId, projectEntries.value],
+  );
+  const groups = useMemo(
+    () => [...new Set(all.flatMap((p) => (p.group ? [p.group] : [])))].sort(),
+    [all],
+  );
+  const allFamilies = useMemo(() => groupFamilies(all), [all]);
 
-  const allFamilies = families.value;
+  // Filters and the compare selection belong to one project.
+  useEffect(() => {
+    setSearch("");
+    setStatus("");
+    setGroup("");
+    selection.value = [];
+  }, [projectId]);
 
-  // A family is shown when any of its versions matches; the card always previews the latest one.
-  const visible = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    const matches = (p: PrototypeWithUrls) =>
-      (!status || p.status === status) &&
-      (!tag || p.tags.includes(tag)) &&
+  // A family matches search/group when any of its versions does; status filters on the latest version (what the card shows).
+  const { visible, statusCounts } = useMemo(() => {
+    const q = search.trim().toLowerCase().replace(/^#/, "");
+    const matchesQuery = (p: PrototypeWithUrls) =>
       (!group || p.group === group) &&
       (!q ||
         [p.id, p.title, p.description ?? "", p.group ?? "", ...p.tags].some((v) =>
           v.toLowerCase().includes(q),
         ));
-    return allFamilies
-      .filter((family) => family.some(matches))
-      .sort((a, b) => familyUpdatedAt(b).localeCompare(familyUpdatedAt(a)));
-  }, [allFamilies, search, status, tag, group]);
+    const searched = allFamilies.filter((family) => family.some(matchesQuery));
+    const counts = new Map<PrototypeStatus, number>();
+    for (const family of searched) {
+      const s = family[family.length - 1]!.status;
+      counts.set(s, (counts.get(s) ?? 0) + 1);
+    }
+    return {
+      statusCounts: counts,
+      visible: searched
+        .filter((family) => !status || family[family.length - 1]!.status === status)
+        .sort((a, b) => familyUpdatedAt(b).localeCompare(familyUpdatedAt(a))),
+    };
+  }, [allFamilies, search, status, group]);
 
   if (!loaded.value) return <p class="page-message">Loading…</p>;
-  if (loadError.value && !all.length) return <p class="page-message error">{loadError.value}</p>;
-  if (!all.length) return <EmptyState />;
+  if (loadError.value && !prototypes.value.length)
+    return <p class="page-message error">{loadError.value}</p>;
+  if (!project)
+    return (
+      <p class="page-message">
+        No project <code>{projectId}</code>. <a href="/">Go to your projects</a>
+      </p>
+    );
+  const dialogs = creating && (
+    <PrototypeDialog projectId={projectId} groups={groups} onClose={() => setCreating(false)} />
+  );
 
   const selected = selection.value;
-  const filtersActive = Boolean(search || status || tag || group);
+  const filtersActive = Boolean(search || status || group);
+  const statusOptions = STATUSES.filter(
+    (s) => allFamilies.some((f) => f[f.length - 1]!.status === s) || s === status,
+  );
+  const clear = () => {
+    setSearch("");
+    setStatus("");
+    setGroup("");
+  };
 
   return (
-    <div class="gallery">
+    <div class={`gallery ${selected.length ? "selecting" : ""}`}>
       <div class="toolbar">
-        <input
-          type="search"
-          class="input"
-          placeholder="Search prototypes"
-          value={search}
-          onInput={(e) => setSearch(e.currentTarget.value)}
-          aria-label="Search prototypes"
-        />
-        <select
-          class="input"
-          value={status}
-          onChange={(e) => setStatus(e.currentTarget.value as PrototypeStatus | "")}
-          aria-label="Status"
-        >
-          <option value="">All statuses</option>
-          {STATUSES.map((s) => (
-            <option value={s} key={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        {info && info.groups.length > 0 && (
+        <SearchInput value={search} onInput={setSearch} placeholder="Search prototypes" />
+        {statusOptions.length > 1 && (
+          <div class="segmented" role="group" aria-label="Filter by status">
+            <button
+              type="button"
+              class={status === "" ? "active" : ""}
+              aria-pressed={status === ""}
+              onClick={() => setStatus("")}
+            >
+              All
+            </button>
+            {statusOptions.map((s) => (
+              <button
+                type="button"
+                key={s}
+                class={`capitalize ${status === s ? "active" : ""}`}
+                aria-pressed={status === s}
+                onClick={() => setStatus(status === s ? "" : s)}
+              >
+                {s}
+                <span class="count">{statusCounts.get(s) ?? 0}</span>
+              </button>
+            ))}
+          </div>
+        )}
+        {groups.length > 1 && (
           <select
             class="input"
             value={group}
             onChange={(e) => setGroup(e.currentTarget.value)}
-            aria-label="Group"
+            aria-label="Filter by group"
           >
             <option value="">All groups</option>
-            {info.groups.map((g) => (
+            {groups.map((g) => (
               <option value={g} key={g}>
                 {g}
               </option>
             ))}
           </select>
         )}
-        {info && info.tags.length > 0 && (
-          <select
-            class="input"
-            value={tag}
-            onChange={(e) => setTag(e.currentTarget.value)}
-            aria-label="Tag"
-          >
-            <option value="">All tags</option>
-            {info.tags.map((t) => (
-              <option value={t} key={t}>
-                #{t}
-              </option>
-            ))}
-          </select>
-        )}
-        {filtersActive && (
-          <button
-            type="button"
-            class="button ghost"
-            onClick={() => {
-              setSearch("");
-              setStatus("");
-              setTag("");
-              setGroup("");
-            }}
-          >
-            Clear filters
-          </button>
-        )}
         <span class="toolbar-spacer" />
-        <span class="muted">
-          {visible.length} of {allFamilies.length}
-        </span>
+        {filtersActive && (
+          <>
+            <span class="result-count" role="status">
+              {visible.length} of {allFamilies.length}
+            </span>
+            <button type="button" class="link-button" onClick={clear}>
+              Clear
+            </button>
+          </>
+        )}
+        <button type="button" class="button primary" onClick={() => setCreating(true)}>
+          <Icon name="plus" size={14} /> New prototype
+        </button>
       </div>
 
-      {visible.length === 0 && <p class="page-message">No prototypes match these filters.</p>}
+      {visible.length === 0 && filtersActive && (
+        <p class="page-message">
+          Nothing matches.{" "}
+          <button type="button" class="link-button" onClick={clear}>
+            Clear filters
+          </button>
+        </p>
+      )}
 
       <div class="grid">
         {visible.map((family) => (
-          <PrototypeCard key={family[0]!.id} family={family} />
+          <PrototypeCard key={family[0]!.id} family={family} groups={groups} />
         ))}
       </div>
 
       {selected.length > 0 && (
         <div class="selection-bar" role="region" aria-label="Selection">
-          <span>{selected.length} selected</span>
+          <span>
+            {selected.length < 2 ? "Select one more to compare" : `${selected.length} selected`}
+          </span>
           <a
             class={`button primary ${selected.length < 2 ? "disabled" : ""}`}
             href={
@@ -132,13 +170,19 @@ export function Gallery() {
             }
             aria-disabled={selected.length < 2}
           >
-            Compare{selected.length < 2 ? " (pick 2+)" : ""}
+            Compare
           </a>
-          <button type="button" class="button ghost" onClick={() => (selection.value = [])}>
-            Clear
+          <button
+            type="button"
+            class="icon-button"
+            aria-label="Clear selection"
+            onClick={() => (selection.value = [])}
+          >
+            <Icon name="x" />
           </button>
         </div>
       )}
+      {dialogs}
     </div>
   );
 }

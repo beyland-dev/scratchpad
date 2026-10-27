@@ -1,0 +1,41 @@
+{
+  "tag": "Button",
+  "kind": "component",
+  "title": "Button",
+  "category": "actions",
+  "description": "Triggers an action. Variants: default (Acme violet), secondary, outline, ghost, destructive and link; sizes sm, default, lg and icon.",
+  "usage": "Primary actions use the default variant, one per view. Use outline or ghost for secondary actions in toolbars.",
+  "attributes": [],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [],
+  "requires": [],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/components/ui/button.tsx"
+    }
+  ],
+  "import": "import { Button } from \"@/components/ui/button\";\nimport { Plus } from \"lucide-react\";",
+  "story": "stories/button.stories.tsx",
+  "docsUrl": "https://ui.shadcn.com/docs/components/button",
+  "examples": [
+    {
+      "title": "Variants",
+      "html": "<div className=\"flex flex-wrap gap-2\">\n  <Button>Save changes</Button>\n  <Button variant=\"secondary\">Secondary</Button>\n  <Button variant=\"outline\">Outline</Button>\n  <Button variant=\"ghost\">Ghost</Button>\n  <Button variant=\"destructive\">Delete</Button>\n  <Button variant=\"link\">Learn more</Button>\n</div>",
+      "story": "Variants"
+    },
+    {
+      "title": "Sizes and icon",
+      "html": "<div className=\"flex items-center gap-2\">\n  <Button size=\"sm\">Small</Button>\n  <Button>Default</Button>\n  <Button size=\"lg\">Large</Button>\n  <Button size=\"icon\" aria-label=\"Add\"><Plus /></Button>\n  <Button><Plus /> New project</Button>\n</div>",
+      "story": "Sizes"
+    }
+  ],
+  "references": [],
+  "status": "stable",
+  "createdAt": "2026-10-27T16:46:21.396Z",
+  "updatedAt": "2026-10-27T16:46:21.396Z"
+}

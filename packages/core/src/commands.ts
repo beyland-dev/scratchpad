@@ -6,9 +6,11 @@ import {
   AuthorSchema,
   FileEncodingSchema,
   FileInputSchema,
+  ProjectIconFormatSchema,
   PrototypeStatusSchema,
   SlugSchema,
   SourceKindSchema,
+  type Project,
   type Prototype,
   type PrototypeUrls,
   type Source,
@@ -17,6 +19,17 @@ import { AGENTS_GUIDE_RESOURCE } from "./guide.ts";
 import type { Core } from "./core.ts";
 
 const IdInput = SlugSchema.describe("Prototype id (its folder name under .design/prototypes/)");
+const ProjectRef = SlugSchema.describe("Project id (its folder name under .design/projects/)");
+
+const ProjectIconInput = z
+  .object({
+    format: ProjectIconFormatSchema,
+    content: z.string().min(1).describe("SVG markup, or base64 data for raster formats"),
+    encoding: FileEncodingSchema.optional().describe(
+      "Defaults to utf8 for svg and base64 otherwise",
+    ),
+  })
+  .describe("Project icon (square works best), shown in the app's project sidebar");
 
 type PrototypeWithUrls = Prototype & { urls: PrototypeUrls };
 
@@ -28,9 +41,19 @@ function describeSource(core: Core, source: Source) {
   return { ...source, resolvedLocation: core.workspace.resolveSourceLocation(source) };
 }
 
+function describeProject(core: Core, project: Project) {
+  return {
+    ...project,
+    prototypes: core.prototypes.list({ project: project.id }).length,
+    systems: core.systems.list().filter((s) => s.project === project.id).length,
+    urls: core.projectUrls(project.id),
+  };
+}
+
 function line(proto: Prototype): string {
   const bits = [
     proto.status,
+    proto.project && `project:${proto.project}`,
     proto.group && `group:${proto.group}`,
     proto.variantOf && `variant-of:${proto.variantOf}`,
   ]
@@ -43,7 +66,7 @@ export const workspaceInfo = defineCommand({
   name: "workspace.info",
   title: "Workspace info",
   description:
-    "Get an overview of the design workspace: name, reference sources (product codebases), prototype counts, groups, tags, and the app URLs. Call this first to orient yourself.",
+    "Get an overview of the design workspace: name, projects, reference sources (product codebases), prototype counts, groups, tags, and the app URLs. Call this first to orient yourself.",
   kind: "query",
   input: z.object({}),
   handler: (_input, core) => {
@@ -54,6 +77,9 @@ export const workspaceInfo = defineCommand({
       description: config.description,
       root: core.workspace.root,
       designDir: core.workspace.designDir,
+      projects: core.projects
+        .list()
+        .map((p) => ({ id: p.id, name: p.name, description: p.description })),
       sources: config.sources.map((s) => describeSource(core, s)),
       prototypeCount: prototypes.length,
       groups: [...new Set(prototypes.flatMap((p) => (p.group ? [p.group] : [])))].sort(),
@@ -65,7 +91,8 @@ export const workspaceInfo = defineCommand({
   format: (out) =>
     [
       `${out.name}  (${out.root})`,
-      `${out.prototypeCount} prototype(s), ${out.sources.length} source(s)`,
+      `${out.projects.length} project(s), ${out.prototypeCount} prototype(s), ${out.sources.length} source(s)`,
+      out.projects.length ? `Projects: ${out.projects.map((p) => p.id).join(", ")}` : "",
       `App: ${out.urls.app}`,
       out.groups.length ? `Groups: ${out.groups.join(", ")}` : "",
     ]
@@ -176,9 +203,10 @@ export const prototypeList = defineCommand({
   name: "prototype.list",
   title: "List prototypes",
   description:
-    "List prototypes, newest first. Optionally filter by group, tag, status, or a search string.",
+    "List prototypes, newest first. Optionally filter by project, group, tag, status, or a search string.",
   kind: "query",
   input: z.object({
+    project: ProjectRef.optional().describe("Only prototypes that belong to this project"),
     group: z.string().optional(),
     tag: z.string().optional(),
     status: PrototypeStatusSchema.optional(),
@@ -227,12 +255,26 @@ export const prototypeCreate = defineCommand({
   name: "prototype.create",
   title: "Create prototype",
   description:
-    "Create a new prototype: a self-contained folder of HTML/CSS/JS served in a sandbox. Pass `html` for a single-page prototype, or `files` for multi-file prototypes. Use `group` to cluster explorations of the same problem, and `prototype.createVariant` for alternatives of an existing prototype. Returns the viewer URL to share with the human.",
+    "Create a new prototype: a self-contained folder of HTML/CSS/JS served in a sandbox. Pass `html` for a single-page prototype, or `files` for multi-file prototypes. Put it in the right `project` (see project.list), use `group` to cluster explorations of the same problem, and `prototype.createVariant` for alternatives of an existing prototype. Returns the viewer URL to share with the human.",
   kind: "mutation",
   input: z.object({
     title: z.string().min(1),
     description: z.string().optional().describe("What this prototype explores and why"),
     id: SlugSchema.optional().describe("Explicit id (defaults to a slug of the title)"),
+    project: ProjectRef.nullable()
+      .optional()
+      .describe(
+        "Project it belongs to. Defaults to the workspace's only project when there is exactly one; null for none",
+      ),
+    framework: z
+      .enum(["react"])
+      .optional()
+      .describe(
+        "Build it with a framework against a package design system: the entry is an HTML shell loading main.tsx, which imports the system's components (`@/components/...`) and styles (`@/index.css`). Omit for plain HTML",
+      ),
+    system: SlugSchema.optional().describe(
+      "Package design system to build against (defaults to the project's only package system)",
+    ),
     group: z.string().optional().describe("Exploration name used to group related prototypes"),
     tags: z.array(z.string()).optional(),
     status: PrototypeStatusSchema.optional(),
@@ -246,9 +288,26 @@ export const prototypeCreate = defineCommand({
     html: z.string().optional().describe("Contents of the entry HTML file"),
     files: z.array(FileInputSchema).optional().describe("Additional files to write"),
   }),
-  handler: async (input, core) => ({
-    prototype: withUrls(core, await core.prototypes.create(input)),
-  }),
+  handler: async ({ project, ...input }, core) => {
+    const projectId = core.resolveProject(project);
+    if (input.framework) {
+      const system = core.prototypeSystem({
+        id: input.id ?? input.title,
+        framework: input.framework,
+        ...(input.system ? { system: input.system } : {}),
+        ...(projectId ? { project: projectId } : {}),
+      } as Prototype);
+      input.system = system;
+    } else if (input.system) {
+      throw new CoreError("INVALID_INPUT", "`system` is only used with a `framework`");
+    }
+    return {
+      prototype: withUrls(
+        core,
+        await core.prototypes.create({ ...input, ...(projectId ? { project: projectId } : {}) }),
+      ),
+    };
+  },
   format: (out) =>
     `Created ${out.prototype.id}\n  viewer: ${out.prototype.urls.viewer}\n  raw:    ${out.prototype.urls.raw}`,
 });
@@ -257,7 +316,7 @@ export const prototypeUpdate = defineCommand({
   name: "prototype.update",
   title: "Update prototype",
   description:
-    "Update prototype metadata (title, description, status, tags, group, variantOf, entry, sourceRefs). Pass null to clear optional fields.",
+    "Update prototype metadata (title, description, status, tags, project, group, variantOf, entry, sourceRefs). Pass null to clear optional fields.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({
@@ -266,14 +325,16 @@ export const prototypeUpdate = defineCommand({
     description: z.string().nullable().optional(),
     status: PrototypeStatusSchema.optional(),
     tags: z.array(z.string()).optional(),
+    project: ProjectRef.nullable().optional().describe("Move to another project (null for none)"),
     group: z.string().nullable().optional(),
     variantOf: SlugSchema.nullable().optional(),
     entry: z.string().optional(),
     sourceRefs: z.array(z.string()).optional(),
   }),
-  handler: async ({ id, ...patch }, core) => ({
-    prototype: withUrls(core, await core.prototypes.update(id, patch)),
-  }),
+  handler: async ({ id, ...patch }, core) => {
+    if (patch.project) core.projects.get(patch.project);
+    return { prototype: withUrls(core, await core.prototypes.update(id, patch)) };
+  },
   format: (out) => `Updated ${out.prototype.id}`,
 });
 
@@ -359,8 +420,132 @@ export const prototypeUrls = defineCommand({
   format: (out) => `viewer: ${out.viewer}\nraw:    ${out.raw}`,
 });
 
+export const projectList = defineCommand({
+  name: "project.list",
+  title: "List projects",
+  description:
+    "List projects: the products or efforts that prototypes and design systems belong to, with how many of each they hold.",
+  kind: "query",
+  input: z.object({}),
+  handler: (_input, core) => ({
+    projects: core.projects.list().map((p) => describeProject(core, p)),
+  }),
+  format: (out) =>
+    out.projects.length
+      ? out.projects
+          .map(
+            (p) =>
+              `${p.id.padEnd(24)} ${p.name}  (${p.prototypes} prototypes, ${p.systems} systems)${p.issues?.length ? "  ⚠" : ""}`,
+          )
+          .join("\n")
+      : "No projects yet. Create one with `dt project create --name <name>`.",
+});
+
+export const projectGet = defineCommand({
+  name: "project.get",
+  title: "Get project",
+  description: "Get a project's metadata with the prototypes and design systems that belong to it.",
+  kind: "query",
+  positional: ["id"],
+  input: z.object({ id: ProjectRef }),
+  handler: (input, core) => {
+    const project = core.projects.get(input.id);
+    return {
+      project: describeProject(core, project),
+      prototypes: core.prototypes.list({ project: project.id }).map((p) => withUrls(core, p)),
+      systems: core.systems
+        .list()
+        .filter((s) => s.project === project.id)
+        .map((s) => ({ id: s.id, name: s.name, description: s.description })),
+    };
+  },
+  format: (out) =>
+    [
+      `${out.project.name} (${out.project.id})`,
+      out.project.description ?? "",
+      `app: ${out.project.urls.app}`,
+      out.systems.length ? `systems: ${out.systems.map((s) => s.id).join(", ")}` : "",
+      ...out.prototypes.map(line),
+    ]
+      .filter(Boolean)
+      .join("\n"),
+});
+
+export const projectCreate = defineCommand({
+  name: "project.create",
+  title: "Create project",
+  description:
+    "Create a project: a product or effort (e.g. a web app, a marketing site) that groups prototypes and design systems. Then pass its id as `project` when creating prototypes and systems.",
+  kind: "mutation",
+  input: z.object({
+    name: z.string().min(1),
+    id: SlugSchema.optional().describe("Explicit id (defaults to a slug of the name)"),
+    description: z.string().optional(),
+    color: z
+      .string()
+      .regex(/^#[0-9a-fA-F]{6}$/)
+      .optional()
+      .describe("Accent color for the generated icon, e.g. #5b5bd6"),
+    pattern: z
+      .number()
+      .int()
+      .min(0)
+      .max(63)
+      .optional()
+      .describe("Abstract pattern of the generated icon (0–7 in the app)"),
+    icon: ProjectIconInput.optional(),
+  }),
+  handler: async (input, core) => {
+    const project = await core.projects.create(input);
+    return { project: describeProject(core, project) };
+  },
+  format: (out) => `Created project ${out.project.id}\n  app: ${out.project.urls.app}`,
+});
+
+export const projectUpdate = defineCommand({
+  name: "project.update",
+  title: "Update project",
+  description:
+    "Update a project's name, description, color or icon. Pass null to clear description, color or icon. To move prototypes or systems between projects, update their `project` field.",
+  kind: "mutation",
+  positional: ["id"],
+  input: z.object({
+    id: ProjectRef,
+    name: z.string().min(1).optional(),
+    description: z.string().nullable().optional(),
+    color: z
+      .string()
+      .regex(/^#[0-9a-fA-F]{6}$/)
+      .nullable()
+      .optional(),
+    pattern: z.number().int().min(0).max(63).nullable().optional(),
+    icon: ProjectIconInput.nullable().optional(),
+  }),
+  handler: async ({ id, ...patch }, core) => ({
+    project: describeProject(core, await core.projects.update(id, patch)),
+  }),
+  format: (out) => `Updated ${out.project.id}`,
+});
+
+export const projectDelete = defineCommand({
+  name: "project.delete",
+  title: "Delete project",
+  description:
+    "Move a project folder to the workspace trash. Its prototypes and design systems are kept and show up as unsorted until they're moved to another project.",
+  kind: "mutation",
+  positional: ["id"],
+  input: z.object({ id: ProjectRef }),
+  handler: (input, core) => core.projects.delete(input.id),
+  format: (out) => `Moved ${out.id} to ${out.trashedTo}`,
+});
+
 export const builtinCommands = [
   workspaceInfo,
+  projectList,
+  projectGet,
+  projectCreate,
+  projectUpdate,
+  projectDelete,
   sourceList,
   sourceAdd,
   sourceRemove,

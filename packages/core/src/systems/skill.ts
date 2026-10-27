@@ -42,7 +42,95 @@ function firstSentence(text: string): string {
   return (match ? match[1]! : text).trim();
 }
 
+/** Skill for a package system: an existing library (e.g. shadcn/ui) used from React prototypes. */
+function renderPackageSkill(
+  system: DesignSystem,
+  components: DesignComponent[],
+  tokens: Token[],
+): string {
+  const name = skillName(system.id);
+  const library = system.library?.name ?? "a component library";
+  const styles = (system.styles ?? "src/index.css").replace(/^src\//, "");
+  const rows = components
+    .map(
+      (c) =>
+        `| \`${c.tag}\` | ${c.title}: ${firstSentence(c.description).replace(/\|/g, "\\|")} | ${c.import ? `\`${c.import.split("\n")[0]!.replace(/\|/g, "\\|")}\`` : ""} | ${c.docsUrl ? `[docs](${c.docsUrl})` : ""} |`,
+    )
+    .join("\n");
+  const example = components.find((c) => c.examples.length);
+  return `---
+name: ${name}
+description: Build React prototypes with ${system.name}, the project's ${library} design system — ${components.length} components (${components
+    .slice(0, 6)
+    .map((c) => c.tag)
+    .join(
+      ", ",
+    )}${components.length > 6 ? ", …" : ""}) and ${tokens.length} theme tokens. Use when creating or editing a prototype that should look like this product.
+---
+
+# ${system.name} design system
+
+${system.description ?? ""}
+
+${system.name} is ${library}${system.library?.docsUrl ? ` ([docs](${system.library.docsUrl}))` : ""}, installed and configured in the design system's folder. Prototypes import its real components, so they look and behave like the product. **Compose; don't recreate.**
+
+## Setup
+
+Create the prototype as a React prototype; design-tool builds it with the system's Vite and shared node_modules:
+
+\`\`\`
+prototype_create { title, framework: "react", system: "${system.id}", files: [{ path: "main.tsx", content }] }
+\`\`\`
+
+The entry \`index.html\` is a shell that loads \`main.tsx\`. In \`main.tsx\`:
+
+\`\`\`tsx
+import { createRoot } from "react-dom/client";
+import "@/${styles}";
+${example?.import?.split("\n")[0] ?? ""}
+
+createRoot(document.getElementById("root")!).render(<App />);
+\`\`\`
+
+Themes: ${system.themes.map((t) => `\`${t.id}\`${t.classes ? ` (class \`${t.classes}\` on <html>)` : ""}`).join(", ")}. Default: \`${system.defaultTheme}\`.
+
+## Rules
+
+1. **Compose from the components below**, imported from \`@/components/…\`. Don't restyle them; use their variants and props.
+2. **Use the theme for anything custom**: Tailwind utilities backed by the tokens (\`bg-primary\`, \`text-muted-foreground\`, \`border\`, \`rounded-lg\`) or \`var(--…)\`, never literal colors.
+3. **Don't install packages from a prototype.** Dependencies live in the design system; ask for anything missing.
+4. **Check your work** in design-tool's viewer, in each theme.
+${system.notes ? `\n## Notes\n\n${system.notes.trim()}\n` : ""}
+## Components
+
+| Component | What | Import | Docs |
+|---|---|---|---|
+${rows}
+
+Examples and props: \`component_get\`, or the official docs.
+${
+  example
+    ? `
+## Example
+
+${example.title}:
+
+\`\`\`tsx
+${example.import ?? ""}
+
+${example.examples[0]!.html.trim()}
+\`\`\`
+`
+    : ""
+}
+## Tools
+
+When the design-tool MCP server is connected: \`system_get\` (overview), \`component_search\` / \`component_get\` (components and examples), \`token_search\` (theme tokens), \`prototype_create\` / \`prototype_writeFile\` (build the prototype).
+`;
+}
+
 function renderSkill(system: DesignSystem, components: DesignComponent[], tokens: Token[]): string {
+  if (system.kind === "package") return renderPackageSkill(system, components, tokens);
   const name = skillName(system.id);
   const contexts = components.filter((c) => c.kind === "context");
   const parts = components.filter((c) => c.kind === "component");

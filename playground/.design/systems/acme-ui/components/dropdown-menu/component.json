@@ -1,0 +1,37 @@
+{
+  "tag": "DropdownMenu",
+  "kind": "pattern",
+  "title": "Dropdown menu",
+  "category": "actions",
+  "description": "Menu of actions opened from a trigger (renders in a portal).",
+  "attributes": [],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [],
+  "requires": [],
+  "tokens": [],
+  "uses": [
+    "Button"
+  ],
+  "sources": [
+    {
+      "path": "src/components/ui/dropdown-menu.tsx"
+    }
+  ],
+  "import": "import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from \"@/components/ui/dropdown-menu\";\nimport { Button } from \"@/components/ui/button\";",
+  "story": "stories/dropdown-menu.stories.tsx",
+  "docsUrl": "https://ui.shadcn.com/docs/components/dropdown-menu",
+  "examples": [
+    {
+      "title": "Account menu",
+      "html": "<DropdownMenu>\n  <DropdownMenuTrigger asChild>\n    <Button variant=\"outline\">Account</Button>\n  </DropdownMenuTrigger>\n  <DropdownMenuContent className=\"w-48\">\n    <DropdownMenuLabel>My account</DropdownMenuLabel>\n    <DropdownMenuSeparator />\n    <DropdownMenuItem>Profile</DropdownMenuItem>\n    <DropdownMenuItem>Billing</DropdownMenuItem>\n    <DropdownMenuItem>Sign out</DropdownMenuItem>\n  </DropdownMenuContent>\n</DropdownMenu>",
+      "story": "Default"
+    }
+  ],
+  "references": [],
+  "status": "stable",
+  "createdAt": "2026-10-27T16:46:21.561Z",
+  "updatedAt": "2026-10-27T16:46:21.561Z"
+}

@@ -2,9 +2,10 @@ import { Code } from "../components/Code.tsx";
 import { useEffect, useState } from "preact/hooks";
 import { useRoute } from "preact-iso";
 import { useCommand } from "../hooks/useCommand.ts";
-import { systemEventOf } from "../store.ts";
+import { systemEventOf, systemsListHref } from "../store.ts";
 import type { DesignSystem } from "../types.ts";
 import { relativeTime } from "../util.ts";
+import { systemTabHref } from "./SystemView.tsx";
 import {
   captureBase,
   captureHref,
@@ -106,28 +107,32 @@ export function CaptureView() {
   if (!capture) return <p class="page-message">No capture {label}.</p>;
   const meta = metaText ? (JSON.parse(metaText) as CaptureMeta) : undefined;
   const geometry = geometryText ? (JSON.parse(geometryText) as GeometryEntry[]) : [];
-  const siblings =
-    groupCaptures(list.captures, sys.system).find((g) => g.captures.some((c) => c.label === label))
-      ?.captures ?? [];
+  const siblingGroup = groupCaptures(list.captures, sys.system).find((g) =>
+    g.captures.some((c) => c.label === label),
+  );
+  const siblings = siblingGroup?.captures ?? [];
+  // Theme variants share one title (e.g. "activitybar"); the theme switch picks the variant.
+  const groupBase = siblings.length > 1 && siblingGroup ? siblingGroup.base : capture.label;
   const themeLabel = (t?: string) => sys.system.themes.find((x) => x.id === t)?.label ?? t ?? "—";
 
   return (
     <div class="page capture-page">
       <div class="page-head">
-        <div class="crumbs">
-          <a href="/systems">Design systems</a> /{" "}
-          <a href={`/systems/${encodeURIComponent(id)}?tab=captures`}>{sys.system.name}</a> /
-          captures /
-        </div>
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href={systemsListHref(id)}>Design systems</a>
+          <span aria-hidden="true">/</span>
+          <a href={systemTabHref(id, "activity", { captures: "all" })}>{sys.system.name}</a>
+        </nav>
         <div class="page-title-row">
-          <h1>{capture.label}</h1>
+          <h1>{groupBase}</h1>
           <span class="toolbar-spacer" />
           {siblings.length > 1 && (
-            <div class="segmented" aria-label="Theme">
+            <div class="segmented" role="group" aria-label="Theme">
               {siblings.map((c) => (
                 <a
                   key={c.label}
                   class={`segmented-link ${c.label === label ? "active" : ""}`}
+                  aria-current={c.label === label ? "page" : undefined}
                   href={captureHref(id, c.label)}
                 >
                   {themeLabel(c.theme)}
@@ -136,19 +141,16 @@ export function CaptureView() {
             </div>
           )}
         </div>
-        <code class="selector big">{capture.selector}</code>
-        <div class="card-meta">
-          <span class="chip">
-            {Math.round(capture.width ?? 0)}×{Math.round(capture.height ?? 0)} px
+        <p class="meta-line">
+          <code class="selector">{capture.selector}</code>
+          <span>
+            {Math.round(capture.width ?? 0)}×{Math.round(capture.height ?? 0)}
           </span>
-          <span class="chip">{capture.elements} elements</span>
-          <span class="chip">{capture.rules} matched rules</span>
-          {meta?.vars && <span class="chip">{Object.keys(meta.vars).length} variables</span>}
-          <span class="chip muted">{themeLabel(capture.theme)}</span>
-          <span class="chip muted" title={capture.capturedAt}>
-            captured {relativeTime(capture.capturedAt ?? "")}
-          </span>
-        </div>
+          <span>{capture.elements} elements</span>
+          <span>{capture.rules} rules</span>
+          {meta?.vars && <span>{Object.keys(meta.vars).length} variables</span>}
+          <span title={capture.capturedAt}>{relativeTime(capture.capturedAt ?? "")}</span>
+        </p>
       </div>
 
       <div class="capture-detail">
@@ -200,12 +202,6 @@ export function CaptureView() {
               <p class="small">{meta.fontFaces.map((f) => f.family).join(", ")}</p>
             </>
           ) : null}
-          {meta?.url && (
-            <>
-              <h3>Source</h3>
-              <p class="small muted break">{meta.url}</p>
-            </>
-          )}
         </aside>
       </div>
 
@@ -224,9 +220,14 @@ export function CaptureView() {
         ))}
       </div>
       {tab === "dom" && (
-        <Code scroll lang="html" code={dom === null ? "Loading…" : prettyHtml(dom)} />
+        <Code
+          scroll
+          lang="html"
+          copy={dom !== null}
+          code={dom === null ? "Loading…" : prettyHtml(dom)}
+        />
       )}
-      {tab === "css" && <Code scroll lang="css" code={css ?? "Loading…"} />}
+      {tab === "css" && <Code scroll lang="css" copy={css !== null} code={css ?? "Loading…"} />}
       {tab === "geometry" && (
         <table class="token-table geometry-table">
           <thead>
@@ -270,6 +271,12 @@ export function CaptureView() {
       )}
       {tab === "context" && (
         <div class="capture-context">
+          {meta?.url && (
+            <>
+              <h3>Captured at</h3>
+              <p class="small muted break">{meta.url}</p>
+            </>
+          )}
           <h3>Ancestors (nearest first)</h3>
           <ol class="ancestors">
             {(meta?.ancestors ?? []).map((a, i) => (

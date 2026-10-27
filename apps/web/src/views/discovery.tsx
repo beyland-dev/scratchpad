@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "preact/hooks";
+import { Icon } from "../components/Icon.tsx";
+import { SearchInput } from "../components/SearchInput.tsx";
 import { VerificationBadge } from "../components/Specimen.tsx";
 import { useCommand } from "../hooks/useCommand.ts";
 import { systemEventOf, workspace } from "../store.ts";
 import type { ActivityEntry, CaptureSummary, ComponentSummary, DesignSystem } from "../types.ts";
 import { relativeTime } from "../util.ts";
+import type { SystemDetails } from "./SystemView.tsx";
 
 const KIND_LABEL: Record<ActivityEntry["kind"], string> = {
   system: "System",
@@ -92,76 +95,71 @@ export function CaptureThumb({
   );
 }
 
-// ---- Pipeline ---------------------------------------------------------------
+// ---- Stats -------------------------------------------------------------------
 
-export function DiscoveryPipeline({
-  system,
-  tokens,
-  components,
+/** One compact strip summarizing the audit: what's been codified and how much of it is verified. */
+function AuditStats({
+  data,
   captures,
-  warnings,
 }: {
-  system: DesignSystem;
-  tokens: { total: number; groups: Record<string, number> };
-  components: ComponentSummary[];
+  data: SystemDetails;
   captures: CaptureSummary[] | undefined;
-  warnings: number;
 }) {
-  const withRefs = components.filter((c) => c.verification !== "unverified").length;
+  const { components, tokens, system } = data;
+  if (system.kind === "package") {
+    const withStories = components.filter((c) => c.story).length;
+    const ratio = components.length ? withStories / components.length : 0;
+    return (
+      <div class="stats">
+        <div class="stat">
+          <strong>{tokens.total.toLocaleString()}</strong>
+          <span>Tokens</span>
+        </div>
+        <div class="stat">
+          <strong>{components.length}</strong>
+          <span>Components</span>
+        </div>
+        <div class={`stat stat-progress ${ratio === 1 ? "ok" : ""}`}>
+          <strong>
+            {withStories}
+            <span class="muted">/{components.length}</span>
+          </strong>
+          <span>With stories</span>
+          <span class="stat-bar" aria-hidden="true">
+            <span style={{ width: `${Math.round(ratio * 100)}%` }} />
+          </span>
+        </div>
+      </div>
+    );
+  }
   const verified = components.filter((c) => c.verification === "verified").length;
   const drift = components.filter((c) => c.verification === "drift").length;
-  const used = captures?.filter((c) => c.usedBy.length).length ?? 0;
-  const groups = captures ? groupCaptures(captures, system).length : 0;
-  const byKind = (k: string) => components.filter((c) => c.kind === k).length;
-  const stages = [
-    {
-      label: "Tokens",
-      value: tokens.total.toLocaleString(),
-      sub: `${Object.keys(tokens.groups).length} groups · ${system.themes.length} themes`,
-      progress: tokens.total ? 1 : 0,
-    },
-    {
-      label: "Captures",
-      value: captures ? String(captures.length) : "…",
-      sub: `${groups} elements · ${used} used by components`,
-      progress: captures?.length ? used / captures.length : 0,
-    },
-    {
-      label: "Components",
-      value: String(components.length),
-      sub: `${byKind("context")} contexts · ${byKind("component")} widgets · ${byKind("pattern")} patterns`,
-      progress: components.length ? 1 : 0,
-    },
-    {
-      label: "Verified",
-      value: `${verified}/${components.length}`,
-      sub: drift
-        ? `${drift} drifting · ${components.length - withRefs} unchecked`
-        : `${components.length - withRefs} unchecked`,
-      progress: components.length ? verified / components.length : 0,
-      tone: drift ? "warn" : verified && verified === components.length ? "ok" : "",
-    },
-    {
-      label: "Build",
-      value: warnings ? `${warnings} ⚠` : "✓",
-      sub: warnings ? "warnings in last build" : "dist/system.css · system.js",
-      progress: components.length ? 1 : 0,
-      tone: warnings ? "warn" : "ok",
-    },
+  const elements = captures ? groupCaptures(captures, system).length : undefined;
+  const progress = components.length ? verified / components.length : 0;
+  const stats = [
+    { label: "Tokens", value: tokens.total.toLocaleString() },
+    { label: "Captured elements", value: elements === undefined ? "…" : String(elements) },
+    { label: "Components", value: String(components.length) },
   ];
   return (
-    <ol class="pipeline">
-      {stages.map((s) => (
-        <li class={`pipeline-stage ${s.tone ?? ""}`} key={s.label}>
-          <span class="pipeline-label">{s.label}</span>
-          <strong class="pipeline-value">{s.value}</strong>
-          <span class="pipeline-sub">{s.sub}</span>
-          <span class="pipeline-bar">
-            <span style={{ width: `${Math.round(s.progress * 100)}%` }} />
-          </span>
-        </li>
+    <div class="stats">
+      {stats.map((s) => (
+        <div class="stat" key={s.label}>
+          <strong>{s.value}</strong>
+          <span>{s.label}</span>
+        </div>
       ))}
-    </ol>
+      <div class={`stat stat-progress ${drift ? "warn" : progress === 1 ? "ok" : ""}`}>
+        <strong>
+          {verified}
+          <span class="muted">/{components.length}</span>
+        </strong>
+        <span>Verified{drift ? ` · ${drift} drifting` : ""}</span>
+        <span class="stat-bar" aria-hidden="true">
+          <span style={{ width: `${Math.round(progress * 100)}%` }} />
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -192,8 +190,8 @@ export function ActivityFeed({ system, limit = 80 }: { system: string; limit?: n
   if (!entries.length)
     return (
       <p class="muted small">
-        No activity yet. Captures, token imports, component edits, verifications and builds show up
-        here as an agent audits the codebase.
+        Captures, token imports, component edits, verifications and builds appear here as an agent
+        audits the product.
       </p>
     );
   return (
@@ -212,10 +210,9 @@ export function ActivityFeed({ system, limit = 80 }: { system: string; limit?: n
             key={key}
             class={`activity-item kind-${e.kind} ${e.status ? `status-${e.status}` : ""} ${fresh.has(key) ? "fresh" : ""}`}
           >
-            <span class="activity-dot" aria-hidden="true" />
+            <span class="activity-dot" title={KIND_LABEL[e.kind]} aria-hidden="true" />
             <div class="activity-main">
               <div class="activity-row">
-                <span class="activity-kind">{KIND_LABEL[e.kind]}</span>
                 {href ? (
                   <a class="activity-title" href={href}>
                     {e.title}
@@ -223,16 +220,16 @@ export function ActivityFeed({ system, limit = 80 }: { system: string; limit?: n
                 ) : (
                   <span class="activity-title">{e.title}</span>
                 )}
-                <span class="activity-time" title={e.at}>
+                <time class="activity-time" dateTime={e.at} title={new Date(e.at).toLocaleString()}>
                   {relativeTime(e.at)}
-                </span>
+                </time>
               </div>
               {e.detail && (
                 <button
                   type="button"
                   class={`activity-detail ${expanded ? "open" : ""}`}
+                  aria-expanded={expanded}
                   onClick={() => setOpen(expanded ? null : key)}
-                  title={expanded ? "Collapse" : "Expand"}
                 >
                   {expanded ? e.detail : e.detail.split("\n")[0]}
                 </button>
@@ -245,85 +242,186 @@ export function ActivityFeed({ system, limit = 80 }: { system: string; limit?: n
   );
 }
 
-// ---- Overview -------------------------------------------------------------------
+// ---- Activity tab -------------------------------------------------------------------
 
-export function DiscoveryOverview({
+/** Long text clamped to two lines; click to expand. */
+function Expandable({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <button
+      type="button"
+      class={`expandable ${open ? "open" : ""}`}
+      aria-expanded={open}
+      title={open ? "Collapse" : "Show all"}
+      onClick={() => setOpen(!open)}
+    >
+      {text}
+    </button>
+  );
+}
+
+export function ActivityTab({
   id,
-  system,
-  components,
+  data,
   captures,
   theme,
+  allCaptures,
+  onAllCaptures,
 }: {
   id: string;
-  system: DesignSystem;
-  components: ComponentSummary[];
+  data: SystemDetails;
   captures: CaptureSummary[] | undefined;
   theme: string;
+  /** Show every capture (searchable) instead of the latest few. */
+  allCaptures: boolean;
+  onAllCaptures: (all: boolean) => void;
 }) {
-  const groups = captures ? groupCaptures(captures, system).slice(0, 8) : [];
-  const ordered = [...components].sort(
-    (a, b) => rank(a.verification) - rank(b.verification) || a.tag.localeCompare(b.tag),
+  const { system, components } = data;
+  const captureGroups = captures ? groupCaptures(captures, system) : [];
+  const latest = captureGroups.slice(0, LATEST_CAPTURES);
+  const drift = components.filter((c) => c.verification === "drift");
+  const isPackage = system.kind === "package";
+  // Package systems aren't verified against captures; what's missing there is a story to render.
+  const unverified = isPackage
+    ? components.filter((c) => !c.story)
+    : components.filter((c) => c.verification === "unverified");
+  const withIssues = components.filter((c) => c.issues?.length);
+  const warnings = data.lastBuild?.result?.warnings ?? [];
+  const attention = drift.length + unverified.length + withIssues.length + warnings.length;
+  const link = (c: ComponentSummary) => (
+    <a
+      key={c.name}
+      class="chip tag-chip"
+      href={`${componentHref(id, c.name)}?theme=${encodeURIComponent(theme)}`}
+      title={c.title}
+    >
+      &lt;{c.tag}&gt;
+    </a>
   );
+
   return (
     <div class="discovery">
       <div class="discovery-main">
+        {system.description && <p class="lede">{system.description}</p>}
+        <AuditStats data={data} captures={captures} />
+
         <section>
           <h2 class="section-heading">
-            Latest captures <span class="muted">{captures?.length ?? 0}</span>
+            Needs attention {attention > 0 && <span class="count">{attention}</span>}
           </h2>
-          {groups.length ? (
-            <div class="capture-strip">
-              {groups.map((g) => (
-                <a class="capture-mini" key={g.base} href={captureHref(id, g.captures[0]!.label)}>
-                  <CaptureThumb system={id} capture={g.captures[0]!} maxHeight={110} />
-                  <span class="capture-mini-label">{g.base}</span>
-                  <span class="muted small">{relativeTime(g.captures[0]!.capturedAt ?? "")}</span>
-                </a>
-              ))}
-            </div>
-          ) : (
-            <p class="muted small">
-              No captures yet. <code>capture.element</code> stores a reference element's DOM,
-              matched CSS rules, geometry and screenshot.
+          {components.length === 0 ? (
+            <p class="muted small">Nothing to check yet: no components have been codified.</p>
+          ) : attention === 0 ? (
+            <p class="all-clear">
+              <Icon name="check" size={15} />{" "}
+              {isPackage
+                ? "Every component has a story."
+                : "Every component is verified against the product."}
             </p>
-          )}
-        </section>
-        <section>
-          <h2 class="section-heading">
-            Components <span class="muted">{components.length}</span>
-          </h2>
-          {components.length ? (
-            <table class="status-table">
-              <thead>
-                <tr>
-                  <th>Element</th>
-                  <th>Kind</th>
-                  <th>Verification</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ordered.map((c) => (
-                  <tr key={c.name}>
-                    <td>
-                      <a href={`${componentHref(id, c.name)}?theme=${theme}`}>
-                        <code class="tag">&lt;{c.tag}&gt;</code>
-                      </a>{" "}
-                      <span class="muted small">{c.title}</span>
-                    </td>
-                    <td class="muted small">{c.kind}</td>
-                    <td>
-                      <VerificationBadge status={c.verification} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           ) : (
-            <p class="muted small">No components codified yet.</p>
+            <div class="attention">
+              {drift.length > 0 && (
+                <div class="attention-row">
+                  <div class="attention-label">
+                    <VerificationBadge status="drift" />
+                    <span class="muted small">Differs from the captured product</span>
+                  </div>
+                  <div class="tag-list">{drift.map(link)}</div>
+                </div>
+              )}
+              {withIssues.length > 0 && (
+                <div class="attention-row">
+                  <div class="attention-label">
+                    <span class="chip warn">
+                      <Icon name="alert" size={12} /> Issues
+                    </span>
+                    <span class="muted small">Invalid or incomplete definitions</span>
+                  </div>
+                  <div class="tag-list">{withIssues.map(link)}</div>
+                </div>
+              )}
+              {unverified.length > 0 && (
+                <div class="attention-row">
+                  <div class="attention-label">
+                    {isPackage ? (
+                      <span class="badge">No story</span>
+                    ) : (
+                      <VerificationBadge status="unverified" />
+                    )}
+                    <span class="muted small">
+                      {isPackage
+                        ? "Nothing renders it in the app yet"
+                        : "No reference capture compared yet"}
+                    </span>
+                  </div>
+                  <div class="tag-list">{unverified.map(link)}</div>
+                </div>
+              )}
+              {warnings.length > 0 && (
+                <div class="attention-row">
+                  <div class="attention-label">
+                    <span class="chip warn">
+                      <Icon name="alert" size={12} /> Build
+                    </span>
+                    <span class="muted small">
+                      {warnings.length === 1 ? "1 warning" : `${warnings.length} warnings`} in the
+                      last build
+                    </span>
+                  </div>
+                  <ul class="warning-list">
+                    {warnings.map((w) => (
+                      <li key={w}>
+                        <Expandable text={w} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           )}
         </section>
+
+        {!isPackage && (
+          <section id="captures">
+            <div class="section-heading">
+              <h2>{allCaptures ? "Captures" : "Latest captures"}</h2>
+              {allCaptures && <span class="count">{captureGroups.length}</span>}
+              <span class="toolbar-spacer" />
+              {captureGroups.length > LATEST_CAPTURES && (
+                <button
+                  type="button"
+                  class="link-button"
+                  aria-expanded={allCaptures}
+                  aria-controls="captures"
+                  onClick={() => onAllCaptures(!allCaptures)}
+                >
+                  {allCaptures ? "Show latest" : `View all ${captureGroups.length}`}
+                </button>
+              )}
+            </div>
+            {!captures ? (
+              <p class="muted small">Loading captures…</p>
+            ) : !captureGroups.length ? (
+              <p class="muted small">
+                No captures yet. <code>capture.element</code> stores a reference element's DOM,
+                matched CSS rules, geometry and screenshot.
+              </p>
+            ) : allCaptures ? (
+              <CaptureBrowser id={id} system={system} groups={captureGroups} />
+            ) : (
+              <div class="capture-strip">
+                {latest.map((g) => (
+                  <a class="capture-mini" key={g.base} href={captureHref(id, g.captures[0]!.label)}>
+                    <CaptureThumb system={id} capture={g.captures[0]!} maxHeight={110} />
+                    <span class="capture-mini-label">{g.base}</span>
+                  </a>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
       </div>
-      <aside class="discovery-side">
+      <aside class="discovery-side" aria-label="Activity">
         <h2 class="section-heading">
           Activity <span class="activity-live" title="Updates live" />
         </h2>
@@ -333,26 +431,23 @@ export function DiscoveryOverview({
   );
 }
 
-function rank(v: string): number {
-  return v === "drift" ? 0 : v === "unverified" ? 1 : 2;
-}
+// ---- Capture browser ---------------------------------------------------------------
 
-// ---- Captures tab ------------------------------------------------------------------
+const LATEST_CAPTURES = 6;
 
-export function CapturesTab({
+/** Every captured element (theme variants grouped), searchable. */
+function CaptureBrowser({
   id,
   system,
-  captures,
+  groups: all,
 }: {
   id: string;
   system: DesignSystem;
-  captures: CaptureSummary[] | undefined;
+  groups: CaptureGroup[];
 }) {
   const [search, setSearch] = useState("");
-  if (!captures) return <p class="page-message">Loading captures…</p>;
-  if (!captures.length) return <p class="page-message">No captures yet.</p>;
   const q = search.trim().toLowerCase();
-  const groups = groupCaptures(captures, system).filter(
+  const groups = all.filter(
     (g) =>
       !q ||
       g.captures.some((c) =>
@@ -365,18 +460,16 @@ export function CapturesTab({
   return (
     <div>
       <div class="toolbar">
-        <input
-          class="input"
-          type="search"
-          placeholder="Search label, selector or component"
+        <SearchInput
           value={search}
-          onInput={(e) => setSearch(e.currentTarget.value)}
-          aria-label="Search captures"
+          onInput={setSearch}
+          placeholder="Search label, selector or component"
         />
-        <span class="toolbar-spacer" />
-        <span class="muted">
-          {groups.length} elements · {captures.length} captures
-        </span>
+        {q && (
+          <span class="result-count" role="status">
+            {groups.length} of {all.length}
+          </span>
+        )}
       </div>
       <div class="capture-grid">
         {groups.map((g) => {
@@ -385,45 +478,37 @@ export function CapturesTab({
             ...new Map(g.captures.flatMap((c) => c.usedBy).map((u) => [u.name, u])).values(),
           ];
           return (
-            <article class="card capture-card" key={g.base}>
+            <article class="capture-card" key={g.base}>
               <div class={`capture-pair n${g.captures.length}`}>
                 {g.captures.map((c) => (
-                  <a key={c.label} href={captureHref(id, c.label)} title={themeLabel(c.theme)}>
+                  <a
+                    key={c.label}
+                    href={captureHref(id, c.label)}
+                    title={`${g.base} · ${themeLabel(c.theme)}`}
+                    tabIndex={-1}
+                  >
                     <CaptureThumb system={id} capture={c} />
                   </a>
                 ))}
               </div>
-              <div class="card-body">
-                <div class="card-title-row">
-                  <a class="card-title" href={captureHref(id, first.label)}>
-                    {g.base}
-                  </a>
-                  <span class="muted small">{relativeTime(first.capturedAt ?? "")}</span>
-                </div>
-                <code class="selector" title={first.selector}>
-                  {first.selector}
-                </code>
-                <div class="muted small">
-                  {Math.round(first.width ?? 0)}×{Math.round(first.height ?? 0)} · {first.elements}{" "}
-                  elements · {first.rules} rules
-                  {g.captures.length > 1
-                    ? ` · ${g.captures.map((c) => themeLabel(c.theme)).join(" / ")}`
-                    : ""}
-                </div>
-                <div class="used-by">
+              <div class="capture-card-body">
+                <a class="card-title" href={captureHref(id, first.label)} title={first.selector}>
+                  {g.base}
+                </a>
+                <div class="tag-list">
                   {usedBy.length ? (
                     usedBy.map((u) => (
                       <a
-                        class="chip"
+                        class="chip tag-chip"
                         key={u.name}
                         href={componentHref(id, u.name)}
-                        title={u.as.join(" + ")}
+                        title={`Used as ${u.as.join(" + ")}`}
                       >
                         &lt;{u.tag}&gt;
                       </a>
                     ))
                   ) : (
-                    <span class="chip muted">not used yet</span>
+                    <span class="muted small">Not used by a component</span>
                   )}
                 </div>
               </div>

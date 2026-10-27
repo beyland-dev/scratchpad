@@ -3,6 +3,7 @@ import path from "node:path";
 import { watch } from "chokidar";
 import type { EventBus } from "./events.ts";
 import { TMP_SUFFIX } from "./fs-utils.ts";
+import type { ProjectStore } from "./projects.ts";
 import type { PrototypeStore } from "./prototypes.ts";
 import { GENERATED_DIRS, OBSERVED_PATHS, SYSTEMS_DIR, type SystemStore } from "./systems/store.ts";
 import { workspaceFileOf, type Workspace } from "./workspace.ts";
@@ -11,6 +12,7 @@ const DEBOUNCE_MS = 75;
 const SYSTEM_DEBOUNCE_MS = 250;
 
 export interface WatchSystemsOptions {
+  projects?: ProjectStore;
   systems: SystemStore;
   /** Called (debounced) after a system's sources changed and were reloaded. */
   onSystemChanged?: (id: string, exists: boolean) => void;
@@ -31,6 +33,7 @@ export async function watchWorkspace(
   const systemsDir = path.join(ws.designDir, SYSTEMS_DIR);
   const pending = new Map<string, { paths: Set<string>; timer: NodeJS.Timeout }>();
   const pendingSystems = new Map<string, { paths: Set<string>; timer: NodeJS.Timeout }>();
+  const pendingProjects = new Map<string, NodeJS.Timeout>();
   let configTimer: NodeJS.Timeout | undefined;
 
   const isGenerated = (file: string): boolean => {
@@ -48,6 +51,10 @@ export async function watchWorkspace(
   if (options) {
     await mkdir(systemsDir, { recursive: true });
     targets.push(systemsDir);
+  }
+  if (options?.projects) {
+    await mkdir(ws.projectsDir, { recursive: true });
+    targets.push(ws.projectsDir);
   }
   const watcher = watch(targets, {
     ignoreInitial: true,
@@ -102,6 +109,27 @@ export async function watchWorkspace(
       }, DEBOUNCE_MS);
       return;
     }
+    const projectRel = path.relative(ws.projectsDir, file);
+    if (options?.projects && projectRel && !projectRel.startsWith("..")) {
+      const [id] = projectRel.split(path.sep);
+      if (!id || id.startsWith(".")) return;
+      clearTimeout(pendingProjects.get(id));
+      pendingProjects.set(
+        id,
+        setTimeout(() => {
+          pendingProjects.delete(id);
+          options
+            .projects!.reloadOne(id)
+            .then((project) =>
+              events.emit("project.changed", { id, exists: project !== undefined }),
+            )
+            .catch((error: unknown) =>
+              console.error(`[design-tool] failed to reload project ${id}`, error),
+            );
+        }, DEBOUNCE_MS),
+      );
+      return;
+    }
     const sysRel = path.relative(systemsDir, file);
     if (options && sysRel && !sysRel.startsWith("..")) {
       const [id, ...rest] = sysRel.split(path.sep);
@@ -136,6 +164,8 @@ export async function watchWorkspace(
     clearTimeout(configTimer);
     for (const { timer } of pending.values()) clearTimeout(timer);
     for (const { timer } of pendingSystems.values()) clearTimeout(timer);
+    for (const timer of pendingProjects.values()) clearTimeout(timer);
+    pendingProjects.clear();
     pending.clear();
     pendingSystems.clear();
     await watcher.close();

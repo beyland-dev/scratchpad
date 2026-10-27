@@ -1,4 +1,5 @@
 import { cp, mkdir, readFile, rename, rm } from "node:fs/promises";
+import { NODE_MODULES_DIR, buildInto, buildPackageSystemDist } from "./package.ts";
 import path from "node:path";
 import vm from "node:vm";
 import { atomicWrite, nowIso, pathExists, writeJson } from "../fs-utils.ts";
@@ -105,10 +106,12 @@ const SPECIMEN_HTML = `<!doctype html>
       :where(body > .dt-specimen-root) { box-sizing: border-box; min-height: 100vh; padding: 16px; }
       :where(body.bare > .dt-specimen-root) { min-height: 0; padding: 0; }
       :where(body.framed > .dt-specimen-root) { min-height: 0; }
+      /* ?fill: fill the frame (e.g. a fixed-height card preview); a script centers the content. */
+      :where(body.fill > .dt-specimen-root) { min-height: 0; }
     </style>
     <script type="module" src="system.js"></script>
     <script type="module">
-      // ?component=<name>&example=<n>&theme=<id>[&bare][&width=px][&frame=<id>] or ?html=<markup>
+      // ?component=<name>&example=<n>&theme=<id>[&bare][&fill][&width=px][&frame=<id>] or ?html=<markup>
       const params = new URLSearchParams(location.search);
       const catalog = await (await fetch("catalog.json", { cache: "no-store" })).json();
       const { system } = catalog;
@@ -126,6 +129,7 @@ const SPECIMEN_HTML = `<!doctype html>
         if (!new RegExp("<" + tag + "[\\\\s>/]").test(html)) html = "<" + tag + ">" + html + "</" + tag + ">";
       }
       if (params.has("bare")) document.body.classList.add("bare");
+      else if (params.has("fill")) document.body.classList.add("fill");
       document.body.innerHTML = html;
       const root = document.body.firstElementChild;
       if (root) {
@@ -133,6 +137,41 @@ const SPECIMEN_HTML = `<!doctype html>
         if (system.rootContext && root.localName === system.rootContext) root.setAttribute("theme", theme);
         else root.setAttribute("data-theme", theme);
         if (params.get("width")) root.style.width = params.get("width") + "px";
+      }
+      // Paint the page with the specimen's own background (the first opaque one from the root
+      // down), so any space around it in the frame matches instead of showing through.
+      const paint = () => {
+        for (let el = root; el; el = el.firstElementChild) {
+          const bg = getComputedStyle(el).backgroundColor;
+          if (bg && bg !== "transparent" && !/^rgba\\(.*,\\s*0\\)$/.test(bg)) {
+            document.documentElement.style.background = bg;
+            return;
+          }
+        }
+      };
+      // Center vertically by the content's full extent (absolutely positioned parts like menus
+      // overflow the root), falling back to top alignment when it's taller than the frame.
+      const center = () => {
+        document.body.style.paddingTop = "0px";
+        let bottom = 0;
+        for (const el of document.body.querySelectorAll("*")) {
+          const rect = el.getBoundingClientRect();
+          if (rect.height && rect.bottom > bottom) bottom = rect.bottom;
+        }
+        const offset = Math.floor((innerHeight - bottom) / 2);
+        document.body.style.paddingTop = Math.max(0, offset) + "px";
+      };
+      const settle = () => {
+        paint();
+        if (params.has("fill")) center();
+      };
+      if (!params.has("bare")) {
+        settle();
+        requestAnimationFrame(settle);
+        if (root && params.has("fill")) {
+          new ResizeObserver(center).observe(root);
+          addEventListener("resize", center);
+        }
       }
       const frame = params.get("frame");
       if (frame) document.body.classList.add("framed");
@@ -153,6 +192,35 @@ export async function buildSystem(store: SystemStore, id: string): Promise<Build
   const components = store.components(id);
   const tokens = await store.tokens(id);
   const dir = store.dirOf(id);
+  if (system.kind === "package") {
+    // Freshly scaffolded systems aren't installed yet: that's a setup step, not a failed build.
+    if (!(await pathExists(path.join(dir, NODE_MODULES_DIR, "vite", "package.json")))) {
+      await writeSkill(store, id, path.join(dir, SKILL_DIR));
+      return {
+        system: id,
+        builtAt: nowIso(),
+        components: components.length,
+        tokens: tokens.length,
+        files: [],
+        css: { bytes: 0, captured: 0, duplicates: 0, authored: 0 },
+        js: { bytes: 0 },
+        warnings: [`Dependencies aren't installed yet: run \`npm install\` in ${dir}`],
+      };
+    }
+    let result: Omit<BuildResult, "system" | "builtAt"> | undefined;
+    await buildInto(path.join(dir, DIST_DIR), async (outDir) => {
+      result = await buildPackageSystemDist(
+        system,
+        components,
+        tokens,
+        dir,
+        outDir,
+        catalogOf(system, components, tokens),
+      );
+    });
+    await writeSkill(store, id, path.join(dir, SKILL_DIR));
+    return { system: id, builtAt: nowIso(), ...result! };
+  }
   // Unique staging folders: the server and other processes (CLI, agents) may build concurrently.
   const stamp = `${process.pid}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
   const next = path.join(dir, `${DIST_DIR}.next-${stamp}`);

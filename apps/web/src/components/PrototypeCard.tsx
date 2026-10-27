@@ -1,8 +1,11 @@
+import { useState } from "preact/hooks";
 import { revisionOf, selection } from "../store.ts";
 import type { PrototypeWithUrls } from "../types.ts";
-import { relativeTime, useElementSize } from "../util.ts";
+import { editedAgo, useElementSize } from "../util.ts";
+import { DeletePrototypeDialog, PrototypeDialog } from "./Dialogs.tsx";
 import { Frame } from "./Frame.tsx";
-import { StatusBadge } from "./StatusBadge.tsx";
+import { Icon } from "./Icon.tsx";
+import { MenuButton } from "./Menu.tsx";
 
 const THUMB_WIDTH = 1280;
 const THUMB_HEIGHT = 800;
@@ -12,11 +15,17 @@ export function familyUpdatedAt(family: PrototypeWithUrls[]): string {
   return family.reduce((latest, p) => (p.updatedAt > latest ? p.updatedAt : latest), "");
 }
 
-/** One card per variant family. It previews and opens the latest version. */
-export function PrototypeCard({ family }: { family: PrototypeWithUrls[] }) {
+/** One card per variant family. Single prototypes show one thumbnail; families show a folder of their newest versions. */
+export function PrototypeCard({
+  family,
+  groups,
+}: {
+  family: PrototypeWithUrls[];
+  groups: string[];
+}) {
+  const [dialog, setDialog] = useState<"edit" | "delete" | null>(null);
   const latest = family[family.length - 1]!;
-  const [thumbRef, size] = useElementSize<HTMLAnchorElement>();
-  const scale = size.width ? size.width / THUMB_WIDTH : 0;
+  const isFamily = family.length > 1;
   const selected = selection.value.includes(latest.id);
   const updatedAt = familyUpdatedAt(family);
   const issues = family.flatMap((p) => p.issues ?? []);
@@ -28,57 +37,121 @@ export function PrototypeCard({ family }: { family: PrototypeWithUrls[] }) {
   };
 
   return (
-    <article class={`card ${selected ? "selected" : ""} ${family.length > 1 ? "stacked" : ""}`}>
-      <a href={href} class="card-thumb" ref={thumbRef} aria-label={`Open ${latest.title}`}>
-        {scale > 0 && (
-          <Frame
-            src={latest.urls.raw}
-            title={`${latest.title} preview`}
-            width={THUMB_WIDTH}
-            height={THUMB_HEIGHT}
-            scale={scale}
-            revision={revisionOf(latest.id)}
-            interactive={false}
-            lazy
-          />
+    <article class={`card ${selected ? "selected" : ""} ${isFamily ? "family" : ""}`}>
+      <div class="card-thumb-wrap">
+        {isFamily ? (
+          <FamilyFolder family={family} />
+        ) : (
+          <Thumb proto={latest} class="card-thumb" title={latest.description} />
         )}
-      </a>
-      <div class="card-body">
-        <div class="card-title-row">
-          <a href={href} class="card-title">
-            {latest.title}
-          </a>
-          <label class="select-toggle" title="Select for comparison">
-            <input type="checkbox" checked={selected} onChange={toggle} />
-            <span class="visually-hidden">Select {latest.title} for comparison</span>
-          </label>
-        </div>
-        <div class="card-meta">
-          <StatusBadge status={latest.status} />
-          {family.length > 1 && (
-            <span class="chip" title={family.map((p) => p.title).join("\n")}>
-              {family.length} versions
-            </span>
-          )}
-          {latest.group && <span class="chip muted">{latest.group}</span>}
-          {latest.tags.map((t) => (
-            <span class="chip muted" key={t}>
-              #{t}
-            </span>
-          ))}
-          {issues.length ? (
-            <span class="chip warn" title={issues.join("\n")}>
-              ⚠ {issues.length}
-            </span>
-          ) : null}
-        </div>
-        <div class="card-footer">
-          <span>{latest.createdBy?.name ?? latest.createdBy?.kind ?? ""}</span>
-          <time dateTime={updatedAt} title={new Date(updatedAt).toLocaleString()}>
-            {relativeTime(updatedAt)}
-          </time>
-        </div>
+        <label class="card-select" title="Select to compare">
+          <input type="checkbox" checked={selected} onChange={toggle} />
+          <span class="visually-hidden">Select {latest.title} to compare</span>
+        </label>
+        <MenuButton
+          class="card-menu"
+          label={`${latest.title} options`}
+          items={[
+            { label: "Edit details…", onSelect: () => setDialog("edit") },
+            {
+              label: isFamily ? "Delete latest version…" : "Delete…",
+              danger: true,
+              onSelect: () => setDialog("delete"),
+            },
+          ]}
+        />
       </div>
+      <div class="card-body">
+        <a href={href} class="card-title" title={latest.title}>
+          {latest.title}
+        </a>
+        {issues.length ? (
+          <span
+            class="card-issues"
+            title={issues.join("\n")}
+            aria-label={`${issues.length} issues`}
+          >
+            <Icon name="alert" size={13} />
+          </span>
+        ) : null}
+        <time class="card-time" dateTime={updatedAt} title={new Date(updatedAt).toLocaleString()}>
+          {editedAgo(updatedAt)}
+        </time>
+      </div>
+      {dialog === "edit" && (
+        <PrototypeDialog proto={latest} groups={groups} onClose={() => setDialog(null)} />
+      )}
+      {dialog === "delete" && (
+        <DeletePrototypeDialog
+          proto={latest}
+          versions={family.length}
+          onClose={() => setDialog(null)}
+        />
+      )}
     </article>
+  );
+}
+
+/** A decorative, scaled-down render of a prototype that links to it. */
+function Thumb({
+  proto,
+  class: className,
+  title,
+}: {
+  proto: PrototypeWithUrls;
+  class: string;
+  title?: string;
+}) {
+  const [ref, size] = useElementSize<HTMLAnchorElement>();
+  const scale = size.width ? size.width / THUMB_WIDTH : 0;
+  return (
+    <a
+      href={`/p/${encodeURIComponent(proto.id)}`}
+      class={className}
+      ref={ref}
+      tabIndex={-1}
+      aria-hidden="true"
+      title={title}
+    >
+      {scale > 0 && (
+        <Frame
+          src={proto.urls.raw}
+          title={`${proto.title} preview`}
+          width={THUMB_WIDTH}
+          height={THUMB_HEIGHT}
+          scale={scale}
+          revision={revisionOf(proto.id)}
+          interactive={false}
+          lazy
+        />
+      )}
+    </a>
+  );
+}
+
+const FOLDER_SLOTS = 4;
+
+/** Folder-style preview of a variant family: its newest versions in a 2×2 grid, each opening that version. */
+function FamilyFolder({ family }: { family: PrototypeWithUrls[] }) {
+  const newestFirst = family.map((p, i) => ({ proto: p, version: i + 1 })).reverse();
+  const hidden = Math.max(0, family.length - FOLDER_SLOTS);
+  return (
+    <div class="card-folder">
+      {Array.from({ length: FOLDER_SLOTS }, (_, i) => {
+        const item = newestFirst[i];
+        if (!item) return <span class="folder-cell empty" key={i} />;
+        const isLast = i === FOLDER_SLOTS - 1 && hidden > 0;
+        return (
+          <div class="folder-cell" key={item.proto.id}>
+            <Thumb
+              proto={item.proto}
+              class="folder-thumb"
+              title={`V${item.version}: ${item.proto.title}`}
+            />
+            {isLast && <span class="folder-more">+{hidden + 1}</span>}
+          </div>
+        );
+      })}
+    </div>
   );
 }

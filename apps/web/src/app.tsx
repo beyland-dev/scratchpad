@@ -1,7 +1,8 @@
 import { useEffect } from "preact/hooks";
-import { LocationProvider, Route, Router } from "preact-iso";
-import { Header } from "./components/Header.tsx";
-import { startLiveUpdates } from "./store.ts";
+import { LocationProvider, Route, Router, useLocation } from "preact-iso";
+import { ConnectionToast, Header, isImmersive } from "./components/Header.tsx";
+import { Sidebar } from "./components/Sidebar.tsx";
+import { homeProjectId, loaded, projectHref, startLiveUpdates } from "./store.ts";
 import { Compare } from "./views/Compare.tsx";
 import { CaptureView } from "./views/CaptureView.tsx";
 import { ComponentView } from "./views/ComponentView.tsx";
@@ -18,18 +19,43 @@ function NotFound() {
   );
 }
 
-export function App() {
-  useEffect(() => startLiveUpdates(), []);
+/** Sends "/" (and the old "/systems") to the last visited project. */
+function ToHomeProject({ section }: { section?: "systems" }) {
+  const { route } = useLocation();
+  const target = loaded.value ? homeProjectId() : undefined;
+  useEffect(() => {
+    if (target) route(projectHref(target, section ?? "prototypes"), true);
+  }, [target]);
+  if (!loaded.value) return <p class="page-message">Loading…</p>;
+  if (!target)
+    return (
+      <p class="page-message">
+        No projects yet. Create one with <code>dt project create --name "My product"</code>.
+      </p>
+    );
+  return null;
+}
+
+function ToHomeSystems() {
+  return <ToHomeProject section="systems" />;
+}
+
+function Shell() {
+  const { path } = useLocation();
+  const immersive = isImmersive(path);
   return (
-    <LocationProvider>
-      <div class="app">
+    <div class="app">
+      {!immersive && <Sidebar />}
+      <div class="app-column">
         <Header />
         <main class="app-main">
           <Router>
-            <Route path="/" component={Gallery} />
+            <Route path="/" component={ToHomeProject} />
+            <Route path="/projects/:project" component={Gallery} />
+            <Route path="/projects/:project/systems" component={Systems} />
             <Route path="/p/:id" component={Viewer} />
             <Route path="/compare" component={Compare} />
-            <Route path="/systems" component={Systems} />
+            <Route path="/systems" component={ToHomeSystems} />
             <Route path="/systems/:id" component={SystemView} />
             <Route path="/systems/:id/c/:name" component={ComponentView} />
             <Route path="/systems/:id/captures/:label" component={CaptureView} />
@@ -37,6 +63,16 @@ export function App() {
           </Router>
         </main>
       </div>
+      <ConnectionToast />
+    </div>
+  );
+}
+
+export function App() {
+  useEffect(() => startLiveUpdates(), []);
+  return (
+    <LocationProvider>
+      <Shell />
     </LocationProvider>
   );
 }

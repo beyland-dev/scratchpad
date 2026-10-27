@@ -1,22 +1,24 @@
 import { useLocation, useRoute } from "preact-iso";
 import { Frame } from "../components/Frame.tsx";
+import { Icon } from "../components/Icon.tsx";
 import { StatusBadge } from "../components/StatusBadge.tsx";
 import { byId, loaded, prototypes, revisionOf } from "../store.ts";
-import { DEVICES, deviceById, useElementSize } from "../util.ts";
+import { DEFAULT_DEVICE, DEVICES, deviceById, useElementSize } from "../util.ts";
 
 const MAX_COLUMNS = 4;
 const GAP = 16;
-const HEADER_HEIGHT = 44;
+const HEADER_HEIGHT = 40;
 
 export function Compare() {
   const { query } = useRoute();
   const { route } = useLocation();
   const ids = (query.ids ?? "").split(",").filter(Boolean).slice(0, MAX_COLUMNS);
-  const device = deviceById(query.device) ?? DEVICES[2]!;
+  const device = deviceById(query.device);
   const [areaRef, area] = useElementSize<HTMLDivElement>();
 
   const update = (nextIds: string[], deviceId = device.id) => {
-    const params = new URLSearchParams({ ids: nextIds.join(","), device: deviceId });
+    const params = new URLSearchParams({ ids: nextIds.join(",") });
+    if (deviceId !== DEFAULT_DEVICE.id) params.set("device", deviceId);
     route(`/compare?${params.toString().replaceAll("%2C", ",")}`, true);
   };
 
@@ -36,19 +38,19 @@ export function Compare() {
   return (
     <div class="compare">
       <div class="viewer-bar">
-        <a href="/" class="button ghost" aria-label="Back to prototypes">
-          ←
+        <a href="/" class="button ghost icon-only" aria-label="Back to prototypes" title="Back">
+          <Icon name="arrow-left" />
         </a>
         <h1 class="viewer-title">Compare</h1>
         <span class="toolbar-spacer" />
         {ids.length < MAX_COLUMNS && candidates.length > 0 && (
           <select
-            class="input"
+            class="input add-select"
             aria-label="Add a prototype"
             value=""
             onChange={(e) => e.currentTarget.value && update([...ids, e.currentTarget.value])}
           >
-            <option value="">+ Add prototype</option>
+            <option value="">Add prototype…</option>
             {candidates.map((p) => (
               <option value={p.id} key={p.id}>
                 {p.title}
@@ -56,7 +58,7 @@ export function Compare() {
             ))}
           </select>
         )}
-        <div class="segmented" aria-label="Viewport">
+        <div class="segmented" role="group" aria-label="Viewport">
           {DEVICES.map((d) => (
             <button
               type="button"
@@ -92,18 +94,19 @@ export function Compare() {
                     >
                       {proto.title}
                     </a>
-                    <StatusBadge status={proto.status} />
+                    {proto.status !== "draft" && <StatusBadge status={proto.status} />}
                   </>
                 ) : (
-                  <span class="muted">Missing: {id}</span>
+                  <span class="compare-title muted">Missing: {id}</span>
                 )}
                 <button
                   type="button"
                   class="icon-button"
                   aria-label={`Remove ${proto?.title ?? id}`}
+                  title="Remove"
                   onClick={() => update(ids.filter((x) => x !== id))}
                 >
-                  ×
+                  <Icon name="x" size={14} />
                 </button>
               </header>
               {proto && (

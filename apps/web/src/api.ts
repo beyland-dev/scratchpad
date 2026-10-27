@@ -32,6 +32,7 @@ export async function call<T>(name: string, input: unknown = {}): Promise<T> {
 export type ServerEvent =
   | { type: "prototype.changed"; data: { id: string; exists: boolean; paths: string[] } }
   | { type: "workspace.changed"; data: Record<string, never> }
+  | { type: "project.changed"; data: { id: string; exists: boolean } }
   | {
       type: "system.changed";
       data: { id: string; exists: boolean; paths: string[]; built?: boolean };
@@ -55,6 +56,7 @@ export function subscribe(
     ready: forward("ready"),
     "prototype.changed": forward("prototype.changed"),
     "workspace.changed": forward("workspace.changed"),
+    "project.changed": forward("project.changed"),
     "system.changed": forward("system.changed"),
   };
   for (const [type, handler] of Object.entries(handlers))

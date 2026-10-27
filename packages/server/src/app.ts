@@ -5,6 +5,7 @@ import { Hono } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { streamSSE } from "hono/streaming";
 import { localGuard } from "./guard.ts";
+import { nativeFolderPicker, PickerUnavailableError, type FolderPicker } from "./pick-folder.ts";
 import { fileResponse } from "./static.ts";
 
 export interface AppOptions {
@@ -16,6 +17,8 @@ export interface AppOptions {
   allowedOrigins?: () => string[];
   /** SSE heartbeat interval in ms. */
   heartbeatMs?: number;
+  /** Opens a folder dialog for the UI (defaults to the OS's native one). */
+  pickFolder?: FolderPicker;
 }
 
 const STATUS_BY_CODE: Record<CoreErrorCode, ContentfulStatusCode> = {
@@ -46,6 +49,28 @@ export function createApp(options: AppOptions): Hono {
   app.get("/api/health", (c) => c.json({ ok: true, name: core.workspace.config.name }));
 
   app.get("/api/commands", (c) => c.json({ ok: true, result: core.registry.describe() }));
+
+  // UI-only (not a core command): a local folder can't be chosen from the browser with its full
+  // path, so the server, which runs on the same machine, opens the native dialog instead.
+  app.post("/api/pick-folder", async (c) => {
+    const picker = options.pickFolder ?? nativeFolderPicker;
+    try {
+      const path = await picker("Choose the product's codebase folder");
+      return c.json({ ok: true, result: { path } });
+    } catch (error) {
+      const unavailable = error instanceof PickerUnavailableError;
+      return c.json(
+        {
+          ok: false,
+          error: {
+            code: unavailable ? "UNAVAILABLE" : "INTERNAL",
+            message: (error as Error).message,
+          },
+        },
+        unavailable ? 501 : 500,
+      );
+    }
+  });
 
   app.post("/api/commands/:name", async (c) => {
     const name = c.req.param("name");

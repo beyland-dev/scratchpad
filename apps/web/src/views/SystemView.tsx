@@ -1,14 +1,21 @@
+import { Fragment } from "preact";
 import { Code } from "../components/Code.tsx";
-import { useMemo, useState } from "preact/hooks";
+import { useState } from "preact/hooks";
 import { useLocation, useRoute } from "preact-iso";
+import { Icon } from "../components/Icon.tsx";
+import { SearchInput } from "../components/SearchInput.tsx";
 import { Specimen, VerificationBadge } from "../components/Specimen.tsx";
 import { useCommand } from "../hooks/useCommand.ts";
-import { systemEventOf, systemRevisionOf } from "../store.ts";
-import { CapturesTab, DiscoveryOverview, DiscoveryPipeline, useCaptures } from "./discovery.tsx";
-import type { ComponentSummary, DesignSystem, Token } from "../types.ts";
-import { copyText } from "../util.ts";
+import { systemEventOf, systemRevisionOf, systems, systemsListHref, workspace } from "../store.ts";
+import { AgentHandoff } from "../components/AgentHandoff.tsx";
+import { DeleteSystemDialog, SystemDialog } from "../components/Dialogs.tsx";
+import { MenuButton } from "../components/Menu.tsx";
+import { packageSetupPrompt, systemAuditPrompt } from "../prompts.ts";
+import { ActivityTab, useCaptures } from "./discovery.tsx";
+import { TokensTab } from "./TokensView.tsx";
+import type { ComponentSummary, DesignSystem } from "../types.ts";
 
-interface SystemDetails {
+export interface SystemDetails {
   system: DesignSystem;
   components: ComponentSummary[];
   tokens: { total: number; groups: Record<string, number> };
@@ -18,14 +25,23 @@ interface SystemDetails {
   lastBuild?: { ok: boolean; at: string; error?: string; result?: { warnings: string[] } };
 }
 
-const TABS = [
-  { id: "overview", label: "Overview" },
-  { id: "components", label: "Components" },
-  { id: "captures", label: "Captures" },
-  { id: "colors", label: "Colors" },
-  { id: "tokens", label: "Tokens" },
-  { id: "setup", label: "Setup & notes" },
-];
+type TabId = "components" | "tokens" | "usage" | "activity";
+
+const DEFAULT_TAB: TabId = "components";
+
+/** Earlier tab ids, kept so old links still land somewhere sensible. */
+const TAB_ALIASES: Record<string, { tab: TabId; extra?: Record<string, string> }> = {
+  overview: { tab: "activity" },
+  captures: { tab: "activity", extra: { captures: "all" } },
+  colors: { tab: "tokens", extra: { tokens: "color" } },
+  setup: { tab: "usage" },
+};
+
+export function systemTabHref(system: string, tab: TabId, query: Record<string, string> = {}) {
+  const params = new URLSearchParams({ ...(tab === DEFAULT_TAB ? {} : { tab }), ...query });
+  const qs = params.toString();
+  return `/systems/${encodeURIComponent(system)}${qs ? `?${qs}` : ""}`;
+}
 
 export function useSystemTheme(
   system: DesignSystem | undefined,
@@ -45,14 +61,21 @@ export function ThemePicker({
   system,
   theme,
   onChange,
+  allOption = false,
 }: {
   system: DesignSystem;
   theme: string;
   onChange: (t: string) => void;
+  /** Adds an "All" option (value "all") that shows every theme side by side. */
+  allOption?: boolean;
 }) {
+  const options = [
+    ...(allOption ? [{ id: "all", label: "All themes" }] : []),
+    ...system.themes.map((t) => ({ id: t.id, label: t.label })),
+  ];
   return (
-    <div class="segmented" aria-label="Theme">
-      {system.themes.map((t) => (
+    <div class="segmented" role="group" aria-label="Theme">
+      {options.map((t) => (
         <button
           type="button"
           key={t.id}
@@ -77,80 +100,140 @@ export function SystemView() {
     systemEventOf(id),
   ]);
   const { data: captureData } = useCaptures(id);
+  const [dialog, setDialog] = useState<"edit" | "delete" | null>(null);
   const [theme, setTheme] = useSystemTheme(data?.system);
-  const tab = query.tab ?? "overview";
+  const alias = TAB_ALIASES[query.tab ?? ""];
+  const tab: TabId = alias?.tab ?? (query.tab as TabId | undefined) ?? DEFAULT_TAB;
+  const q = { ...query, ...alias?.extra };
 
   if (error) return <p class="page-message error">{error}</p>;
   if (!data) return <p class="page-message">Loading…</p>;
   const { system } = data;
-  const warnings = data.lastBuild?.result?.warnings ?? [];
+  const summary = systems.value.find((s) => s.id === id);
+
+  const setQuery = (next: Record<string, string | undefined>) => {
+    const p = new URLSearchParams(q);
+    if (alias) p.set("tab", alias.tab);
+    for (const [k, v] of Object.entries(next)) {
+      if (v) p.set(k, v);
+      else p.delete(k);
+    }
+    if (p.get("tab") === DEFAULT_TAB) p.delete("tab");
+    const qs = p.toString();
+    route(qs ? `${path}?${qs}` : path, true);
+  };
+
+  // Activity is last in the tab order, so flag problems that need a person's eye.
+  const needsLook =
+    data.components.some((c) => c.verification === "drift" || c.issues?.length) ||
+    data.lastBuild?.ok === false;
+
+  const tabs: { id: TabId; label: string; count?: number }[] = [
+    { id: "components", label: "Components", count: data.components.length },
+    { id: "tokens", label: "Tokens" },
+    { id: "usage", label: "Usage" },
+    { id: "activity", label: "Activity" },
+  ];
 
   return (
     <div class="page system-page">
       <div class="page-head">
-        <div class="crumbs">
-          <a href="/systems">Design systems</a> /
-        </div>
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href={systemsListHref(id)}>Design systems</a>
+        </nav>
         <div class="page-title-row">
           <h1>{system.name}</h1>
-          <span class="toolbar-spacer" />
-          <ThemePicker system={system} theme={theme} onChange={setTheme} />
-        </div>
-        {system.description && <p class="muted">{system.description}</p>}
-        <div class="card-meta">
-          {system.capturedFrom?.product && (
-            <span class="chip muted">
-              from {system.capturedFrom.product}
-              {system.capturedFrom.version ? ` ${system.capturedFrom.version}` : ""}
-              {system.capturedFrom.commit ? ` @ ${system.capturedFrom.commit.slice(0, 8)}` : ""}
+          {system.library &&
+            (system.library.docsUrl ? (
+              <a
+                class="chip library-chip"
+                href={system.library.docsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`${system.library.name} documentation`}
+              >
+                {system.library.name} <Icon name="external" size={12} />
+              </a>
+            ) : (
+              <span class="chip library-chip">{system.library.name}</span>
+            ))}
+          {data.lastBuild && !data.lastBuild.ok && (
+            <span class="chip warn" title={data.lastBuild.error}>
+              <Icon name="alert" size={12} /> Build failed
             </span>
           )}
-          {data.lastBuild && !data.lastBuild.ok && (
-            <span class="chip warn">build failed: {data.lastBuild.error}</span>
+          <span class="toolbar-spacer" />
+          {summary && (
+            <MenuButton
+              label={`${system.name} options`}
+              items={[
+                { label: "Edit details…", onSelect: () => setDialog("edit") },
+                {
+                  label: "Delete design system…",
+                  danger: true,
+                  onSelect: () => setDialog("delete"),
+                },
+              ]}
+            />
           )}
         </div>
-        <DiscoveryPipeline
-          system={system}
-          tokens={data.tokens}
-          components={data.components}
-          captures={captureData?.captures}
-          warnings={warnings.length}
-        />
       </div>
       <div class="tabs" role="tablist">
-        {TABS.map((t) => (
+        {tabs.map((t) => (
           <button
             type="button"
             role="tab"
             key={t.id}
             aria-selected={tab === t.id}
             class={tab === t.id ? "active" : ""}
-            onClick={() => {
-              const p = new URLSearchParams(query);
-              p.set("tab", t.id);
-              route(`${path}?${p.toString()}`, true);
-            }}
+            onClick={() =>
+              setQuery({ tab: t.id, tokens: undefined, token: undefined, captures: undefined })
+            }
           >
             {t.label}
+            {t.count !== undefined && <span class="tab-count">{t.count.toLocaleString()}</span>}
+            {t.id === "activity" && needsLook && (
+              <span class="tab-dot" title="Something needs attention" />
+            )}
           </button>
         ))}
       </div>
-      {tab === "overview" && (
-        <DiscoveryOverview
+      {dialog === "edit" && summary && (
+        <SystemDialog system={summary} onClose={() => setDialog(null)} />
+      )}
+      {dialog === "delete" && summary && (
+        <DeleteSystemDialog system={summary} onClose={() => setDialog(null)} />
+      )}
+      {tab === "components" && (
+        <ComponentsTab
           id={id}
           system={system}
           components={data.components}
-          captures={captureData?.captures}
           theme={theme}
+          onTheme={setTheme}
         />
       )}
-      {tab === "components" && <ComponentsTab id={id} components={data.components} theme={theme} />}
-      {tab === "captures" && (
-        <CapturesTab id={id} system={system} captures={captureData?.captures} />
+      {tab === "tokens" && (
+        <TokensTab
+          id={id}
+          data={data}
+          category={q.tokens}
+          selected={q.token}
+          onCategory={(c) => setQuery({ tokens: c, token: undefined })}
+          onSelect={(t) => setQuery({ token: t })}
+        />
       )}
-      {tab === "colors" && <TokensTab id={id} system={system} type="color" />}
-      {tab === "tokens" && <TokensTab id={id} system={system} />}
-      {tab === "setup" && <SetupTab data={data} />}
+      {tab === "usage" && <UsageTab data={data} />}
+      {tab === "activity" && (
+        <ActivityTab
+          id={id}
+          data={data}
+          captures={captureData?.captures}
+          theme={theme}
+          allCaptures={q.captures === "all"}
+          onAllCaptures={(all) => setQuery({ captures: all ? "all" : undefined })}
+        />
+      )}
     </div>
   );
 }
@@ -161,80 +244,125 @@ const KIND_LABELS: Record<string, string> = {
   pattern: "Patterns",
 };
 
+export function componentPageHref(system: string, name: string, theme: string): string {
+  return `/systems/${encodeURIComponent(system)}/c/${encodeURIComponent(name)}?theme=${encodeURIComponent(theme)}`;
+}
+
 function ComponentsTab({
   id,
+  system,
   components,
   theme,
+  onTheme,
 }: {
   id: string;
+  system: DesignSystem;
   components: ComponentSummary[];
   theme: string;
+  onTheme: (t: string) => void;
 }) {
   const [search, setSearch] = useState("");
   const q = search.trim().toLowerCase();
   const visible = components.filter(
     (c) => !q || `${c.tag} ${c.title} ${c.category} ${c.summary}`.toLowerCase().includes(q),
   );
-  if (!components.length) return <p class="page-message">No components yet.</p>;
+  if (!components.length) {
+    const source = workspace.value?.sources.find((s) => s.id === system.sourceId);
+    return (
+      <AgentHandoff
+        title={
+          system.kind === "package"
+            ? `Set up ${system.library?.name ?? "the library"}`
+            : "Fill it from your product"
+        }
+        prompt={
+          system.kind === "package"
+            ? packageSetupPrompt(system, source, workspace.value?.designDir)
+            : systemAuditPrompt(system, source, workspace.value?.designDir)
+        }
+      >
+        {system.kind === "package" ? (
+          <>
+            This design system is empty. Give this prompt to an agent connected over MCP: it
+            installs {system.library?.name ?? "the library"}, applies your product's customizations,
+            and writes a story for each component. Progress shows up live under Activity.
+          </>
+        ) : (
+          <>
+            This design system is empty. Give this prompt to an agent connected over MCP: it imports
+            the product's tokens, captures reference UI, and codifies verified{" "}
+            <code>&lt;{system.prefix}-…&gt;</code> components. Progress shows up live under
+            Activity.
+          </>
+        )}
+      </AgentHandoff>
+    );
+  }
   return (
     <div>
       <div class="toolbar">
-        <input
-          class="input"
-          type="search"
-          placeholder="Search components"
-          value={search}
-          onInput={(e) => setSearch(e.currentTarget.value)}
-          aria-label="Search components"
-        />
+        <SearchInput value={search} onInput={setSearch} placeholder="Search components" />
+        {q && (
+          <span class="result-count" role="status">
+            {visible.length} of {components.length}
+          </span>
+        )}
         <span class="toolbar-spacer" />
-        <span class="muted">
-          {visible.length} of {components.length}
-        </span>
+        {system.themes.length > 1 && (
+          <ThemePicker system={system} theme={theme} onChange={onTheme} />
+        )}
       </div>
+      {visible.length === 0 && <p class="page-message">No components match “{search}”.</p>}
       {(["pattern", "component", "context"] as const).map((kind) => {
         const items = visible.filter((c) => c.kind === kind);
         if (!items.length) return null;
         return (
           <section key={kind} class="component-section">
             <h2 class="section-heading">
-              {KIND_LABELS[kind]} <span class="muted">{items.length}</span>
+              {KIND_LABELS[kind]} <span class="count">{items.length}</span>
             </h2>
             <div class="grid component-grid">
-              {items.map((c) => (
-                <article class="card component-card" key={c.name}>
-                  <a
-                    class="component-preview"
-                    href={`/systems/${encodeURIComponent(id)}/c/${encodeURIComponent(c.name)}?theme=${theme}`}
-                  >
-                    {kind !== "context" ? (
-                      <Specimen
-                        system={id}
-                        component={c.name}
-                        theme={theme}
-                        maxHeight={260}
-                        title={`${c.title} preview`}
-                      />
-                    ) : (
-                      <div class="context-placeholder">context</div>
-                    )}
-                  </a>
-                  <div class="card-body">
-                    <div class="card-title-row">
-                      <a
-                        class="card-title"
-                        href={`/systems/${encodeURIComponent(id)}/c/${encodeURIComponent(c.name)}?theme=${theme}`}
-                      >
-                        {c.title}
-                      </a>
-                      <VerificationBadge status={c.verification} />
+              {items.map((c) => {
+                const href = componentPageHref(id, c.name, theme);
+                return (
+                  <article class="component-card" key={c.name}>
+                    <a class="component-preview" href={href} tabIndex={-1} aria-hidden="true">
+                      {kind !== "context" ? (
+                        <Specimen
+                          system={id}
+                          component={c.name}
+                          theme={theme}
+                          fill
+                          interactive={false}
+                          title={`${c.title} preview`}
+                        />
+                      ) : (
+                        <code class="context-placeholder">
+                          &lt;{c.tag}&gt; … &lt;/{c.tag}&gt;
+                        </code>
+                      )}
+                    </a>
+                    <div class="component-card-body">
+                      <div class="card-title-row">
+                        <a class="card-title" href={href}>
+                          {c.title}
+                        </a>
+                        {system.kind !== "package" && c.verification !== "verified" && (
+                          <VerificationBadge status={c.verification} />
+                        )}
+                        {c.issues?.length ? (
+                          <span class="warn-count" title={c.issues.join("\n")}>
+                            <Icon name="alert" size={12} />
+                            {c.issues.length}
+                          </span>
+                        ) : null}
+                      </div>
+                      <code class="tag">&lt;{c.tag}&gt;</code>
+                      <p class="summary">{c.summary}</p>
                     </div>
-                    <code class="tag">&lt;{c.tag}&gt;</code>
-                    <p class="muted small">{c.summary}</p>
-                    {c.issues?.length ? <span class="chip warn">⚠ {c.issues.length}</span> : null}
-                  </div>
-                </article>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           </section>
         );
@@ -243,206 +371,119 @@ function ComponentsTab({
   );
 }
 
-export function TokenSwatch({ value }: { value: string | undefined }) {
-  if (!value) return <span class="swatch empty" title="not set" />;
-  return <span class="swatch" title={value} style={{ "--swatch": value }} />;
-}
-
-function TokensTab({ id, system, type }: { id: string; system: DesignSystem; type?: "color" }) {
-  const revision = systemRevisionOf(id);
-  const { data, error } = useCommand<{ tokens: Token[]; total: number }>(
-    "token.search",
-    { system: id, ...(type ? { type } : {}), limit: 10000 },
-    [revision],
-  );
-  const [search, setSearch] = useState("");
-  const [open, setOpen] = useState<Set<string>>(new Set());
-  const [copied, setCopied] = useState<string | null>(null);
-  const tokens = useMemo(
-    () => (data?.tokens ?? []).filter((t) => (type ? true : t.type !== "color")),
-    [data, type],
-  );
-  const q = search.trim().toLowerCase();
-  const filtered = q
-    ? tokens.filter((t) =>
-        `${t.name} ${t.cssVar} ${t.description ?? ""} ${Object.values(t.values).join(" ")} ${t.value ?? ""}`
-          .toLowerCase()
-          .includes(q),
-      )
-    : tokens;
-  const groups = useMemo(() => {
-    const map = new Map<string, Token[]>();
-    for (const t of filtered) {
-      const g = t.group ?? "other";
-      map.set(g, [...(map.get(g) ?? []), t]);
-    }
-    return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-  }, [filtered]);
-
-  if (error) return <p class="page-message error">{error}</p>;
-  if (!data) return <p class="page-message">Loading tokens…</p>;
-  if (!tokens.length)
-    return <p class="page-message">No {type === "color" ? "color " : ""}tokens yet.</p>;
-  const expandAll = q.length > 0 || groups.length <= 3;
-  const copy = async (text: string) => {
-    if (await copyText(text)) {
-      setCopied(text);
-      setTimeout(() => setCopied(null), 1200);
-    }
-  };
-
+function UsageTab({ data }: { data: SystemDetails }) {
+  const { system } = data;
+  const warnings = data.lastBuild?.result?.warnings ?? [];
+  const from = system.capturedFrom;
+  const isPackage = system.kind === "package";
+  const snippet = isPackage
+    ? `// A React prototype built with ${system.name}:\n// prototype_create { title, framework: "react", system: "${system.id}" }\n\n// main.tsx\nimport { createRoot } from "react-dom/client";\nimport "@/${(system.styles ?? "src/index.css").replace(/^src\//, "")}";\nimport { Button } from "@/components/ui/button";\n\ncreateRoot(document.getElementById("root")!).render(<Button>Hello</Button>);`
+    : system.rootContext
+      ? `${data.include}\n\n<${system.rootContext} theme="${system.defaultTheme}">\n  …\n</${system.rootContext}>`
+      : data.include;
   return (
-    <div>
-      <div class="toolbar">
-        <input
-          class="input"
-          type="search"
-          placeholder="Search name, variable, value or description"
-          value={search}
-          onInput={(e) => setSearch(e.currentTarget.value)}
-          aria-label="Search tokens"
-        />
-        <span class="toolbar-spacer" />
-        <span class="muted">
-          {filtered.length} of {tokens.length} · {groups.length} groups
-        </span>
-      </div>
-      <div class="token-groups">
-        {groups.map(([group, list]) => {
-          const isOpen = expandAll || open.has(group);
-          return (
-            <section class="token-group" key={group}>
-              <button
-                type="button"
-                class="token-group-head"
-                aria-expanded={isOpen}
-                onClick={() => {
-                  const next = new Set(open);
-                  if (next.has(group)) next.delete(group);
-                  else next.add(group);
-                  setOpen(next);
-                }}
-              >
-                <span class="caret">{isOpen ? "▾" : "▸"}</span>
-                <strong>{group}</strong>
-                <span class="muted">{list.length}</span>
-                {type === "color" && (
-                  <span class="swatch-strip">
-                    {list.slice(0, 24).map((t) => (
-                      <TokenSwatch
-                        key={t.cssVar}
-                        value={t.values[system.defaultTheme] ?? t.value}
-                      />
-                    ))}
+    <div class="usage">
+      <section>
+        <h2 class="section-heading">Add it to a prototype</h2>
+        {isPackage && (
+          <p>
+            Prototypes that use {system.name} are React prototypes: an <code>index.html</code> shell
+            loading <code>main.tsx</code>, built with this system's Vite and its shared{" "}
+            <code>node_modules</code>.
+          </p>
+        )}
+        <Code code={snippet} lang={isPackage ? "tsx" : "html"} />
+        {system.themes.length > 1 && (
+          <p class="muted small">
+            Themes:{" "}
+            {system.themes.map((t, i) => (
+              <span key={t.id}>
+                {i > 0 && ", "}
+                <code>{t.id}</code>
+              </span>
+            ))}
+          </p>
+        )}
+      </section>
+      <section>
+        <h2 class="section-heading">For agents</h2>
+        <p>
+          Install the generated skill <code>{data.skill}</code> with <code>dt skills install</code>,
+          or use the MCP tools <code>system_get</code>, <code>component_search</code>,{" "}
+          <code>component_get</code> and <code>token_search</code>.
+        </p>
+      </section>
+      {warnings.length > 0 && (
+        <section>
+          <h2 class="section-heading">
+            Build warnings <span class="count">{warnings.length}</span>
+          </h2>
+          <ul class="warning-list">
+            {warnings.map((w) => (
+              <li key={w}>{w}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+      <section>
+        <h2 class="section-heading">About</h2>
+        <dl class="meta wide">
+          {system.library && (
+            <>
+              <dt>Library</dt>
+              <dd>
+                {system.library.docsUrl ? (
+                  <a href={system.library.docsUrl} target="_blank" rel="noopener noreferrer">
+                    {system.library.name}
+                  </a>
+                ) : (
+                  system.library.name
+                )}
+                {system.library.package && (
+                  <span class="muted">
+                    {" · "}
+                    <code>{system.library.package}</code>
                   </span>
                 )}
-              </button>
-              {isOpen && (
-                <table class="token-table">
-                  <thead>
-                    <tr>
-                      <th>Variable</th>
-                      {system.themes.map((th) => (
-                        <th key={th.id}>{th.label}</th>
-                      ))}
-                      <th>Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {list.map((t) => (
-                      <tr key={t.cssVar}>
-                        <td>
-                          <button
-                            type="button"
-                            class="token-var"
-                            title="Copy var()"
-                            onClick={() => void copy(`var(${t.cssVar})`)}
-                          >
-                            {copied === `var(${t.cssVar})` ? "Copied" : t.cssVar}
-                          </button>
-                          <div class="muted small">
-                            {t.name} · {t.type}
-                          </div>
-                        </td>
-                        {system.themes.map((th) => {
-                          const v = t.values[th.id] ?? t.value;
-                          return (
-                            <td key={th.id} class="token-value">
-                              {t.type === "color" && <TokenSwatch value={v} />}
-                              <code>{v ?? "—"}</code>
-                            </td>
-                          );
-                        })}
-                        <td class="small">{t.description}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </section>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function SetupTab({ data }: { data: SystemDetails }) {
-  const { system } = data;
-  return (
-    <div class="setup">
-      <h2>Use it in a prototype</h2>
-      <Code code={data.include} lang="html" />
-      {system.rootContext && (
-        <Code
-          lang="html"
-          code={`<${system.rootContext} theme="${system.defaultTheme}">\n  …\n</${system.rootContext}>`}
-        />
-      )}
-      <p class="muted">
-        Agents: install the generated skill <code>{data.skill}</code> with{" "}
-        <code>dt skills.install</code>, or use the MCP tools <code>system_get</code>,{" "}
-        <code>component_search</code>, <code>component_get</code> and <code>token_search</code>.
-      </p>
-      <h2>Themes</h2>
-      <ul>
-        {system.themes.map((t) => (
-          <li key={t.id}>
-            <code>{t.id}</code> — {t.label} ({t.kind})
-            {t.classes ? <span class="muted"> · classes: {t.classes}</span> : null}
-          </li>
-        ))}
-      </ul>
+              </dd>
+              <dt>Folder</dt>
+              <dd>
+                <code class="small">{`${workspace.value?.designDir ?? ".design"}/systems/${system.id}`}</code>
+              </dd>
+            </>
+          )}
+          {from?.product && (
+            <>
+              <dt>Captured from</dt>
+              <dd>
+                {from.product}
+                {from.version ? ` ${from.version}` : ""}
+                {from.commit && <code class="small"> {from.commit.slice(0, 8)}</code>}
+              </dd>
+            </>
+          )}
+          {system.attribution.map((a, i) => (
+            <Fragment key={a.name}>
+              <dt>{i === 0 ? "Attribution" : ""}</dt>
+              <dd>
+                {a.url ? (
+                  <a href={a.url} target="_blank" rel="noopener noreferrer">
+                    {a.name}
+                  </a>
+                ) : (
+                  a.name
+                )}{" "}
+                <span class="muted">· {a.license}</span>
+              </dd>
+            </Fragment>
+          ))}
+        </dl>
+      </section>
       {system.notes && (
-        <>
-          <h2>Notes</h2>
-          <pre class="notes">{system.notes}</pre>
-        </>
-      )}
-      {system.attribution.length > 0 && (
-        <>
-          <h2>Attribution</h2>
-          <ul>
-            {system.attribution.map((a) => (
-              <li key={a.name}>
-                {a.name} — {a.license}
-                {a.note ? <span class="muted"> · {a.note}</span> : null}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-      {(data.lastBuild?.result?.warnings.length ?? 0) > 0 && (
-        <>
-          <h2>Build warnings</h2>
-          <ul>
-            {data.lastBuild!.result!.warnings.map((w) => (
-              <li key={w} class="small">
-                {w}
-              </li>
-            ))}
-          </ul>
-        </>
+        <details class="notes">
+          <summary>Capture notes</summary>
+          <pre>{system.notes}</pre>
+        </details>
       )}
     </div>
   );

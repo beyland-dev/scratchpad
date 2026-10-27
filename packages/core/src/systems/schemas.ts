@@ -15,6 +15,17 @@ export const TagSchema = z
   .string()
   .regex(/^[a-z][a-z0-9]*(-[a-z0-9]+)+$/, "Must be a valid custom element name, e.g. 'vsc-button'");
 
+/**
+ * How a component is written in markup: a custom element name (captured systems, e.g. "vsc-button")
+ * or a JSX component name (package systems, e.g. "Button").
+ */
+export const ComponentTagSchema = z
+  .string()
+  .regex(
+    /^([a-z][a-z0-9]*(-[a-z0-9]+)+|[A-Z][A-Za-z0-9]*)$/,
+    "Must be a custom element name (e.g. 'vsc-button') or a JSX component name (e.g. 'Button')",
+  );
+
 export const ComponentNameSchema = z
   .string()
   .regex(/^[a-z0-9][a-z0-9-]{0,79}$/, "Lowercase letters, numbers and dashes");
@@ -47,12 +58,43 @@ export const CapturedFromSchema = z.object({
 });
 
 /** Contents of `.design/systems/<id>/system.json`. */
+/**
+ * - `captured`: components reverse-engineered from a running product into custom elements
+ *   (dist/system.css + system.js, usable from plain HTML).
+ * - `package`: an existing library (e.g. shadcn/ui, Primer) installed and configured in the system's
+ *   folder (package.json, vite.config.ts, node_modules shared by every prototype built with it).
+ */
+export const SystemKindSchema = z.enum(["captured", "package"]);
+export type SystemKind = z.infer<typeof SystemKindSchema>;
+
+export const FrameworkSchema = z.enum(["react"]);
+export type Framework = z.infer<typeof FrameworkSchema>;
+
+export const LibrarySchema = z.object({
+  /** Display name, e.g. "shadcn/ui". */
+  name: z.string().min(1),
+  /** npm package or registry it comes from, e.g. "shadcn" or "@primer/react". */
+  package: z.string().optional(),
+  /** Official documentation, linked from the app. */
+  docsUrl: z.string().url().optional(),
+});
+export type Library = z.infer<typeof LibrarySchema>;
+
 export const SystemFileSchema = z.object({
   version: z.literal(SYSTEM_FORMAT_VERSION).default(SYSTEM_FORMAT_VERSION),
+  kind: SystemKindSchema.default("captured"),
+  /** Package systems: the UI framework its components are written in. */
+  framework: FrameworkSchema.optional(),
+  /** Package systems: the library it's based on. */
+  library: LibrarySchema.optional(),
+  /** Package systems: the global stylesheet (theme variables), relative to the system folder. */
+  styles: z.string().optional(),
   name: z.string().min(1),
   description: z.string().optional(),
   /** Workspace source (codebase) this system was audited from. */
   sourceId: z.string().optional(),
+  /** Id of the project this system belongs to. */
+  project: SystemIdSchema.optional(),
   /** Custom element tag prefix, e.g. "vsc". */
   prefix: z.string().regex(/^[a-z][a-z0-9]*$/),
   themes: z.array(ThemeSchema).min(1),
@@ -157,7 +199,10 @@ export const StateSchema = z.object({
 
 export const ExampleSchema = z.object({
   title: z.string(),
+  /** Markup shown with the example: HTML (captured systems) or JSX (package systems). */
   html: z.string(),
+  /** Package systems: the export of the component's `story` module that renders this example. */
+  story: z.string().optional(),
   description: z.string().optional(),
   /** Width of the specimen frame in CSS px. */
   width: z.number().int().positive().optional(),
@@ -192,7 +237,7 @@ export type Verification = z.infer<typeof VerificationSchema>;
 
 /** Contents of `.design/systems/<id>/components/<name>/component.json`. */
 export const ComponentFileSchema = z.object({
-  tag: TagSchema,
+  tag: ComponentTagSchema,
   kind: ComponentKindSchema.default("component"),
   title: z.string().min(1),
   category: z.string().default("general"),
@@ -224,12 +269,18 @@ export const ComponentFileSchema = z.object({
   /** Capture labels whose captured rules are part of this component's CSS (resolved at build time). */
   cssCaptures: z.array(z.string()).default([]),
   /** Context elements that must wrap this one (outermost first), e.g. ["vsc-workbench", "vsc-chat-view"]. */
-  requires: z.array(TagSchema).default([]),
+  requires: z.array(ComponentTagSchema).default([]),
   /** CSS custom properties the component reads. */
   tokens: z.array(z.string()).default([]),
   /** Components this one is composed of (tags). */
-  uses: z.array(TagSchema).default([]),
+  uses: z.array(ComponentTagSchema).default([]),
   sources: z.array(SourceRefSchema).default([]),
+  /** Package systems: how to import it, e.g. `import { Button } from "@/components/ui/button"`. */
+  import: z.string().optional(),
+  /** Package systems: module with its examples as React components, relative to the system folder. */
+  story: z.string().optional(),
+  /** Official documentation for this component. */
+  docsUrl: z.string().url().optional(),
   examples: z.array(ExampleSchema).default([]),
   /** Captured references from the real app that `capture.verify` compares the component against. */
   references: z.array(ReferenceSchema).default([]),

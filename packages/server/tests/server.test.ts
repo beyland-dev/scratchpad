@@ -4,7 +4,13 @@ import path from "node:path";
 import { Core, initWorkspace } from "@design-tool/core";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { afterEach, beforeEach, describe, expect, test } from "vite-plus/test";
-import { createApp, createSandboxApp, startServer, type RunningServer } from "../src/index.ts";
+import {
+  PickerUnavailableError,
+  createApp,
+  createSandboxApp,
+  startServer,
+  type RunningServer,
+} from "../src/index.ts";
 
 let root: string;
 let core: Core;
@@ -86,6 +92,33 @@ describe("app API", () => {
     ).toBe(200);
   });
 
+  test("folder picker endpoint returns the chosen path, null, or unavailable", async () => {
+    const pick = async (picker: () => Promise<string | null>) => {
+      const app = createApp({ core, pickFolder: picker });
+      const res = await app.request("/api/pick-folder", {
+        method: "POST",
+        headers: JSON_HEADERS,
+        body: "{}",
+      });
+      return { status: res.status, body: (await res.json()) as Record<string, unknown> };
+    };
+    expect(await pick(async () => "/tmp/app")).toMatchObject({
+      status: 200,
+      body: { ok: true, result: { path: "/tmp/app" } },
+    });
+    expect((await pick(async () => null)).body).toMatchObject({ result: { path: null } });
+    expect(
+      await pick(async () => {
+        throw new PickerUnavailableError("none");
+      }),
+    ).toMatchObject({ status: 501, body: { ok: false, error: { code: "UNAVAILABLE" } } });
+    const foreign = await createApp({ core, pickFolder: async () => "/x" }).request(
+      "/api/pick-folder",
+      { method: "POST", headers: { ...JSON_HEADERS, origin: "https://evil.example" }, body: "{}" },
+    );
+    expect(foreign.status).toBe(403);
+  });
+
   test("serves the built UI with SPA fallback", async () => {
     const webRoot = path.join(root, "web");
     await mkdir(path.join(webRoot, "assets"), { recursive: true });
@@ -102,6 +135,37 @@ describe("app API", () => {
 });
 
 describe("sandbox", () => {
+  test("serves project icons with a no-script CSP", async () => {
+    await core.run("project.create", {
+      name: "Iconic",
+      icon: {
+        format: "svg",
+        content: '<svg xmlns="http://www.w3.org/2000/svg"><script>1</script></svg>',
+      },
+    });
+    const sandbox = createSandboxApp({ core });
+    const icon = await sandbox.request("/projects/iconic/icon", { headers: HOST });
+    expect(icon.status).toBe(200);
+    expect(icon.headers.get("content-type")).toContain("image/svg+xml");
+    expect(icon.headers.get("content-security-policy")).toContain("default-src 'none'");
+    expect((await sandbox.request("/projects/server-test/icon", { headers: HOST })).status).toBe(
+      404,
+    );
+    expect((await sandbox.request("/projects/missing/icon", { headers: HOST })).status).toBe(404);
+  });
+
+  test("React prototypes are built on demand; failures render an explanation", async () => {
+    await core.run("system.create", { id: "kit", name: "Kit", kind: "package" });
+    await core.run("prototype.create", { title: "App", framework: "react" });
+    const sandbox = createSandboxApp({ core });
+    const page = await sandbox.request("/p/app/", { headers: HOST });
+    expect(page.status).toBe(500);
+    const html = await page.text();
+    expect(html).toContain("build this prototype");
+    expect(html).toContain("npm install");
+    expect((await sandbox.request("/p/app/assets/x.js", { headers: HOST })).status).toBe(500);
+  });
+
   test("serves design system builds, building on demand", async () => {
     await core.run("system.create", { id: "acme", name: "Acme", prefix: "acme" });
     await core.run("component.create", {

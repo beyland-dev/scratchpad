@@ -1,13 +1,15 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { CoreError } from "./errors.ts";
-import { atomicWrite, nowIso, pathExists, writeJson } from "./fs-utils.ts";
+import { atomicWrite, nowIso, pathExists, slugify, writeJson } from "./fs-utils.ts";
+import { PROJECT_META_FILE } from "./projects.ts";
 import { EXAMPLE_PROTOTYPE_HTML, renderAgentsGuide } from "./guide.ts";
 import { PROTOTYPE_META_FILE } from "./prototypes.ts";
-import type { PrototypeFile } from "./schemas.ts";
+import { ID_PATTERN, type ProjectFile, type PrototypeFile } from "./schemas.ts";
 import {
   CACHE_DIR,
   DESIGN_DIR,
+  PROJECTS_DIR,
   PROTOTYPES_DIR,
   TRASH_DIR,
   defaultWorkspaceConfig,
@@ -61,6 +63,14 @@ export async function initWorkspace(
     created.push(rel(rootAgents));
   }
 
+  // Start with one project named after the workspace; new prototypes and systems default to it.
+  const slug = slugify(name);
+  const projectId = ID_PATTERN.test(slug) ? slug : "main";
+  const projectDir = path.join(designDir, PROJECTS_DIR, projectId);
+  const project: ProjectFile = { name, createdAt: nowIso(), updatedAt: nowIso() };
+  await writeJson(path.join(projectDir, PROJECT_META_FILE), project);
+  created.push(rel(projectDir) + "/");
+
   if (options.example ?? true) {
     const dir = path.join(designDir, PROTOTYPES_DIR, "welcome");
     const now = nowIso();
@@ -69,6 +79,7 @@ export async function initWorkspace(
       description: "An example prototype showing the workspace conventions.",
       status: "draft",
       tags: ["example"],
+      project: projectId,
       entry: "index.html",
       createdBy: { kind: "human", name: "design-tool" },
       sourceRefs: [],

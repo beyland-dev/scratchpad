@@ -1,0 +1,37 @@
+{
+  "tag": "Switch",
+  "kind": "component",
+  "title": "Switch",
+  "category": "forms",
+  "description": "On/off toggle for settings that apply immediately.",
+  "attributes": [],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [],
+  "requires": [],
+  "tokens": [],
+  "uses": [
+    "Label"
+  ],
+  "sources": [
+    {
+      "path": "src/components/ui/switch.tsx"
+    }
+  ],
+  "import": "import { Switch } from \"@/components/ui/switch\";\nimport { Label } from \"@/components/ui/label\";",
+  "story": "stories/switch.stories.tsx",
+  "docsUrl": "https://ui.shadcn.com/docs/components/switch",
+  "examples": [
+    {
+      "title": "With a label",
+      "html": "<div className=\"flex items-center gap-3\">\n  <Switch id=\"digest\" defaultChecked />\n  <Label htmlFor=\"digest\">Weekly digest email</Label>\n</div>",
+      "story": "Default"
+    }
+  ],
+  "references": [],
+  "status": "stable",
+  "createdAt": "2026-10-27T16:46:21.469Z",
+  "updatedAt": "2026-10-27T16:46:21.469Z"
+}

@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "name": "Playground",
+  "name": "VSC Design",
   "sources": [
     {
       "id": "vscode",
       "name": "VS Code",
       "kind": "local",
-      "location": "/var/home/hawkticehurst/Code/work/vscode",
+      "location": "/Users/hawkticehurst/Code/work/vscode",
       "notes": "microsoft/vscode main. Chat composer: src/vs/workbench/contrib/chat/browser/widget/input/chatInputPart.ts + widget/media/chat.css. Default themes: extensions/theme-defaults/themes/2026-*.json.",
       "addedAt": "2026-10-22T18:04:32.313Z"
     }

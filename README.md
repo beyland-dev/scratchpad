@@ -49,29 +49,31 @@ pnpm dt init ../other --mcp vscode,claude    # or write project-level MCP config
 Then ask your agent something like:
 
 > Use the design-tool MCP server. Read the `design-tool://guide` resource and call `workspace_info`.
-> Then create 3 prototype variants of a simpler checkout, grouped as "checkout-redesign", matching
+> Then create 3 prototype variants of a simpler checkout in the right project, grouped as "checkout-redesign", matching
 > our design system from the registered sources. Share the viewer URLs.
 
 Prototypes appear in the gallery live as the agent writes them.
 
 ## Concepts
 
-| Concept           | What it is                                                                                                                                                                        |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Workspace**     | A folder containing `.design/`. Commit it to git, or keep it next to your product repo.                                                                                           |
-| **Prototype**     | A self-contained folder of HTML/CSS/JS (`.design/prototypes/<id>/`) with a `prototype.json` for metadata.                                                                         |
-| **Group**         | A free-form exploration name clustering related prototypes (e.g. `checkout-redesign`).                                                                                            |
-| **Variant**       | A prototype linked to another via `variantOf`. A prototype and its variants form one family: one gallery card that opens the latest version.                                      |
-| **Source**        | A product codebase (local path or git URL) used as a read-only reference for tokens, components, and styles.                                                                      |
-| **Design system** | Tokens and verified web components codified from a running product (`.design/systems/<id>/`), plus a generated agent skill. See [docs/design-systems.md](docs/design-systems.md). |
+| Concept           | What it is                                                                                                                                                                                                                                                                            |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Project**       | A product or effort being designed (e.g. a web app). Prototypes and design systems belong to one via their `project` field. Lives in `.design/projects/<id>/` with an optional icon.                                                                                                  |
+| **Workspace**     | A folder containing `.design/`. Commit it to git, or keep it next to your product repo.                                                                                                                                                                                               |
+| **Prototype**     | A self-contained folder of HTML/CSS/JS (`.design/prototypes/<id>/`) with a `prototype.json` for metadata.                                                                                                                                                                             |
+| **Group**         | A free-form exploration name clustering related prototypes (e.g. `checkout-redesign`).                                                                                                                                                                                                |
+| **Variant**       | A prototype linked to another via `variantOf`. A prototype and its variants form one family: one gallery card that opens the latest version.                                                                                                                                          |
+| **Source**        | A product codebase (local path or git URL) used as a read-only reference for tokens, components, and styles.                                                                                                                                                                          |
+| **Design system** | Either tokens and verified web components codified from a running product, or an existing library (shadcn/ui, Primer, …) installed and customized for React prototypes (`.design/systems/<id>/`), plus a generated agent skill. See [docs/design-systems.md](docs/design-systems.md). |
 
 ## The app
 
-- **Gallery:** a grid with one card per variant family, previewing its latest version. Filter by status, group, tag, and search, and select 2+ cards to compare.
-- **Viewer:** device presets (Fit / Mobile / Tablet / Laptop / Desktop), multi-page navigation, a version switcher (V1, V2, … Latest; ← → or 1–9), status editing, and file details.
+- **Projects:** a sidebar lists projects as icon tiles (collapsible to a narrow rail; press `[`). Each project has its own prototypes and design systems.
+- **Gallery:** a grid with one card per variant family: single prototypes show their preview, and families show a folder of their newest versions. Filter by status and group, search titles, descriptions, groups and tags (press `/`), and select 2+ cards to compare.
+- **Viewer:** a full-window stage with device presets (Desktop / Laptop / Tablet / Mobile), multi-page navigation, a version switcher (V1, V2, … Latest; ← → or 1–9), and an optional details panel (status, group, tags, files).
 - **Compare:** up to 4 prototypes side by side at the same viewport.
-- **Design systems:** watch an audit live (pipeline, captures, activity), browse components with examples in every theme, tokens, captures (screenshot, DOM, matched CSS, geometry) and verification results.
-- **Live updates:** edits from agents, the CLI, or your editor appear immediately.
+- **Design systems:** browse components with examples in every theme, explore tokens visually (colors, type scale, spacing, shadows, icons) with per-token details, and watch an audit live (progress, what needs attention, captures with screenshot, DOM, matched CSS and geometry, activity) with verification results.
+- **Live updates:** edits from agents, the CLI, or your editor appear immediately. The app only shows the connection status when it's lost.
 - **Sandboxing:** prototypes run in sandboxed iframes on a separate origin (port `7421`), so untrusted agent code can't reach the app or API.
 
 ## CLI
@@ -84,6 +86,7 @@ dt mcp-config [client]       Print MCP config snippets
 dt commands                  List core commands with JSON schemas
 
 dt workspace info
+dt project list | get <id> | create | update <id> | delete <id>
 dt source list | add <location> | remove <id>
 dt prototype list | get <id> | create | update <id> | create-variant <id>
 dt prototype write-file <id> <path> --content @file | read-file <id> <path>

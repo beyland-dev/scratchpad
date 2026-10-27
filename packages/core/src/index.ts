@@ -7,6 +7,8 @@ export * from "./commands.ts";
 export * from "./core.ts";
 export * from "./guide.ts";
 export * from "./init.ts";
+export { ProjectStore, PROJECT_META_FILE, MAX_ICON_BYTES } from "./projects.ts";
+export type { CreateProjectInput, UpdateProjectInput, ProjectIconInput } from "./projects.ts";
 export { PrototypeStore, PROTOTYPE_META_FILE, MAX_FILE_BYTES, normalizeRel } from "./prototypes.ts";
 export type {
   CreatePrototypeInput,
@@ -19,6 +21,7 @@ export {
   findWorkspaceRoot,
   readWorkspaceConfig,
   DESIGN_DIR,
+  PROJECTS_DIR,
   PROTOTYPES_DIR,
   WORKSPACE_FILE,
 } from "./workspace.ts";
@@ -32,6 +35,7 @@ export {
   COMPONENTS_DIR,
   CAPTURES_DIR,
   GENERATED_DIRS,
+  SOURCE_CHECKOUT_DIR,
 } from "./systems/store.ts";
 export type { TokenQuery, ComponentQuery, ActivityEntry, ActivityKind } from "./systems/store.ts";
 export { buildSystem, themeSelector, catalogOf, type BuildResult } from "./systems/build.ts";

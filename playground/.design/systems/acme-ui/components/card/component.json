@@ -1,0 +1,38 @@
+{
+  "tag": "Card",
+  "kind": "pattern",
+  "title": "Card",
+  "category": "layout",
+  "description": "A surface grouping related content: header (title, description, action), content and footer.",
+  "usage": "Dashboard widgets, settings sections and forms.",
+  "attributes": [],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [],
+  "requires": [],
+  "tokens": [],
+  "uses": [
+    "Button"
+  ],
+  "sources": [
+    {
+      "path": "src/components/ui/card.tsx"
+    }
+  ],
+  "import": "import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from \"@/components/ui/card\";\nimport { Button } from \"@/components/ui/button\";",
+  "story": "stories/card.stories.tsx",
+  "docsUrl": "https://ui.shadcn.com/docs/components/card",
+  "examples": [
+    {
+      "title": "Card with footer",
+      "html": "<Card className=\"w-96\">\n  <CardHeader>\n    <CardTitle>Upgrade to Pro</CardTitle>\n    <CardDescription>Unlimited projects and priority support.</CardDescription>\n  </CardHeader>\n  <CardContent className=\"text-sm text-muted-foreground\">$24 per seat, billed monthly.</CardContent>\n  <CardFooter className=\"justify-end gap-2\">\n    <Button variant=\"ghost\">Not now</Button>\n    <Button>Upgrade</Button>\n  </CardFooter>\n</Card>",
+      "story": "Default"
+    }
+  ],
+  "references": [],
+  "status": "stable",
+  "createdAt": "2026-10-27T16:46:21.423Z",
+  "updatedAt": "2026-10-27T16:46:21.423Z"
+}

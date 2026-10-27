@@ -3,6 +3,7 @@
   "name": "VS Code",
   "description": "The VS Code workbench design system (2026 themes): theme tokens, codicons, core widgets and chat UI, codified from the running product.",
   "sourceId": "vscode",
+  "project": "vscode",
   "prefix": "vsc",
   "themes": [
     {
@@ -52,5 +53,5 @@
     }
   ],
   "createdAt": "2026-10-22T19:22:04.156Z",
-  "updatedAt": "2026-10-22T21:49:55.675Z"
+  "updatedAt": "2026-10-27T14:31:40.542Z"
 }

@@ -1,0 +1,14 @@
+{
+  "title": "About",
+  "description": "A page for learning more about the team.",
+  "status": "draft",
+  "tags": [],
+  "project": "marketing-site",
+  "entry": "index.html",
+  "createdBy": {
+    "kind": "human"
+  },
+  "sourceRefs": [],
+  "createdAt": "2026-10-27T16:18:20.591Z",
+  "updatedAt": "2026-10-27T16:18:20.644Z"
+}

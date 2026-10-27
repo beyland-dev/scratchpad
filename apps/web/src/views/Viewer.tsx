@@ -3,12 +3,26 @@ import { useEffect, useState } from "preact/hooks";
 import { useLocation, useRoute } from "preact-iso";
 import { call } from "../api.ts";
 import { Frame } from "../components/Frame.tsx";
-import { STATUSES, StatusBadge } from "../components/StatusBadge.tsx";
-import { byId, familyOf, loaded, revisionOf, sandboxUrlFor, workspace } from "../store.ts";
-import type { PrototypeDetails, PrototypeStatus, PrototypeWithUrls } from "../types.ts";
+import { DeletePrototypeDialog, PrototypeDialog } from "../components/Dialogs.tsx";
+import { Icon } from "../components/Icon.tsx";
+import { StatusSelect } from "../components/StatusBadge.tsx";
 import {
+  byId,
+  familyOf,
+  loaded,
+  projectHref,
+  projectIdOf,
+  prototypes,
+  revisionOf,
+  sandboxUrlFor,
+  systems,
+  workspace,
+} from "../store.ts";
+import type { PrototypeDetails, PrototypeWithUrls } from "../types.ts";
+import {
+  DEFAULT_DEVICE,
   DEVICES,
-  FIT_DEVICE,
+  copyText,
   deviceById,
   isTypingTarget,
   relativeTime,
@@ -16,6 +30,7 @@ import {
 } from "../util.ts";
 
 const STAGE_PADDING = 32;
+const PANEL_KEY = "dt.viewer.details";
 
 function withQuery(path: string, query: Record<string, string | undefined>): string {
   const params = new URLSearchParams();
@@ -47,11 +62,14 @@ export function Viewer() {
   const revision = revisionOf(id);
   const { details, error } = useDetails(id, revision);
   const [stageRef, stage] = useElementSize<HTMLDivElement>();
-  const [panelOpen, setPanelOpen] = useState(true);
+  const [panelOpen, setPanelOpen] = useState(() => localStorage.getItem(PANEL_KEY) === "open");
+  const togglePanel = (open: boolean) => {
+    localStorage.setItem(PANEL_KEY, open ? "open" : "closed");
+    setPanelOpen(open);
+  };
   const [reloadNonce, setReloadNonce] = useState(0);
 
-  const deviceId = query.device ?? FIT_DEVICE;
-  const device = deviceById(deviceId);
+  const device = deviceById(query.device);
   const page = query.page;
   const family = proto ? familyOf(proto.id) : [];
   const familyIndex = family.findIndex((p) => p.id === id);
@@ -86,9 +104,11 @@ export function Viewer() {
   if (!proto) {
     if (!loaded.value) return <p class="page-message">Loading…</p>;
     return (
-      <p class="page-message">
-        No prototype <code>{id}</code>. <a href="/">Back to prototypes</a>
-      </p>
+      <div class="viewer">
+        <p class="page-message">
+          No prototype <code>{id}</code>. <a href="/">Back to prototypes</a>
+        </p>
+      </div>
     );
   }
 
@@ -96,18 +116,23 @@ export function Viewer() {
   const src = sandboxUrlFor(proto, page);
   const availableW = Math.max(stage.width - STAGE_PADDING * 2, 0);
   const availableH = Math.max(stage.height - STAGE_PADDING * 2, 0);
-  const frameW = device?.width ?? availableW;
-  const frameH = device?.height ?? availableH;
-  const scale = device ? Math.min(1, availableW / device.width, availableH / device.height) : 1;
+  const scale = Math.min(1, availableW / device.width, availableH / device.height);
+  const hasIssues = Boolean(proto.issues?.length);
 
   return (
     <div class={`viewer ${panelOpen ? "panel-open" : ""}`}>
       <div class="viewer-bar">
-        <a href="/" class="button ghost" aria-label="Back to prototypes">
-          ←
+        <a
+          href={projectHref(projectIdOf(proto))}
+          class="button ghost icon-only"
+          aria-label="Back to prototypes"
+          title="Back"
+        >
+          <Icon name="arrow-left" />
         </a>
-        <h1 class="viewer-title">{proto.title}</h1>
-        <StatusBadge status={proto.status} />
+        <h1 class="viewer-title" title={proto.description ?? proto.title}>
+          {proto.title}
+        </h1>
 
         {family.length > 1 && (
           <div class="segmented" role="tablist" aria-label="Versions (← → or 1–9)">
@@ -147,18 +172,18 @@ export function Viewer() {
             ))}
           </select>
         )}
-        <div class="segmented" aria-label="Viewport">
-          {[{ id: FIT_DEVICE, label: "Fit" }, ...DEVICES].map((d) => (
+        <div class="segmented" role="group" aria-label="Viewport">
+          {DEVICES.map((d) => (
             <button
               type="button"
               key={d.id}
-              class={deviceId === d.id ? "active" : ""}
-              aria-pressed={deviceId === d.id}
-              title={"width" in d ? `${d.width}×${d.height}` : "Fill the available space"}
+              class={device.id === d.id ? "active" : ""}
+              aria-pressed={device.id === d.id}
+              title={`${d.width}×${d.height}`}
               onClick={() =>
                 route(
                   withQuery(`/p/${encodeURIComponent(id)}`, {
-                    device: d.id === FIT_DEVICE ? undefined : d.id,
+                    device: d.id === DEFAULT_DEVICE.id ? undefined : d.id,
                     page,
                   }),
                   true,
@@ -169,57 +194,73 @@ export function Viewer() {
             </button>
           ))}
         </div>
+        <span class="bar-divider" />
         <button
           type="button"
-          class="button ghost"
+          class="button ghost icon-only"
           title="Reload"
+          aria-label="Reload"
           onClick={() => setReloadNonce((n) => n + 1)}
         >
-          ↻
+          <Icon name="refresh" />
         </button>
         <a
-          class="button ghost"
+          class="button ghost icon-only"
           href={src}
           target="_blank"
           rel="noopener noreferrer"
           title="Open in a new tab"
+          aria-label="Open in a new tab"
         >
-          ↗
+          <Icon name="external" />
         </a>
         {family.length > 1 && (
           <a
-            class="button ghost"
+            class="button ghost icon-only"
             href={`/compare?ids=${family.map((p) => encodeURIComponent(p.id)).join(",")}`}
+            title="Compare versions side by side"
+            aria-label="Compare versions"
           >
-            Compare versions
+            <Icon name="columns" />
           </a>
         )}
         <button
           type="button"
-          class="button ghost"
+          class="button ghost icon-only has-dot"
           aria-pressed={panelOpen}
-          onClick={() => setPanelOpen(!panelOpen)}
+          aria-label={hasIssues ? "Details (has issues)" : "Details"}
+          title="Details"
+          onClick={() => togglePanel(!panelOpen)}
         >
-          Details
+          <Icon name="panel" />
+          {hasIssues && !panelOpen && <span class="dot warn" />}
         </button>
       </div>
 
       <div class="viewer-body">
-        <div class={`stage ${device ? "device" : "fit"}`} ref={stageRef}>
+        <div class="stage" ref={stageRef}>
           {stage.width > 0 && (
             <Frame
               src={src}
               title={proto.title}
-              width={frameW}
-              height={frameH}
+              width={device.width}
+              height={device.height}
               scale={scale}
               revision={revision * 1000 + reloadNonce}
-              class={device ? "framed" : "full"}
+              class="framed"
             />
           )}
-          {device && scale < 1 && <span class="scale-note">{Math.round(scale * 100)}%</span>}
+          {scale < 1 && <span class="scale-note">{Math.round(scale * 100)}%</span>}
         </div>
-        {panelOpen && <DetailsPanel proto={proto} details={details} error={error} />}
+        {panelOpen && (
+          <DetailsPanel
+            proto={proto}
+            details={details}
+            error={error}
+            versions={family.length}
+            onDeleted={() => route(projectHref(projectIdOf(proto)), true)}
+          />
+        )}
       </div>
     </div>
   );
@@ -229,83 +270,76 @@ function DetailsPanel({
   proto,
   details,
   error,
+  versions,
+  onDeleted,
 }: {
   proto: PrototypeWithUrls;
   details: PrototypeDetails | null;
   error: string | null;
+  versions: number;
+  onDeleted: () => void;
 }) {
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [dialog, setDialog] = useState<"edit" | "delete" | null>(null);
+  const groups = [
+    ...new Set(
+      prototypes.value
+        .filter((p) => projectIdOf(p) === projectIdOf(proto) && p.group)
+        .map((p) => p.group!),
+    ),
+  ].sort();
   const sources = workspace.value?.sources ?? [];
-  const parent = proto.variantOf ? byId.value.get(proto.variantOf) : undefined;
-
-  const setStatus = async (status: PrototypeStatus) => {
-    setSaving(true);
-    setSaveError(null);
-    try {
-      await call("prototype.update", { id: proto.id, status });
-    } catch (e) {
-      setSaveError((e as Error).message);
-    } finally {
-      setSaving(false);
-    }
-  };
+  const files = details?.files ?? [];
+  const folder = `.design/prototypes/${proto.id}/`;
+  const [copied, setCopied] = useState(false);
 
   return (
     <aside class="panel" aria-label="Prototype details">
       {proto.description && <p class="panel-description">{proto.description}</p>}
+
+      {proto.issues?.length ? (
+        <div class="issues" role="alert">
+          <h3>
+            <Icon name="alert" size={14} /> {proto.issues.length === 1 ? "Issue" : "Issues"}
+          </h3>
+          <ul>
+            {proto.issues.map((i) => (
+              <li key={i}>{i}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       <dl class="meta">
         <dt>Status</dt>
         <dd>
-          <select
-            class="input"
-            value={proto.status}
-            disabled={saving}
-            onChange={(e) => void setStatus(e.currentTarget.value as PrototypeStatus)}
-          >
-            {STATUSES.map((s) => (
-              <option value={s} key={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-          {saveError && <span class="error">{saveError}</span>}
+          <StatusSelect id={proto.id} status={proto.status} />
         </dd>
-        <dt>Id</dt>
-        <dd>
-          <code>{proto.id}</code>
-        </dd>
+        {proto.framework && (
+          <>
+            <dt>Built with</dt>
+            <dd>
+              React
+              {proto.system && (
+                <>
+                  {" · "}
+                  <a href={`/systems/${encodeURIComponent(proto.system)}`}>
+                    {systems.value.find((s) => s.id === proto.system)?.name ?? proto.system}
+                  </a>
+                </>
+              )}
+            </dd>
+          </>
+        )}
         {proto.group && (
           <>
             <dt>Group</dt>
             <dd>{proto.group}</dd>
           </>
         )}
-        {proto.variantOf && (
-          <>
-            <dt>Variant of</dt>
-            <dd>
-              {parent ? (
-                <a href={`/p/${encodeURIComponent(parent.id)}`}>{parent.title}</a>
-              ) : (
-                <code>{proto.variantOf}</code>
-              )}
-            </dd>
-          </>
-        )}
         {proto.tags.length > 0 && (
           <>
             <dt>Tags</dt>
             <dd>{proto.tags.map((t) => `#${t}`).join(" ")}</dd>
-          </>
-        )}
-        {proto.createdBy && (
-          <>
-            <dt>Created by</dt>
-            <dd>
-              {proto.createdBy.name ?? "unknown"}{" "}
-              <span class="muted">({proto.createdBy.kind})</span>
-            </dd>
           </>
         )}
         {proto.sourceRefs.length > 0 && (
@@ -318,38 +352,68 @@ function DetailsPanel({
             </dd>
           </>
         )}
-        <dt>Updated</dt>
-        <dd title={new Date(proto.updatedAt).toLocaleString()}>{relativeTime(proto.updatedAt)}</dd>
-        <dt>Created</dt>
-        <dd title={new Date(proto.createdAt).toLocaleString()}>{relativeTime(proto.createdAt)}</dd>
+        <dt>Edited</dt>
+        <dd title={new Date(proto.updatedAt).toLocaleString()}>
+          {relativeTime(proto.updatedAt)}
+          {proto.createdBy?.name && <span class="muted"> · by {proto.createdBy.name}</span>}
+        </dd>
+        <dt>Folder</dt>
+        <dd>
+          <button
+            type="button"
+            class="copy-path"
+            title="Copy path"
+            onClick={async () => {
+              if (await copyText(folder)) {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1200);
+              }
+            }}
+          >
+            {copied ? "Copied" : folder}
+          </button>
+        </dd>
       </dl>
 
-      {proto.issues?.length ? (
-        <div class="issues">
-          <h3>Issues</h3>
-          <ul>
-            {proto.issues.map((i) => (
-              <li key={i}>{i}</li>
+      {error && <p class="error">{error}</p>}
+      {files.length > 1 && (
+        <>
+          <h3>Files</h3>
+          <ul class="files">
+            {files.map((f) => (
+              <li key={f.path}>
+                <a href={sandboxUrlFor(proto, f.path)} target="_blank" rel="noopener noreferrer">
+                  {f.path}
+                </a>
+                <span class="muted">{formatBytes(f.size)}</span>
+              </li>
             ))}
           </ul>
-        </div>
-      ) : null}
-
-      <h3>Files</h3>
-      {error && <p class="error">{error}</p>}
-      <ul class="files">
-        {(details?.files ?? []).map((f) => (
-          <li key={f.path}>
-            <a href={sandboxUrlFor(proto, f.path)} target="_blank" rel="noopener noreferrer">
-              {f.path}
-            </a>
-            <span class="muted">{formatBytes(f.size)}</span>
-          </li>
-        ))}
-      </ul>
-      <p class="muted small">
-        Folder: <code>.design/prototypes/{proto.id}/</code>
-      </p>
+        </>
+      )}
+      <div class="panel-actions">
+        <button type="button" class="button small" onClick={() => setDialog("edit")}>
+          Edit details
+        </button>
+        <button
+          type="button"
+          class="button small ghost danger-text"
+          onClick={() => setDialog("delete")}
+        >
+          Delete…
+        </button>
+      </div>
+      {dialog === "edit" && (
+        <PrototypeDialog proto={proto} groups={groups} onClose={() => setDialog(null)} />
+      )}
+      {dialog === "delete" && (
+        <DeletePrototypeDialog
+          proto={proto}
+          versions={versions}
+          onDeleted={onDeleted}
+          onClose={() => setDialog(null)}
+        />
+      )}
     </aside>
   );
 }

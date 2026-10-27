@@ -1,36 +1,22 @@
 import { Code } from "../components/Code.tsx";
 import { useEffect, useState } from "preact/hooks";
 import { useRoute } from "preact-iso";
+import { Icon } from "../components/Icon.tsx";
 import { Specimen, VerificationBadge } from "../components/Specimen.tsx";
 import { useCommand } from "../hooks/useCommand.ts";
-import { systemRevisionOf, workspace } from "../store.ts";
+import { systemRevisionOf, systemsListHref, workspace } from "../store.ts";
+import { ComponentDialog, DeleteComponentDialog } from "../components/Dialogs.tsx";
+import { MenuButton } from "../components/Menu.tsx";
 import type { ComponentSummary, DesignComponent, DesignSystem, Token } from "../types.ts";
-import { copyText } from "../util.ts";
-import { ThemePicker, TokenSwatch, useSystemTheme } from "./SystemView.tsx";
+import { relativeTime } from "../util.ts";
+import { ThemePicker, systemTabHref, useSystemTheme } from "./SystemView.tsx";
+import { TokenSwatch } from "./TokensView.tsx";
 
 interface ComponentDetails {
   component: DesignComponent;
   snippet: string;
   files: { path: string; size: number }[];
   code?: { css: string; js: string };
-}
-
-function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <button
-      type="button"
-      class="button small"
-      onClick={async () => {
-        if (await copyText(text)) {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1200);
-        }
-      }}
-    >
-      {copied ? "Copied" : label}
-    </button>
-  );
 }
 
 const ALL_THEMES_KEY = "dt.component.allThemes";
@@ -62,6 +48,7 @@ export function ComponentView() {
     setAllThemesState(on);
   };
   const [codeTab, setCodeTab] = useState<"js" | "css">("js");
+  const [dialog, setDialog] = useState<"edit" | "delete" | null>(null);
 
   if (details.error) return <p class="page-message error">{details.error}</p>;
   if (!details.data || !system.data) return <p class="page-message">Loading…</p>;
@@ -72,6 +59,9 @@ export function ComponentView() {
     (x) => x.name !== c.name && (x.uses.includes(c.tag) || x.requires.includes(c.tag)),
   );
   const tokenByVar = new Map((tokens.data?.tokens ?? []).map((t) => [t.cssVar, t]));
+  // Package systems use an existing library: no capture verification or custom-element code.
+  const isPackage = sys.kind === "package";
+  const lang = isPackage ? "tsx" : "html";
   const themes = allThemes ? sys.themes.map((t) => t.id) : [theme];
   const sandbox = workspace.value?.urls.sandbox;
   const link = (tag: string) => {
@@ -90,38 +80,55 @@ export function ComponentView() {
   return (
     <div class="page component-page">
       <div class="page-head">
-        <div class="crumbs">
-          <a href="/systems">Design systems</a> /{" "}
-          <a href={`/systems/${encodeURIComponent(id)}?theme=${theme}`}>{sys.name}</a> /
-        </div>
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href={systemsListHref(id)}>Design systems</a>
+          <span aria-hidden="true">/</span>
+          <a href={systemTabHref(id, "components", { theme })}>{sys.name}</a>
+        </nav>
         <div class="page-title-row">
           <h1>{c.title}</h1>
           <code class="tag big">&lt;{c.tag}&gt;</code>
-          <VerificationBadge status={c.verification?.status ?? "unverified"} />
+          {!isPackage && <VerificationBadge status={c.verification?.status ?? "unverified"} />}
           <span class="toolbar-spacer" />
-          <label class="check">
-            <input
-              type="checkbox"
-              checked={allThemes}
-              onChange={(e) => setAllThemes(e.currentTarget.checked)}
-            />{" "}
-            All themes
-          </label>
-          {!allThemes && <ThemePicker system={sys} theme={theme} onChange={setTheme} />}
+          {c.docsUrl && (
+            <a class="button small" href={c.docsUrl} target="_blank" rel="noopener noreferrer">
+              Docs <Icon name="external" size={13} />
+            </a>
+          )}
+          <MenuButton
+            label={`<${c.tag}> options`}
+            items={[
+              { label: "Edit details…", onSelect: () => setDialog("edit") },
+              { label: "Delete component…", danger: true, onSelect: () => setDialog("delete") },
+            ]}
+          />
+          {sys.themes.length > 1 && (
+            <ThemePicker
+              system={sys}
+              allOption
+              theme={allThemes ? "all" : theme}
+              onChange={(t) => {
+                setAllThemes(t === "all");
+                if (t !== "all") setTheme(t);
+              }}
+            />
+          )}
         </div>
-        <div class="card-meta">
-          <span class="chip">{c.kind}</span>
-          <span class="chip muted">{c.category}</span>
-          <span class="chip muted">{c.status}</span>
-        </div>
-        {c.description && <p>{c.description}</p>}
-        {c.usage && (
-          <p class="muted">
-            <strong>Usage:</strong> {c.usage}
+        {c.description && <p class="lede">{c.description}</p>}
+        {c.usage && <p class="muted">{c.usage}</p>}
+        {c.issues?.length ? (
+          <p class="error">
+            <Icon name="alert" size={14} /> {c.issues.join("; ")}
           </p>
-        )}
-        {c.issues?.length ? <p class="error">{c.issues.join("; ")}</p> : null}
+        ) : null}
       </div>
+
+      {dialog === "edit" && (
+        <ComponentDialog systemId={id} component={c} onClose={() => setDialog(null)} />
+      )}
+      {dialog === "delete" && (
+        <DeleteComponentDialog systemId={id} component={c} onClose={() => setDialog(null)} />
+      )}
 
       <section>
         <h2 class="section-heading">Examples</h2>
@@ -131,8 +138,6 @@ export function ComponentView() {
             <div class="example-head">
               <strong>{example.title}</strong>
               {example.description && <span class="muted"> — {example.description}</span>}
-              <span class="toolbar-spacer" />
-              <CopyButton text={example.html} label="Copy HTML" />
             </div>
             <div class={`example-specimens ${themes.length > 1 ? "split" : ""}`}>
               {themes.map((t) => (
@@ -151,75 +156,88 @@ export function ComponentView() {
                 </div>
               ))}
             </div>
-            <Code code={example.html} lang="html" />
+            <Code code={example.html} lang={lang} />
           </div>
         ))}
-        <div class="example-head">
-          <strong>Snippet with required context</strong>
-          <span class="toolbar-spacer" />
-          <CopyButton text={snippet} />
-        </div>
-        <Code code={snippet} lang="html" />
+        {isPackage ? (
+          c.import && (
+            <>
+              <div class="example-head">
+                <strong>Import</strong>
+              </div>
+              <Code code={c.import} lang="tsx" />
+            </>
+          )
+        ) : (
+          <>
+            <div class="example-head">
+              <strong>Snippet with required context</strong>
+            </div>
+            <Code code={snippet} lang="html" />
+          </>
+        )}
       </section>
 
       <div class="api-grid">
-        <section>
-          <h2 class="section-heading">Attributes</h2>
-          {c.attributes.length ? (
-            <table class="token-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Type</th>
-                  <th>Default</th>
-                  <th>Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                {c.attributes.map((a) => (
-                  <tr key={a.name}>
-                    <td>
-                      <code>{a.name}</code>
-                    </td>
-                    <td class="small">
-                      {a.type === "enum" && a.values ? a.values.join(" | ") : a.type}
-                    </td>
-                    <td>{a.default !== undefined && <code>{a.default}</code>}</td>
-                    <td class="small">{a.description}</td>
+        {!isPackage && (
+          <section>
+            <h2 class="section-heading">Attributes</h2>
+            {c.attributes.length ? (
+              <table class="token-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Default</th>
+                    <th>Description</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p class="muted">None.</p>
-          )}
-          {c.slots.length > 0 && (
-            <>
-              <h3>Slots</h3>
-              <ul>
-                {c.slots.map((s) => (
-                  <li key={s.name}>
-                    {s.name ? <code>slot="{s.name}"</code> : "default (children)"}{" "}
-                    <span class="muted">{s.description}</span>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-          {c.states.length > 0 && (
-            <>
-              <h3>States</h3>
-              <ul>
-                {c.states.map((s) => (
-                  <li key={s.name}>
-                    <code>{s.name}</code>
-                    {s.trigger && <span class="muted"> ({s.trigger})</span>} {s.description}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </section>
+                </thead>
+                <tbody>
+                  {c.attributes.map((a) => (
+                    <tr key={a.name}>
+                      <td>
+                        <code>{a.name}</code>
+                      </td>
+                      <td class="small">
+                        {a.type === "enum" && a.values ? a.values.join(" | ") : a.type}
+                      </td>
+                      <td>{a.default !== undefined && <code>{a.default}</code>}</td>
+                      <td class="small">{a.description}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p class="muted">None.</p>
+            )}
+            {c.slots.length > 0 && (
+              <>
+                <h3>Slots</h3>
+                <ul>
+                  {c.slots.map((s) => (
+                    <li key={s.name}>
+                      {s.name ? <code>slot="{s.name}"</code> : "default (children)"}{" "}
+                      <span class="muted">{s.description}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {c.states.length > 0 && (
+              <>
+                <h3>States</h3>
+                <ul>
+                  {c.states.map((s) => (
+                    <li key={s.name}>
+                      <code>{s.name}</code>
+                      {s.trigger && <span class="muted"> ({s.trigger})</span>} {s.description}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </section>
+        )}
         <section>
           <h2 class="section-heading">Relationships</h2>
           <dl class="meta">
@@ -289,70 +307,75 @@ export function ComponentView() {
         </section>
       </div>
 
-      <section>
-        <h2 class="section-heading">
-          Verification <VerificationBadge status={c.verification?.status ?? "unverified"} />
-        </h2>
-        {c.verification ? (
-          <p class="muted small">
-            Checked {new Date(c.verification.checkedAt).toLocaleString()} ·{" "}
-            {c.verification.compared ?? 0} elements compared · {c.verification.diffs ?? 0}{" "}
-            difference(s)
-          </p>
-        ) : (
-          <p class="muted">
-            Not verified yet. Run <code>capture_verify</code> once the component has references.
-          </p>
-        )}
-        {c.verification?.summary?.length ? (
-          <ul class="diff-list">
-            {c.verification.summary.map((line) => (
-              <li key={line}>
-                <code class="small">{line}</code>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-        {c.references.map((ref, i) => (
-          <div class="reference" key={i}>
-            <div class="muted small">
-              Reference <code>{ref.capture}</code> · example {ref.example}
-              {ref.theme ? ` · ${ref.theme}` : ""}
-            </div>
-            <div class="reference-compare">
-              <figure>
-                <figcaption>Captured from the product</figcaption>
-                {sandbox && (
-                  <CaptureImage
-                    base={`${sandbox}/s/${encodeURIComponent(id)}/~captures/${encodeURIComponent(ref.capture)}`}
-                    alt={`Captured ${ref.capture}`}
+      {!isPackage && (
+        <details class="code-details">
+          <summary class="section-heading">
+            Verification <VerificationBadge status={c.verification?.status ?? "unverified"} />
+          </summary>
+          {c.verification ? (
+            <p class="muted small">
+              <span title={new Date(c.verification.checkedAt).toLocaleString()}>
+                Checked {relativeTime(c.verification.checkedAt)}
+              </span>{" "}
+              · {c.verification.compared ?? 0} elements compared · {c.verification.diffs ?? 0}{" "}
+              {c.verification.diffs === 1 ? "difference" : "differences"}
+            </p>
+          ) : (
+            <p class="muted">
+              Not verified yet. Run <code>capture_verify</code> once the component has references.
+            </p>
+          )}
+          {c.verification?.summary?.length ? (
+            <ul class="diff-list">
+              {c.verification.summary.map((line) => (
+                <li key={line}>
+                  <code class="small">{line}</code>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {c.references.map((ref, i) => (
+            <div class="reference" key={i}>
+              <div class="muted small">
+                Reference <code>{ref.capture}</code> · example {ref.example}
+                {ref.theme ? ` · ${ref.theme}` : ""}
+              </div>
+              <div class="reference-compare">
+                <figure>
+                  <figcaption>Captured from the product</figcaption>
+                  {sandbox && (
+                    <CaptureImage
+                      base={`${sandbox}/s/${encodeURIComponent(id)}/~captures/${encodeURIComponent(ref.capture)}`}
+                      alt={`Captured ${ref.capture}`}
+                    />
+                  )}
+                </figure>
+                <figure>
+                  <figcaption>Library component</figcaption>
+                  <Specimen
+                    system={id}
+                    component={c.name}
+                    example={ref.example}
+                    theme={ref.theme ?? theme}
+                    bare
+                    width={ref.width}
+                    title="Library rendering"
                   />
-                )}
-              </figure>
-              <figure>
-                <figcaption>Library component</figcaption>
-                <Specimen
-                  system={id}
-                  component={c.name}
-                  example={ref.example}
-                  theme={ref.theme ?? theme}
-                  bare
-                  width={ref.width}
-                  title="Library rendering"
-                />
-              </figure>
+                </figure>
+              </div>
             </div>
-          </div>
-        ))}
-      </section>
+          ))}
+        </details>
+      )}
 
-      {code && (
-        <section>
-          <h2 class="section-heading">Code</h2>
-          <div class="segmented">
+      {code && !isPackage && (
+        <details class="code-details">
+          <summary class="section-heading">Implementation</summary>
+          <div class="segmented" role="group" aria-label="File">
             <button
               type="button"
               class={codeTab === "js" ? "active" : ""}
+              aria-pressed={codeTab === "js"}
               onClick={() => setCodeTab("js")}
             >
               component.js
@@ -360,6 +383,7 @@ export function ComponentView() {
             <button
               type="button"
               class={codeTab === "css" ? "active" : ""}
+              aria-pressed={codeTab === "css"}
               onClick={() => setCodeTab("css")}
             >
               component.css
@@ -370,7 +394,7 @@ export function ComponentView() {
             lang={codeTab === "js" ? "javascript" : "css"}
             code={codeTab === "js" ? code.js || "// none" : code.css || "/* none */"}
           />
-        </section>
+        </details>
       )}
     </div>
   );

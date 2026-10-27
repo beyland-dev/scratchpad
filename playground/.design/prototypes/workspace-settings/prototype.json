@@ -1,0 +1,18 @@
+{
+  "title": "Workspace settings",
+  "description": "Settings page: workspace profile, team members and notification preferences.",
+  "status": "draft",
+  "tags": [],
+  "project": "acme",
+  "framework": "react",
+  "system": "acme-ui",
+  "group": "settings",
+  "entry": "index.html",
+  "createdBy": {
+    "kind": "agent",
+    "name": "copilot"
+  },
+  "sourceRefs": [],
+  "createdAt": "2026-10-27T16:47:25.284Z",
+  "updatedAt": "2026-10-27T16:47:25.284Z"
+}

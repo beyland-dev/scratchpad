@@ -3,3 +3,4 @@ export { createSandboxApp, type SandboxOptions } from "./sandbox.ts";
 export { startServer, startSandbox, type RunningServer, type StartServerOptions } from "./start.ts";
 export { localGuard, type GuardOptions } from "./guard.ts";
 export { fileResponse, mimeTypeFor } from "./static.ts";
+export { nativeFolderPicker, PickerUnavailableError, type FolderPicker } from "./pick-folder.ts";

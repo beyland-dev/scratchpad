@@ -34,6 +34,9 @@ export interface CreatePrototypeInput {
   description?: string;
   status?: PrototypeStatus;
   tags?: string[];
+  project?: string;
+  framework?: "react";
+  system?: string;
   group?: string;
   variantOf?: string;
   entry?: string;
@@ -48,6 +51,7 @@ export interface UpdatePrototypeInput {
   description?: string | null;
   status?: PrototypeStatus;
   tags?: string[];
+  project?: string | null;
   group?: string | null;
   variantOf?: string | null;
   entry?: string;
@@ -55,6 +59,7 @@ export interface UpdatePrototypeInput {
 }
 
 export interface PrototypeFilter {
+  project?: string;
   group?: string;
   tag?: string;
   status?: PrototypeStatus;
@@ -110,6 +115,7 @@ export class PrototypeStore {
   list(filter: PrototypeFilter = {}): Prototype[] {
     const search = filter.search?.toLowerCase();
     return [...this.#index.values()]
+      .filter((p) => (filter.project === undefined ? true : p.project === filter.project))
       .filter((p) => (filter.group === undefined ? true : p.group === filter.group))
       .filter((p) => (filter.tag === undefined ? true : p.tags.includes(filter.tag)))
       .filter((p) => (filter.status === undefined ? true : p.status === filter.status))
@@ -152,6 +158,9 @@ export class PrototypeStore {
       ...(input.description ? { description: input.description } : {}),
       status: input.status ?? "draft",
       tags: input.tags ?? [],
+      ...(input.project ? { project: input.project } : {}),
+      ...(input.framework ? { framework: input.framework } : {}),
+      ...(input.system ? { system: input.system } : {}),
       ...(input.group ? { group: input.group } : {}),
       ...(input.variantOf ? { variantOf: input.variantOf } : {}),
       entry,
@@ -165,7 +174,18 @@ export class PrototypeStore {
       files.push({ path: entry, content: input.html, encoding: "utf8" });
     for (const file of files) await this.#writeRaw(dir, file.path, file.content, file.encoding);
     if (!files.some((f) => normalizeRel(f.path) === normalizeRel(entry))) {
-      await this.#writeRaw(dir, entry, placeholderHtml(input.title, input.description), "utf8");
+      if (input.framework === "react") {
+        await this.#writeRaw(dir, entry, reactShellHtml(input.title), "utf8");
+        if (!files.some((f) => /^main\.[jt]sx?$/.test(normalizeRel(f.path))))
+          await this.#writeRaw(
+            dir,
+            "main.tsx",
+            reactPlaceholder(input.title, input.description),
+            "utf8",
+          );
+      } else {
+        await this.#writeRaw(dir, entry, placeholderHtml(input.title, input.description), "utf8");
+      }
     }
     await writeJson(path.join(dir, PROTOTYPE_META_FILE), meta);
     return (await this.reloadOne(id))!;
@@ -186,6 +206,7 @@ export class PrototypeStore {
     if (patch.entry !== undefined) next.entry = normalizeRel(patch.entry);
     if (patch.sourceRefs !== undefined) next.sourceRefs = patch.sourceRefs;
     applyNullable(next, "description", patch.description);
+    applyNullable(next, "project", patch.project);
     applyNullable(next, "group", patch.group);
     applyNullable(next, "variantOf", patch.variantOf);
     next.updatedAt = nowIso();
@@ -405,7 +426,7 @@ function toFile(proto: Prototype): PrototypeFile {
   return rest;
 }
 
-function applyNullable<K extends "description" | "group" | "variantOf">(
+function applyNullable<K extends "description" | "project" | "group" | "variantOf">(
   target: PrototypeFile,
   key: K,
   value: string | null | undefined,
@@ -457,6 +478,44 @@ async function inferTitle(dir: string, entry: string, id: string): Promise<strin
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+}
+
+/** Entry of a React prototype: an empty shell; the app lives in main.tsx. */
+export function reactShellHtml(title: string): string {
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(title)}</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>
+`;
+}
+
+function reactPlaceholder(title: string, description?: string): string {
+  return `import { createRoot } from "react-dom/client";
+import "@/index.css";
+
+function App() {
+  return (
+    <main className="grid min-h-screen place-items-center bg-background p-8 text-foreground">
+      <div className="max-w-md text-center">
+        <h1 className="text-2xl font-semibold">${title.replace(/[{}<>]/g, "")}</h1>
+        <p className="mt-2 text-muted-foreground">
+          ${(description ?? "This prototype is empty. Write main.tsx to get started.").replace(/[{}<>]/g, "")}
+        </p>
+      </div>
+    </main>
+  );
+}
+
+createRoot(document.getElementById("root")!).render(<App />);
+`;
 }
 
 function placeholderHtml(title: string, description?: string): string {

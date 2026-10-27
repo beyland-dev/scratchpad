@@ -1,0 +1,35 @@
+{
+  "tag": "Label",
+  "kind": "component",
+  "title": "Label",
+  "category": "forms",
+  "description": "Accessible label for a form control.",
+  "attributes": [],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "cssCaptures": [],
+  "requires": [],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/components/ui/label.tsx"
+    }
+  ],
+  "import": "import { Label } from \"@/components/ui/label\";",
+  "story": "stories/label.stories.tsx",
+  "docsUrl": "https://ui.shadcn.com/docs/components/label",
+  "examples": [
+    {
+      "title": "Default",
+      "html": "<Label>Workspace name</Label>",
+      "story": "Default"
+    }
+  ],
+  "references": [],
+  "status": "stable",
+  "createdAt": "2026-10-27T16:46:21.453Z",
+  "updatedAt": "2026-10-27T16:46:21.453Z"
+}

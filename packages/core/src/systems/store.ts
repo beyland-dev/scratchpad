@@ -1,8 +1,14 @@
-import { appendFile, mkdir, readFile, readdir, rm, stat } from "node:fs/promises";
+import { appendFile, mkdir, readFile, readdir, rename, stat } from "node:fs/promises";
 import path from "node:path";
 import { CoreError } from "../errors.ts";
 import { atomicWrite, nowIso, pathExists, safeJoin, walkFiles, writeJson } from "../fs-utils.ts";
 import type { FileEncoding } from "../schemas.ts";
+import {
+  DEFAULT_STYLES,
+  NODE_MODULES_DIR,
+  extractCssTokens,
+  scaffoldPackageSystem,
+} from "./package.ts";
 import type { Workspace } from "../workspace.ts";
 import {
   ComponentFileSchema,
@@ -32,7 +38,16 @@ export const SKILL_DIR = "skill";
 export const CAPTURES_DIR = "captures";
 /** Append-only log of audit activity (captures, imports, components, verifications, builds). */
 export const ACTIVITY_FILE = "activity.jsonl";
-export const GENERATED_DIRS = [DIST_DIR, SKILL_DIR, CAPTURES_DIR, ACTIVITY_FILE];
+/** Local clone of a system's source repo (gitignored; never watched, listed or written through the API). */
+export const SOURCE_CHECKOUT_DIR = "source";
+export const GENERATED_DIRS = [
+  DIST_DIR,
+  SKILL_DIR,
+  CAPTURES_DIR,
+  ACTIVITY_FILE,
+  SOURCE_CHECKOUT_DIR,
+  NODE_MODULES_DIR,
+];
 /** Generated paths that are still worth notifying about (but never trigger a rebuild). */
 export const OBSERVED_PATHS = [CAPTURES_DIR, ACTIVITY_FILE];
 const ACTIVITY_MAX_BYTES = 512 * 1024;
@@ -126,6 +141,7 @@ export class SystemStore {
       system = {
         id,
         version: 1,
+        kind: "captured",
         name: id,
         prefix: "x",
         themes: [{ id: "default", label: "Default", kind: "light", classes: "" }],
@@ -238,6 +254,8 @@ export class SystemStore {
     await mkdir(path.join(this.dirOf(id), COMPONENTS_DIR), { recursive: true });
     await writeJson(path.join(this.dirOf(id), SYSTEM_FILE), file);
     await writeJson(path.join(this.dirOf(id), TOKENS_FILE), { tokens: [] });
+    if (file.kind === "package") await scaffoldPackageSystem(this.dirOf(id), id);
+    else await atomicWrite(path.join(this.dirOf(id), ".gitignore"), `${SOURCE_CHECKOUT_DIR}/\n`);
     await this.logActivity(id, { kind: "system", title: `Created design system ${file.name}` });
     return (await this.reloadSystem(id))!;
   }
@@ -268,7 +286,6 @@ export class SystemStore {
     this.get(id);
     await mkdir(this.#ws.trashDir, { recursive: true });
     const target = path.join(this.#ws.trashDir, `system-${id}-${Date.now()}`);
-    const { rename } = await import("node:fs/promises");
     await rename(this.dirOf(id), target);
     this.#systems.delete(id);
     this.#components.delete(id);
@@ -320,20 +337,41 @@ export class SystemStore {
 
   // ---- Tokens ------------------------------------------------------------
 
+  /**
+   * The system's tokens. Package systems also get the theme variables declared in their stylesheet
+   * (read live, so they always match the configured theme); tokens.json entries with the same
+   * variable add to or override them (e.g. descriptions).
+   */
   async tokens(id: string): Promise<Token[]> {
-    this.get(id);
+    const system = this.get(id);
     const cached = this.#tokens.get(id);
     if (cached) return cached;
-    const file = path.join(this.dirOf(id), TOKENS_FILE);
-    let tokens: Token[] = [];
-    if (await pathExists(file)) {
-      const parsed = TokensFileSchema.safeParse(JSON.parse(await readFile(file, "utf8")));
-      if (!parsed.success)
-        throw new CoreError("INVALID_INPUT", `${TOKENS_FILE} is invalid: ${parsed.error.message}`);
-      tokens = parsed.data.tokens;
+    let tokens = await this.#fileTokens(id);
+    if (system.kind === "package") {
+      const styles = system.styles ?? DEFAULT_STYLES;
+      const css = await readFile(safeJoin(this.dirOf(id), styles), "utf8").catch(() => "");
+      const own = new Map(tokens.map((t) => [t.cssVar, t]));
+      tokens = [
+        ...extractCssTokens(css, system, styles).map((t) => {
+          const extra = own.get(t.cssVar);
+          own.delete(t.cssVar);
+          return extra ? { ...t, ...extra, values: { ...t.values, ...extra.values } } : t;
+        }),
+        ...own.values(),
+      ].sort((a, b) => a.name.localeCompare(b.name));
     }
     this.#tokens.set(id, tokens);
     return tokens;
+  }
+
+  /** Tokens stored in tokens.json. */
+  async #fileTokens(id: string): Promise<Token[]> {
+    const file = path.join(this.dirOf(id), TOKENS_FILE);
+    if (!(await pathExists(file))) return [];
+    const parsed = TokensFileSchema.safeParse(JSON.parse(await readFile(file, "utf8")));
+    if (!parsed.success)
+      throw new CoreError("INVALID_INPUT", `${TOKENS_FILE} is invalid: ${parsed.error.message}`);
+    return parsed.data.tokens;
   }
 
   /**
@@ -346,7 +384,7 @@ export class SystemStore {
     incoming: TokenInput[],
     mode: "merge" | "replace" = "merge",
   ): Promise<{ added: number; updated: number; total: number }> {
-    const existing = mode === "replace" ? [] : await this.tokens(id);
+    const existing = mode === "replace" ? [] : await this.#fileTokens(id);
     const byVar = new Map(existing.map((t) => [t.cssVar, t]));
     const nameToVar = new Map(existing.map((t) => [t.name, t.cssVar]));
     let added = 0;
@@ -374,7 +412,7 @@ export class SystemStore {
     }
     const tokens = [...byVar.values()].sort((a, b) => a.name.localeCompare(b.name));
     await writeJson(path.join(this.dirOf(id), TOKENS_FILE), { tokens });
-    this.#tokens.set(id, tokens);
+    this.#tokens.delete(id);
     await this.#touch(id);
     const groups = new Set(incoming.map((t) => t.group).filter(Boolean));
     await this.logActivity(id, {
@@ -568,13 +606,19 @@ export class SystemStore {
     return (await this.reloadComponent(id, name))!;
   }
 
-  async removeComponent(id: string, name: string): Promise<{ name: string; removed: true }> {
+  /** Move a component folder to the workspace trash (recoverable by moving it back). */
+  async removeComponent(
+    id: string,
+    name: string,
+  ): Promise<{ name: string; removed: true; trashedTo: string }> {
     const tag = this.component(id, name).tag;
-    await rm(this.componentDirOf(id, name), { recursive: true, force: true });
+    await mkdir(this.#ws.trashDir, { recursive: true });
+    const target = path.join(this.#ws.trashDir, `component-${id}-${name}-${Date.now()}`);
+    await rename(this.componentDirOf(id, name), target);
     this.#components.get(id)?.delete(name);
     await this.#touch(id);
     await this.logActivity(id, { kind: "component", title: `Removed <${tag}>`, ref: name });
-    return { name, removed: true };
+    return { name, removed: true, trashedTo: path.relative(this.#ws.root, target) };
   }
 
   async writeComponentFile(

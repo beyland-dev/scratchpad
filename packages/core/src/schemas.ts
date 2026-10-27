@@ -45,6 +45,35 @@ export const WorkspaceConfigSchema = z.object({
 });
 export type WorkspaceConfig = z.infer<typeof WorkspaceConfigSchema>;
 
+/** Contents of `.design/projects/<id>/project.json`. A project is a product or effort that
+ * prototypes and design systems belong to (via their `project` field). */
+export const ProjectFileSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().optional(),
+  /** Accent color for the project's generated icon, e.g. "#5b5bd6". */
+  color: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/, "Must be a hex color like #5b5bd6")
+    .optional(),
+  /** Which abstract pattern the generated icon uses (when there's no icon file). */
+  pattern: z.number().int().min(0).max(63).optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+export type ProjectFile = z.infer<typeof ProjectFileSchema>;
+
+export const ProjectSchema = ProjectFileSchema.extend({
+  id: SlugSchema,
+  /** File name of the project's icon (e.g. "icon.svg") when it has one. */
+  icon: z.string().optional(),
+  /** Problems found while loading (e.g. missing or invalid project.json). */
+  issues: z.array(z.string()).optional(),
+});
+export type Project = z.infer<typeof ProjectSchema>;
+
+export const ProjectIconFormatSchema = z.enum(["svg", "png", "webp", "jpg"]);
+export type ProjectIconFormat = z.infer<typeof ProjectIconFormatSchema>;
+
 export const PrototypeStatusSchema = z.enum(["draft", "review", "approved", "archived"]);
 export type PrototypeStatus = z.infer<typeof PrototypeStatusSchema>;
 
@@ -60,6 +89,15 @@ export const PrototypeFileSchema = z.object({
   description: z.string().optional(),
   status: PrototypeStatusSchema.default("draft"),
   tags: z.array(z.string()).default([]),
+  /** Id of the project this prototype belongs to. */
+  project: SlugSchema.optional(),
+  /**
+   * Built with a framework (bundled by the design system's Vite on demand) instead of served as
+   * plain files. The entry stays an HTML shell that loads e.g. main.tsx.
+   */
+  framework: z.enum(["react"]).optional(),
+  /** Package design system it's built against (its components, styles and node_modules). */
+  system: SlugSchema.optional(),
   /** Free-form exploration name used to group related prototypes. */
   group: z.string().optional(),
   /** Id of the prototype this one is a variant of. */
@@ -105,6 +143,13 @@ export type FileInput = z.input<typeof FileInputSchema>;
 export interface WorkspaceUrls {
   app: string;
   sandbox: string;
+}
+
+export interface ProjectUrls {
+  /** The project's page in the app. */
+  app: string;
+  /** The icon, served from the sandbox origin (icons are untrusted files). */
+  icon?: string;
 }
 
 export interface PrototypeUrls {

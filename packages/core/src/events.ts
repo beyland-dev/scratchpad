@@ -1,6 +1,8 @@
 export interface CoreEvents {
   /** A prototype's metadata or files changed (or it was created/removed). */
   "prototype.changed": { id: string; exists: boolean; paths: string[] };
+  /** A project's metadata or icon changed (or it was created/removed). */
+  "project.changed": { id: string; exists: boolean };
   /** `.design/workspace.json` changed. */
   "workspace.changed": Record<string, never>;
   /** A design system's sources changed, or it was rebuilt. */
