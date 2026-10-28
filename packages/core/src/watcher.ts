@@ -5,7 +5,7 @@ import { TMP_SUFFIX } from "./fs-utils.ts";
 import type { ProjectStore } from "./projects.ts";
 import { ID_PATTERN } from "./schemas.ts";
 import { GENERATED_DIRS, OBSERVED_PATHS, SYSTEMS_DIR } from "./systems/store.ts";
-import { CACHE_DIR, PROTOTYPES_DIR, TRASH_DIR, type Workspace } from "./workspace.ts";
+import { CACHE_DIR, PROTOTYPES_DIR, REVIEWS_DIR, TRASH_DIR, type Workspace } from "./workspace.ts";
 
 const DEBOUNCE_MS = 75;
 const SYSTEM_DEBOUNCE_MS = 250;
@@ -34,6 +34,7 @@ export async function watchWorkspace(
 ): Promise<() => Promise<void>> {
   const pendingPrototypes = new Map<string, Pending>();
   const pendingSystems = new Map<string, Pending>();
+  const pendingReviews = new Map<string, Pending>();
   const pendingProjects = new Map<string, NodeJS.Timeout>();
   let configTimer: NodeJS.Timeout | undefined;
 
@@ -138,6 +139,17 @@ export async function watchWorkspace(
     }
   };
 
+  const flushReview = async (key: string): Promise<void> => {
+    const [project, id] = split(key);
+    if (!projects.has(project)) return scheduleProject(project);
+    try {
+      const review = await projects.scope(project).reviews.reloadOne(id);
+      events.emit("review.changed", { project, id, exists: review !== undefined });
+    } catch (error) {
+      console.error(`[scratchpad] failed to reload review ${key}`, error);
+    }
+  };
+
   watcher.on("all", (_event, file) => {
     if (path.resolve(file) === path.resolve(ws.configFile)) {
       clearTimeout(configTimer);
@@ -163,6 +175,8 @@ export async function watchWorkspace(
       queue(pendingPrototypes, `${project}/${id}`, rest, DEBOUNCE_MS, flushPrototype);
     else if (section === SYSTEMS_DIR)
       queue(pendingSystems, `${project}/${id}`, rest, SYSTEM_DEBOUNCE_MS, flushSystem);
+    else if (section === REVIEWS_DIR)
+      queue(pendingReviews, `${project}/${id}`, rest, DEBOUNCE_MS, flushReview);
   });
 
   await new Promise<void>((resolve, reject) => {
@@ -174,6 +188,8 @@ export async function watchWorkspace(
     clearTimeout(configTimer);
     for (const { timer } of pendingPrototypes.values()) clearTimeout(timer);
     for (const { timer } of pendingSystems.values()) clearTimeout(timer);
+    for (const { timer } of pendingReviews.values()) clearTimeout(timer);
+    pendingReviews.clear();
     for (const timer of pendingProjects.values()) clearTimeout(timer);
     pendingPrototypes.clear();
     pendingSystems.clear();

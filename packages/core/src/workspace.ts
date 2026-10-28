@@ -100,6 +100,10 @@ export class Workspace {
   static async open(root: string): Promise<Workspace> {
     const { root: resolved } = await ensureWorkspace(root);
     await mkdir(path.join(resolved, PROJECTS_DIR), { recursive: true });
+    // The guide is generated: keep it in step with this version of Scratchpad.
+    const guide = path.join(resolved, AGENTS_FILE);
+    const text = renderAgentsGuide();
+    if ((await readFile(guide, "utf8").catch(() => "")) !== text) await atomicWrite(guide, text);
     return new Workspace(resolved, await readWorkspaceConfig(resolved));
   }
 

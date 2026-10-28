@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "title": "Checkout: payment step",
+  "intro": "We're simplifying the payment step of checkout. Each option below is a clickable prototype; try paying for the order as you normally would.\n\nThese are rough prototypes, so not every button works.",
+  "questions": [
+    "Which option makes it clearest what you'll be charged?",
+    "Is anything confusing or missing when you choose how to pay?",
+    "Which one would you trust most with your card details?"
+  ],
+  "presentation": "both",
+  "device": "desktop",
+  "round": 2,
+  "exportedAt": "2026-10-28T16:00:00.000Z",
+  "project": "Storefront",
+  "items": [
+    {
+      "key": "a",
+      "label": "Option A",
+      "note": "Single page, summary on the right",
+      "entry": "prototypes/checkout-a/index.html",
+      "pages": ["prototypes/checkout-a/confirmation.html"]
+    },
+    {
+      "key": "b",
+      "label": "Option B",
+      "note": "Step by step",
+      "entry": "prototypes/checkout-b/index.html",
+      "pages": []
+    },
+    {
+      "key": "c",
+      "label": "Option C",
+      "entry": "prototypes/checkout-c/index.html",
+      "pages": []
+    }
+  ]
+}

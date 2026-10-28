@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout A</title>
+    <style>
+      body {
+        margin: 0;
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+        color: #1c1c22;
+        background: #f6f6f8;
+      }
+      main {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 48px 24px;
+      }
+      section {
+        flex: 2 1 320px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 1px 3px #0001;
+      }
+      aside {
+        flex: 1 1 220px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        height: fit-content;
+      }
+      label {
+        display: block;
+        margin: 12px 0 4px;
+        font-size: 13px;
+        color: #666;
+      }
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font: inherit;
+      }
+      a.pay {
+        display: block;
+        margin-top: 20px;
+        padding: 12px;
+        text-align: center;
+        color: #fff;
+        background: #2f6fed;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        margin: 6px 0;
+      }
+      .total {
+        font-weight: 700;
+        border-top: 1px solid #eee;
+        padding-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>Payment</h1>
+        <label for="card">Card number</label>
+        <input id="card" placeholder="1234 5678 9012 3456" />
+        <label for="exp">Expiry</label>
+        <input id="exp" placeholder="MM / YY" />
+        <a class="pay" href="confirmation.html">Pay $84.00</a>
+      </section>
+      <aside>
+        <h2>Summary</h2>
+        <div class="row"><span>Sneakers</span><span>$76.00</span></div>
+        <div class="row"><span>Shipping</span><span>$8.00</span></div>
+        <div class="row total"><span>Total</span><span>$84.00</span></div>
+      </aside>
+    </main>
+  </body>
+</html>

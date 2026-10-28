@@ -10,12 +10,14 @@
   "exports": {
     ".": "./src/index.ts",
     "./family": "./src/family.ts",
+    "./review-manifest": "./src/review-manifest.ts",
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "exports": {
       ".": "./dist/index.mjs",
       "./family": "./dist/family.mjs",
+      "./review-manifest": "./dist/review-manifest.mjs",
       "./package.json": "./package.json"
     },
     "access": "public"

@@ -5,7 +5,7 @@ import {
   versionLabel,
 } from "@beyland/scratchpad-core/family";
 import { call, subscribe } from "./api.ts";
-import type { ProjectSummary, PrototypeWithUrls, WorkspaceInfo } from "./types.ts";
+import type { ProjectSummary, PrototypeWithUrls, Review, WorkspaceInfo } from "./types.ts";
 
 /** `project/id`: how the app identifies prototypes and design systems across projects. */
 export function refOf(project: string, id: string): string {
@@ -42,6 +42,7 @@ function normalizeSystem(s: ApiSystem): SystemSummary {
 export const workspace = signal<WorkspaceInfo | null>(null);
 export const prototypes = signal<PrototypeWithUrls[]>([]);
 export const projects = signal<ProjectSummary[]>([]);
+export const reviews = signal<Review[]>([]);
 export const loaded = signal(false);
 export const loadError = signal<string | null>(null);
 export const connected = signal(false);
@@ -110,12 +111,14 @@ export async function refresh(): Promise<void> {
   }
   refreshing = (async () => {
     try {
-      const [info, list, systemList, projectList] = await Promise.all([
+      const [info, list, systemList, projectList, reviewList] = await Promise.all([
         call<WorkspaceInfo>("workspace.info"),
         call<{ prototypes: ApiPrototype[] }>("prototype.list"),
         call<{ systems: ApiSystem[] }>("system.list").catch(() => ({ systems: [] })),
         call<{ projects: ProjectSummary[] }>("project.list").catch(() => ({ projects: [] })),
+        call<{ reviews: Review[] }>("review.list").catch(() => ({ reviews: [] })),
       ]);
+      reviews.value = reviewList.reviews;
       workspace.value = info;
       projects.value = projectList.projects;
       systems.value = systemList.systems.map(normalizeSystem);
@@ -147,6 +150,7 @@ export function startLiveUpdates(): void {
       if (event.type === "prototype.changed" || event.type === "system.changed")
         bumpProject(event.data.project);
       if (event.type === "project.changed") bumpProject(event.data.id);
+      if (event.type === "review.changed") bumpProject(event.data.project);
       if (event.type === "prototype.changed") {
         const ref = refOf(event.data.project, event.data.id);
         revisions.value = { ...revisions.value, [ref]: revisionOf(ref) + 1 };
@@ -276,4 +280,35 @@ export function projectDirOf(project: string): string {
 /** The design systems list of the project that `systemRef` (`project/id`) belongs to. */
 export function systemsListHref(systemRef: string): string {
   return projectHref(splitRef(systemRef).project, "systems");
+}
+
+// ---- Reviews -----------------------------------------------------------------
+
+export function reviewHref(review: { project: string; id: string }): string {
+  return `${projectHref(review.project, "feedback")}/${encodeURIComponent(review.id)}`;
+}
+
+/** The prototype an option of a review shows, if it still exists. */
+export function reviewItemPrototype(
+  review: { project: string },
+  item: { prototype: string },
+): PrototypeWithUrls | undefined {
+  return byId.value.get(refOf(review.project, item.prototype));
+}
+
+/**
+ * Options whose prototype changed since the last published round (so a new round would differ),
+ * or that weren't in it.
+ */
+export function changedSinceLastRound(review: Review): Set<string> {
+  const last = review.rounds.at(-1);
+  const changed = new Set<string>();
+  if (!last) return changed;
+  const published = new Map(last.prototypes.map((p) => [p.id, p.updatedAt]));
+  for (const item of review.items) {
+    const proto = reviewItemPrototype(review, item);
+    const at = published.get(item.prototype);
+    if (!at || (proto && proto.updatedAt > at)) changed.add(item.prototype);
+  }
+  return changed;
 }

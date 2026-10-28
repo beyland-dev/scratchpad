@@ -181,12 +181,15 @@ export function ConfirmDialog({
   confirmLabel,
   onConfirm,
   onClose,
+  danger = true,
 }: {
   title: string;
   children: ComponentChildren;
   confirmLabel: string;
   onConfirm: () => Promise<void>;
   onClose: () => void;
+  /** Style the confirm button as destructive (the default; most confirmations are deletes). */
+  danger?: boolean;
 }) {
   const { busy, error, submit } = useSubmit(onConfirm);
   return (
@@ -198,7 +201,7 @@ export function ConfirmDialog({
           busy={busy}
           error={error}
           onCancel={onClose}
-          danger
+          danger={danger}
         />
       </form>
     </Modal>

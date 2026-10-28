@@ -10,9 +10,10 @@ import { systemCommands } from "./systems/commands.ts";
 import type { AnyCommand } from "./registry.ts";
 import { EventBus } from "./events.ts";
 import { gitCommands } from "./git-commands.ts";
+import { reviewCommands } from "./review-commands.ts";
 import { ProjectGit, execRunner, type Runner } from "./git.ts";
 import { CoreError } from "./errors.ts";
-import { PrototypeIndex, SystemIndex } from "./indexes.ts";
+import { PrototypeIndex, ReviewIndex, SystemIndex } from "./indexes.ts";
 import { ProjectStore } from "./projects.ts";
 import { refKey } from "./refs.ts";
 import type { ProjectUrls, PrototypeUrls, WorkspaceUrls } from "./schemas.ts";
@@ -50,11 +51,14 @@ export class Core {
   readonly prototypes: PrototypeIndex;
   /** Design systems across projects, addressed as `project/id` (or an id only one project has). */
   readonly systems: SystemIndex;
+  /** Reviews across projects, addressed as `project/id` (or an id only one project has). */
+  readonly reviews: ReviewIndex;
   readonly events = new EventBus();
   readonly registry = new CommandRegistry().register(
     ...builtinCommands,
     ...systemCommands,
     ...gitCommands,
+    ...reviewCommands,
   );
   gitRunner: Runner = execRunner;
   #urls: WorkspaceUrls | undefined;
@@ -71,6 +75,7 @@ export class Core {
     this.projects = new ProjectStore(workspace);
     this.prototypes = new PrototypeIndex(this);
     this.systems = new SystemIndex(this);
+    this.reviews = new ReviewIndex(this);
   }
 
   static async open(options: OpenCoreOptions): Promise<Core> {

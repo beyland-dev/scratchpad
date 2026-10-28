@@ -8,6 +8,7 @@ import type {
   UpdatePrototypeInput,
 } from "./prototypes.ts";
 import { parseRef } from "./refs.ts";
+import type { Review, ReviewInput, ReviewStore } from "./reviews.ts";
 import type { ProjectScope } from "./scope.ts";
 import type { Author, FileEncoding, Prototype, PrototypeFileEntry } from "./schemas.ts";
 import type { ActivityEntry, ComponentQuery, SystemStore, TokenQuery } from "./systems/store.ts";
@@ -335,5 +336,40 @@ export class SystemIndex {
   activity(ref: string, limit?: number): Promise<ActivityEntry[]> {
     const { store, id } = this.locate(ref);
     return store.activity(id, limit);
+  }
+}
+
+/** Reviews across every project, addressed as `project/id` (or an id only one project has). */
+export class ReviewIndex {
+  readonly #core: Core;
+
+  constructor(core: Core) {
+    this.#core = core;
+  }
+
+  locate(ref: string): Located<ReviewStore> {
+    return locate(
+      this.#core,
+      ref,
+      "review",
+      (scope) => scope.reviews,
+      (store, id) => store.has(id),
+    );
+  }
+
+  list(project?: string): Review[] {
+    const scopes = project ? [this.#core.projects.scope(project)] : this.#core.projects.scopes();
+    return scopes
+      .flatMap((scope) => scope.reviews.list())
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  }
+
+  get(ref: string): Review {
+    const { store, id } = this.locate(ref);
+    return store.get(id);
+  }
+
+  create(project: string, input: ReviewInput & { title: string; id?: string }): Promise<Review> {
+    return this.#core.projects.scope(project).reviews.create(input);
   }
 }

@@ -9,6 +9,7 @@ import {
   CoreError,
   builtinCommands,
   gitCommands,
+  reviewCommands,
   systemCommands,
   defaultWorkspaceRoot,
   isCoreError,
@@ -47,6 +48,7 @@ const registry = new CommandRegistry().register(
   ...builtinCommands,
   ...systemCommands,
   ...gitCommands,
+  ...reviewCommands,
   ...captureCommands,
 );
 

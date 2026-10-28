@@ -6,6 +6,8 @@ export interface CoreEvents {
    * whole folder appeared or disappeared (e.g. a clone), so its contents changed too.
    */
   "project.changed": { id: string; exists: boolean; contents?: boolean };
+  /** A review's settings changed (or it was created/removed). */
+  "review.changed": { project: string; id: string; exists: boolean };
   /** `config.json` changed. */
   "workspace.changed": Record<string, never>;
   /** A design system's sources changed, or it was rebuilt. */

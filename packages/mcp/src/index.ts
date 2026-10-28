@@ -26,6 +26,7 @@ const DESTRUCTIVE = new Set([
   "project.delete",
   "system.delete",
   "component.remove",
+  "review.delete",
 ]);
 
 const INSTRUCTIONS = `Scratchpad manages projects of design prototypes (self-contained HTML folders) and design systems, plus read-only reference sources (product codebases).

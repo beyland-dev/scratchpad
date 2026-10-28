@@ -513,10 +513,14 @@ function applyNullable<K extends "description" | "group" | "variantOf" | "system
 /** `../../systems/<id>/system.css` (or .js): a plain HTML prototype loading one of its project's systems. */
 const SYSTEM_REF = /(?:^|[/"'])systems\/([a-zA-Z0-9][a-zA-Z0-9._-]*)\/system\.(?:css|js)\b/g;
 
+/** Ids of the design systems an HTML page loads with `…/systems/<id>/system.css` (or .js). */
+export function systemRefsIn(html: string): string[] {
+  return [...new Set([...html.matchAll(SYSTEM_REF)].map((m) => m[1]!))];
+}
+
 async function readSystemRefs(file: string): Promise<string[]> {
   if (!/\.html?$/i.test(file)) return [];
-  const html = await readFile(file, "utf8").catch(() => "");
-  return [...new Set([...html.matchAll(SYSTEM_REF)].map((m) => m[1]!))];
+  return systemRefsIn(await readFile(file, "utf8").catch(() => ""));
 }
 
 export function normalizeRel(rel: string): string {

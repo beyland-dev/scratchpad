@@ -27,6 +27,8 @@ project folder is self-contained and is often its own git repo, shared with coll
           ...               # any other pages/assets, referenced with relative paths
       systems/
         <id>/               # design systems (tokens + components) used by this project's prototypes
+      reviews/
+        <id>/review.json    # prototypes packaged for people to give feedback on
       .gitignore            # generated and local-only files (builds, node_modules, trash)
 \`\`\`
 
@@ -133,6 +135,23 @@ configured in its folder (\`kind: "package"\`): a Vite + React project with \`pa
   Scratchpad builds it with the system's Vite on demand (build errors show in the viewer). Never
   install packages into a prototype; add dependencies to the design system.
 
+## Reviews (feedback)
+
+A **review** packages specific prototype versions of a project for people to give feedback on:
+reviewers see them as labeled options (\`Option A\`, …; internal titles, descriptions and ids stay
+private) with your intro and questions, one at a time and/or side by side. Create one with
+\`review.create { project, title, intro, questions, items: [{ prototype, label?, note? }] }\`, check it
+with \`review.preview\` (a local URL), and \`review.publish\` it: each publish is a frozen round on
+GitHub Pages from the project's repo (the project must be shared first), and the review keeps a
+stable link to the latest round. Published reviews are public to anyone with the link.
+
+## Sharing projects with git
+
+\`project.git.status\` shows whether a project is a repo and what's uncommitted, to push or to pull.
+\`project.git.link\` shares it (a new GitHub repo, or an empty remote), \`project.clone\` adds a shared
+project, and \`project.git.sync\` commits, pulls and pushes. Only sync when the person asks: it
+publishes their work to collaborators.
+
 ## Tools
 
 The same operations are available over MCP, the HTTP API (\`POST /api/commands/<name>\`),
@@ -151,6 +170,10 @@ and the \`scratchpad\` (\`sp\`) CLI:
 | \`prototype.update\` | Edit metadata (status, group, tags, …) or move it to another project |
 | \`prototype.delete\` | Move to the project's trash |
 | \`prototype.urls\` | Viewer + raw URLs to share with a person |
+| \`review.create\` / \`review.update\` / \`review.get\` / \`review.list\` | Package prototypes for feedback |
+| \`review.preview\` / \`review.publish\` / \`review.export\` | Preview, publish a round to GitHub Pages, or export a static copy |
+| \`project.git.status\` / \`project.git.link\` / \`project.clone\` | Share projects as git repos |
+| \`project.git.commit\` / \`pull\` / \`push\` / \`sync\` | Exchange changes with collaborators |
 
 MCP tool names use underscores instead of dots (e.g. \`prototype_create\`).
 

@@ -117,13 +117,14 @@ export class ProjectStore {
     const project = await this.#readFromDisk(id);
     let scopeChanged = false;
     if (project) {
-      this.#index.set(id, project);
+      // Load a new project's contents before it's listed, so it's never known without its stores.
       if (!this.#scopes.has(id)) {
         const scope = new ProjectScope(this.#ws, id);
         await scope.load();
         this.#scopes.set(id, scope);
         scopeChanged = true;
       }
+      this.#index.set(id, project);
     } else {
       this.#index.delete(id);
       scopeChanged = this.#scopes.delete(id);

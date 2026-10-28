@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout C</title>
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #15151a;
+        --card: #f2f2f5;
+        --accent: #0a7d55;
+      }
+      :root[data-theme="dark"] {
+        --bg: #121216;
+        --fg: #ececf1;
+        --card: #1f1f26;
+        --accent: #4fc987;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+      }
+      main {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 48px 24px;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 20px;
+        margin: 16px 0;
+      }
+      .total {
+        font-size: 32px;
+        font-weight: 800;
+      }
+      a {
+        display: block;
+        padding: 14px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>You'll pay</p>
+      <p class="total">$84.00</p>
+      <div class="card">Visa ending 4242 · <u>Change</u></div>
+      <div class="card">Ships to 12 Elm Street, Springfield</div>
+      <a href="#">Pay now</a>
+    </main>
+    <script>
+      // A tiny stand-in for a design system runtime's theme bridge (dt-theme-ready / dt-theme).
+      const themes = [
+        { id: "light", label: "Light", kind: "light" },
+        { id: "dark", label: "Dark", kind: "dark" },
+      ];
+      const set = (id) => {
+        if (themes.some((t) => t.id === id)) document.documentElement.dataset.theme = id;
+      };
+      set(new URLSearchParams(location.search).get("theme"));
+      addEventListener("message", (event) => {
+        if (event.source === parent && event.data && event.data.type === "dt-theme")
+          set(event.data.theme);
+      });
+      if (parent !== window) {
+        parent.postMessage(
+          {
+            type: "dt-theme-ready",
+            system: "sample",
+            themes,
+            theme: document.documentElement.dataset.theme || "light",
+          },
+          "*",
+        );
+      }
+    </script>
+  </body>
+</html>

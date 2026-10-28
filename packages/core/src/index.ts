@@ -9,7 +9,7 @@ export * from "./guide.ts";
 export * from "./init.ts";
 export { ProjectStore, PROJECT_META_FILE, PROJECT_GITIGNORE, MAX_ICON_BYTES } from "./projects.ts";
 export { ProjectScope, type ScopeContext } from "./scope.ts";
-export { PrototypeIndex, SystemIndex, type Located } from "./indexes.ts";
+export { PrototypeIndex, ReviewIndex, SystemIndex, type Located } from "./indexes.ts";
 export { parseRef, qualify, refKey, REF_PATTERN, type Ref } from "./refs.ts";
 export {
   ProjectGit,
@@ -21,8 +21,36 @@ export {
   type Runner,
 } from "./git.ts";
 export { gitCommands, summarizeChanges } from "./git-commands.ts";
+export * from "./review-manifest.ts";
+export {
+  ReviewStore,
+  ReviewFileSchema,
+  ReviewItemSchema,
+  ReviewRoundSchema,
+  REVIEW_META_FILE,
+  type Review,
+  type ReviewFile,
+  type ReviewItem,
+  type ReviewRound,
+} from "./reviews.ts";
+export {
+  exportReview,
+  publishReview,
+  findReviewApp,
+  reviewAppCandidates,
+  PUBLISH_BRANCH,
+  type ExportResult,
+  type PublishResult,
+} from "./review-export.ts";
+export { reviewCommands } from "./review-commands.ts";
 export type { CreateProjectInput, UpdateProjectInput, ProjectIconInput } from "./projects.ts";
-export { PrototypeStore, PROTOTYPE_META_FILE, MAX_FILE_BYTES, normalizeRel } from "./prototypes.ts";
+export {
+  PrototypeStore,
+  PROTOTYPE_META_FILE,
+  MAX_FILE_BYTES,
+  normalizeRel,
+  systemRefsIn,
+} from "./prototypes.ts";
 export type {
   CreatePrototypeInput,
   UpdatePrototypeInput,

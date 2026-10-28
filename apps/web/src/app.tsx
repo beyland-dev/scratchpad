@@ -6,6 +6,7 @@ import { Sidebar } from "./components/Sidebar.tsx";
 import { homeProjectId, loaded, projectHref, startLiveUpdates } from "./store.ts";
 import { Compare } from "./views/Compare.tsx";
 import { Feedback } from "./views/Feedback.tsx";
+import { ReviewView } from "./views/ReviewView.tsx";
 import { Handoff } from "./views/Handoff.tsx";
 import { Settings } from "./views/Settings.tsx";
 import { CaptureView } from "./views/CaptureView.tsx";
@@ -55,6 +56,7 @@ function Shell() {
             <Route path="/projects/:project" component={Gallery} />
             <Route path="/projects/:project/systems" component={Systems} />
             <Route path="/projects/:project/feedback" component={Feedback} />
+            <Route path="/projects/:project/feedback/:id" component={ReviewView} />
             <Route path="/projects/:project/handoff" component={Handoff} />
             <Route path="/settings" component={Settings} />
             <Route path="/projects/:project/p/:id" component={Viewer} />

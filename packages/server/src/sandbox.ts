@@ -6,6 +6,7 @@ import {
   SPECIMEN_HTML,
   isCoreError,
   safeJoin,
+  ID_PATTERN,
   refKey,
   type Core,
 } from "@beyland/scratchpad-core";
@@ -158,6 +159,26 @@ export function createSandboxApp(options: SandboxOptions): Hono {
       const relative = rest === "" ? entry : rest;
       if (relative === PROTOTYPE_META_FILE) return c.text("Not found", 404, SANDBOX_HEADERS);
       const response = await fileResponse(safeJoin(dir, relative), SANDBOX_HEADERS);
+      return response ?? c.text("Not found", 404, SANDBOX_HEADERS);
+    } catch (error) {
+      if (isCoreError(error)) return c.text(error.message, 400, SANDBOX_HEADERS);
+      throw error;
+    }
+  });
+
+  // Local previews of review exports (review.preview), exactly as reviewers will see them.
+  app.get("/review-previews/:project/:id/*", async (c) => {
+    const project = c.req.param("project");
+    const id = c.req.param("id");
+    const rest = restOf(
+      c.req.path,
+      `/review-previews/${encodeURIComponent(project)}/${encodeURIComponent(id)}/`,
+    );
+    if (rest === undefined || !ID_PATTERN.test(project) || !ID_PATTERN.test(id))
+      return c.text("Bad path", 400, SANDBOX_HEADERS);
+    try {
+      const dir = path.join(core.workspace.cacheDir, "review-previews", project, id);
+      const response = await fileResponse(safeJoin(dir, rest || "index.html"), SANDBOX_HEADERS);
       return response ?? c.text("Not found", 404, SANDBOX_HEADERS);
     } catch (error) {
       if (isCoreError(error)) return c.text(error.message, 400, SANDBOX_HEADERS);

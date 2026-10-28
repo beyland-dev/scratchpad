@@ -1,5 +1,6 @@
 import path from "node:path";
 import { PrototypeStore } from "./prototypes.ts";
+import { ReviewStore } from "./reviews.ts";
 import { SystemStore } from "./systems/store.ts";
 import { TRASH_DIR, type Workspace } from "./workspace.ts";
 
@@ -24,6 +25,7 @@ export class ProjectScope {
   readonly context: ScopeContext;
   readonly prototypes: PrototypeStore;
   readonly systems: SystemStore;
+  readonly reviews: ReviewStore;
 
   constructor(workspace: Workspace, id: string) {
     this.id = id;
@@ -36,10 +38,12 @@ export class ProjectScope {
     };
     this.prototypes = new PrototypeStore(this.context);
     this.systems = new SystemStore(this.context);
+    this.reviews = new ReviewStore(this.context);
   }
 
   async load(): Promise<void> {
     await this.prototypes.load();
     await this.systems.load();
+    await this.reviews.load();
   }
 }

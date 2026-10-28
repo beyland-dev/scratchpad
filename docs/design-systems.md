@@ -1,20 +1,21 @@
 # Design systems
 
 A design system turns a product's real UI into reusable, verified building blocks that agents
-use to make prototypes that look like the product. It lives in `.design/systems/<id>/`:
+use to make prototypes that look like the product. It lives in its project's folder,
+`~/.scratchpad/projects/<project>/systems/<id>/`, and its prototypes are in the same project:
 
 ```text
-.design/systems/vscode/
+projects/vscode/systems/vscode/
   system.json         name, prefix, themes, root context, capture provenance, notes
   tokens.json         design tokens (CSS custom properties) with per-theme values
   base.css            global styles (@font-face, …)
   assets/             fonts and icons referenced by base.css
   components/<name>/  component.json (API, examples, references), component.js, component.css
-  captures/<label>/   reference captures from the running product (generated)
-  activity.jsonl      audit activity log (generated)
+  captures/<label>/   reference captures from the running product (generated, committed)
+  activity.jsonl      audit activity log (generated, gitignored)
   source/             local clone of the system's git source (gitignored; never read by Scratchpad)
-  dist/               built system.css, system.js, catalog.json, specimen.html (generated)
-  skill/              generated agent skill (SKILL.md + references)
+  dist/               built system.css, system.js, catalog.json, specimen.html (generated, gitignored)
+  skill/              generated agent skill (SKILL.md + references; generated, gitignored)
 ```
 
 ## How a system is built
@@ -43,9 +44,13 @@ with a details panel) and **Usage** tabs browse the results.
 
 ## Using a system in a prototype
 
+In a prototype's entry (`prototypes/<id>/index.html`) in the same project, load the system with
+relative paths, so the prototype works anywhere the project folder is served (the sandbox, an
+exported review on GitHub Pages):
+
 ```html
-<link rel="stylesheet" href="/s/vscode/system.css" />
-<script type="module" src="/s/vscode/system.js"></script>
+<link rel="stylesheet" href="../../systems/vscode/system.css" />
+<script type="module" src="../../systems/vscode/system.js"></script>
 
 <vsc-workbench theme="dark-2026">
   <vsc-chat-view><vsc-chat-input></vsc-chat-input></vsc-chat-view>
@@ -73,7 +78,8 @@ including ones added later) or, for package systems, `data-theme` and the theme'
 `<html>`. Without a URL theme or message, nothing changes.
 
 A prototype's design system is its `system` field, else (for plain HTML) the system whose
-`/s/<id>/system.css` or `system.js` its entry HTML loads, else its project's only design system.
+`../../systems/<id>/system.css` or `system.js` its entry HTML loads, else its project's only
+design system.
 The API returns it as `resolvedSystem`.
 
 Agents get the same information from the generated skill (`skills.install` /
@@ -88,7 +94,7 @@ custom elements, the library is installed and configured in the system's folder,
 directly from React.
 
 ```text
-.design/systems/acme-ui/
+projects/acme/systems/acme-ui/
   system.json         kind "package", framework "react", library { name, package, docsUrl }, styles
   package.json        the library and its dependencies (scaffolded with Vite, React and Tailwind)
   vite.config.ts      used to build the specimen page and every prototype that uses the system
@@ -112,7 +118,7 @@ directly from React.
 - **Prototypes:** `prototype.create { framework: "react", system }` creates an `index.html` shell
   loading `main.tsx`. The sandbox builds it on demand with the system's Vite and `node_modules`
   (imports like `@/components/ui/button` resolve to the system), caches the build in
-  `.design/.cache/builds/<id>/` until its files or the system change, and shows build errors in the
+  `~/.scratchpad/.cache/builds/<project>/<id>/` until its files or the system change, and shows build errors in the
   viewer. Prototypes still run sandboxed on the separate origin.
 
 Plain-HTML prototypes can still use a package system's look through its CSS variables, but its

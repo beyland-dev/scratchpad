@@ -35,6 +35,7 @@ export type ServerEvent =
       data: { project: string; id: string; exists: boolean; paths: string[] };
     }
   | { type: "workspace.changed"; data: Record<string, never> }
+  | { type: "review.changed"; data: { project: string; id: string; exists: boolean } }
   | { type: "project.changed"; data: { id: string; exists: boolean; contents?: boolean } }
   | {
       type: "system.changed";
@@ -66,6 +67,7 @@ export function subscribe(
     "prototype.changed": forward("prototype.changed"),
     "workspace.changed": forward("workspace.changed"),
     "project.changed": forward("project.changed"),
+    "review.changed": forward("review.changed"),
     "system.changed": forward("system.changed"),
   };
   for (const [type, handler] of Object.entries(handlers))

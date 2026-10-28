@@ -109,3 +109,39 @@ export interface GitStatus {
   conflicts: string[];
   lastCommit?: { hash: string; subject: string; author: string; date: string };
 }
+
+export type { ReviewManifest } from "@beyland/scratchpad-core/review-manifest";
+
+export interface ReviewItem {
+  /** Prototype id in the review's project (a specific version). */
+  prototype: string;
+  label: string;
+  note?: string;
+}
+
+export interface ReviewRound {
+  round: number;
+  publishedAt: string;
+  target: "github-pages";
+  url?: string;
+  path: string;
+  prototypes: { id: string; updatedAt: string }[];
+}
+
+export interface Review {
+  id: string;
+  project: string;
+  title: string;
+  intro?: string;
+  questions: string[];
+  presentation: "sequence" | "compare" | "both";
+  device: "desktop" | "laptop" | "tablet" | "mobile";
+  theme?: string;
+  items: ReviewItem[];
+  slug?: string;
+  rounds: ReviewRound[];
+  createdAt: string;
+  updatedAt: string;
+  issues?: string[];
+  urls: { app: string; latest?: string };
+}
