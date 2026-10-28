@@ -48,6 +48,8 @@ export async function watchWorkspace(
     if (file.endsWith(TMP_SUFFIX)) return true;
     const parts = segmentsOf(file);
     if (!parts) return false;
+    // Dot-folders next to projects are staging areas (e.g. a clone in progress).
+    if (parts[0]!.startsWith(".")) return true;
     if (parts.some((part) => SKIPPED_DIRS.has(part))) return true;
     const [, section, , top] = parts;
     return (

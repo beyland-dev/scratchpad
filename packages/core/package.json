@@ -1,7 +1,7 @@
 {
   "name": "@beyland/scratchpad-core",
   "version": "0.0.0",
-  "description": "Headless core for scratchpad: workspace model, file storage, and command registry.",
+  "description": "Headless core for Scratchpad: workspace model, file storage, and command registry.",
   "license": "MIT",
   "files": [
     "dist"

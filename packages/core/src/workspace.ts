@@ -55,7 +55,7 @@ export async function readWorkspaceConfig(root: string): Promise<WorkspaceConfig
   } catch {
     throw new CoreError(
       "NO_WORKSPACE",
-      `No scratchpad workspace at ${root} (missing ${CONFIG_FILE}).`,
+      `No Scratchpad workspace at ${root} (missing ${CONFIG_FILE}).`,
     );
   }
   let json: unknown;

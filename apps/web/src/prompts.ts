@@ -1,6 +1,6 @@
 /** Prompts people hand to an agent after creating something in the UI. */
 
-const START = "Use the scratchpad MCP server. Read the scratchpad://guide resource first.";
+const START = "Use the Scratchpad MCP server. Read the scratchpad://guide resource first.";
 
 export function prototypePrompt(proto: {
   id: string;
@@ -90,7 +90,7 @@ export function starterHtml(
       ${proto.description?.trim() ? `<p class="brief">${escapeHtml(proto.description.trim())}</p>` : ""}
       <section class="card">
         <h2>Next: hand it to an agent</h2>
-        <p>Give this prompt to an agent connected to scratchpad over MCP. It replaces this page, and the viewer updates live as it writes files.</p>
+        <p>Give this prompt to an agent connected to Scratchpad over MCP. It replaces this page, and the viewer updates live as it writes files.</p>
         <div class="prompt">
           <div class="prompt-head">Prompt <button type="button" id="copy">Copy</button></div>
           <pre id="prompt">${escapeHtml(prompt)}</pre>
@@ -171,7 +171,7 @@ export function packageSetupPrompt(
         ? `Match the product: clone ${source.location} into ${dir}/source (gitignored) and bring over its customizations: theme variables (src/index.css, light under :root and dark under .dark), fonts, and any customized or wrapped components (into src/components).`
         : `It has no source codebase yet: ask me whether the product customizes ${library} (a repo, a folder, or a theme). If so, register it with source_add (CLI: sp source add <path-or-url>), link it with system_update { id: "${system.project}/${system.id}", sourceId }, and bring over its theme variables, fonts and customized components. Otherwise keep the library's defaults.`;
   return `${START}
-Set up the design system "${system.name}" (id "${system.id}", project "${system.project}"): ${library}${system.library?.docsUrl ? ` (docs: ${system.library.docsUrl})` : ""}, used from React prototypes. Its folder ${dir} is a Vite + React + Tailwind project scratchpad scaffolded; its node_modules are shared by every prototype that uses it.
+Set up the design system "${system.name}" (id "${system.id}", project "${system.project}"): ${library}${system.library?.docsUrl ? ` (docs: ${system.library.docsUrl})` : ""}, used from React prototypes. Its folder ${dir} is a Vite + React + Tailwind project Scratchpad scaffolded; its node_modules are shared by every prototype that uses it.
 1. Install: run \`npm install\` in ${dir}.
 2. ${setup}
 3. ${customize}
@@ -186,7 +186,7 @@ export function starterTsx(proto: { title: string; description?: string }, promp
 import { createRoot } from "react-dom/client";
 import "@/index.css";
 
-// A setup note from scratchpad. An agent replaces this file when it builds the prototype.
+// A setup note from Scratchpad. An agent replaces this file when it builds the prototype.
 const title = ${JSON.stringify(proto.title)};
 const brief = ${JSON.stringify(proto.description?.trim() ?? "")};
 const prompt = ${JSON.stringify(prompt)};
@@ -215,7 +215,7 @@ function Starter() {
         <section className="mt-7 rounded-xl border bg-card p-5 text-card-foreground">
           <h2 className="font-medium">Next: hand it to an agent</h2>
           <p className="mt-1 mb-4 text-sm text-muted-foreground">
-            Give this prompt to an agent connected to scratchpad over MCP. It replaces this page, and the viewer updates live as it writes files.
+            Give this prompt to an agent connected to Scratchpad over MCP. It replaces this page, and the viewer updates live as it writes files.
           </p>
           <div className="rounded-lg bg-muted">
             <div className="flex items-center justify-between px-4 pt-2 text-xs font-medium text-muted-foreground">

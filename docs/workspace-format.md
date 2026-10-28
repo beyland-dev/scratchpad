@@ -45,7 +45,7 @@ from the current directory, or from `--workspace <dir>` / `$DT_WORKSPACE`.
 ```
 
 - `sources[].kind` is `local` (path, absolute or relative to the workspace root) or `git` (URL).
-  Sources are **read-only references**. scratchpad never writes to them.
+  Sources are **read-only references**. Scratchpad never writes to them.
 - `server` is optional and overrides the default ports and host for `dt serve`.
 
 ## Projects

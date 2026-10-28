@@ -8,6 +8,7 @@ import {
   Core,
   CoreError,
   builtinCommands,
+  gitCommands,
   systemCommands,
   defaultWorkspaceRoot,
   isCoreError,
@@ -45,6 +46,7 @@ export const BIN_PATH = fileURLToPath(
 const registry = new CommandRegistry().register(
   ...builtinCommands,
   ...systemCommands,
+  ...gitCommands,
   ...captureCommands,
 );
 
@@ -98,15 +100,16 @@ function extractGlobals(argv: string[]): Globals {
 
 const camel = (token: string) => token.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
 
-/** Accepts `prototype.createVariant`, `prototype createVariant`, and `prototype create-variant`. */
+/** Accepts `prototype.createVariant`, `prototype createVariant`, `prototype create-variant`, and `project git status`. */
 function resolveCommand(
   tokens: string[],
 ): { descriptor: CommandDescriptor; args: string[] } | undefined {
-  const [first, second] = tokens.map(camel);
-  if (first && descriptors.has(first))
-    return { descriptor: descriptors.get(first)!, args: tokens.slice(1) };
-  if (first && second && descriptors.has(`${first}.${second}`)) {
-    return { descriptor: descriptors.get(`${first}.${second}`)!, args: tokens.slice(2) };
+  const words = tokens.map(camel);
+  // Longest match first: `project git status` before `project git`.
+  for (let n = Math.min(3, words.length); n >= 1; n--) {
+    const name = words.slice(0, n).join(".");
+    const descriptor = descriptors.get(name);
+    if (descriptor) return { descriptor, args: tokens.slice(n) };
   }
   return undefined;
 }
@@ -126,7 +129,7 @@ function mainHelp(): string {
     const usage = `${d.name}${d.positional.length ? ` ${d.positional.map((p) => `<${p}>`).join(" ")}` : ""}`;
     return `  ${usage.padEnd(36)} ${d.title}`;
   });
-  return `scratchpad ${VERSION} — design prototyping with agents
+  return `Scratchpad ${VERSION} — design prototyping with agents
 
 Usage: scratchpad <command> [options]   (or: sp <command>)
 
@@ -287,7 +290,7 @@ async function runServe(args: string[], globals: Globals, io: CliIO): Promise<nu
       webRoot: webRoot ?? null,
     },
     [
-      "scratchpad",
+      "Scratchpad",
       `  App:       ${server.url}${webRoot ? "" : "  (web UI not built; run `pnpm build` or `pnpm dev`)"}`,
       `  Sandbox:   ${server.sandboxUrl}`,
       `  MCP:       ${server.url}/mcp  (or \`sp mcp\` over stdio)`,

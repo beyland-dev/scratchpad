@@ -84,6 +84,9 @@ export function ProjectDialog({
   );
   const [icon, setIcon] = useState<IconUpload | null>(null);
   const [removeIcon, setRemoveIcon] = useState(false);
+  // New projects can start empty, or from a repo a collaborator shared.
+  const [mode, setMode] = useState<"new" | "clone">("new");
+  const [repoUrl, setRepoUrl] = useState("");
   const [iconError, setIconError] = useState<string | null>(null);
   const hasIcon = Boolean(icon || (project?.iconUrl && !removeIcon));
   const { busy, error, submit } = useSubmit(async () => {
@@ -101,6 +104,13 @@ export function ProjectDialog({
       });
       await refresh();
       onClose();
+    } else if (mode === "clone") {
+      const { project: cloned } = await call<{ project: { id: string } }>("project.clone", {
+        url: repoUrl.trim(),
+      });
+      await refresh();
+      onClose();
+      route(projectHref(cloned.id));
     } else {
       const { project: created } = await call<{ project: { id: string } }>("project.create", {
         name: name.trim(),
@@ -128,116 +138,151 @@ export function ProjectDialog({
     <Modal title={project ? "Edit project" : "New project"} onClose={onClose}>
       <form onSubmit={submit}>
         <div class="dialog-body">
-          <Field
-            label="Name"
-            value={name}
-            onInput={setName}
-            required
-            autoFocus
-            placeholder="e.g. Web app"
-          />
-          <Field
-            label="Description"
-            value={description}
-            onInput={setDescription}
-            multiline
-            placeholder="What's this product, and what are you exploring?"
-          />
-          <div class="field" role="group" aria-label="Icon">
-            <span class="field-label">Icon</span>
-            <div class="icon-picker">
-              <div class="icon-preview">
-                <ProjectIcon project={preview} size={48} />
-                {!hasIcon && (
-                  <button
-                    type="button"
-                    class="icon-remix"
-                    aria-label="Next icon style"
-                    title="Next style"
-                    onClick={() =>
-                      setPattern(((pattern ?? patternOf(preview)) + 1) % PATTERN_COUNT)
-                    }
-                  >
-                    <Icon name="shuffle" size={18} />
-                  </button>
-                )}
-              </div>
-              <div class="icon-picker-controls">
-                <div class="icon-picker-buttons">
-                  <label class="button small">
-                    <Icon name="upload" size={14} />
-                    {hasIcon ? "Replace image" : "Upload image"}
-                    <input
-                      type="file"
-                      accept={Object.keys(ICON_TYPES).join(",")}
-                      class="visually-hidden"
-                      onChange={async (e) => {
-                        const file = e.currentTarget.files?.[0];
-                        e.currentTarget.value = "";
-                        if (!file) return;
-                        try {
-                          setIcon(await readIcon(file));
-                          setRemoveIcon(false);
-                          setIconError(null);
-                        } catch (err) {
-                          setIconError((err as Error).message);
-                        }
-                      }}
-                    />
-                  </label>
-                  {hasIcon && (
-                    <button
-                      type="button"
-                      class="button small ghost"
-                      onClick={() => {
-                        setIcon(null);
-                        setRemoveIcon(true);
-                      }}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-                {!hasIcon && (
-                  <div class="swatches" role="radiogroup" aria-label="Icon color">
-                    <button
-                      type="button"
-                      role="radio"
-                      aria-checked={!color}
-                      class={`swatch-option auto ${!color ? "active" : ""}`}
-                      title="Automatic"
-                      onClick={() => setColor("")}
-                    >
-                      Auto
-                    </button>
-                    {ICON_COLORS.map(([c, colorName]) => (
+          {!project && (
+            <div class="segmented source-modes" role="radiogroup" aria-label="Start from">
+              {(
+                [
+                  ["new", "Start a new project"],
+                  ["clone", "Clone from a repo"],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  type="button"
+                  role="radio"
+                  key={value}
+                  aria-checked={mode === value}
+                  class={mode === value ? "active" : ""}
+                  onClick={() => setMode(value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+          {mode === "clone" ? (
+            <Field
+              label="Repository URL"
+              value={repoUrl}
+              onInput={setRepoUrl}
+              required
+              autoFocus
+              placeholder="git@github.com:owner/repo.git"
+              hint="A project a collaborator shared. It's cloned into your projects folder; sync changes from the header."
+            />
+          ) : (
+            <>
+              <Field
+                label="Name"
+                value={name}
+                onInput={setName}
+                required
+                autoFocus
+                placeholder="e.g. Web app"
+              />
+              <Field
+                label="Description"
+                value={description}
+                onInput={setDescription}
+                multiline
+                placeholder="What's this product, and what are you exploring?"
+              />
+              <div class="field" role="group" aria-label="Icon">
+                <span class="field-label">Icon</span>
+                <div class="icon-picker">
+                  <div class="icon-preview">
+                    <ProjectIcon project={preview} size={48} />
+                    {!hasIcon && (
                       <button
                         type="button"
-                        role="radio"
-                        key={c}
-                        aria-checked={color === c}
-                        aria-label={colorName}
-                        title={colorName}
-                        class={`swatch-option ${color === c ? "active" : ""}`}
-                        style={{ "--swatch": c }}
-                        onClick={() => setColor(c)}
-                      />
-                    ))}
+                        class="icon-remix"
+                        aria-label="Next icon style"
+                        title="Next style"
+                        onClick={() =>
+                          setPattern(((pattern ?? patternOf(preview)) + 1) % PATTERN_COUNT)
+                        }
+                      >
+                        <Icon name="shuffle" size={18} />
+                      </button>
+                    )}
                   </div>
-                )}
-                <span class="field-hint">
-                  {iconError ?? "SVG, PNG, WebP or JPEG, up to 1 MB. Square works best."}
-                </span>
+                  <div class="icon-picker-controls">
+                    <div class="icon-picker-buttons">
+                      <label class="button small">
+                        <Icon name="upload" size={14} />
+                        {hasIcon ? "Replace image" : "Upload image"}
+                        <input
+                          type="file"
+                          accept={Object.keys(ICON_TYPES).join(",")}
+                          class="visually-hidden"
+                          onChange={async (e) => {
+                            const file = e.currentTarget.files?.[0];
+                            e.currentTarget.value = "";
+                            if (!file) return;
+                            try {
+                              setIcon(await readIcon(file));
+                              setRemoveIcon(false);
+                              setIconError(null);
+                            } catch (err) {
+                              setIconError((err as Error).message);
+                            }
+                          }}
+                        />
+                      </label>
+                      {hasIcon && (
+                        <button
+                          type="button"
+                          class="button small ghost"
+                          onClick={() => {
+                            setIcon(null);
+                            setRemoveIcon(true);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    {!hasIcon && (
+                      <div class="swatches" role="radiogroup" aria-label="Icon color">
+                        <button
+                          type="button"
+                          role="radio"
+                          aria-checked={!color}
+                          class={`swatch-option auto ${!color ? "active" : ""}`}
+                          title="Automatic"
+                          onClick={() => setColor("")}
+                        >
+                          Auto
+                        </button>
+                        {ICON_COLORS.map(([c, colorName]) => (
+                          <button
+                            type="button"
+                            role="radio"
+                            key={c}
+                            aria-checked={color === c}
+                            aria-label={colorName}
+                            title={colorName}
+                            class={`swatch-option ${color === c ? "active" : ""}`}
+                            style={{ "--swatch": c }}
+                            onClick={() => setColor(c)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    <span class="field-hint">
+                      {iconError ?? "SVG, PNG, WebP or JPEG, up to 1 MB. Square works best."}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
         <FormActions
-          submitLabel={project ? "Save" : "Create project"}
+          submitLabel={project ? "Save" : mode === "clone" ? "Clone project" : "Create project"}
           busy={busy}
           error={error}
           onCancel={onClose}
-          disabled={!name.trim()}
+          disabled={mode === "clone" ? !repoUrl.trim() : !name.trim()}
         />
       </form>
     </Modal>

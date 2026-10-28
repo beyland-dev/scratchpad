@@ -159,10 +159,10 @@ export function createApp(options: AppOptions): Hono {
   return app;
 }
 
-const MISSING_UI_HTML = `<!doctype html><meta charset="utf-8"><title>scratchpad</title>
+const MISSING_UI_HTML = `<!doctype html><meta charset="utf-8"><title>Scratchpad</title>
 <body style="font-family:system-ui;max-width:40rem;margin:4rem auto;padding:0 1rem;line-height:1.5">
-<h1>scratchpad</h1>
-<p>The API is running, but the web UI hasn't been built. Run <code>pnpm build</code> in the scratchpad repo,
+<h1>Scratchpad</h1>
+<p>The API is running, but the web UI hasn't been built. Run <code>pnpm build</code> in the Scratchpad repo,
 or use <code>pnpm dev</code> for the development UI.</p>
 <p>API: <a href="/api/commands">/api/commands</a> · MCP: <code>/mcp</code></p>
 </body>`;

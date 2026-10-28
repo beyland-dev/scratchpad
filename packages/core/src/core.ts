@@ -9,6 +9,8 @@ import type { Prototype } from "./schemas.ts";
 import { systemCommands } from "./systems/commands.ts";
 import type { AnyCommand } from "./registry.ts";
 import { EventBus } from "./events.ts";
+import { gitCommands } from "./git-commands.ts";
+import { ProjectGit, execRunner, type Runner } from "./git.ts";
 import { CoreError } from "./errors.ts";
 import { PrototypeIndex, SystemIndex } from "./indexes.ts";
 import { ProjectStore } from "./projects.ts";
@@ -28,6 +30,8 @@ export interface OpenCoreOptions {
   watch?: boolean;
   /** Extra commands to register (e.g. capture commands from @beyland/scratchpad-capture). */
   commands?: AnyCommand[];
+  /** Runs git (and gh); replaceable in tests. */
+  gitRunner?: Runner;
 }
 
 export interface LastBuild {
@@ -47,7 +51,12 @@ export class Core {
   /** Design systems across projects, addressed as `project/id` (or an id only one project has). */
   readonly systems: SystemIndex;
   readonly events = new EventBus();
-  readonly registry = new CommandRegistry().register(...builtinCommands, ...systemCommands);
+  readonly registry = new CommandRegistry().register(
+    ...builtinCommands,
+    ...systemCommands,
+    ...gitCommands,
+  );
+  gitRunner: Runner = execRunner;
   #urls: WorkspaceUrls | undefined;
   #builds = new Map<string, LastBuild>();
   #buildQueue = new Map<string, Promise<BuildResult>>();
@@ -67,6 +76,7 @@ export class Core {
   static async open(options: OpenCoreOptions): Promise<Core> {
     const core = new Core(await Workspace.open(path.resolve(options.root)));
     if (options.commands?.length) core.registry.register(...options.commands);
+    if (options.gitRunner) core.gitRunner = options.gitRunner;
     await core.projects.load();
     if (options.watch) await core.startWatching();
     return core;
@@ -74,6 +84,21 @@ export class Core {
 
   run<T = unknown>(name: string, input?: unknown): Promise<T> {
     return this.registry.run(this, name, input) as Promise<T>;
+  }
+
+  /** Git operations on a project's folder. */
+  git(project: string): ProjectGit {
+    return new ProjectGit(this.projects.scope(project).dir, this.gitRunner);
+  }
+
+  /**
+   * Re-read a project and everything in it (e.g. after a git pull or clone), and tell listeners.
+   * The watcher would get there too, but callers want the result right away.
+   */
+  async reloadProject(id: string): Promise<void> {
+    const { project, scopeChanged } = await this.projects.reloadOne(id);
+    if (project && !scopeChanged) await this.projects.scope(id).load();
+    this.events.emit("project.changed", { id, exists: project !== undefined, contents: true });
   }
 
   /** URLs for the app and sandbox servers. Defaults to configured/default ports when no server has registered. */
@@ -283,7 +308,7 @@ export class Core {
               (rel.startsWith("node_modules/") && rel !== "node_modules/.package-lock.json"),
           },
         ]);
-        // The injected script is part of the output too: rebuild when scratchpad changes it.
+        // The injected script is part of the output too: rebuild when Scratchpad changes it.
         const signature = `${sources}:${createHash("sha256").update(headScript).digest("hex").slice(0, 16)}`;
         const target = path.join(this.workspace.cacheDir, "builds", scope.id, id);
         await mkdir(path.dirname(target), { recursive: true });

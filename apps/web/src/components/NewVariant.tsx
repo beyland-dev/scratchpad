@@ -67,7 +67,7 @@ function NewVariantDialog({ sourceId, onClose }: { sourceId: string; onClose: ()
           <p class="variant-created">
             The new version of <strong>{root.title}</strong> starts as a copy of{" "}
             <strong>{fromLabel ?? "the original"}</strong>. Give this prompt to an agent connected
-            to scratchpad to make the change. The viewer updates live as it writes files.
+            to Scratchpad to make the change. The viewer updates live as it writes files.
           </p>
           <Code code={created.prompt} lang="text" class="variant-prompt" />
         </div>

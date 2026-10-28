@@ -128,6 +128,13 @@ describe("sp", () => {
     expect(unknown.stderr).toContain("--nope");
   });
 
+  test("three-word commands resolve (project git status)", async () => {
+    await run(["project", "create", "--name", "Repo"]);
+    const status = await run(["project", "git", "status", "repo", "--json"]);
+    expect(status.code).toBe(0);
+    expect(JSON.parse(status.stdout)).toMatchObject({ project: "repo", repo: false });
+  });
+
   test("mcp-config passes --home only for a non-default workspace", async () => {
     const out = await run(["mcp-config", "vscode", "--json"]);
     expect(JSON.parse(out.stdout).launch.args).toEqual(

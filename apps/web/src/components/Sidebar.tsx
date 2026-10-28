@@ -82,7 +82,7 @@ export function Sidebar() {
     const rect = el.getBoundingClientRect();
     setTip({ text, sub, top: rect.top + rect.height / 2, left: rect.right + 10 });
   };
-  const workspaceName = "scratchpad";
+  const workspaceName = "Scratchpad";
   const menuItems = (p: ProjectEntry): MenuItem[] => [
     { label: "Edit project…", onSelect: () => setDialog({ kind: "edit", project: p }) },
     {

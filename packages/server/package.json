@@ -1,7 +1,7 @@
 {
   "name": "@beyland/scratchpad-server",
   "version": "0.0.0",
-  "description": "Local HTTP API, live events, and sandboxed prototype server for scratchpad.",
+  "description": "Local HTTP API, live events, and sandboxed prototype server for Scratchpad.",
   "license": "MIT",
   "files": [
     "dist"

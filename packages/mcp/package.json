@@ -1,7 +1,7 @@
 {
   "name": "@beyland/scratchpad-mcp",
   "version": "0.0.0",
-  "description": "Model Context Protocol server for scratchpad, generated from the core command registry.",
+  "description": "Model Context Protocol server for Scratchpad, generated from the core command registry.",
   "license": "MIT",
   "files": [
     "dist"

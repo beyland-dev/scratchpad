@@ -1,6 +1,6 @@
 # Architecture
 
-scratchpad is an **open core with a thin UI**. All behavior lives in a headless core. The web UI,
+Scratchpad is an **open core with a thin UI**. All behavior lives in a headless core. The web UI,
 HTTP API, MCP server, and CLI are thin adapters over it, so anything a person can do, an agent can do too.
 
 ```

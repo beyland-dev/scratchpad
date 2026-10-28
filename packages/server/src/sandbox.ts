@@ -117,7 +117,7 @@ export function createSandboxApp(options: SandboxOptions): Hono {
       if (!(await pathExists(path.join(dist, "catalog.json"))))
         await core.buildSystem(refKey(project, id));
       // Captured systems' specimen page doesn't depend on the system: serve this version's, so a
-      // build by an older scratchpad process (e.g. a long-running MCP server) can't leave a stale one.
+      // build by an older Scratchpad process (e.g. a long-running MCP server) can't leave a stale one.
       if ((rest === "" || rest === "specimen.html") && scope.systems.get(id).kind !== "package")
         return c.html(SPECIMEN_HTML, 200, SANDBOX_HEADERS);
       const response = await fileResponse(safeJoin(dist, rest || "specimen.html"), SANDBOX_HEADERS);
@@ -165,7 +165,7 @@ export function createSandboxApp(options: SandboxOptions): Hono {
     }
   });
 
-  app.get("*", (c) => c.text("scratchpad prototype sandbox", 404, SANDBOX_HEADERS));
+  app.get("*", (c) => c.text("Scratchpad prototype sandbox", 404, SANDBOX_HEADERS));
 
   return app;
 }

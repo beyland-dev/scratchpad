@@ -28,7 +28,7 @@ const DESTRUCTIVE = new Set([
   "component.remove",
 ]);
 
-const INSTRUCTIONS = `scratchpad manages projects of design prototypes (self-contained HTML folders) and design systems, plus read-only reference sources (product codebases).
+const INSTRUCTIONS = `Scratchpad manages projects of design prototypes (self-contained HTML folders) and design systems, plus read-only reference sources (product codebases).
 Start with workspace_info, and read the ${AGENTS_GUIDE_RESOURCE} resource for conventions. Ids are unique within a project: pass project/id when several projects have the same id.
 Create alternatives with prototype_createVariant instead of overwriting, and share the returned viewer URL with the user.`;
 
@@ -107,8 +107,8 @@ export function createMcpServer(core: Core): McpServer {
     "guide",
     AGENTS_GUIDE_RESOURCE,
     {
-      title: "scratchpad guide",
-      description: "Conventions for creating and iterating on prototypes in scratchpad.",
+      title: "Scratchpad guide",
+      description: "Conventions for creating and iterating on prototypes in Scratchpad.",
       mimeType: "text/markdown",
     },
     async (uri) => ({
@@ -126,7 +126,7 @@ export function createMcpServer(core: Core): McpServer {
     AUDIT_SKILL_RESOURCE,
     {
       title: "Design system audit skill",
-      description: "How to audit a codebase into a verified design-system library with scratchpad.",
+      description: "How to audit a codebase into a verified design-system library with Scratchpad.",
       mimeType: "text/markdown",
     },
     async (uri) => ({
@@ -138,7 +138,7 @@ export function createMcpServer(core: Core): McpServer {
     {
       title: "Audit a codebase into a design system",
       description:
-        "Start (or continue) auditing a registered source codebase into a scratchpad design system.",
+        "Start (or continue) auditing a registered source codebase into a Scratchpad design system.",
       argsSchema: z.object({
         source: z.string().optional().describe("Workspace source id of the codebase"),
         system: z.string().optional().describe("Design system id to create or continue"),

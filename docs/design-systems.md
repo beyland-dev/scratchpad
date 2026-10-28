@@ -12,7 +12,7 @@ use to make prototypes that look like the product. It lives in `.design/systems/
   components/<name>/  component.json (API, examples, references), component.js, component.css
   captures/<label>/   reference captures from the running product (generated)
   activity.jsonl      audit activity log (generated)
-  source/             local clone of the system's git source (gitignored; never read by scratchpad)
+  source/             local clone of the system's git source (gitignored; never read by Scratchpad)
   dist/               built system.css, system.js, catalog.json, specimen.html (generated)
   skill/              generated agent skill (SKILL.md + references)
 ```

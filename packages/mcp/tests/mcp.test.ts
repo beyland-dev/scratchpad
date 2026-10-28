@@ -74,7 +74,7 @@ test("reports errors as tool errors", async () => {
 test("serves the workspace guide resource", async () => {
   const result = await client.readResource({ uri: "scratchpad://guide" });
   const first = result.contents[0];
-  expect(first && "text" in first ? first.text : "").toContain("# scratchpad");
+  expect(first && "text" in first ? first.text : "").toContain("# Scratchpad");
 });
 
 test("serves the audit skill as a resource and a prompt", async () => {

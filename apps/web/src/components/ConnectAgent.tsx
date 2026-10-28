@@ -3,7 +3,7 @@ import { useRef } from "preact/hooks";
 import { workspace } from "../store.ts";
 import { Icon } from "./Icon.tsx";
 
-export const AGENT_PROMPT = `Use the scratchpad MCP server for this task.
+export const AGENT_PROMPT = `Use the Scratchpad MCP server for this task.
 1. Read the scratchpad://guide resource and call workspace_info to learn the workspace conventions, projects, and reference sources.
 2. Look at the registered sources (product codebases) to match the real design system: tokens, components, and copy.
 3. Create 3 prototype variants exploring: <describe the problem or flow>. Put them in the right project and one group, and use prototype_createVariant for alternatives.

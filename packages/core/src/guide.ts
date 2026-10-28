@@ -1,10 +1,10 @@
 export const AGENTS_GUIDE_RESOURCE = "scratchpad://guide";
 
-/** Conventions for agents working in scratchpad. Written to `~/.scratchpad/AGENTS.md` and served over MCP. */
+/** Conventions for agents working in Scratchpad. Written to `~/.scratchpad/AGENTS.md` and served over MCP. */
 export function renderAgentsGuide(): string {
-  return `# scratchpad
+  return `# Scratchpad
 
-scratchpad holds design prototypes that are created mostly by agents and reviewed by people.
+Scratchpad holds design prototypes that are created mostly by agents and reviewed by people.
 These conventions apply whether you use the MCP tools or edit files directly.
 
 ## Layout
@@ -22,7 +22,7 @@ project folder is self-contained and is often its own git repo, shared with coll
       icon.svg              # optional icon (svg, png, webp or jpg)
       prototypes/
         <id>/               # one folder per prototype; the folder name is the id
-          prototype.json    # metadata (managed by scratchpad; see schema below)
+          prototype.json    # metadata (managed by Scratchpad; see schema below)
           index.html        # entry file, served in a sandbox
           ...               # any other pages/assets, referenced with relative paths
       systems/
@@ -47,7 +47,7 @@ project has it. Results include both \`id\` and \`project\`.
   HTML/CSS/JS. Inline everything or use **relative paths** (never root-absolute ones like
   \`/styles.css\`), so the prototype works wherever it's hosted.
 - Prototypes run in a **sandboxed iframe on a separate origin**. They can run
-  scripts but can't access the scratchpad app, cookies, or storage of other
+  scripts but can't access the Scratchpad app, cookies, or storage of other
   prototypes. Don't rely on \`localStorage\` persisting.
 - Make prototypes **realistic**: real-looking content, the product's actual
   design tokens and components (see *Design systems* and *Sources*), and real interaction states
@@ -107,7 +107,7 @@ themed tokens codified from a real product. When a prototype should look like th
 - \`token_search\` finds tokens (\`var(--…)\`) to style anything custom.
 - Each system also has a generated skill (\`skills_install\` exports it for your agent).
 - **Don't build theme toggles into prototypes.** Set the theme the prototype opens in (e.g. the
-  root context's \`theme\` attribute) and leave switching to scratchpad's viewer, which offers the
+  root context's \`theme\` attribute) and leave switching to Scratchpad's viewer, which offers the
   system's themes for prototypes that use it. Set the prototype's \`system\` when it isn't obvious
   (it's inferred from the \`systems/<id>/system.js\` it loads, or the project's only system).
 
@@ -130,7 +130,7 @@ configured in its folder (\`kind: "package"\`): a Vite + React project with \`pa
   stylesheet automatically. \`system_build\` renders the stories for the app.
 - **Prototypes:** \`prototype_create { framework: "react", system }\`. The entry is an HTML shell that
   loads \`main.tsx\`; import the theme (\`import "@/index.css"\`) and components (\`@/components/ui/…\`).
-  scratchpad builds it with the system's Vite on demand (build errors show in the viewer). Never
+  Scratchpad builds it with the system's Vite on demand (build errors show in the viewer). Never
   install packages into a prototype; add dependencies to the design system.
 
 ## Tools
@@ -164,7 +164,7 @@ export const EXAMPLE_PROTOTYPE_HTML = `<!doctype html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Welcome to scratchpad</title>
+    <title>Welcome to Scratchpad</title>
     <style>
       :root { --accent: #5b5bd6; --fg: #1c1c24; --muted: #6b6b7b; --bg: #f7f7fb; --card: #fff; }
       * { box-sizing: border-box; }

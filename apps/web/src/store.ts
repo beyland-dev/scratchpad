@@ -77,6 +77,16 @@ export function systemRevisionOf(id: string): number {
   return systemRevisions.value[id] ?? 0;
 }
 
+/** Per-project counters bumped whenever anything in the project changes (e.g. to refresh git status). */
+export const projectEvents = signal<Record<string, number>>({});
+
+function bumpProject(project: string): void {
+  projectEvents.value = {
+    ...projectEvents.value,
+    [project]: (projectEvents.value[project] ?? 0) + 1,
+  };
+}
+
 /** Per-system counters bumped on every change (sources, captures, activity, builds). */
 export const systemEvents = signal<Record<string, number>>({});
 
@@ -134,6 +144,9 @@ export function startLiveUpdates(): void {
   void refresh();
   subscribe(
     (event) => {
+      if (event.type === "prototype.changed" || event.type === "system.changed")
+        bumpProject(event.data.project);
+      if (event.type === "project.changed") bumpProject(event.data.id);
       if (event.type === "prototype.changed") {
         const ref = refOf(event.data.project, event.data.id);
         revisions.value = { ...revisions.value, [ref]: revisionOf(ref) + 1 };

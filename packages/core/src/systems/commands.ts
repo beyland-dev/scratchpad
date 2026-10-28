@@ -764,7 +764,7 @@ export const skillsInstall = defineCommand({
   name: "skills.install",
   title: "Install agent skills",
   description:
-    "Install scratchpad's agent skills where agents load them: the 'design-system-audit' skill (how to audit a codebase into a design system) and, optionally, the generated skill of every design system in a project. Target: 'github' (.github/skills) or 'claude' (.claude/skills) in the project folder, or a folder path (absolute, or relative to the project folder).",
+    "Install Scratchpad's agent skills where agents load them: the 'design-system-audit' skill (how to audit a codebase into a design system) and, optionally, the generated skill of every design system in a project. Target: 'github' (.github/skills) or 'claude' (.claude/skills) in the project folder, or a folder path (absolute, or relative to the project folder).",
   kind: "mutation",
   input: z.object({
     project: SystemIdSchema.optional().describe(

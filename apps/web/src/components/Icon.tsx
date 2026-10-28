@@ -30,6 +30,10 @@ const PATHS = {
   monitor: "M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm4 17h8m-4-4v4",
   message: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
   send: "M14.5 21.5 22 2 2.5 9.5l8 3.5zM22 2 10.5 13",
+  sync: "M4 10a8 8 0 0 1 14.3-4.3L20 7.5M20 3v4.5h-4.5M20 14a8 8 0 0 1-14.3 4.3L4 16.5M4 21v-4.5h4.5",
+  branch:
+    "M6 3v12m0 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm12-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 0a9 9 0 0 1-9 9",
+  share: "M12 3v12m0-12L7.5 7.5M12 3l4.5 4.5M5 13v5a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-5",
 } as const;
 
 export type IconName = keyof typeof PATHS;

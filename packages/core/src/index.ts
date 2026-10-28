@@ -11,6 +11,16 @@ export { ProjectStore, PROJECT_META_FILE, PROJECT_GITIGNORE, MAX_ICON_BYTES } fr
 export { ProjectScope, type ScopeContext } from "./scope.ts";
 export { PrototypeIndex, SystemIndex, type Located } from "./indexes.ts";
 export { parseRef, qualify, refKey, REF_PATTERN, type Ref } from "./refs.ts";
+export {
+  ProjectGit,
+  cloneInto,
+  execRunner,
+  githubRepoOf,
+  type GitChange,
+  type GitStatus,
+  type Runner,
+} from "./git.ts";
+export { gitCommands, summarizeChanges } from "./git-commands.ts";
 export type { CreateProjectInput, UpdateProjectInput, ProjectIconInput } from "./projects.ts";
 export { PrototypeStore, PROTOTYPE_META_FILE, MAX_FILE_BYTES, normalizeRel } from "./prototypes.ts";
 export type {

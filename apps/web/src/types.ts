@@ -95,3 +95,17 @@ export interface ActivityEntry {
   ref?: string;
   status?: "ok" | "warn" | "error";
 }
+
+export interface GitStatus {
+  project: string;
+  repo: boolean;
+  branch?: string;
+  remote?: string;
+  webUrl?: string;
+  upstream?: string;
+  ahead: number;
+  behind: number;
+  changes: { path: string; status: string }[];
+  conflicts: string[];
+  lastCommit?: { hash: string; subject: string; author: string; date: string };
+}

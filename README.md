@@ -12,7 +12,7 @@ available to agents over **MCP**, a **CLI**, and an **HTTP API**.
 ## Why
 
 Product design work is spread across many tools: prototyping, docs, Slack and Teams threads,
-research platforms, meeting recordings, and handoff. scratchpad aims to bring that loop together:
+research platforms, meeting recordings, and handoff. Scratchpad aims to bring that loop together:
 
 **product codebase (context)** → **many agent-made prototypes** → **feedback from real people** → **iteration** → **handoff to production agents**
 
@@ -48,7 +48,7 @@ pnpm dt init ../other --mcp vscode,claude    # or write project-level MCP config
 
 Then ask your agent something like:
 
-> Use the scratchpad MCP server. Read the `scratchpad://guide` resource and call `workspace_info`.
+> Use the Scratchpad MCP server. Read the `scratchpad://guide` resource and call `workspace_info`.
 > Then create 3 prototype variants of a simpler checkout in the right project, grouped as "checkout-redesign", matching
 > our design system from the registered sources. Share the viewer URLs.
 

@@ -81,7 +81,7 @@ export const workspaceInfo = defineCommand({
   name: "workspace.info",
   title: "Workspace info",
   description:
-    "Get an overview of the scratchpad workspace: projects, reference sources (product codebases), prototype counts, groups, tags, and the app URLs. Call this first to orient yourself.",
+    "Get an overview of the Scratchpad workspace: projects, reference sources (product codebases), prototype counts, groups, tags, and the app URLs. Call this first to orient yourself.",
   kind: "query",
   input: z.object({}),
   handler: (_input, core) => {
@@ -105,7 +105,7 @@ export const workspaceInfo = defineCommand({
   },
   format: (out) =>
     [
-      `scratchpad  (${out.root})`,
+      `Scratchpad  (${out.root})`,
       `${out.projects.length} project(s), ${out.prototypeCount} prototype(s), ${out.sources.length} source(s)`,
       out.projects.length ? `Projects: ${out.projects.map((p) => p.id).join(", ")}` : "",
       `App: ${out.urls.app}`,

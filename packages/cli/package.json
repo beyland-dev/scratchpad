@@ -1,7 +1,7 @@
 {
   "name": "@beyland/scratchpad",
   "version": "0.0.0",
-  "description": "The `scratchpad` (`sp`) command line: serve the app, run the MCP server, and call any core command.",
+  "description": "The `Scratchpad` (`sp`) command line: serve the app, run the MCP server, and call any core command.",
   "license": "MIT",
   "bin": {
     "scratchpad": "./src/bin.ts",
