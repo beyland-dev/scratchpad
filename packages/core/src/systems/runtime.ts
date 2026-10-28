@@ -1,3 +1,5 @@
+import { THEME_BRIDGE_JS } from "./theme-bridge.ts";
+
 /**
  * Browser runtime shipped at the top of every `system.js`. Components are light-DOM
  * custom elements whose host element *is* the root of the captured markup (it carries
@@ -137,7 +139,11 @@ const ds = (() => {
     if (!customElements.get(tag)) customElements.define(tag, ctor);
   }
 
-  return { system, h, append, icon, themeOf, applyTheme, define, Element: DSElement };
+  ${THEME_BRIDGE_JS}
+  // The viewer's theme control: ?theme=<id> and "dt-theme" messages from the parent window.
+  const theme = dtThemeBridge(system);
+
+  return { system, h, append, icon, themeOf, applyTheme, define, setTheme: theme.set, Element: DSElement };
 })();
 window.ds = window.ds || {};
 window.ds[ds.system.id] = ds;

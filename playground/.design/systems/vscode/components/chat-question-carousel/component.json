@@ -1,0 +1,219 @@
+{
+  "tag": "vsc-chat-question-carousel",
+  "kind": "component",
+  "title": "Chat question carousel",
+  "category": "chat",
+  "description": "The chat question carousel (\"ask user a question\" widget): an agent's question with a header (optional carousel message, title, skip and collapse buttons), a scrollable answer area (optional detailed message, numbered single- or multi-select options or a text input, plus a numbered \"Enter custom answer\" row) and a footer with the submit hint and Submit button. Captured from VS Code's own component fixtures (chatQuestionCarousel.fixture.ts) with the Dark 2026 theme. The fixture's Light variant uses Light Modern, and its rules are identical, so Light 2026 colors come from this system's tokens. The answer area's height is set from JS like the product (port of layoutInputScrollable). Known verification drift, limited to the invisible DomScrollableElement scrollbars: their sliders get 4px corners from the workbench's .modern-ui class (the fixture page lacks it; the real Agents window has it), and the fixture's vertical bar height (16px taller) is stale from before the answer area is constrained. Everything visible matches with 0 diffs.",
+  "usage": "Use when an agent asks the user a question in chat (askQuestions tool / MCP elicitation). Put it inside <vsc-chat-view>. Give the question with question= (or slot=\"question\" for bold/links), optional message= above it and slot=\"detail\" for longer context; add <vsc-chat-question-option label description selected> children for choices (multi for checkboxes). Listen for the \"submit\" event (detail.answer) and \"skip\". Don't use it for tool or terminal approvals; those are confirmation widgets.",
+  "attributes": [
+    {
+      "name": "question",
+      "type": "string",
+      "description": "The question shown in the header title (plain text; use slot=\"question\" for rich text)"
+    },
+    {
+      "name": "message",
+      "type": "string",
+      "description": "Carousel-level message shown above the title (plain text; use slot=\"message\" for rich text)"
+    },
+    {
+      "name": "multi",
+      "type": "boolean",
+      "description": "Multi-select: options render as checkboxes and clicking toggles instead of submitting"
+    },
+    {
+      "name": "required",
+      "type": "boolean",
+      "description": "Appends \" *\" to the title, like a required question"
+    },
+    {
+      "name": "no-freeform",
+      "type": "boolean",
+      "description": "Hide the numbered \"Enter custom answer\" row (allowFreeformInput: false)"
+    },
+    {
+      "name": "no-skip",
+      "type": "boolean",
+      "description": "Hide the skip (close) button (allowSkip: false)"
+    },
+    {
+      "name": "collapsed",
+      "type": "boolean",
+      "description": "Collapsed: only the header is visible (toggled by the chevron)"
+    },
+    {
+      "name": "placeholder",
+      "type": "string",
+      "default": "Enter your answer",
+      "description": "Placeholder of the text input when there are no options"
+    },
+    {
+      "name": "submit-label",
+      "type": "string",
+      "default": "Submit"
+    },
+    {
+      "name": "submit-hint",
+      "type": "string",
+      "description": "Defaults to \"⌘⏎ to submit\" on macOS, \"Ctrl+Enter to submit\" elsewhere"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "<vsc-chat-question-option> children (the answers). Without options the carousel shows a text input."
+    },
+    {
+      "name": "question",
+      "description": "Rich question title (inline HTML: strong, a, code). Overrides the question attribute's rendering."
+    },
+    {
+      "name": "message",
+      "description": "Rich carousel-level message above the title."
+    },
+    {
+      "name": "detail",
+      "description": "Detailed message rendered at the top of the answer area (block HTML: h3, p, ul)."
+    }
+  ],
+  "states": [
+    {
+      "name": "collapsed",
+      "description": "Only the header is visible; chevron points up",
+      "trigger": "collapsed attribute or the chevron button"
+    },
+    {
+      "name": "selected option",
+      "description": "Option row highlighted with a check (single) or checked checkbox (multi)",
+      "trigger": "selected on an option, click, ↑/↓ or number keys"
+    },
+    {
+      "name": "submitted",
+      "description": "Clicking an option (single-select), Enter/Space in the list, ⌘/Ctrl+Enter or Submit fire a submit event",
+      "trigger": "submit event"
+    }
+  ],
+  "variants": [],
+  "hostDisplay": "block",
+  "hostTag": "div",
+  "cssCaptures": [
+    "chat-question-carousel-dark",
+    "chat-question-carousel-light",
+    "chat-question-carousel-message-dark",
+    "chat-question-carousel-multi-dark",
+    "chat-question-carousel-collapsed-dark"
+  ],
+  "requires": [
+    "vsc-workbench",
+    "vsc-chat-view"
+  ],
+  "tokens": [],
+  "uses": [
+    "vsc-chat-question-option"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatQuestionCarouselPart.ts",
+      "line": 846,
+      "note": "header row: carousel message, title, actions"
+    },
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatQuestionCarouselPart.ts",
+      "line": 989,
+      "note": "footer: submit hint and Submit"
+    },
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatQuestionCarouselPart.ts",
+      "line": 1196,
+      "note": "single-select list, freeform answer, keyboard"
+    },
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/chatContentParts/media/chatQuestionCarousel.css"
+    },
+    {
+      "path": "src/vs/workbench/test/browser/componentFixtures/chat/chatQuestionCarousel.fixture.ts",
+      "note": "capture source (component explorer)"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Single select",
+      "html": "<vsc-chat-question-carousel question=\"Which language do you want to use?\"><vsc-chat-question-option label=\"TypeScript\" description=\"Strongly typed JavaScript\" selected></vsc-chat-question-option><vsc-chat-question-option label=\"JavaScript\" description=\"Dynamic scripting language\"></vsc-chat-question-option><vsc-chat-question-option label=\"Python\" description=\"General purpose language\"></vsc-chat-question-option><vsc-chat-question-option label=\"Rust\" description=\"Systems programming\"></vsc-chat-question-option></vsc-chat-question-carousel>",
+      "width": 376
+    },
+    {
+      "title": "Multi select",
+      "html": "<vsc-chat-question-carousel question=\"Which features should be enabled?\" multi><vsc-chat-question-option label=\"Linting\" selected></vsc-chat-question-option><vsc-chat-question-option label=\"Formatting\" selected></vsc-chat-question-option><vsc-chat-question-option label=\"Testing\"></vsc-chat-question-option><vsc-chat-question-option label=\"CI/CD Pipeline\"></vsc-chat-question-option></vsc-chat-question-carousel>",
+      "width": 376
+    },
+    {
+      "title": "Message, detail and text answer",
+      "html": "<vsc-chat-question-carousel><span slot=\"message\">See <strong><a href=\"https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode\">question guidance</a></strong>.</span><span slot=\"question\"><strong>Review the <a href=\"https://code.visualstudio.com/docs\">VS Code documentation</a> before continuing.</strong></span><div slot=\"detail\"><h3><a href=\"https://code.visualstudio.com/docs\">Related resources</a></h3><p>Read the <a href=\"https://code.visualstudio.com/api/get-started/your-first-extension\">extension guide</a> for more information.</p><ul><li><strong><a href=\"https://github.com/microsoft/vscode\">VS Code repository</a></strong></li><li><a href=\"https://code.visualstudio.com/api\">Extension API</a></li></ul></div></vsc-chat-question-carousel>",
+      "width": 376
+    },
+    {
+      "title": "Collapsed",
+      "html": "<vsc-chat-question-carousel question=\"Which language do you want to use?\" collapsed><vsc-chat-question-option label=\"TypeScript\" description=\"Strongly typed JavaScript\" selected></vsc-chat-question-option><vsc-chat-question-option label=\"JavaScript\" description=\"Dynamic scripting language\"></vsc-chat-question-option><vsc-chat-question-option label=\"Python\" description=\"General purpose language\"></vsc-chat-question-option><vsc-chat-question-option label=\"Rust\" description=\"Systems programming\"></vsc-chat-question-option></vsc-chat-question-carousel>",
+      "width": 376
+    },
+    {
+      "title": "Carousel message with a detailed question",
+      "html": "<vsc-chat-question-carousel message=\"Here's a random question to test the interaction:\" question=\"Which would you rather explore?\"><p slot=\"detail\">Which would you rather explore?</p><vsc-chat-question-option label=\"The deep ocean\" selected></vsc-chat-question-option><vsc-chat-question-option label=\"Outer space\"></vsc-chat-question-option><vsc-chat-question-option label=\"An ancient city\"></vsc-chat-question-option></vsc-chat-question-carousel>",
+      "width": 520
+    }
+  ],
+  "references": [
+    {
+      "capture": "chat-question-carousel-dark",
+      "example": 0,
+      "theme": "dark-2026",
+      "width": 376,
+      "ignore": []
+    },
+    {
+      "capture": "chat-question-carousel-multi-dark",
+      "example": 1,
+      "theme": "dark-2026",
+      "width": 376,
+      "ignore": []
+    },
+    {
+      "capture": "chat-question-carousel-message-dark",
+      "example": 2,
+      "theme": "dark-2026",
+      "width": 376,
+      "ignore": []
+    },
+    {
+      "capture": "chat-question-carousel-collapsed-dark",
+      "example": 3,
+      "theme": "dark-2026",
+      "width": 376,
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "drift",
+    "checkedAt": "2026-10-27T22:02:07.629Z",
+    "compared": 152,
+    "diffs": 12,
+    "theme": "dark-2026",
+    "summary": [
+      "[chat-question-carousel-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > horizontal.invisible.scrollbar > slider radius: expected \"0px\", got \"4px\"",
+      "[chat-question-carousel-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > invisible.scrollbar.vertical h: expected 254, got 238",
+      "[chat-question-carousel-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > invisible.scrollbar.vertical > slider h: expected 254, got 238",
+      "[chat-question-carousel-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > invisible.scrollbar.vertical > slider radius: expected \"0px\", got \"4px\"",
+      "[chat-question-carousel-multi-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > horizontal.invisible.scrollbar > slider radius: expected \"0px\", got \"4px\"",
+      "[chat-question-carousel-multi-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > invisible.scrollbar.vertical h: expected 193, got 177",
+      "[chat-question-carousel-multi-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > invisible.scrollbar.vertical > slider h: expected 193, got 177",
+      "[chat-question-carousel-multi-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > invisible.scrollbar.vertical > slider radius: expected \"0px\", got \"4px\"",
+      "[chat-question-carousel-message-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > horizontal.invisible.scrollbar > slider radius: expected \"0px\", got \"4px\"",
+      "[chat-question-carousel-message-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > invisible.scrollbar.vertical h: expected 195, got 179",
+      "[chat-question-carousel-message-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > invisible.scrollbar.vertical > slider h: expected 195, got 179",
+      "[chat-question-carousel-message-dark] chat-question-carousel-content > chat-question-input-scrollable.mac.monaco-scrollable-element > invisible.scrollbar.vertical > slider radius: expected \"0px\", got \"4px\""
+    ]
+  },
+  "createdAt": "2026-10-27T21:57:33.428Z",
+  "updatedAt": "2026-10-27T22:02:25.029Z"
+}

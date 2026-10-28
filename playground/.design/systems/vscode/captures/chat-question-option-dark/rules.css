@@ -1,0 +1,163 @@
+/*
+ * Captured from http://localhost:5123/___explorer?fixture=chat/chatQuestionCarousel
+ * Selector: #dt-target
+ * On: 2026-10-27T22:01:08.843Z
+ */
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@65 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@66 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@1189.0 */
+:is(.disable-animations) * {
+  transition: none !important;
+  animation: auto ease 0s 1 normal none running none !important;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@1266 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.1 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list-item:focus {
+  outline: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: var(--vscode-cornerRadius-medium);
+  user-select: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0.0 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item) .chat-question-list-indicator {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0.1 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item) .chat-question-list-indicator.codicon-check {
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0.2 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item) .chat-question-list-label {
+  font-size: var(--vscode-fontSize-body2);
+  font-weight: var(--vscode-fontWeight-semiBold);
+  flex: 1 1 0%;
+  overflow-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0.3 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item) .chat-question-list-label-title {
+  font-weight: var(--vscode-fontWeight-semiBold);
+  line-height: 1.4;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0.4 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item) .chat-question-list-label-desc {
+  font-weight: var(--vscode-fontWeight-regular);
+  color: var(--vscode-descriptionForeground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.1 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.has-description {
+  align-items: flex-start;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.1.0 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.has-description) .chat-question-list-number {
+  line-height: 1.4;
+  font-size: var(--vscode-fontSize-body2);
+  font-weight: var(--vscode-fontWeight-semiBold);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.2 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item:hover {
+  background-color: var(--vscode-list-hoverBackground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.3 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.selected {
+  background-color: var(--vscode-list-inactiveSelectionBackground, var(--vscode-list-hoverBackground));
+  color: var(--vscode-list-inactiveSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.3.0 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.selected) .chat-question-list-label-desc {
+  color: var(--vscode-list-inactiveSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.3.1 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.selected) .chat-question-list-indicator.codicon-check {
+  color: var(--vscode-list-inactiveSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.3.2 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.selected) .chat-question-list-number {
+  color: var(--vscode-list-inactiveSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.4 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):focus .chat-question-list-item.selected {
+  background-color: var(--vscode-list-activeSelectionBackground, var(--vscode-list-hoverBackground));
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.4.0 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):focus .chat-question-list-item.selected) .chat-question-list-label-desc {
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.4.1 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):focus .chat-question-list-item.selected) .chat-question-list-indicator.codicon-check {
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.4.2 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):focus .chat-question-list-item.selected) .chat-question-list-number {
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.5 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):not(:focus) .chat-question-list-item.selected:hover {
+  background-color: var(--vscode-list-inactiveSelectionBackground, var(--vscode-list-hoverBackground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.4 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list-number {
+  font-size: var(--vscode-fontSize-body2);
+  font-weight: var(--vscode-fontWeight-semiBold);
+  color: var(--vscode-descriptionForeground);
+  flex-shrink: 0;
+  min-width: 1ch;
+  text-align: right;
+}

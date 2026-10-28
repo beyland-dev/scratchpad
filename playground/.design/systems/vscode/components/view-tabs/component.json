@@ -1,0 +1,140 @@
+{
+  "tag": "vsc-view-tabs",
+  "kind": "component",
+  "title": "View tabs",
+  "category": "workbench",
+  "description": "A row of view-switcher tabs styled like the bottom panel's (Problems / Output / Debug Console / Terminal) and the Settings editor scope tabs in the modern UI: borderless text tabs where the active one sits on a rounded pill. Renders the panel's composite bar (`.pane-composite-part > .composite.title > .composite-bar-container > .composite-bar > .monaco-action-bar > ul[role=tablist]`) so the captured panel rules apply unchanged, without the panel part around it. Known drift vs. the panel-title capture: the panel's title row adds 2px/4px padding and a flex layout from `.part.panel > .title` (panel-specific, intentionally not reproduced), and tab widths differ ~1px from platform font metrics (the capture was taken on Linux; computed font, padding and widths are identical to the verified <vsc-panel>).",
+  "usage": "Use for switching between views or filtered lists inside a surface (panel views, settings scopes, inbox buckets). Children are <vsc-view-tab value>Label</vsc-view-tab>; set active to a value and listen for \"change\". Not for editor tabs (use <vsc-tabs>/<vsc-tab>).",
+  "attributes": [
+    {
+      "name": "active",
+      "type": "string",
+      "description": "value of the active <vsc-view-tab> (defaults to the first)"
+    },
+    {
+      "name": "label",
+      "type": "string",
+      "default": "Active View Switcher",
+      "description": "Accessible name of the tablist"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "<vsc-view-tab> children"
+    }
+  ],
+  "states": [
+    {
+      "name": "active",
+      "description": "The tab whose value equals active gets the pill",
+      "trigger": "active attribute, click, ←/→"
+    }
+  ],
+  "variants": [],
+  "hostDisplay": "block",
+  "hostTag": "div",
+  "cssCaptures": [
+    "panel-title-dark",
+    "panel-title-light"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [],
+  "uses": [
+    "vsc-view-tab"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/workbench/browser/parts/compositeBar.ts",
+      "note": "composite bar"
+    },
+    {
+      "path": "src/vs/workbench/browser/parts/media/paneCompositePart.css",
+      "note": "panel title / modern-ui-tabs"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Panel tabs",
+      "html": "<vsc-view-tabs active=\"terminal\"><vsc-view-tab value=\"problems\">Problems</vsc-view-tab><vsc-view-tab value=\"output\">Output</vsc-view-tab><vsc-view-tab value=\"debug\">Debug Console</vsc-view-tab><vsc-view-tab value=\"terminal\">Terminal</vsc-view-tab></vsc-view-tabs>",
+      "width": 400
+    },
+    {
+      "title": "With counts",
+      "html": "<vsc-view-tabs active=\"ready\" label=\"Inbox\"><vsc-view-tab value=\"ready\" count=\"6\">Ready for you</vsc-view-tab><vsc-view-tab value=\"working\" count=\"3\">Working</vsc-view-tab><vsc-view-tab value=\"hold\" count=\"2\">On hold</vsc-view-tab><vsc-view-tab value=\"done\">Done</vsc-view-tab></vsc-view-tabs>",
+      "width": 480
+    }
+  ],
+  "references": [
+    {
+      "capture": "panel-title-dark",
+      "example": 0,
+      "theme": "dark-2026",
+      "width": 658,
+      "root": ".composite.title",
+      "ignore": []
+    },
+    {
+      "capture": "panel-title-light",
+      "example": 0,
+      "theme": "light-2026",
+      "width": 658,
+      "root": ".composite.title",
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "drift",
+    "checkedAt": "2026-10-28T00:05:03.981Z",
+    "compared": 34,
+    "diffs": 126,
+    "theme": "dark-2026",
+    "summary": [
+      "[panel-title-dark] missing: title-actions",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.menu-entry[0]",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.menu-entry[0] > action-label.single-terminal-tab",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.menu-entry[0] > action-label.single-terminal-tab > codicon.codicon-terminal",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.monaco-dropdown-with-primary",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.monaco-dropdown-with-primary > action-container.menu-entry",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.monaco-dropdown-with-primary > action-container.menu-entry > action-label.codicon.codicon-plus",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.monaco-dropdown-with-primary > dropdown-action-container",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.monaco-dropdown-with-primary > dropdown-action-container > monaco-dropdown",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.monaco-dropdown-with-primary > dropdown-action-container > monaco-dropdown > dropdown-label",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.monaco-dropdown-with-primary > dropdown-action-container > monaco-dropdown > dropdown-label > action-label.codicon.codicon-chevron-down",
+      "[panel-title-dark] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item[0]",
+      "[panel-title-dark] ROOT border: expected \"0px none rgba(0, 0, 0, 0)\", got \"0px none rgb(191, 191, 191)\"",
+      "[panel-title-dark] ROOT padding: expected \"0px 4px 0px 2px\", got \"0px\"",
+      "[panel-title-dark] composite-bar-container x: expected 2, got 0",
+      "[panel-title-dark] composite-bar-container w: expected 327.86, got 658",
+      "[panel-title-dark] composite-bar-container > composite-bar x: expected 2, got 0",
+      "[panel-title-dark] composite-bar-container > composite-bar w: expected 327.86, got 323.3",
+      "[panel-title-dark] composite-bar-container > composite-bar > monaco-action-bar x: expected 2, got 0",
+      "[panel-title-dark] composite-bar-container > composite-bar > monaco-action-bar w: expected 327.86, got 323.3",
+      "[panel-title-dark] composite-bar-container > composite-bar > monaco-action-bar > actions-container x: expected 2, got 0",
+      "[panel-title-dark] composite-bar-container > composite-bar > monaco-action-bar > actions-container w: expected 327.86, got 323.3",
+      "[panel-title-dark] composite-bar-container > composite-bar > monaco-action-bar > actions-container > action-item[0] x: expected 2, got 0",
+      "[panel-title-dark] composite-bar-container > composite-bar > monaco-action-bar > actions-container > action-item[0] w: expected 77.91, got 76.92",
+      "[panel-title-dark] composite-bar-container > composite-bar > monaco-action-bar > actions-container > action-item[0] > action-label x: expected 12, got 10",
+      "[panel-title-dark] composite-bar-container > composite-bar > monaco-action-bar > actions-container > action-item[0] > action-label w: expected 57.91, got 56.92",
+      "[panel-title-dark] composite-bar-container > composite-bar > monaco-action-bar > actions-container > action-item[0] > active-item-indicator x: expected 4, got 2",
+      "[panel-title-light] missing: title-actions",
+      "[panel-title-light] missing: title-actions > monaco-toolbar",
+      "[panel-title-light] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar",
+      "[panel-title-light] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container",
+      "[panel-title-light] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.menu-entry[0]",
+      "[panel-title-light] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.menu-entry[0] > action-label.single-terminal-tab",
+      "[panel-title-light] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.menu-entry[0] > action-label.single-terminal-tab > codicon.codicon-terminal",
+      "[panel-title-light] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.monaco-dropdown-with-primary",
+      "[panel-title-light] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.monaco-dropdown-with-primary > action-container.menu-entry",
+      "[panel-title-light] missing: title-actions > monaco-toolbar > has-overflow.monaco-action-bar > actions-container > action-item.monaco-dropdown-with-primary > action-container.menu-entry > action-label.codicon.codicon-plus"
+    ]
+  },
+  "createdAt": "2026-10-27T22:06:25.867Z",
+  "updatedAt": "2026-10-28T00:05:03.981Z"
+}

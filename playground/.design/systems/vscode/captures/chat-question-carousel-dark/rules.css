@@ -1,0 +1,553 @@
+/*
+ * Captured from http://localhost:5123/___explorer?fixture=chat/chatQuestionCarousel
+ * Selector: #dt-target
+ * On: 2026-10-27T21:50:31.760Z
+ */
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2 */
+.monaco-scrollable-element > .invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@5 */
+.monaco-scrollable-element > .shadow {
+  position: absolute;
+  display: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@10 */
+.monaco-scrollable-element > .scrollbar {
+  background: var(--vscode-scrollbar-background);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@11 */
+.monaco-scrollable-element > .scrollbar > .slider {
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@12 */
+.monaco-scrollable-element > .scrollbar > .slider:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@13 */
+.monaco-scrollable-element > .scrollbar > .slider.active {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@47 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@51 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@58 */
+.monaco-workbench textarea::placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@59 */
+.monaco-workbench textarea::-webkit-input-placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@65 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@66 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@74 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench textarea:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@77 */
+.monaco-workbench [tabindex="0"]:active {
+  outline: 0px !important;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@630 */
+.monaco-text-button {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--vscode-button-border, transparent);
+  line-height: 16px;
+  font-size: 12px;
+  overflow-wrap: normal;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@631 */
+.monaco-text-button.secondary {
+  border-color: var(--vscode-button-secondaryBorder, var(--vscode-button-border, transparent));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@633 */
+.monaco-text-button:focus {
+  outline-offset: 2px !important;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@634 */
+.monaco-text-button:hover {
+  text-decoration: none !important;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@635 */
+.monaco-button.disabled:focus,
+.monaco-button.disabled {
+  opacity: 0.4 !important;
+  cursor: default;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@636 */
+.monaco-text-button .codicon {
+  margin: 0px 0.2em;
+  color: inherit !important;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@1189.0 */
+:is(.disable-animations) * {
+  transition: none !important;
+  animation: auto ease 0s 1 normal none running none !important;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@1266 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2446 */
+.chat-card-large {
+  display: flex;
+  flex-direction: column;
+  border: var(--vscode-strokeThickness) solid var(--vscode-input-border, var(--vscode-chat-requestBorder));
+  border-radius: var(--vscode-cornerRadius-large);
+  background-color: var(--vscode-panel-background);
+  overflow: hidden;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2447 */
+.chat-card-large:focus-within {
+  border-color: var(--vscode-focusBorder);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2451 */
+.chat-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--vscode-spacing-size80);
+  padding: var(--vscode-spacing-size80) var(--vscode-spacing-size80) var(--vscode-spacing-size80) var(--vscode-spacing-size160);
+  border-bottom: var(--vscode-strokeThickness) solid var(--vscode-chat-requestBorder);
+  flex-shrink: 0;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2452 */
+.chat-card-title {
+  flex: 1 1 0%;
+  min-width: 0px;
+  margin: 0px;
+  font-size: var(--vscode-fontSize-heading3);
+  font-weight: var(--vscode-fontWeight-semiBold);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2454 */
+.monaco-button.chat-card-icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0px;
+  border-width: medium;
+  border-style: none;
+  border-color: currentcolor;
+  border-image: none;
+  box-shadow: none;
+  background: transparent;
+  color: var(--vscode-icon-foreground);
+  cursor: pointer;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2455 */
+.monaco-button.chat-card-icon-button:hover:not(.disabled) {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2456 */
+.monaco-button.chat-card-icon-button.disabled {
+  opacity: 0.4;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2510 */
+.interactive-session .interactive-input-part > .chat-question-carousel-widget-container .chat-question-carousel-container {
+  margin: 0px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2511 */
+.interactive-session .chat-question-carousel-container {
+  margin: 8px 0px;
+  container-type: inline-size;
+  max-height: min(420px, 45vh);
+  position: relative;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2512 */
+.interactive-session .chat-question-carousel-container:focus {
+  outline: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2513 */
+.interactive-session .chat-question-carousel-container:focus-visible {
+  border-color: var(--vscode-focusBorder);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2515 */
+.interactive-session .interactive-input-part > .chat-question-carousel-widget-container .chat-question-carousel-content {
+  min-height: 0px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2516 */
+.interactive-session .chat-question-carousel-container .chat-question-carousel-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0px;
+  overflow: hidden;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2516.0 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-carousel-content) .chat-question-header-row {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2516.0.0 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-carousel-content) .chat-question-header-row) .chat-question-title-row {
+  min-width: 0px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2516.0.1 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-carousel-content) .chat-question-header-row) .chat-question-title {
+  word-break: break-word;
+  white-space: normal;
+  user-select: text;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2516.0.1.0.0 */
+:is(:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-carousel-content) .chat-question-header-row) .chat-question-title) .rendered-markdown) p {
+  margin: 0px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2516.0.2 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-carousel-content) .chat-question-header-row) .chat-question-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2516.0.4 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-carousel-content) .chat-question-header-row) .chat-question-close-container {
+  flex-shrink: 0;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522 */
+.interactive-session .chat-question-carousel-container .chat-question-input-container {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px;
+  min-width: 0px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.0 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-input-container)::after {
+  content: "";
+  display: block;
+  height: 8px;
+  flex-shrink: 0;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.1 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list-item:focus,
+:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list:focus {
+  outline: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list {
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  padding: 0px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: var(--vscode-cornerRadius-medium);
+  user-select: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0.0 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item) .chat-question-list-indicator {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0.1 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item) .chat-question-list-indicator.codicon-check {
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0.2 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item) .chat-question-list-label {
+  font-size: var(--vscode-fontSize-body2);
+  font-weight: var(--vscode-fontWeight-semiBold);
+  flex: 1 1 0%;
+  overflow-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0.3 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item) .chat-question-list-label-title {
+  font-weight: var(--vscode-fontWeight-semiBold);
+  line-height: 1.4;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0.4 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item) .chat-question-list-label-desc {
+  font-weight: var(--vscode-fontWeight-regular);
+  color: var(--vscode-descriptionForeground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.1 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.has-description {
+  align-items: flex-start;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.1.0 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.has-description) .chat-question-list-number {
+  line-height: 1.4;
+  font-size: var(--vscode-fontSize-body2);
+  font-weight: var(--vscode-fontWeight-semiBold);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.2 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item:hover {
+  background-color: var(--vscode-list-hoverBackground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.3 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.selected {
+  background-color: var(--vscode-list-inactiveSelectionBackground, var(--vscode-list-hoverBackground));
+  color: var(--vscode-list-inactiveSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.3.0 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.selected) .chat-question-list-label-desc {
+  color: var(--vscode-list-inactiveSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.3.1 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.selected) .chat-question-list-indicator.codicon-check {
+  color: var(--vscode-list-inactiveSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.3.2 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.selected) .chat-question-list-number {
+  color: var(--vscode-list-inactiveSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.4 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):focus .chat-question-list-item.selected {
+  background-color: var(--vscode-list-activeSelectionBackground, var(--vscode-list-hoverBackground));
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.4.0 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):focus .chat-question-list-item.selected) .chat-question-list-label-desc {
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.4.1 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):focus .chat-question-list-item.selected) .chat-question-list-indicator.codicon-check {
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.4.2 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):focus .chat-question-list-item.selected) .chat-question-list-number {
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.5 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):not(:focus) .chat-question-list-item.selected:hover {
+  background-color: var(--vscode-list-inactiveSelectionBackground, var(--vscode-list-hoverBackground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.3 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-freeform {
+  margin: 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 8px;
+  gap: 8px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.3.0 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-freeform) .chat-question-freeform-number {
+  height: fit-content;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.3.1 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-freeform) .chat-question-freeform-textarea {
+  width: 100%;
+  min-height: 24px;
+  max-height: 200px;
+  padding: 3px 8px;
+  border: 1px solid var(--vscode-input-border, var(--vscode-chat-requestBorder));
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border-radius: 4px;
+  resize: none;
+  font-family: var(--vscode-chat-font-family, inherit);
+  font-size: var(--vscode-chat-font-size-body-s);
+  box-sizing: border-box;
+  overflow-y: hidden;
+  align-content: center;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.3.2 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-freeform) .chat-question-freeform-textarea:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  border-color: var(--vscode-focusBorder);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.3.3 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-freeform) .chat-question-freeform-textarea::placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.4 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list-number,
+:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-freeform-number {
+  font-size: var(--vscode-fontSize-body2);
+  font-weight: var(--vscode-fontWeight-semiBold);
+  color: var(--vscode-descriptionForeground);
+  flex-shrink: 0;
+  min-width: 1ch;
+  text-align: right;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2523 */
+.interactive-session .chat-question-carousel-container .chat-question-input-container > * {
+  flex-shrink: 0;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2524 */
+.interactive-session .chat-question-carousel-container .chat-question-input-scrollable {
+  flex: 0 1 auto;
+  min-height: 0px;
+  overscroll-behavior: contain;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2525 */
+.interactive-session .chat-question-carousel-container .chat-question-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  border-top: 1px solid var(--vscode-chat-requestBorder);
+  flex-shrink: 0;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2525.0 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-footer-row) .chat-question-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2525.1 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-footer-row) .chat-question-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2525.4 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-footer-row) .chat-question-submit-hint {
+  font-size: var(--vscode-fontSize-body2);
+  color: var(--vscode-descriptionForeground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2525.5 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-footer-row) .monaco-button.chat-question-submit-button {
+  height: 22px;
+  width: auto;
+  flex: 0 0 auto;
+  min-width: auto;
+  padding: 0px 8px;
+  background: var(--vscode-button-background) !important;
+  color: var(--vscode-button-foreground) !important;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2525.6 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-footer-row) .monaco-button.chat-question-submit-button:hover:not(.disabled) {
+  background: var(--vscode-button-hoverBackground) !important;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2529 */
+.interactive-session .chat-question-carousel-container .chat-question-validation-message {
+  padding: 0px 16px 4px;
+  font-size: var(--vscode-chat-font-size-body-s);
+  color: var(--vscode-editorWarning-foreground);
+  flex-shrink: 0;
+}

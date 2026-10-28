@@ -172,16 +172,32 @@ describe("prototypes", () => {
   test("variants copy files and form a family", async () => {
     await core.prototypes.create({ title: "Base", html: "<p>base</p>", group: "g" });
     const v2 = await core.prototypes.createVariant("base");
-    const v3 = await core.prototypes.createVariant(v2.id, { title: "Third" });
-    expect(v2).toMatchObject({
-      id: "base-v2",
-      variantOf: "base",
-      group: "g",
-      title: "Base (variant 2)",
-    });
-    expect(v3).toMatchObject({ variantOf: "base-v2", title: "Third" });
+    const v3 = await core.prototypes.createVariant(v2.id, { description: "Third" });
+    const v4 = await core.prototypes.createVariant(v3.id);
+    // Versions share the family's name; they're told apart as V1, V2, … Latest.
+    expect(v2).toMatchObject({ id: "base-v2", variantOf: "base", group: "g", title: "Base" });
+    expect(v3).toMatchObject({ id: "base-v3", variantOf: "base-v2", title: "Base" });
+    expect(v3.description).toBe("Third");
+    // Forks of forks are still named after the family's original.
+    expect(v4).toMatchObject({ id: "base-v4", variantOf: "base-v3", title: "Base" });
     expect((await core.prototypes.readFile(v3.id, "index.html")).content).toBe("<p>base</p>");
-    expect(core.prototypes.family(v3.id).map((p) => p.id)).toEqual(["base", "base-v2", v3.id]);
+    expect(core.prototypes.family(v3.id).map((p) => p.id)).toEqual([
+      "base",
+      "base-v2",
+      "base-v3",
+      "base-v4",
+    ]);
+
+    // Renaming any version renames the family, without touching the others' edit times.
+    const before = core.prototypes.get("base").updatedAt;
+    await core.run("prototype.update", { id: v3.id, title: "Renamed" });
+    expect(core.prototypes.family("base").map((p) => p.title)).toEqual(Array(4).fill("Renamed"));
+    expect(core.prototypes.get("base").updatedAt).toBe(before);
+
+    // Joining a family takes on its name.
+    await core.prototypes.create({ title: "Stray", html: "<p>stray</p>" });
+    await core.run("prototype.update", { id: "stray", variantOf: "base" });
+    expect(core.prototypes.get("stray").title).toBe("Renamed");
   });
 
   test("delete moves to trash", async () => {
@@ -304,6 +320,46 @@ describe("projects", () => {
     await expect(
       core.run("prototype.create", { title: "Typo", project: "nope" }),
     ).rejects.toMatchObject({ code: "NOT_FOUND" });
+  });
+
+  test("prototypes resolve the design system they use (field, HTML reference, project)", async () => {
+    type Out = { prototype: { id: string; resolvedSystem?: string } };
+    const resolved = async (id: string) =>
+      (await core.run<Out>("prototype.get", { id })).prototype.resolvedSystem;
+    // No system in the project yet.
+    expect(await resolved("welcome")).toBeUndefined();
+
+    // The project's only design system.
+    await core.run("system.create", { id: "ds", name: "DS", prefix: "ds" });
+    expect(await resolved("welcome")).toBe("ds");
+
+    // With several, the one the entry HTML loads wins.
+    await core.run("system.create", { id: "other-ds", name: "Other", prefix: "ot" });
+    expect(await resolved("welcome")).toBeUndefined();
+    const linked = await core.run<Out>("prototype.create", {
+      title: "Linked",
+      html: '<link rel="stylesheet" href="http://127.0.0.1:7421/s/other-ds/system.css" /><script src="/s/other-ds/system.js"></script>',
+    });
+    expect(linked.prototype.resolvedSystem).toBe("other-ds");
+
+    // An explicit `system` wins over both, and null goes back to inferring it.
+    await core.run("prototype.update", { id: linked.prototype.id, system: "ds" });
+    expect(core.prototypes.get(linked.prototype.id).system).toBe("ds");
+    expect(await resolved(linked.prototype.id)).toBe("ds");
+    await core.run("prototype.update", { id: linked.prototype.id, system: null });
+    expect(core.prototypes.get(linked.prototype.id).system).toBeUndefined();
+    expect(await resolved(linked.prototype.id)).toBe("other-ds");
+    await expect(
+      core.run("prototype.update", { id: linked.prototype.id, system: "nope" }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
+
+    // Editing the entry HTML updates the inferred system.
+    await core.run("prototype.writeFile", {
+      id: linked.prototype.id,
+      path: "index.html",
+      content: '<script type="module" src="/s/ds/system.js"></script>',
+    });
+    expect(await resolved(linked.prototype.id)).toBe("ds");
   });
 
   test("prototypes and systems move between projects; lists filter by project", async () => {
@@ -458,9 +514,15 @@ describe("package design systems", () => {
     expect((await core.prototypes.readFile(prototype.id, "index.html")).content).toContain(
       'src="./main.tsx"',
     );
+    // Any prototype can name its system now (plain HTML ones for the viewer's theme options).
+    const plain = await core.run<{ prototype: { system?: string } }>("prototype.create", {
+      title: "Plain",
+      system: "acme-ui",
+    });
+    expect(plain.prototype.system).toBe("acme-ui");
     await expect(
-      core.run("prototype.create", { title: "Plain", system: "acme-ui" }),
-    ).rejects.toMatchObject({ code: "INVALID_INPUT" });
+      core.run("prototype.create", { title: "Typo", system: "nope" }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
   });
 
   test("building without installed dependencies explains how to fix it", async () => {

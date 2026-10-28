@@ -1,0 +1,166 @@
+{
+  "label": "chat-question-option-multi-dark",
+  "url": "http://localhost:5123/___explorer?fixture=chat/chatQuestionCarousel/MultiSelectQuestion",
+  "selector": "#dt-target",
+  "theme": "dark-2026",
+  "state": "multi-select, checked",
+  "capturedAt": "2026-10-27T22:01:09.330Z",
+  "rect": {
+    "x": 341,
+    "y": 169,
+    "w": 342,
+    "h": 30.203125
+  },
+  "parentWidth": 342,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "chat-question-list",
+      "w": 342,
+      "h": 120.8125,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "chat-question-input-container",
+      "w": 374,
+      "h": 193,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element mac chat-question-input-scrollable",
+      "w": 374,
+      "h": 177,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "chat-question-carousel-content",
+      "w": 374,
+      "h": 216,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "d6e93e8c-112e-4eb9-b9fa-56b3a945ac8c",
+      "classes": "chat-question-carousel-container chat-card-large",
+      "w": 376,
+      "h": 249,
+      "display": "flex",
+      "bg": "rgb(25, 26, 27)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "chat-question-carousel-widget-container",
+      "w": 376,
+      "h": 249,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "interactive-input-part",
+      "w": 376,
+      "h": 257,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "component-fixture-container component-fixture monaco-workbench mac disable-animations vs-dark vscode-theme-defaults--extensions-theme-defaults-themes-2026-dark-json file-icons-enabled interactive-session",
+      "w": 416,
+      "h": 273,
+      "display": "flex",
+      "bg": "rgb(37, 37, 38)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "component-fixture-file-icon-theme-vs-seti",
+      "w": 416,
+      "h": 273,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "",
+      "w": 416,
+      "h": 273,
+      "display": "inline-block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "root",
+      "classes": "",
+      "w": 1400,
+      "h": 3000,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "",
+      "w": 1400,
+      "h": 3000,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(191, 191, 191)",
+    "font-family": "-apple-system, \"system-ui\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-icon-foreground": "#8c8c8c",
+    "--vscode-focusBorder": "rgba(57, 148, 188, 0.7)",
+    "--vscode-strokeThickness": "1px",
+    "--vscode-inputOption-hoverBackground": "rgba(90, 93, 94, 0.5)",
+    "--vscode-cornerRadius-medium": "6px",
+    "--vscode-fontSize-body2": "11px",
+    "--vscode-fontWeight-semiBold": "600",
+    "--vscode-list-hoverBackground": "rgba(255, 255, 255, 0.08)",
+    "--vscode-list-inactiveSelectionBackground": "#2c2d2e",
+    "--vscode-list-inactiveSelectionForeground": "#ededed",
+    "--vscode-foreground": "#bfbfbf",
+    "--vscode-list-activeSelectionBackground": "rgba(255, 255, 255, 0.13)",
+    "--vscode-list-activeSelectionForeground": "#ededed",
+    "--vscode-descriptionForeground": "#8c8c8c"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"/bundled/assets/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "http://localhost:5123/bundled/assets/codicon.ttf"
+      ]
+    }
+  ],
+  "rules": 23,
+  "scale": 2,
+  "viewport": {
+    "width": 1400,
+    "height": 3000
+  }
+}

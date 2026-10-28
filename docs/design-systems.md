@@ -52,6 +52,30 @@ with a details panel) and **Usage** tabs browse the results.
 </vsc-workbench>
 ```
 
+### Themes in the viewer
+
+The viewer (and Compare) offers a prototype's design system themes, so prototypes don't need
+their own theme toggles. Set the theme a prototype opens in (above, `theme="dark-2026"`) and let
+the viewer switch it. It works through a small bridge in every built `system.js` (and in every
+framework prototype build):
+
+- `?theme=<id>` in the prototype's URL applies that theme on load. The viewer adds it to the
+  frame, "Open in a new tab" and Compare, and keeps it in its own URL (`/p/<id>?theme=<id>`).
+- `{ type: "dt-theme", theme: "<id>" }` posted by the parent window switches the theme live,
+  without reloading (so the prototype keeps its state). Messages from other windows and unknown
+  theme ids are ignored.
+- When the page is parsed, the bridge posts `{ type: "dt-theme-ready", system, themes, theme }`
+  to the parent. The viewer only shows its theme control after this handshake, for a prototype
+  whose design system (below) matches.
+
+A theme is applied by setting `theme` on every root context element (`system.rootContext`,
+including ones added later) or, for package systems, `data-theme` and the theme's classes on
+`<html>`. Without a URL theme or message, nothing changes.
+
+A prototype's design system is its `system` field, else (for plain HTML) the system whose
+`/s/<id>/system.css` or `system.js` its entry HTML loads, else its project's only design system.
+The API returns it as `resolvedSystem`.
+
 Agents get the same information from the generated skill (`skills.install` /
 `system.exportSkill`) and the MCP tools `system_get`, `component_search`, `component_get` and
 `token_search`; `component_get` returns a ready-to-paste snippet already wrapped in its contexts.

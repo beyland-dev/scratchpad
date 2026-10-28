@@ -1,9 +1,13 @@
 import { useEffect } from "preact/hooks";
 import { LocationProvider, Route, Router, useLocation } from "preact-iso";
 import { ConnectionToast, Header, isImmersive } from "./components/Header.tsx";
+import { NewVariantHost } from "./components/NewVariant.tsx";
 import { Sidebar } from "./components/Sidebar.tsx";
 import { homeProjectId, loaded, projectHref, startLiveUpdates } from "./store.ts";
 import { Compare } from "./views/Compare.tsx";
+import { Feedback } from "./views/Feedback.tsx";
+import { Handoff } from "./views/Handoff.tsx";
+import { Settings } from "./views/Settings.tsx";
 import { CaptureView } from "./views/CaptureView.tsx";
 import { ComponentView } from "./views/ComponentView.tsx";
 import { Systems } from "./views/Systems.tsx";
@@ -53,6 +57,9 @@ function Shell() {
             <Route path="/" component={ToHomeProject} />
             <Route path="/projects/:project" component={Gallery} />
             <Route path="/projects/:project/systems" component={Systems} />
+            <Route path="/projects/:project/feedback" component={Feedback} />
+            <Route path="/projects/:project/handoff" component={Handoff} />
+            <Route path="/settings" component={Settings} />
             <Route path="/p/:id" component={Viewer} />
             <Route path="/compare" component={Compare} />
             <Route path="/systems" component={ToHomeSystems} />
@@ -64,6 +71,7 @@ function Shell() {
         </main>
       </div>
       <ConnectionToast />
+      <NewVariantHost />
     </div>
   );
 }

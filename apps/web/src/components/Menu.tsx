@@ -1,3 +1,4 @@
+import { Fragment } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 import { Icon } from "./Icon.tsx";
 
@@ -5,6 +6,14 @@ export interface MenuItem {
   label: string;
   onSelect: () => void;
   danger?: boolean;
+  /** Secondary text under the label. */
+  detail?: string;
+  /** Muted text at the end of the row (a time, a shortcut). */
+  hint?: string;
+  /** Makes it a radio item: the menu shows which option is current. */
+  checked?: boolean;
+  /** Draw a divider above this item. */
+  divider?: boolean;
 }
 
 export interface MenuPosition {
@@ -31,19 +40,27 @@ export function MenuPopup({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    ref.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    const menu = ref.current;
+    (
+      menu?.querySelector<HTMLButtonElement>('[aria-checked="true"]') ??
+      menu?.querySelector<HTMLButtonElement>("button")
+    )?.focus();
     const onDown = (e: PointerEvent) => {
       const target = e.target as Node;
       if (ref.current?.contains(target) || anchor?.current?.contains(target)) return;
       onClose();
     };
-    const onScroll = () => onClose();
+    const onResize = () => onClose();
+    // The page scrolling away from the anchor closes it; scrolling a long menu itself doesn't.
+    const onScroll = (e: Event) => {
+      if (!ref.current?.contains(e.target as Node)) onClose();
+    };
     window.addEventListener("pointerdown", onDown, true);
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onResize);
     document.addEventListener("scroll", onScroll, true);
     return () => {
       window.removeEventListener("pointerdown", onDown, true);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
       document.removeEventListener("scroll", onScroll, true);
     };
   }, []);
@@ -54,6 +71,7 @@ export function MenuPopup({
   };
   const left = position.alignRight ? undefined : `${Math.min(position.x, innerWidth - 200)}px`;
   const right = position.alignRight ? `${innerWidth - position.x}px` : undefined;
+  const rowHeight = items.some((item) => item.detail) ? 48 : 32;
   return (
     <div
       ref={ref}
@@ -61,7 +79,7 @@ export function MenuPopup({
       role="menu"
       aria-label={label}
       style={{
-        top: `${Math.min(position.y, innerHeight - 40 * items.length - 16)}px`,
+        top: `${Math.max(8, Math.min(position.y, innerHeight - rowHeight * items.length - 16))}px`,
         left,
         right,
       }}
@@ -73,20 +91,42 @@ export function MenuPopup({
         e.preventDefault();
       }}
     >
-      {items.map((item) => (
-        <button
-          type="button"
-          role="menuitem"
-          key={item.label}
-          class={item.danger ? "danger" : ""}
-          onClick={() => {
-            onClose();
-            item.onSelect();
-          }}
-        >
-          {item.label}
-        </button>
-      ))}
+      {items.map((item) => {
+        const radio = item.checked !== undefined;
+        const rich = radio || item.detail || item.hint;
+        return (
+          <Fragment key={item.label}>
+            {item.divider && <hr class="menu-divider" />}
+            <button
+              type="button"
+              role={radio ? "menuitemradio" : "menuitem"}
+              aria-checked={radio ? item.checked : undefined}
+              class={[item.danger ? "danger" : "", rich ? "rich" : ""].filter(Boolean).join(" ")}
+              onClick={() => {
+                onClose();
+                item.onSelect();
+              }}
+            >
+              {rich ? (
+                <>
+                  {radio && (
+                    <span class="menu-check" aria-hidden="true">
+                      {item.checked && <Icon name="check" size={14} />}
+                    </span>
+                  )}
+                  <span class="menu-text">
+                    <span class="menu-label">{item.label}</span>
+                    {item.detail && <span class="menu-detail">{item.detail}</span>}
+                  </span>
+                  {item.hint && <span class="menu-hint">{item.hint}</span>}
+                </>
+              ) : (
+                item.label
+              )}
+            </button>
+          </Fragment>
+        );
+      })}
     </div>
   );
 }

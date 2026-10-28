@@ -1,0 +1,945 @@
+/*
+ * Captured from http://127.0.0.1:8457/?folder=/tmp/dt-vsc/ws
+ * Selector: #dt-toasts
+ * On: 2026-10-27T22:57:46.292Z
+ */
+
+/* @capture workbench.css@23 */
+.monaco-scrollable-element > .invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* @capture workbench.css@26 */
+.monaco-scrollable-element > .shadow {
+  position: absolute;
+  display: none;
+}
+
+/* @capture workbench.css@31 */
+.monaco-scrollable-element > .scrollbar {
+  background: var(--vscode-scrollbar-background);
+}
+
+/* @capture workbench.css@32 */
+.monaco-scrollable-element > .scrollbar > .slider {
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+/* @capture workbench.css@33 */
+.monaco-scrollable-element > .scrollbar > .slider:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* @capture workbench.css@34 */
+.monaco-scrollable-element > .scrollbar > .slider.active {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+/* @capture workbench.css@124 */
+.monaco-list {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@125 */
+.monaco-list.mouse-support {
+  user-select: none;
+}
+
+/* @capture workbench.css@126 */
+.monaco-list > .monaco-scrollable-element {
+  height: 100%;
+}
+
+/* @capture workbench.css@127 */
+.monaco-list-rows {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* @capture workbench.css@129 */
+.monaco-list-row {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* @capture workbench.css@130 */
+.monaco-list.mouse-support .monaco-list-row {
+  cursor: pointer;
+  touch-action: none;
+}
+
+/* @capture workbench.css@131 */
+.monaco-list .monaco-scrollable-element > .scrollbar.vertical {
+  z-index: 14;
+}
+
+/* @capture workbench.css@201 */
+.monaco-action-bar {
+  white-space: nowrap;
+  height: 100%;
+}
+
+/* @capture workbench.css@202 */
+.monaco-action-bar .actions-container {
+  display: flex;
+  margin: 0px auto;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+/* @capture workbench.css@204 */
+.monaco-action-bar .action-item {
+  display: block;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+/* @capture workbench.css@205 */
+.monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@206 */
+.monaco-action-bar .action-item .codicon {
+  display: block;
+}
+
+/* @capture workbench.css@207 */
+.monaco-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* @capture workbench.css@208 */
+.monaco-action-bar .action-label {
+  display: flex;
+  font-size: 11px;
+  padding: 3px;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture workbench.css@209 */
+.monaco-action-bar .action-item.disabled .action-label:not(.icon),
+.monaco-action-bar .action-item.disabled .action-label:not(.icon)::before,
+.monaco-action-bar .action-item.disabled .action-label:not(.icon):hover {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture workbench.css@250 */
+.monaco-dropdown {
+  height: 100%;
+  padding: 0px;
+}
+
+/* @capture workbench.css@251 */
+.monaco-dropdown > .dropdown-label {
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* @capture workbench.css@252 */
+.monaco-dropdown > .dropdown-label > .action-label.disabled {
+  cursor: default;
+}
+
+/* @capture workbench.css@382 */
+.monaco-text-button {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--vscode-button-border, transparent);
+  line-height: 16px;
+  font-size: 12px;
+  overflow-wrap: normal;
+}
+
+/* @capture workbench.css@383 */
+.monaco-text-button.secondary {
+  border-color: var(--vscode-button-secondaryBorder, var(--vscode-button-border, transparent));
+}
+
+/* @capture workbench.css@385 */
+.monaco-text-button:focus {
+  outline-offset: 2px !important;
+}
+
+/* @capture workbench.css@386 */
+.monaco-text-button:hover {
+  text-decoration: none !important;
+}
+
+/* @capture workbench.css@387 */
+.monaco-button.disabled:focus,
+.monaco-button.disabled {
+  opacity: 0.4 !important;
+  cursor: default;
+}
+
+/* @capture workbench.css@530 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture workbench.css@1114 */
+.monaco-progress-container {
+  width: 100%;
+  height: 2px;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@1115 */
+.monaco-progress-container .progress-bit {
+  width: 2%;
+  height: 2px;
+  position: absolute;
+  left: 0px;
+  display: none;
+}
+
+/* @capture workbench.css@1116 */
+.monaco-progress-container.active .progress-bit {
+  display: inherit;
+}
+
+/* @capture workbench.css@8208 */
+.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-toolbar-container .action-item {
+  margin-right: 4px;
+}
+
+/* @capture workbench.css@8209 */
+.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-toolbar-container .action-item:first-child {
+  margin-left: 4px;
+}
+
+/* @capture workbench.css@8292 */
+.modern-ui-notifications-dialogs.monaco-workbench .notifications-list-container .notification-list-item {
+  padding: var(--vscode-spacing-size60) var(--vscode-spacing-size20);
+}
+
+/* @capture workbench.css@8293 */
+.modern-ui-notifications-dialogs.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-icon {
+  font-size: var(--vscode-codiconFontSize);
+  margin: 0 var(--vscode-spacing-size80) 0 var(--vscode-spacing-size60);
+}
+
+/* @capture workbench.css@8294 */
+.modern-ui-notifications-dialogs.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-buttons-container > .monaco-button {
+  margin: 0 var(--vscode-spacing-size40) 0 0;
+}
+
+/* @capture workbench.css@8295 */
+.modern-ui-notifications-dialogs.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-source {
+  color: var(--vscode-descriptionForeground);
+  margin-left: var(--vscode-spacing-size240);
+}
+
+/* @capture workbench.css@8300 */
+.modern-ui-notifications-dialogs.monaco-workbench > .notifications-toasts {
+  right: calc(var(--modern-ui-notifications-inline-inset, var(--vscode-spacing-size80)) - var(--vscode-spacing-size40));
+  bottom: calc(var(--modern-ui-notifications-block-end-inset, var(--vscode-spacing-size360)) - var(--vscode-spacing-size40));
+}
+
+/* @capture workbench.css@8301 */
+.modern-ui-notifications-dialogs.monaco-workbench > .notifications-toasts .notification-toast-container:not(:last-child) > .notification-toast {
+  margin-bottom: var(--vscode-spacing-sizeNone);
+}
+
+/* @capture workbench.css@8302 */
+.modern-ui-notifications-dialogs.monaco-workbench.nostatusbar > .notifications-toasts:not(.top-right) {
+  bottom: calc(var(--modern-ui-notifications-block-end-inset, var(--vscode-spacing-size320)) - var(--vscode-spacing-size40));
+}
+
+/* @capture workbench.css@8303 */
+.modern-ui-notifications-dialogs.monaco-workbench > .notifications-toasts.bottom-left {
+  right: auto;
+  left: calc(var(--modern-ui-notifications-inline-inset, var(--vscode-spacing-size80)) - var(--vscode-spacing-size40));
+  bottom: calc(var(--modern-ui-notifications-block-end-inset, var(--vscode-spacing-size360)) - var(--vscode-spacing-size40));
+}
+
+/* @capture workbench.css@8307 */
+.modern-ui-notifications-dialogs.monaco-workbench > .notifications-toasts,
+.modern-ui-notifications-dialogs.monaco-workbench > .notifications-toasts .notifications-list-container,
+.modern-ui-notifications-dialogs.monaco-workbench > .notifications-toasts .notification-toast-container > .notification-toast,
+.modern-ui-notifications-dialogs.monaco-workbench > .notifications-toasts .notification-toast-container > .notification-toast .monaco-scrollable-element,
+.modern-ui-notifications-dialogs.monaco-workbench > .notifications-toasts .notification-toast-container > .notification-toast .monaco-list:not(.element-focused):focus::before,
+.modern-ui-notifications-dialogs.monaco-workbench > .notifications-toasts .notification-toast-container > .notification-toast .monaco-list-row {
+  border-radius: var(--vscode-cornerRadius-large);
+}
+
+/* @capture workbench.css@8391 */
+.modern-ui .monaco-list .monaco-list-row:not(.separator) {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8392 */
+.modern-ui .monaco-action-bar .action-label {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@8401 */
+.modern-ui .monaco-scrollable-element > .scrollbar > .slider {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@9671 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture workbench.css@9675 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture workbench.css@9688 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture workbench.css@9689 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture workbench.css@9697 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench [tabindex="-1"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture workbench.css@9700 */
+.monaco-workbench [tabindex="0"]:active,
+.monaco-workbench [tabindex="-1"]:active {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9707 */
+.monaco-workbench .monaco-list:focus {
+  outline: 0px !important;
+}
+
+/* @capture workbench.css@9709 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-label:not(.disabled):hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+/* @capture workbench.css@9710 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item.active .action-label:not(.disabled),
+.monaco-workbench .monaco-action-bar:not(.vertical) .monaco-dropdown.active .action-label:not(.disabled) {
+  background-color: var(--vscode-toolbar-activeBackground);
+}
+
+/* @capture workbench.css@9711 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item .action-label:hover:not(.disabled) {
+  outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+  outline-offset: -1px;
+}
+
+/* @capture workbench.css@9726 */
+.monaco-workbench .notifications-list-container {
+  color: var(--vscode-notifications-foreground);
+  background: var(--vscode-notifications-background);
+  outline-color: var(--vscode-contrastBorder);
+}
+
+/* @capture workbench.css@9727 */
+.monaco-workbench .notifications-list-container .notification-list-item {
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 10px 5px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* @capture workbench.css@9728 */
+.monaco-workbench .notifications-list-container .notification-offset-helper {
+  opacity: 0;
+  position: absolute;
+  line-height: 22px;
+  overflow-wrap: break-word;
+}
+
+/* @capture workbench.css@9729 */
+.monaco-workbench .notifications-list-container .notification-list-item > .notification-list-item-main-row {
+  display: flex;
+  flex-grow: 1;
+}
+
+/* @capture workbench.css@9730 */
+.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-icon {
+  display: flex;
+  align-items: center;
+  flex: 0 0 16px;
+  height: 22px;
+  margin-right: 4px;
+  margin-left: 4px;
+  font-size: 18px;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+/* @capture workbench.css@9731 */
+.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-message {
+  line-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 0%;
+  user-select: text;
+}
+
+/* @capture workbench.css@9734 */
+.monaco-workbench .notifications-list-container .notification-list-item.expanded .notification-list-item-message {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* @capture workbench.css@9735 */
+.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-toolbar-container {
+  display: none;
+  height: 22px;
+}
+
+/* @capture workbench.css@9736 */
+.monaco-workbench .notifications-list-container .monaco-list:focus-within .notification-list-item .notification-list-item-toolbar-container,
+.monaco-workbench .notifications-list-container .notification-list-item:hover .notification-list-item-toolbar-container,
+.monaco-workbench .notifications-list-container .monaco-list-row.focused .notification-list-item .notification-list-item-toolbar-container,
+.monaco-workbench .notifications-list-container .notification-list-item.expanded .notification-list-item-toolbar-container {
+  display: block;
+}
+
+/* @capture workbench.css@9737 */
+.monaco-workbench .notifications-list-container .notification-list-item > .notification-list-item-details-row {
+  display: none;
+  align-items: center;
+  padding-left: 5px;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@9738 */
+.monaco-workbench .notifications-list-container .notification-list-item.expanded > .notification-list-item-details-row {
+  display: flex;
+}
+
+/* @capture workbench.css@9739 */
+.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-source {
+  flex: 1 1 0%;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* @capture workbench.css@9740 */
+.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-buttons-container {
+  display: flex;
+  overflow: hidden;
+}
+
+/* @capture workbench.css@9741 */
+.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-buttons-container > .monaco-button {
+  margin: 4px 5px;
+}
+
+/* @capture workbench.css@9742 */
+.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-buttons-container .monaco-button {
+  outline-offset: 2px !important;
+}
+
+/* @capture workbench.css@9743 */
+.monaco-workbench .notifications-list-container .notification-list-item .notification-list-item-buttons-container .monaco-text-button {
+  width: fit-content;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* @capture workbench.css@9745 */
+.monaco-workbench .notifications-list-container .progress-bit {
+  bottom: 0px;
+}
+
+/* @capture workbench.css@9746 */
+.monaco-workbench > .notifications-toasts {
+  position: absolute;
+  z-index: 2545;
+  right: 3px;
+  bottom: 25px;
+  display: none;
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture workbench.css@9747 */
+.monaco-workbench.nostatusbar > .notifications-toasts {
+  bottom: 3px;
+}
+
+/* @capture workbench.css@9748 */
+.monaco-workbench > .notifications-toasts.bottom-left {
+  right: auto;
+  left: 3px;
+}
+
+/* @capture workbench.css@9751 */
+.monaco-workbench > .notifications-toasts.visible {
+  display: flex;
+  flex-direction: column;
+}
+
+/* @capture workbench.css@9752 */
+.monaco-workbench > .notifications-toasts .notification-toast-container > .notification-toast {
+  margin: 4px;
+  transform: translate3d(0px, 100%, 0px);
+  opacity: 0;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* @capture workbench.css@9753 */
+.monaco-workbench > .notifications-toasts .notifications-list-container {
+  box-shadow: var(--vscode-shadow-lg);
+}
+
+/* @capture workbench.css@9754 */
+.monaco-workbench > .notifications-toasts .notifications-list-container,
+.monaco-workbench > .notifications-toasts .notification-toast-container > .notification-toast,
+.monaco-workbench > .notifications-toasts .notification-toast-container > .notification-toast .monaco-scrollable-element,
+.monaco-workbench > .notifications-toasts .notification-toast-container > .notification-toast .monaco-list:not(.element-focused):focus::before,
+.monaco-workbench > .notifications-toasts .notification-toast-container > .notification-toast .monaco-list-row {
+  border-radius: 4px;
+}
+
+/* @capture workbench.css@9757 */
+.monaco-workbench > .notifications-toasts .notification-toast-container > .notification-toast.notification-fade-in-done {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+/* @capture workbench.css@9758 */
+.monaco-workbench > .notifications-toasts .codicon.codicon-error {
+  color: var(--vscode-notificationsErrorIcon-foreground) !important;
+}
+
+/* @capture workbench.css@9759 */
+.monaco-workbench > .notifications-toasts .codicon.codicon-warning {
+  color: var(--vscode-notificationsWarningIcon-foreground) !important;
+}
+
+/* @capture workbench.css@9760 */
+.monaco-workbench > .notifications-toasts .codicon.codicon-info {
+  color: var(--vscode-notificationsInfoIcon-foreground) !important;
+}
+
+/* @capture contributedColorTheme@182 */
+.monaco-workbench .monaco-list-row.selected {
+  --vscode-debug-ansi-terminal-ansiBlack: #939393;
+  --vscode-debug-ansi-terminal-ansiRed: #db6a6a;
+  --vscode-debug-ansi-terminal-ansiGreen: #0dbc79;
+  --vscode-debug-ansi-terminal-ansiYellow: #e5e510;
+  --vscode-debug-ansi-terminal-ansiBlue: #4e8ed3;
+  --vscode-debug-ansi-terminal-ansiMagenta: #c965c9;
+  --vscode-debug-ansi-terminal-ansiCyan: #11a8cd;
+  --vscode-debug-ansi-terminal-ansiWhite: #e5e5e5;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #919191;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #f35e5e;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #23d18b;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #f5f543;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #3b8eea;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #d670d6;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #29b8db;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #e5e5e5;
+}
+
+/* @capture contributedColorTheme@183 */
+.monaco-workbench .monaco-list-row.focused {
+  --vscode-debug-ansi-terminal-ansiBlack: #000000;
+  --vscode-debug-ansi-terminal-ansiRed: #cd3131;
+  --vscode-debug-ansi-terminal-ansiGreen: #0dbc79;
+  --vscode-debug-ansi-terminal-ansiYellow: #e5e510;
+  --vscode-debug-ansi-terminal-ansiBlue: #2472c8;
+  --vscode-debug-ansi-terminal-ansiMagenta: #bc3fbc;
+  --vscode-debug-ansi-terminal-ansiCyan: #11a8cd;
+  --vscode-debug-ansi-terminal-ansiWhite: #e5e5e5;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #666666;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #f14c4c;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #23d18b;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #f5f543;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #3b8eea;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #d670d6;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #29b8db;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #e5e5e5;
+}
+
+/* @capture contributedColorTheme@184 */
+.monaco-workbench .monaco-list:focus .monaco-list-row.focused {
+  --vscode-debug-ansi-terminal-ansiBlack: #000000;
+  --vscode-debug-ansi-terminal-ansiRed: #cd3131;
+  --vscode-debug-ansi-terminal-ansiGreen: #088857;
+  --vscode-debug-ansi-terminal-ansiYellow: #787807;
+  --vscode-debug-ansi-terminal-ansiBlue: #2472c8;
+  --vscode-debug-ansi-terminal-ansiMagenta: #bc3fbc;
+  --vscode-debug-ansi-terminal-ansiCyan: #0d87a5;
+  --vscode-debug-ansi-terminal-ansiWhite: #787878;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #666666;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #d84444;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #15885a;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #818122;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #357fd2;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #ac5aac;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #1c859f;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #787878;
+}
+
+/* @capture contributedColorTheme@185 */
+.monaco-workbench .monaco-list:focus .monaco-list-row.selected {
+  --vscode-debug-ansi-terminal-ansiBlack: #000000;
+  --vscode-debug-ansi-terminal-ansiRed: #cd3131;
+  --vscode-debug-ansi-terminal-ansiGreen: #088857;
+  --vscode-debug-ansi-terminal-ansiYellow: #787807;
+  --vscode-debug-ansi-terminal-ansiBlue: #2472c8;
+  --vscode-debug-ansi-terminal-ansiMagenta: #bc3fbc;
+  --vscode-debug-ansi-terminal-ansiCyan: #0d87a5;
+  --vscode-debug-ansi-terminal-ansiWhite: #787878;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #666666;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #d84444;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #15885a;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #818122;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #357fd2;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #ac5aac;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #1c859f;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #787878;
+}
+
+/* @capture codiconStyles@32 */
+.codicon-warning::before {
+  content: "\ea6c";
+}
+
+/* @capture codiconStyles@52 */
+.codicon-info::before {
+  content: "\ea74";
+}
+
+/* @capture codiconStyles@97 */
+.codicon-error::before {
+  content: "\ea87";
+}
+
+/* @capture codiconStyles@1119 */
+.codicon-notifications-clear::before {
+  content: "\ea76";
+}
+
+/* @capture codiconStyles@1123 */
+.codicon-notifications-expand::before {
+  content: "\eab7";
+}
+
+/* @capture codiconStyles@1127 */
+.codicon-notifications-configure::before {
+  content: "\eaf8";
+}
+
+/* @capture inline-hd03j9@0 */
+.monaco-list.list_id_7 .monaco-list-rows {
+  background: var(--vscode-notifications-background);
+}
+
+/* @capture inline-hd03j9@1 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  background-color: var(--vscode-list-focusBackground);
+}
+
+/* @capture inline-hd03j9@3 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  color: var(--vscode-list-focusForeground);
+}
+
+/* @capture inline-hd03j9@4 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+/* @capture inline-hd03j9@6 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+/* @capture inline-hd03j9@7 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected .codicon {
+  color: var(--vscode-list-activeSelectionIconForeground);
+}
+
+/* @capture inline-hd03j9@8 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected.focused {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+/* @capture inline-hd03j9@9 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected.focused {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+/* @capture inline-hd03j9@10 */
+.monaco-list.list_id_7 .monaco-list-row.focused .codicon {
+  color: var(--vscode-list-inactiveSelectionIconForeground);
+}
+
+/* @capture inline-hd03j9@11 */
+.monaco-list.list_id_7 .monaco-list-row.focused {
+  background-color: var(--vscode-list-inactiveFocusBackground);
+}
+
+/* @capture inline-hd03j9@13 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  background-color: var(--vscode-list-inactiveSelectionBackground);
+}
+
+/* @capture inline-hd03j9@15 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  color: var(--vscode-list-inactiveSelectionForeground);
+}
+
+/* @capture inline-hd03j9@18 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused.selected {
+  outline: 1px solid var(--vscode-list-focusAndSelectionOutline, var(--vscode-contrastActiveBorder, var(--vscode-list-focusOutline)));
+  outline-offset: -1px;
+}
+
+/* @capture inline-hd03j9@19 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  outline: 1px solid var(--vscode-list-focusOutline);
+  outline-offset: -1px;
+}
+
+/* @capture inline-hd03j9@20 */
+.monaco-list.list_id_7 .monaco-list-row.focused.selected {
+  outline: 1px dotted var(--vscode-contrastActiveBorder, var(--vscode-list-inactiveFocusOutline));
+  outline-offset: -1px;
+}
+
+/* @capture inline-hd03j9@21 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+/* @capture inline-hd03j9@22 */
+.monaco-list.list_id_7 .monaco-list-row.focused {
+  outline: 1px dotted var(--vscode-list-inactiveFocusOutline);
+  outline-offset: -1px;
+}
+
+/* @capture inline-4tf7mi@0 */
+.monaco-list.list_id_7 .monaco-list-rows {
+  background: var(--vscode-notifications-background);
+}
+
+/* @capture inline-4tf7mi@1 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  background-color: var(--vscode-list-focusBackground);
+}
+
+/* @capture inline-4tf7mi@3 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  color: var(--vscode-list-focusForeground);
+}
+
+/* @capture inline-4tf7mi@4 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+/* @capture inline-4tf7mi@6 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+/* @capture inline-4tf7mi@7 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected .codicon {
+  color: var(--vscode-list-activeSelectionIconForeground);
+}
+
+/* @capture inline-4tf7mi@8 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected.focused {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+/* @capture inline-4tf7mi@9 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected.focused {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+/* @capture inline-4tf7mi@10 */
+.monaco-list.list_id_7 .monaco-list-row.focused .codicon {
+  color: var(--vscode-list-inactiveSelectionIconForeground);
+}
+
+/* @capture inline-4tf7mi@11 */
+.monaco-list.list_id_7 .monaco-list-row.focused {
+  background-color: var(--vscode-list-inactiveFocusBackground);
+}
+
+/* @capture inline-4tf7mi@13 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  background-color: var(--vscode-list-inactiveSelectionBackground);
+}
+
+/* @capture inline-4tf7mi@15 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  color: var(--vscode-list-inactiveSelectionForeground);
+}
+
+/* @capture inline-4tf7mi@18 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused.selected {
+  outline: 1px solid var(--vscode-list-focusAndSelectionOutline, var(--vscode-contrastActiveBorder, var(--vscode-list-focusOutline)));
+  outline-offset: -1px;
+}
+
+/* @capture inline-4tf7mi@19 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  outline: 1px solid var(--vscode-list-focusOutline);
+  outline-offset: -1px;
+}
+
+/* @capture inline-4tf7mi@20 */
+.monaco-list.list_id_7 .monaco-list-row.focused.selected {
+  outline: 1px dotted var(--vscode-contrastActiveBorder, var(--vscode-list-inactiveFocusOutline));
+  outline-offset: -1px;
+}
+
+/* @capture inline-4tf7mi@21 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+/* @capture inline-4tf7mi@22 */
+.monaco-list.list_id_7 .monaco-list-row.focused {
+  outline: 1px dotted var(--vscode-list-inactiveFocusOutline);
+  outline-offset: -1px;
+}
+
+/* @capture inline-1t4oa0v@0 */
+.monaco-list.list_id_7 .monaco-list-rows {
+  background: var(--vscode-notifications-background);
+}
+
+/* @capture inline-1t4oa0v@1 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  background-color: var(--vscode-list-focusBackground);
+}
+
+/* @capture inline-1t4oa0v@3 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  color: var(--vscode-list-focusForeground);
+}
+
+/* @capture inline-1t4oa0v@4 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+/* @capture inline-1t4oa0v@6 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+/* @capture inline-1t4oa0v@7 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected .codicon {
+  color: var(--vscode-list-activeSelectionIconForeground);
+}
+
+/* @capture inline-1t4oa0v@8 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected.focused {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+/* @capture inline-1t4oa0v@9 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected.focused {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+/* @capture inline-1t4oa0v@10 */
+.monaco-list.list_id_7 .monaco-list-row.focused .codicon {
+  color: var(--vscode-list-inactiveSelectionIconForeground);
+}
+
+/* @capture inline-1t4oa0v@11 */
+.monaco-list.list_id_7 .monaco-list-row.focused {
+  background-color: var(--vscode-list-inactiveFocusBackground);
+}
+
+/* @capture inline-1t4oa0v@13 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  background-color: var(--vscode-list-inactiveSelectionBackground);
+}
+
+/* @capture inline-1t4oa0v@15 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  color: var(--vscode-list-inactiveSelectionForeground);
+}
+
+/* @capture inline-1t4oa0v@18 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused.selected {
+  outline: 1px solid var(--vscode-list-focusAndSelectionOutline, var(--vscode-contrastActiveBorder, var(--vscode-list-focusOutline)));
+  outline-offset: -1px;
+}
+
+/* @capture inline-1t4oa0v@19 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  outline: 1px solid var(--vscode-list-focusOutline);
+  outline-offset: -1px;
+}
+
+/* @capture inline-1t4oa0v@20 */
+.monaco-list.list_id_7 .monaco-list-row.focused.selected {
+  outline: 1px dotted var(--vscode-contrastActiveBorder, var(--vscode-list-inactiveFocusOutline));
+  outline-offset: -1px;
+}
+
+/* @capture inline-1t4oa0v@21 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+/* @capture inline-1t4oa0v@22 */
+.monaco-list.list_id_7 .monaco-list-row.focused {
+  outline: 1px dotted var(--vscode-list-inactiveFocusOutline);
+  outline-offset: -1px;
+}

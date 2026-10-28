@@ -1,3 +1,5 @@
+import type { Ref } from "preact";
+
 /** Untrusted prototype code: scripts allowed, but never same-origin with the app. */
 export const SANDBOX_FLAGS = "allow-scripts allow-forms allow-popups allow-modals";
 
@@ -14,6 +16,8 @@ interface FrameProps {
   interactive?: boolean;
   lazy?: boolean;
   class?: string;
+  /** The iframe element, e.g. to post messages to the prototype. */
+  frameRef?: Ref<HTMLIFrameElement>;
 }
 
 export function Frame({
@@ -26,6 +30,7 @@ export function Frame({
   interactive = true,
   lazy,
   class: className,
+  frameRef,
 }: FrameProps) {
   const outer = {
     width: `${Math.round(width * scale)}px`,
@@ -41,6 +46,7 @@ export function Frame({
     <div class={`frame ${className ?? ""}`} style={outer}>
       <iframe
         key={`${src}#${revision}`}
+        ref={frameRef}
         src={src}
         title={title}
         sandbox={SANDBOX_FLAGS}

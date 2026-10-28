@@ -27,7 +27,7 @@ import { Button } from "@/components/ui/button";
 createRoot(document.getElementById("root")!).render(<App />);
 ```
 
-Themes: `light`, `dark` (class `dark` on <html>). Default: `light`.
+Themes: `light`, `dark` (class `dark` on <html>). Default: `light`. Don't build a theme toggle: design-tool's viewer switches between the themes (it sets `data-theme` and the theme's classes on <html>).
 
 ## Rules
 

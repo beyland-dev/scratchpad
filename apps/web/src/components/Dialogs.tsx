@@ -3,10 +3,13 @@ import { useLocation } from "preact-iso";
 import { call } from "../api.ts";
 import {
   UNSORTED,
+  familyOf,
+  familyTitle,
   projectHref,
   projectIdOf,
   refresh,
   systems,
+  versionLabelOf,
   workspace,
   type ProjectEntry,
   type SystemSummary,
@@ -268,7 +271,7 @@ export function DeleteProjectDialog({
         {contents.length
           ? `Its ${contents.join(" and ")} ${
               project.prototypes + project.systems === 1 ? "isn't" : "aren't"
-            } deleted; ${project.prototypes + project.systems === 1 ? "it moves" : "they move"} to Unsorted.`
+            } deleted; ${project.prototypes + project.systems === 1 ? "it moves" : "they move"} to Trash.`
           : "It's empty."}
       </p>
     </ConfirmDialog>
@@ -290,7 +293,9 @@ export function PrototypeDialog({
   onClose: () => void;
 }) {
   const { route } = useLocation();
-  const [title, setTitle] = useState(proto?.title ?? "");
+  // Versions share their family's name, so editing one renames the family.
+  const versions = proto ? familyOf(proto.id).length : 1;
+  const [title, setTitle] = useState(proto ? familyTitle(proto) : "");
   const [description, setDescription] = useState(proto?.description ?? "");
   const [group, setGroup] = useState(proto?.group ?? "");
   const [tags, setTags] = useState(proto?.tags.join(", ") ?? "");
@@ -346,13 +351,18 @@ export function PrototypeDialog({
             required
             autoFocus
             placeholder="e.g. One-page checkout"
+            hint={versions > 1 ? `Shared by all ${versions} versions.` : undefined}
           />
           <Field
             label="Description"
             value={description}
             onInput={setDescription}
             multiline
-            placeholder="What it explores and why. Agents use this as the brief."
+            placeholder={
+              versions > 1
+                ? "What this version changes. Agents use this as the brief."
+                : "What it explores and why. Agents use this as the brief."
+            }
           />
           {!proto && packageSystems.length > 0 && (
             <div class="field" role="group" aria-labelledby="built-with-label">
@@ -431,7 +441,11 @@ export function DeletePrototypeDialog({
 }) {
   return (
     <ConfirmDialog
-      title={`Delete “${proto.title}”?`}
+      title={
+        versions > 1
+          ? `Delete ${versionLabelOf(proto) ?? "this version"} of “${familyTitle(proto)}”?`
+          : `Delete “${proto.title}”?`
+      }
       confirmLabel={versions > 1 ? "Delete this version" : "Delete prototype"}
       onClose={onClose}
       onConfirm={async () => {

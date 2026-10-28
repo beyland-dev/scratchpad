@@ -93,7 +93,7 @@ Most app CSS depends on ancestors, e.g. \`.workbench .chat-view .input …\`. Ea
    - \`attributes\`, \`slots\`, \`states\`
    - \`requires\` and \`uses\`
    - \`sources\` (file and line)
-   - \`examples\`: one per reference, with the same content as the capture
+   - \`examples\`: one per reference, with the same content as the capture. The app renders each example on its own, scaled to fit its card or detail page. Give any context that sizes itself from its container (lists, split views, editors, side bars) an explicit size, for example \`<x-settings-editor style="height: 300px">\`, or the component renders clipped. The first example is the component's card preview, so make it show the component itself rather than a whole screen around it.
    - \`references\`: \`{ capture, example, theme, width? }\`
 7. **Verify** with \`capture_verify\` and fix until it's \`verified\`. Common fixes:
    - **Inherited font or color wrong:** a context's own CSS is missing. Capture the context.

@@ -31,10 +31,19 @@ const ProjectIconInput = z
   })
   .describe("Project icon (square works best), shown in the app's project sidebar");
 
-type PrototypeWithUrls = Prototype & { urls: PrototypeUrls };
+type PrototypeWithUrls = Prototype & {
+  urls: PrototypeUrls;
+  /** The design system it uses: its `system`, or the one inferred from its HTML or project. */
+  resolvedSystem?: string;
+};
 
 function withUrls(core: Core, proto: Prototype): PrototypeWithUrls {
-  return { ...proto, urls: core.prototypeUrls(proto.id) };
+  const resolvedSystem = core.resolvePrototypeSystem(proto);
+  return {
+    ...proto,
+    urls: core.prototypeUrls(proto.id),
+    ...(resolvedSystem ? { resolvedSystem } : {}),
+  };
 }
 
 function describeSource(core: Core, source: Source) {
@@ -273,7 +282,7 @@ export const prototypeCreate = defineCommand({
         "Build it with a framework against a package design system: the entry is an HTML shell loading main.tsx, which imports the system's components (`@/components/...`) and styles (`@/index.css`). Omit for plain HTML",
       ),
     system: SlugSchema.optional().describe(
-      "Package design system to build against (defaults to the project's only package system)",
+      "Design system it uses. With a framework: the package system to build against (defaults to the project's only package system). For plain HTML: the captured system whose /s/<id>/system.css and system.js it loads (inferred from the HTML when omitted). The viewer offers its themes",
     ),
     group: z.string().optional().describe("Exploration name used to group related prototypes"),
     tags: z.array(z.string()).optional(),
@@ -299,7 +308,7 @@ export const prototypeCreate = defineCommand({
       } as Prototype);
       input.system = system;
     } else if (input.system) {
-      throw new CoreError("INVALID_INPUT", "`system` is only used with a `framework`");
+      core.systems.get(input.system);
     }
     return {
       prototype: withUrls(
@@ -316,7 +325,7 @@ export const prototypeUpdate = defineCommand({
   name: "prototype.update",
   title: "Update prototype",
   description:
-    "Update prototype metadata (title, description, status, tags, project, group, variantOf, entry, sourceRefs). Pass null to clear optional fields.",
+    "Update prototype metadata (title, description, status, tags, project, system, group, variantOf, entry, sourceRefs). Pass null to clear optional fields. Versions of a family share one title: renaming one renames all, and setting `variantOf` takes on the family's title.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({
@@ -326,6 +335,9 @@ export const prototypeUpdate = defineCommand({
     status: PrototypeStatusSchema.optional(),
     tags: z.array(z.string()).optional(),
     project: ProjectRef.nullable().optional().describe("Move to another project (null for none)"),
+    system: SlugSchema.nullable()
+      .optional()
+      .describe("Design system it uses (null to infer it from its HTML or project)"),
     group: z.string().nullable().optional(),
     variantOf: SlugSchema.nullable().optional(),
     entry: z.string().optional(),
@@ -333,6 +345,12 @@ export const prototypeUpdate = defineCommand({
   }),
   handler: async ({ id, ...patch }, core) => {
     if (patch.project) core.projects.get(patch.project);
+    if (patch.system) {
+      const proto = core.prototypes.get(id);
+      // Framework prototypes build against it, so it must be a package system.
+      if (proto.framework) core.prototypeSystem({ ...proto, system: patch.system });
+      else core.systems.get(patch.system);
+    }
     return { prototype: withUrls(core, await core.prototypes.update(id, patch)) };
   },
   format: (out) => `Updated ${out.prototype.id}`,
@@ -377,14 +395,18 @@ export const prototypeCreateVariant = defineCommand({
   name: "prototype.createVariant",
   title: "Create variant",
   description:
-    "Copy an existing prototype into a new variant linked by `variantOf`, so alternatives can be compared and switched between. Then edit the variant's files with prototype.writeFile.",
+    "Copy an existing prototype into a new variant linked by `variantOf`, so alternatives can be compared and switched between. The variant keeps the family's title (versions are told apart as V1, V2, … Latest); describe what it changes in `description`. Then edit the variant's files with prototype.writeFile.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({
     id: IdInput.describe("Id of the prototype to copy"),
     newId: SlugSchema.optional().describe("Explicit id for the variant"),
-    title: z.string().min(1).optional(),
-    description: z.string().optional().describe("What this variant changes"),
+    description: z
+      .string()
+      .optional()
+      .describe(
+        "What this variant changes. Versions share the family's title (they're told apart as V1, V2, … Latest), so this is how people tell them apart",
+      ),
     createdBy: AuthorSchema.optional(),
   }),
   handler: async ({ id, newId, ...rest }, core) => ({
@@ -531,7 +553,7 @@ export const projectDelete = defineCommand({
   name: "project.delete",
   title: "Delete project",
   description:
-    "Move a project folder to the workspace trash. Its prototypes and design systems are kept and show up as unsorted until they're moved to another project.",
+    "Move a project folder to the workspace trash. Its prototypes and design systems are kept (the app lists them under Trash) until they're moved to another project.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({ id: ProjectRef }),

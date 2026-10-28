@@ -1,5 +1,5 @@
 {
-  "title": "Checkout — single page",
+  "title": "Checkout",
   "description": "Everything on one page: fewer steps, more scanning.",
   "status": "draft",
   "tags": [
@@ -14,5 +14,5 @@
   },
   "sourceRefs": [],
   "createdAt": "2026-10-22T03:21:27.868Z",
-  "updatedAt": "2026-10-27T14:31:38.298Z"
+  "updatedAt": "2026-10-27T23:54:32.584Z"
 }

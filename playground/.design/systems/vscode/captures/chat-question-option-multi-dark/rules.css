@@ -1,0 +1,171 @@
+/*
+ * Captured from http://localhost:5123/___explorer?fixture=chat/chatQuestionCarousel/MultiSelectQuestion
+ * Selector: #dt-target
+ * On: 2026-10-27T22:01:09.326Z
+ */
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@65 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@66 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@74 */
+.monaco-workbench [tabindex="-1"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@77 */
+.monaco-workbench [tabindex="-1"]:active {
+  outline: 0px !important;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@521 */
+.monaco-custom-toggle {
+  margin-left: 2px;
+  float: left;
+  cursor: pointer;
+  overflow: hidden;
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  border: var(--vscode-strokeThickness, 1px) solid var(--monaco-custom-toggle-border-color, transparent);
+  padding: 1px;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@522 */
+.monaco-custom-toggle:hover {
+  background-color: var(--vscode-inputOption-hoverBackground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@525 */
+.monaco-custom-toggle.disabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@529 */
+.monaco-custom-toggle.monaco-checkbox {
+  height: 18px;
+  width: 18px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  margin-right: 9px;
+  margin-left: 0px;
+  padding: 0px;
+  opacity: 1;
+  background-size: 16px auto !important;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@1189.0 */
+:is(.disable-animations) * {
+  transition: none !important;
+  animation: auto ease 0s 1 normal none running none !important;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@1266 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.1 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list-item:focus {
+  outline: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: var(--vscode-cornerRadius-medium);
+  user-select: none;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.0.2 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item) .chat-question-list-label {
+  font-size: var(--vscode-fontSize-body2);
+  font-weight: var(--vscode-fontWeight-semiBold);
+  flex: 1 1 0%;
+  overflow-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.2 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item:hover {
+  background-color: var(--vscode-list-hoverBackground);
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.3 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.selected {
+  background-color: var(--vscode-list-inactiveSelectionBackground, var(--vscode-list-hoverBackground));
+  color: var(--vscode-list-inactiveSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.3.2 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.selected) .chat-question-list-number {
+  color: var(--vscode-list-inactiveSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.4 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):focus .chat-question-list-item.selected {
+  background-color: var(--vscode-list-activeSelectionBackground, var(--vscode-list-hoverBackground));
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.4.2 */
+:is(:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):focus .chat-question-list-item.selected) .chat-question-list-number {
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.5 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list):not(:focus) .chat-question-list-item.selected:hover {
+  background-color: var(--vscode-list-inactiveSelectionBackground, var(--vscode-list-hoverBackground));
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.6 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-item.multi-select:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.7 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-checkbox {
+  flex-shrink: 0;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.2.8 */
+:is(:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list) .chat-question-list-checkbox.monaco-custom-toggle {
+  margin-right: 0px;
+}
+
+/* @capture src_vs_sessions_contrib_agentFeedback_test_browser_agentFeedbackEditorOverlayWidget_fixture_t-3879d7.css@2522.4 */
+:is(.interactive-session .chat-question-carousel-container .chat-question-input-container) .chat-question-list-number {
+  font-size: var(--vscode-fontSize-body2);
+  font-weight: var(--vscode-fontWeight-semiBold);
+  color: var(--vscode-descriptionForeground);
+  flex-shrink: 0;
+  min-width: 1ch;
+  text-align: right;
+}

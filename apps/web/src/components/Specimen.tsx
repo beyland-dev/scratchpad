@@ -64,6 +64,7 @@ export function Specimen({
   if (theme) params.set("theme", theme);
   if (bare) params.set("bare", "");
   else if (fill) params.set("fill", "");
+  else params.set("maxh", String(maxHeight));
   if (width) params.set("width", String(width));
   const src = `${sandbox}/s/${encodeURIComponent(system)}/specimen.html?${params.toString()}`;
   return (
@@ -78,7 +79,8 @@ export function Specimen({
       aria-hidden={interactive ? undefined : true}
       style={{
         height: fill ? "100%" : `${height}px`,
-        width: width ? `${width}px` : "100%",
+        // `width` lays the example out at that width; only bare renders (as captured) shrink the frame.
+        width: width && bare ? `${width}px` : "100%",
         pointerEvents: interactive ? undefined : "none",
       }}
     />

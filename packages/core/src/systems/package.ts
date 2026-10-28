@@ -11,6 +11,8 @@ import path from "node:path";
 import { CoreError } from "../errors.ts";
 import { atomicWrite, pathExists, walkFiles, writeJson } from "../fs-utils.ts";
 import type { BuildResult } from "./build.ts";
+import { SPECIMEN_FIT_SCRIPT } from "./specimen-fit.ts";
+import { THEME_BRIDGE_JS } from "./theme-bridge.ts";
 import type { DesignComponent, DesignSystem, Theme, Token, TokenType } from "./schemas.ts";
 
 export const NODE_MODULES_DIR = "node_modules";
@@ -184,6 +186,8 @@ export interface ViteJob {
   entrySource?: string;
   /** HTML entry files, relative to `root`. */
   inputs?: string[];
+  /** Prototype builds: inline script added to the top of every HTML entry's head. */
+  headScript?: string;
   outDir: string;
 }
 
@@ -224,6 +228,9 @@ const bridge = {
     if (!importer.startsWith("\0") && inside(systemDir, importer.split("?")[0])) return null;
     return this.resolve(source, path.join(systemDir, "package.json"), { ...options, skipSelf: true });
   },
+  transformIndexHtml: job.headScript
+    ? { order: "pre", handler: () => [{ tag: "script", children: job.headScript, injectTo: "head-prepend" }] }
+    : undefined,
   async load(id) {
     if (id === ENTRY) return job.entrySource;
     const file = id.split("?")[0];
@@ -300,6 +307,21 @@ export async function runVite(job: ViteJob): Promise<void> {
   throw new CoreError("INTERNAL", `Build failed:\n${message || `exit code ${output.code}`}`);
 }
 
+// ---- Prototype builds ------------------------------------------------------------------
+
+/**
+ * Inline script for framework prototypes built with `system`: the theme bridge, so the viewer can
+ * switch the prototype between the system's themes (`data-theme` and theme classes on `<html>`).
+ */
+export function prototypeHeadScript(system: DesignSystem): string {
+  const info = JSON.stringify({
+    id: system.id,
+    themes: system.themes,
+    defaultTheme: system.defaultTheme,
+  }).replace(/</g, "\\u003c");
+  return `${THEME_BRIDGE_JS}\ndtThemeBridge(${info});\n`;
+}
+
 // ---- Specimen page ------------------------------------------------------------------
 
 /** The specimen app: renders one example (a story export) with the same URL API and size reporting as captured systems. */
@@ -325,6 +347,7 @@ class Boundary extends Component {
   }
 }
 
+${SPECIMEN_FIT_SCRIPT}
 const params = new URLSearchParams(location.search);
 fetch("catalog.json", { cache: "no-store" }).then((r) => r.json()).then((catalog) => {
   const component = catalog.components.find((c) => c.name === params.get("component"));
@@ -336,6 +359,10 @@ fetch("catalog.json", { cache: "no-store" }).then((r) => r.json()).then((catalog
   const Story = module?.[example?.story ?? "default"] ?? module?.default;
   const host = document.createElement("div");
   host.className = "dt-specimen-root";
+  const frame = params.get("frame");
+  const fitting = !params.has("bare") && (params.has("fill") || frame);
+  // design-tool's wrapper, not part of the example: it doesn't count when fitting the example.
+  if (fitting) host.setAttribute("data-dt-context", "");
   if (params.get("width")) host.style.width = params.get("width") + "px";
   document.body.append(host);
   if (!params.has("bare")) host.style.padding = "16px";
@@ -348,19 +375,17 @@ fetch("catalog.json", { cache: "no-store" }).then((r) => r.json()).then((catalog
       if (bg && bg !== "transparent" && !/^rgba\\(.*,\\s*0\\)$/.test(bg)) { document.documentElement.style.background = bg; return; }
     }
   };
-  const center = () => {
-    document.body.style.paddingTop = "0px";
-    let bottom = 0;
-    for (const el of document.body.querySelectorAll("*")) { const r = el.getBoundingClientRect(); if (r.height && r.bottom > bottom) bottom = r.bottom; }
-    document.body.style.paddingTop = Math.max(0, Math.floor((innerHeight - bottom) / 2)) + "px";
-  };
-  const frame = params.get("frame");
-  const report = () => frame && parent !== window && parent.postMessage({ type: "dt-specimen-size", frame, height: Math.ceil(document.documentElement.scrollHeight) }, "*");
   requestAnimationFrame(() => {
     if (!params.has("bare")) paint();
-    if (params.has("fill")) { center(); new ResizeObserver(center).observe(host); addEventListener("resize", center); }
-    new ResizeObserver(report).observe(document.body);
-    report();
+    // Embedded in the app (a card or a detail page): fit and center the example in its frame.
+    if (fitting) {
+      dtFit({ root: host, mode: params.has("fill") ? "fill" : "frame", frame, maxHeight: Number(params.get("maxh")) || 900 });
+    } else if (frame && parent !== window) {
+      // Bare (as captured): report the natural height.
+      const report = () => parent.postMessage({ type: "dt-specimen-size", frame, height: Math.ceil(document.documentElement.scrollHeight) }, "*");
+      new ResizeObserver(report).observe(document.body);
+      report();
+    }
     document.documentElement.dataset.ready = "true";
   });
 });

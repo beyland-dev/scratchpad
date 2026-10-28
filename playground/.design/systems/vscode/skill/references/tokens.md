@@ -1,6 +1,6 @@
 # VS Code tokens
 
-3373 tokens. Use them as `var(--name)`; values switch with the theme.
+3379 tokens. Use them as `var(--name)`; values switch with the theme.
 
 ## actionBar
 
@@ -309,6 +309,12 @@
 | `--vscode-chat-editedFileForeground` | color | `#e2c08d` | `#895503` | The foreground color of a chat edited file in the edited file list. |
 | `--vscode-chat-findMatchBackground` | color | `#276782` | `rgba(0, 105, 204, 0.2)` | Background color of the current search match in a chat transcript. |
 | `--vscode-chat-findMatchHighlightBackground` | color | `rgba(39, 103, 130, 0.5)` | `rgba(0, 105, 204, 0.1)` | Background color of the other search matches in a chat transcript. The color must not be opaque so as not to hide underlying content. |
+| `--vscode-chat-font-size-body-l` | fontSize | `1.077em` | `1.077em` | Chat body font size L (14px when the base font is 13px). Defined on .interactive-session. |
+| `--vscode-chat-font-size-body-m` | fontSize | `1em` | `1em` | Chat body font size M (13px when the base font is 13px). Defined on .interactive-session. |
+| `--vscode-chat-font-size-body-s` | fontSize | `0.923em` | `0.923em` | Chat body font size S (12px when the base font is 13px). Defined on .interactive-session. |
+| `--vscode-chat-font-size-body-xl` | fontSize | `1.231em` | `1.231em` | Chat body font size XL (16px when the base font is 13px). Defined on .interactive-session. |
+| `--vscode-chat-font-size-body-xs` | fontSize | `0.846em` | `0.846em` | Chat body font size XS (11px when the base font is 13px). Defined on .interactive-session. |
+| `--vscode-chat-font-size-body-xxl` | fontSize | `1.538em` | `1.538em` | Chat body font size XXL (20px when the base font is 13px). Defined on .interactive-session. |
 | `--vscode-chat-fusionBadgeForeground` | color | `#1f1f1f` | `#1f1f1f` | Foreground color of the Copilot Fusion discount badge in the model picker. |
 | `--vscode-chat-fusionBadgeGradientEnd` | color | `#a685f3` | `#a685f3` | End color of the gradient behind the Copilot Fusion discount badge in the model picker. |
 | `--vscode-chat-fusionBadgeGradientStart` | color | `#94f6ed` | `#94f6ed` | Start color of the gradient behind the Copilot Fusion discount badge in the model picker. |

@@ -1,6 +1,6 @@
 # VS Code components
 
-48 components. Root context: `<vsc-workbench>`.
+60 components. Root context: `<vsc-workbench>`.
 
 ## `<vsc-chat-view>` — Chat view
 
@@ -69,6 +69,34 @@ Root of every VS Code UI: the `.monaco-workbench` element. Applies the theme (to
 ```
 
 Source: `src/vs/workbench/browser/workbench.ts`, `src/vs/workbench/browser/media/style.css`
+
+## `<vsc-notification-toasts>` — Notification toasts
+
+Kind: context · Category: overlays · Status: draft · Verification: verified
+
+The workbench's notification toast stack (`.monaco-workbench > .notifications-toasts`): pinned to the bottom-right (or bottom-left / top-right) corner, newest toast on top, at most 3 toasts (NotificationsToasts.MAX_NOTIFICATIONS). Uses the modern-UI insets from notificationsDialogs.css (--modern-ui-notifications-inline-inset / -block-end-inset, 8px / 36px by default, 32px bottom with .nostatusbar on the workbench). The Agents window sets both insets to 8px (sessions/browser/media/workbench.css); set those variables on the workbench to match. Position rules are captured for bottom-right and for bottom-left with no status bar.
+
+**Usage:** Place once as a direct child of <vsc-workbench> and call show({ severity, message, buttons, source }) to raise toasts. Set position="bottom-left" to match workbench.notifications.position. Add the nostatusbar class to the workbench when the window has no status bar. For the Agents window also set --modern-ui-notifications-inline-inset and --modern-ui-notifications-block-end-inset to var(--vscode-spacing-size80) on the workbench.
+
+**Must be inside:** `<vsc-workbench>`
+
+**Composed of:** `<vsc-notification>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `position` | `bottom-right` \| `bottom-left` \| `top-right` | `bottom-right` | Corner of the workbench (workbench.notifications.position) |
+| `static` | boolean |  | Lay out in the document flow instead of pinning to a workbench corner (for docs and specimens) |
+
+**Slots:**
+- default (children): <vsc-notification> toasts, newest first
+
+**Example — Stack**
+
+```html
+<vsc-notification-toasts static><vsc-notification severity="warning" message="Session deleted." source="DT Notify" configure sticky no-animation></vsc-notification><vsc-notification severity="error" message="Build failed on darwin-arm64: @vscode/spdlog has no prebuild for Electron 39." source="DT Notify" buttons="Open Session,Retry" configure sticky no-animation></vsc-notification><vsc-notification severity="info" message="Marked as done." source="DT Notify" buttons="Undo" configure sticky no-animation></vsc-notification></vsc-notification-toasts>
+```
+
+Source: `src/vs/workbench/browser/parts/notifications/notificationsToasts.ts`, `src/vs/workbench/browser/parts/notifications/media/notificationsToasts.css`
 
 ## `<vsc-editor>` — Editor area
 
@@ -146,6 +174,27 @@ The primary side bar part with an optional view title (`.composite.title`) and a
 
 Source: `src/vs/workbench/browser/parts/sidebar/sidebarPart.ts`, `src/vs/workbench/browser/parts/compositePart.ts`
 
+## `<vsc-chat-markdown>` — Chat markdown
+
+Kind: component · Category: chat · Status: stable
+
+A rendered markdown part of a chat response (`.chat-markdown-part.rendered-markdown`): paragraphs, headings, lists, bold, inline code, tables and code blocks styled like the product's chat renderer.
+
+**Usage:** Inside <vsc-chat-response>. Write the markdown as HTML children (<p>, <h2>, <ul>, <strong>, <code>, <pre>, <table>). Plain text is wrapped in a paragraph.
+
+**Must be inside:** `<vsc-workbench>` › `<vsc-chat-view>` › `<vsc-chat-response>`
+
+**Slots:**
+- default (children): Rendered markdown as HTML
+
+**Example — Markdown**
+
+```html
+<vsc-chat-response><vsc-chat-markdown><h2>Comparison</h2><p>The new implementation preserves the existing title until a replacement is ready.</p><ul><li><strong>Streaming:</strong> partial results no longer overwrite a useful title.</li><li><strong>Validation:</strong> the focused <code>title-generation</code> tests pass.</li></ul></vsc-chat-markdown></vsc-chat-response>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatMarkdownContentPart.ts`
+
 ## `<vsc-chat-model-picker>` — Model picker
 
 Kind: component · Category: chat · Status: draft · Verification: verified
@@ -192,6 +241,197 @@ Dropdown picker in the chat input toolbars: icon + label (agent mode, session ta
 
 Source: `src/vs/workbench/contrib/chat/browser/widget/input/chatInputPickerActionItem.ts`
 
+## `<vsc-chat-question-carousel>` — Chat question carousel
+
+Kind: component · Category: chat · Status: draft · Verification: drift
+
+The chat question carousel ("ask user a question" widget): an agent's question with a header (optional carousel message, title, skip and collapse buttons), a scrollable answer area (optional detailed message, numbered single- or multi-select options or a text input, plus a numbered "Enter custom answer" row) and a footer with the submit hint and Submit button. Captured from VS Code's own component fixtures (chatQuestionCarousel.fixture.ts) with the Dark 2026 theme. The fixture's Light variant uses Light Modern, and its rules are identical, so Light 2026 colors come from this system's tokens. The answer area's height is set from JS like the product (port of layoutInputScrollable). Known verification drift, limited to the invisible DomScrollableElement scrollbars: their sliders get 4px corners from the workbench's .modern-ui class (the fixture page lacks it; the real Agents window has it), and the fixture's vertical bar height (16px taller) is stale from before the answer area is constrained. Everything visible matches with 0 diffs.
+
+**Usage:** Use when an agent asks the user a question in chat (askQuestions tool / MCP elicitation). Put it inside <vsc-chat-view>. Give the question with question= (or slot="question" for bold/links), optional message= above it and slot="detail" for longer context; add <vsc-chat-question-option label description selected> children for choices (multi for checkboxes). Listen for the "submit" event (detail.answer) and "skip". Don't use it for tool or terminal approvals; those are confirmation widgets.
+
+**Must be inside:** `<vsc-workbench>` › `<vsc-chat-view>`
+
+**Composed of:** `<vsc-chat-question-option>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `question` | string |  | The question shown in the header title (plain text; use slot="question" for rich text) |
+| `message` | string |  | Carousel-level message shown above the title (plain text; use slot="message" for rich text) |
+| `multi` | boolean |  | Multi-select: options render as checkboxes and clicking toggles instead of submitting |
+| `required` | boolean |  | Appends " *" to the title, like a required question |
+| `no-freeform` | boolean |  | Hide the numbered "Enter custom answer" row (allowFreeformInput: false) |
+| `no-skip` | boolean |  | Hide the skip (close) button (allowSkip: false) |
+| `collapsed` | boolean |  | Collapsed: only the header is visible (toggled by the chevron) |
+| `placeholder` | string | `Enter your answer` | Placeholder of the text input when there are no options |
+| `submit-label` | string | `Submit` |  |
+| `submit-hint` | string |  | Defaults to "⌘⏎ to submit" on macOS, "Ctrl+Enter to submit" elsewhere |
+
+**Slots:**
+- default (children): <vsc-chat-question-option> children (the answers). Without options the carousel shows a text input.
+- `slot="question"`: Rich question title (inline HTML: strong, a, code). Overrides the question attribute's rendering.
+- `slot="message"`: Rich carousel-level message above the title.
+- `slot="detail"`: Detailed message rendered at the top of the answer area (block HTML: h3, p, ul).
+
+**States:**
+- `collapsed` (collapsed attribute or the chevron button): Only the header is visible; chevron points up
+- `selected option` (selected on an option, click, ↑/↓ or number keys): Option row highlighted with a check (single) or checked checkbox (multi)
+- `submitted` (submit event): Clicking an option (single-select), Enter/Space in the list, ⌘/Ctrl+Enter or Submit fire a submit event
+
+**Example — Single select**
+
+```html
+<vsc-chat-question-carousel question="Which language do you want to use?"><vsc-chat-question-option label="TypeScript" description="Strongly typed JavaScript" selected></vsc-chat-question-option><vsc-chat-question-option label="JavaScript" description="Dynamic scripting language"></vsc-chat-question-option><vsc-chat-question-option label="Python" description="General purpose language"></vsc-chat-question-option><vsc-chat-question-option label="Rust" description="Systems programming"></vsc-chat-question-option></vsc-chat-question-carousel>
+```
+
+**Example — Multi select**
+
+```html
+<vsc-chat-question-carousel question="Which features should be enabled?" multi><vsc-chat-question-option label="Linting" selected></vsc-chat-question-option><vsc-chat-question-option label="Formatting" selected></vsc-chat-question-option><vsc-chat-question-option label="Testing"></vsc-chat-question-option><vsc-chat-question-option label="CI/CD Pipeline"></vsc-chat-question-option></vsc-chat-question-carousel>
+```
+
+**Example — Message, detail and text answer**
+
+```html
+<vsc-chat-question-carousel><span slot="message">See <strong><a href="https://code.visualstudio.com/docs/copilot/chat/chat-agent-mode">question guidance</a></strong>.</span><span slot="question"><strong>Review the <a href="https://code.visualstudio.com/docs">VS Code documentation</a> before continuing.</strong></span><div slot="detail"><h3><a href="https://code.visualstudio.com/docs">Related resources</a></h3><p>Read the <a href="https://code.visualstudio.com/api/get-started/your-first-extension">extension guide</a> for more information.</p><ul><li><strong><a href="https://github.com/microsoft/vscode">VS Code repository</a></strong></li><li><a href="https://code.visualstudio.com/api">Extension API</a></li></ul></div></vsc-chat-question-carousel>
+```
+
+**Example — Collapsed**
+
+```html
+<vsc-chat-question-carousel question="Which language do you want to use?" collapsed><vsc-chat-question-option label="TypeScript" description="Strongly typed JavaScript" selected></vsc-chat-question-option><vsc-chat-question-option label="JavaScript" description="Dynamic scripting language"></vsc-chat-question-option><vsc-chat-question-option label="Python" description="General purpose language"></vsc-chat-question-option><vsc-chat-question-option label="Rust" description="Systems programming"></vsc-chat-question-option></vsc-chat-question-carousel>
+```
+
+**Example — Carousel message with a detailed question**
+
+```html
+<vsc-chat-question-carousel message="Here's a random question to test the interaction:" question="Which would you rather explore?"><p slot="detail">Which would you rather explore?</p><vsc-chat-question-option label="The deep ocean" selected></vsc-chat-question-option><vsc-chat-question-option label="Outer space"></vsc-chat-question-option><vsc-chat-question-option label="An ancient city"></vsc-chat-question-option></vsc-chat-question-carousel>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatQuestionCarouselPart.ts:846`, `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatQuestionCarouselPart.ts:989`, `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatQuestionCarouselPart.ts:1196`, `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/media/chatQuestionCarousel.css`, `src/vs/workbench/test/browser/componentFixtures/chat/chatQuestionCarousel.fixture.ts`
+
+## `<vsc-chat-question-option>` — Chat question option
+
+Kind: component · Category: chat · Status: draft · Verification: verified
+
+One answer in a chat question carousel's list (`.chat-question-list-item`): number, label (with optional description), and either a selection check (single-select) or a checkbox (multi-select). Mirrors the list items rendered by ChatQuestionCarouselPart.renderSingleSelect / renderMultiSelect.
+
+**Usage:** Only as a child of <vsc-chat-question-carousel>. Use label (and optionally description, rendered as the product's "Title - Description" two-line row). Mark the default answer with selected. Don't set index or multi yourself; the carousel does.
+
+**Must be inside:** `<vsc-workbench>` › `<vsc-chat-view>` › `<vsc-chat-question-carousel>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `label` | string |  | Option text (the product's option label, or the part before " - ") |
+| `description` | string |  | Second line (the part after " - " in the product's option label) |
+| `selected` | boolean |  | Selected (single-select) or checked (multi-select) |
+| `index` | number |  | 1-based number shown before the label (set by the carousel) |
+| `multi` | boolean |  | Render as a multi-select checkbox row (set by the carousel) |
+
+**States:**
+- `selected` (selected attribute, or click / number key in the carousel): Single-select: row highlighted with a check indicator. Multi-select: checkbox checked.
+
+**Example — Single select (selected, with description)**
+
+```html
+<vsc-chat-question-carousel question="Which language do you want to use?"><vsc-chat-question-option label="TypeScript" description="Strongly typed JavaScript" selected></vsc-chat-question-option><vsc-chat-question-option label="JavaScript" description="Dynamic scripting language"></vsc-chat-question-option><vsc-chat-question-option label="Python" description="General purpose language"></vsc-chat-question-option><vsc-chat-question-option label="Rust" description="Systems programming"></vsc-chat-question-option></vsc-chat-question-carousel>
+```
+
+**Example — Multi select (checked)**
+
+```html
+<vsc-chat-question-carousel question="Which features should be enabled?" multi><vsc-chat-question-option label="Linting" selected></vsc-chat-question-option><vsc-chat-question-option label="Formatting" selected></vsc-chat-question-option><vsc-chat-question-option label="Testing"></vsc-chat-question-option><vsc-chat-question-option label="CI/CD Pipeline"></vsc-chat-question-option></vsc-chat-question-carousel>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatQuestionCarouselPart.ts:1241`, `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatQuestionCarouselPart.ts:1433`, `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/media/chatQuestionCarousel.css`
+
+## `<vsc-chat-question-summary>` — Chat question summary
+
+Kind: component · Category: chat · Status: stable
+
+An answered question in a chat transcript (`.chat-question-carousel-container.chat-question-carousel-used`): "Question: …" with the chosen answer below on a connector ("Answered: …"). It replaces the question carousel once the user answers.
+
+**Usage:** Inside <vsc-chat-response>, where a <vsc-chat-question-carousel> was answered.
+
+**Must be inside:** `<vsc-workbench>` › `<vsc-chat-view>` › `<vsc-chat-response>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `question` | string |  | Question title |
+| `answer` | string |  | Chosen answer (or freeform text) |
+
+**Example — Answered**
+
+```html
+<vsc-chat-response><vsc-chat-question-summary question="Continue with the rendering changes?" answer="Confirm (Recommended)"></vsc-chat-question-summary></vsc-chat-response>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatQuestionCarouselPart.ts`
+
+## `<vsc-chat-request>` — Chat request
+
+Kind: component · Category: chat · Status: stable · Verification: verified
+
+The user's message in a chat transcript (`.interactive-item-container.interactive-request`): a right-aligned rounded bubble with the rendered markdown request, plus the (hover-revealed) timestamp row and empty footer toolbar. Mirrors ChatListItemRenderer's request template.
+
+**Usage:** Put one per user turn inside a <vsc-chat-view>, followed by its <vsc-chat-response>. Children are the request text (plain text is wrapped in a paragraph; block HTML such as <p> or <ul> is used as is).
+
+**Must be inside:** `<vsc-workbench>` › `<vsc-chat-view>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `timestamp` | string |  | Sent time shown on hover, e.g. "8:00 AM" |
+
+**Slots:**
+- default (children): Request text or markdown-like HTML
+
+**Example — Request**
+
+```html
+<vsc-chat-request timestamp="8:00 AM">Check the chat rendering</vsc-chat-request>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/widget/chatListRenderer.ts`, `src/vs/workbench/test/browser/componentFixtures/chat/chatRendering.fixture.ts`
+
+## `<vsc-chat-response>` — Chat response
+
+Kind: component · Category: chat · Status: stable · Verification: drift
+
+The agent's turn in a chat transcript (`.interactive-item-container.interactive-response`): a full-width column of content parts (markdown, tool chains, question summaries), optionally headed by the collapsed "Completed N steps" disclosure with +added/-removed edit stats. Holds the CSS for all of its parts.
+
+**Usage:** After each <vsc-chat-request> inside a <vsc-chat-view>. Children are parts: <vsc-chat-markdown>, <vsc-chat-tool-chain>, <vsc-chat-question-summary>, <vsc-chat-question-carousel>. With summary, children in slot="steps" are the collapsed steps (shown when expanded); the final answer goes in the default slot.
+
+**Must be inside:** `<vsc-workbench>` › `<vsc-chat-view>`
+
+**Composed of:** `<vsc-chat-markdown>`, `<vsc-chat-tool-chain>`, `<vsc-chat-tool-call>`, `<vsc-chat-question-summary>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `summary` | string |  | Collapsed steps label, e.g. "Completed 5 steps in 48s" |
+| `added` | number |  | Lines added, shown after the summary |
+| `removed` | number |  | Lines removed, shown after the summary |
+| `expanded` | boolean |  | Show the steps under the summary (toggled by clicking it) |
+
+**Slots:**
+- default (children): Response parts
+- `slot="steps"`: Parts hidden behind the summary disclosure
+
+**States:**
+- `expanded` (click the summary or set expanded): Steps disclosure open
+
+**Example — Tools, markdown and an answered question**
+
+```html
+<vsc-chat-response><vsc-chat-tool-chain><vsc-chat-tool-call icon="search-compact">Searched for <strong>Manifestation preview</strong></vsc-chat-tool-call></vsc-chat-tool-chain><vsc-chat-markdown>The response must remain below the complete search title.</vsc-chat-markdown><vsc-chat-tool-chain><vsc-chat-tool-call icon="book-compact" file="renderer.ts">Read</vsc-chat-tool-call><vsc-chat-tool-call edit icon="pencil" file="renderer.ts" added="14" removed="3"></vsc-chat-tool-call></vsc-chat-tool-chain><vsc-chat-question-summary question="Continue with the rendering changes?" answer="Confirm (Recommended)"></vsc-chat-question-summary></vsc-chat-response>
+```
+
+**Example — Completed summary with edits**
+
+```html
+<vsc-chat-response summary="Completed 5 steps in 48s" added="14" removed="3"><vsc-chat-tool-chain slot="steps"><vsc-chat-tool-call icon="book-compact">Read the renderer</vsc-chat-tool-call></vsc-chat-tool-chain><vsc-chat-markdown>The task is complete. The final response remains below the completed steps.</vsc-chat-markdown></vsc-chat-response>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/widget/chatListRenderer.ts`, `src/vs/workbench/test/browser/componentFixtures/chat/chatRendering.fixture.ts`
+
 ## `<vsc-chat-submit>` — Send button
 
 Kind: component · Category: chat · Status: draft · Verification: verified
@@ -218,6 +458,80 @@ Chat send button (arrow up), disabled while the input is empty.
 ```
 
 Source: `src/vs/workbench/contrib/chat/browser/widget/input/chatInputPart.ts`
+
+## `<vsc-chat-tool-call>` — Chat tool call
+
+Kind: component · Category: chat · Status: stable
+
+One completed tool call in a chat response (`.chat-thinking-tool-wrapper`): a compact codicon and a past-tense message, optionally followed by a file pill. With `edit`, it renders the edited-file row ("Edited" + file pill with +added/-removed line counts).
+
+**Usage:** Inside <vsc-chat-tool-chain>. Children are the message (inline HTML like <strong>/<code> allowed), e.g. "Ran npm test". Pick a compact codicon matching the tool: search-compact, book-compact (read), pencil (edit), terminal-compact (shell), tools (other).
+
+**Must be inside:** `<vsc-workbench>` › `<vsc-chat-view>` › `<vsc-chat-response>` › `<vsc-chat-tool-chain>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `icon` | string | `tools` | Codicon name, e.g. search-compact, book-compact, pencil, terminal-compact |
+| `file` | string |  | File shown as a pill after the message (or the edited file with edit) |
+| `edit` | boolean |  | Render the edited-file row (status label + file pill with line counts) |
+| `added` | number |  | Lines added (edit) |
+| `removed` | number |  | Lines removed (edit) |
+| `running` | boolean |  | In progress: the icon becomes a spinning loading codicon (present-tense message) |
+
+**Slots:**
+- default (children): Past-tense message (default "Edited" with edit)
+
+**States:**
+- `running` (running attribute): Tool call still in progress
+
+**Example — Read file**
+
+```html
+<vsc-chat-response><vsc-chat-tool-chain><vsc-chat-tool-call icon="book-compact" file="renderer.ts">Read</vsc-chat-tool-call></vsc-chat-tool-chain></vsc-chat-response>
+```
+
+**Example — Edited file**
+
+```html
+<vsc-chat-response><vsc-chat-tool-chain><vsc-chat-tool-call edit icon="pencil" file="renderer.ts" added="14" removed="3"></vsc-chat-tool-call></vsc-chat-tool-chain></vsc-chat-response>
+```
+
+**Example — Shell**
+
+```html
+<vsc-chat-response><vsc-chat-tool-chain><vsc-chat-tool-call icon="terminal-compact">Ran <code>npm test</code></vsc-chat-tool-call></vsc-chat-tool-chain></vsc-chat-response>
+```
+
+**Example — Running**
+
+```html
+<vsc-chat-response><vsc-chat-tool-chain><vsc-chat-tool-call icon="tools">Profile the extension host</vsc-chat-tool-call><vsc-chat-tool-call running>Bisecting 46 commits</vsc-chat-tool-call></vsc-chat-tool-chain></vsc-chat-response>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/toolInvocationParts/chatToolProgressPart.ts`, `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/codeBlockPart.ts`
+
+## `<vsc-chat-tool-chain>` — Chat tool chain
+
+Kind: component · Category: chat · Status: stable
+
+A group of consecutive tool calls in a chat response (`.chat-used-context.chat-thinking-box.chat-tool-chain`). Each call shows its icon, and a thin connector line joins the icons of consecutive calls.
+
+**Usage:** Inside <vsc-chat-response>, wrapping one or more <vsc-chat-tool-call>. Start a new chain after each markdown part, like the product does.
+
+**Must be inside:** `<vsc-workbench>` › `<vsc-chat-view>` › `<vsc-chat-response>`
+
+**Composed of:** `<vsc-chat-tool-call>`
+
+**Slots:**
+- default (children): <vsc-chat-tool-call> elements
+
+**Example — Read then edit**
+
+```html
+<vsc-chat-response><vsc-chat-tool-chain><vsc-chat-tool-call icon="book-compact" file="renderer.ts">Read</vsc-chat-tool-call><vsc-chat-tool-call edit icon="pencil" file="renderer.ts" added="14" removed="3"></vsc-chat-tool-call></vsc-chat-tool-chain></vsc-chat-response>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatThinkingContentPart.ts`
 
 ## `<vsc-chat-welcome>` — Chat welcome
 
@@ -365,6 +679,76 @@ Horizontal rule between menu groups.
 ```
 
 Source: `src/vs/base/browser/ui/menu/menu.ts`
+
+## `<vsc-notification>` — Notification toast
+
+Kind: component · Category: overlays · Status: draft · Verification: drift
+
+A notification toast (bottom-right / bottom-left stack in the workbench): severity icon, message, toolbar (⚙ More Actions when configure, expand/collapse chevron, ✕ Clear) and, while expanded, a details row with "Source: …" and buttons (first primary). Mirrors NotificationsToasts + NotificationRenderer (notificationsViewer.ts): compact 34px modern-ui rows, wrapped messages grow the row by their extra lines, notifications with buttons are always expanded, slide/fade-in and severity-based auto-dismiss. Captured from VS Code Insiders (serve-web) toasts in Dark 2026 and Light 2026; the runtime list id is normalized to list_id_7 (unused by other lists in this system). Known verification drift: the error and warning references were not the last toast in their stack, where modern UI drops the bottom margin (`:not(:last-child)`), so the single-toast examples are 4px taller.
+
+**Usage:** Inside <vsc-notification-toasts> (a direct child of <vsc-workbench>). Prefer toasts.show({ severity, message, buttons, source }) from script; it returns the element. Listen for "action" (detail.label) and "close". Use buttons for actions like "Undo"; leave source empty for product (core) notifications. Not for blocking questions: use <vsc-dialog>.
+
+**Must be inside:** `<vsc-workbench>` › `<vsc-notification-toasts>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `severity` | `info` \| `warning` \| `error` | `info` |  |
+| `message` | string |  | Message text (plain; use the default slot for rich text such as links) |
+| `buttons` | string |  | Comma-separated button labels; the first is primary. Notifications with buttons are always expanded and can't collapse (except compact, where they sit inline) |
+| `source` | string |  | Shown as "Source: …" in the details row while expanded (extensions set this; core notifications don't). Ignored when compact |
+| `expanded` | boolean |  | Expanded state for notifications without buttons (toggled by the chevron when there is a source) |
+| `configure` | boolean |  | Show the ⚙ "More Actions..." dropdown (notifications with secondary actions, e.g. from extensions) |
+| `compact` | boolean |  | Compact variant (design-tool addition, not in VS Code): a single row with buttons inline after the message, no toolbar (no ✕), auto-dismissed after 5s. For brief confirmations like "Marked as done. [Undo]" |
+| `timeout` | number |  | Auto-dismiss delay in ms (overrides the default: compact 5000; otherwise info 10000, warning 12000, error 15000) |
+| `sticky` | boolean |  | Don't auto-dismiss (by default: info 10s, warning 12s, error 15s, compact 5s; paused while hovered or focused) |
+| `no-animation` | boolean |  | Skip the slide/fade-in |
+
+**Slots:**
+- default (children): Rich message content (used when no message attribute is set)
+
+**States:**
+- `expanded` (always with buttons; chevron / → otherwise): Details row with source and buttons; row grows
+- `compact` (compact attribute): Single 34px row, buttons inline after the message, no ✕, 5s auto-dismiss
+- `fade-in` (connected): Slides up and fades in over 300ms
+- `auto-dismiss` (timeout): Removed after 10/12/15s (info/warning/error), 5s when compact, unless hovered, focused or sticky
+
+**Example — Info with a button**
+
+```html
+<vsc-notification-toasts static><vsc-notification severity="info" message="Marked as done." source="DT Notify" buttons="Undo" configure sticky no-animation></vsc-notification></vsc-notification-toasts>
+```
+
+**Example — Error with source and two buttons**
+
+```html
+<vsc-notification-toasts static><vsc-notification severity="error" message="Build failed on darwin-arm64: @vscode/spdlog has no prebuild for Electron 39." source="DT Notify" buttons="Open Session,Retry" configure sticky no-animation></vsc-notification></vsc-notification-toasts>
+```
+
+**Example — Warning, collapsed**
+
+```html
+<vsc-notification-toasts static><vsc-notification severity="warning" message="Session deleted." source="DT Notify" configure sticky no-animation></vsc-notification></vsc-notification-toasts>
+```
+
+**Example — Core info (no source, no buttons)**
+
+```html
+<vsc-notification-toasts static><vsc-notification severity="info" message="Session started. It'll land in Ready for you when it's done." sticky no-animation></vsc-notification></vsc-notification-toasts>
+```
+
+**Example — Compact with Undo**
+
+```html
+<vsc-notification-toasts static><vsc-notification compact severity="info" message="Marked as done." buttons="Undo" sticky no-animation></vsc-notification></vsc-notification-toasts>
+```
+
+**Example — Compact, no button**
+
+```html
+<vsc-notification-toasts static><vsc-notification compact severity="info" message="Sent to Copilot. It moved to Working." sticky no-animation></vsc-notification></vsc-notification-toasts>
+```
+
+Source: `src/vs/workbench/browser/parts/notifications/notificationsViewer.ts:234`, `src/vs/workbench/browser/parts/notifications/notificationsViewer.ts:478`, `src/vs/workbench/browser/parts/notifications/notificationsToasts.ts:50`, `src/vs/workbench/browser/parts/notifications/media/notificationsToasts.css`, `src/vs/workbench/browser/parts/notifications/media/notificationsList.css`
 
 ## `<vsc-notifications-center>` — Notifications center
 
@@ -1109,6 +1493,73 @@ Window title bar with navigation, the command center (search box + agent status 
 ```
 
 Source: `src/vs/workbench/browser/parts/titlebar/titlebarPart.ts`, `src/vs/workbench/browser/parts/titlebar/commandCenterControl.ts`
+
+## `<vsc-view-tab>` — View tab
+
+Kind: component · Category: workbench · Status: draft
+
+One tab in a <vsc-view-tabs> bar: a panel-style composite bar item (`li.action-item > a.action-label`, hidden badge and `.active-item-indicator`). The active tab gets the modern-ui pill background; inactive tabs use panelTitle.inactiveForeground and show the hover pill. Optional plain-text count after the label.
+
+**Usage:** Only as a child of <vsc-view-tabs>. Give each a value and its label as text; add count="6" for a plain count. Don't set checked yourself; set active on the bar.
+
+**Must be inside:** `<vsc-workbench>` › `<vsc-view-tabs>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `value` | string |  | Stable id reported by the bar's change event and matched by its active attribute |
+| `label` | string |  | Tab text (defaults to the element's text) |
+| `count` | string |  | Optional count shown after the label as plain secondary text |
+| `checked` | boolean |  | Active tab (set by <vsc-view-tabs> from its active attribute) |
+
+**States:**
+- `checked` (parent active attribute / click): Pill background (modernTab active colors)
+- `hover` (pointer over an inactive tab): Hover pill on inactive tabs
+- `focus` (keyboard focus): focusBorder outline
+
+**Example — In a tab bar**
+
+```html
+<vsc-view-tabs active="terminal"><vsc-view-tab value="problems">Problems</vsc-view-tab><vsc-view-tab value="output">Output</vsc-view-tab><vsc-view-tab value="debug">Debug Console</vsc-view-tab><vsc-view-tab value="terminal">Terminal</vsc-view-tab></vsc-view-tabs>
+```
+
+Source: `src/vs/workbench/browser/parts/compositeBarActions.ts`, `src/vs/workbench/browser/parts/media/paneCompositePart.css`
+
+## `<vsc-view-tabs>` — View tabs
+
+Kind: component · Category: workbench · Status: draft · Verification: drift
+
+A row of view-switcher tabs styled like the bottom panel's (Problems / Output / Debug Console / Terminal) and the Settings editor scope tabs in the modern UI: borderless text tabs where the active one sits on a rounded pill. Renders the panel's composite bar (`.pane-composite-part > .composite.title > .composite-bar-container > .composite-bar > .monaco-action-bar > ul[role=tablist]`) so the captured panel rules apply unchanged, without the panel part around it. Known drift vs. the panel-title capture: the panel's title row adds 2px/4px padding and a flex layout from `.part.panel > .title` (panel-specific, intentionally not reproduced), and tab widths differ ~1px from platform font metrics (the capture was taken on Linux; computed font, padding and widths are identical to the verified <vsc-panel>).
+
+**Usage:** Use for switching between views or filtered lists inside a surface (panel views, settings scopes, inbox buckets). Children are <vsc-view-tab value>Label</vsc-view-tab>; set active to a value and listen for "change". Not for editor tabs (use <vsc-tabs>/<vsc-tab>).
+
+**Must be inside:** `<vsc-workbench>`
+
+**Composed of:** `<vsc-view-tab>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `active` | string |  | value of the active <vsc-view-tab> (defaults to the first) |
+| `label` | string | `Active View Switcher` | Accessible name of the tablist |
+
+**Slots:**
+- default (children): <vsc-view-tab> children
+
+**States:**
+- `active` (active attribute, click, ←/→): The tab whose value equals active gets the pill
+
+**Example — Panel tabs**
+
+```html
+<vsc-view-tabs active="terminal"><vsc-view-tab value="problems">Problems</vsc-view-tab><vsc-view-tab value="output">Output</vsc-view-tab><vsc-view-tab value="debug">Debug Console</vsc-view-tab><vsc-view-tab value="terminal">Terminal</vsc-view-tab></vsc-view-tabs>
+```
+
+**Example — With counts**
+
+```html
+<vsc-view-tabs active="ready" label="Inbox"><vsc-view-tab value="ready" count="6">Ready for you</vsc-view-tab><vsc-view-tab value="working" count="3">Working</vsc-view-tab><vsc-view-tab value="hold" count="2">On hold</vsc-view-tab><vsc-view-tab value="done">Done</vsc-view-tab></vsc-view-tabs>
+```
+
+Source: `src/vs/workbench/browser/parts/compositeBar.ts`, `src/vs/workbench/browser/parts/media/paneCompositePart.css`
 
 ## `<vsc-watermark-entry>` — Watermark entry
 

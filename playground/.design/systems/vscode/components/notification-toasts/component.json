@@ -1,0 +1,91 @@
+{
+  "tag": "vsc-notification-toasts",
+  "kind": "context",
+  "title": "Notification toasts",
+  "category": "overlays",
+  "description": "The workbench's notification toast stack (`.monaco-workbench > .notifications-toasts`): pinned to the bottom-right (or bottom-left / top-right) corner, newest toast on top, at most 3 toasts (NotificationsToasts.MAX_NOTIFICATIONS). Uses the modern-UI insets from notificationsDialogs.css (--modern-ui-notifications-inline-inset / -block-end-inset, 8px / 36px by default, 32px bottom with .nostatusbar on the workbench). The Agents window sets both insets to 8px (sessions/browser/media/workbench.css); set those variables on the workbench to match. Position rules are captured for bottom-right and for bottom-left with no status bar.",
+  "usage": "Place once as a direct child of <vsc-workbench> and call show({ severity, message, buttons, source }) to raise toasts. Set position=\"bottom-left\" to match workbench.notifications.position. Add the nostatusbar class to the workbench when the window has no status bar. For the Agents window also set --modern-ui-notifications-inline-inset and --modern-ui-notifications-block-end-inset to var(--vscode-spacing-size80) on the workbench.",
+  "attributes": [
+    {
+      "name": "position",
+      "type": "enum",
+      "values": [
+        "bottom-right",
+        "bottom-left",
+        "top-right"
+      ],
+      "default": "bottom-right",
+      "description": "Corner of the workbench (workbench.notifications.position)"
+    },
+    {
+      "name": "static",
+      "type": "boolean",
+      "description": "Lay out in the document flow instead of pinning to a workbench corner (for docs and specimens)"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "<vsc-notification> toasts, newest first"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "hostTag": "div",
+  "cssCaptures": [
+    "notification-toasts-dark",
+    "notification-toasts-light",
+    "notification-toasts-bottom-left-dark"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [],
+  "uses": [
+    "vsc-notification"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/workbench/browser/parts/notifications/notificationsToasts.ts",
+      "note": "addToast, MAX_NOTIFICATIONS, positions"
+    },
+    {
+      "path": "src/vs/workbench/browser/parts/notifications/media/notificationsToasts.css"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Stack",
+      "html": "<vsc-notification-toasts static><vsc-notification severity=\"warning\" message=\"Session deleted.\" source=\"DT Notify\" configure sticky no-animation></vsc-notification><vsc-notification severity=\"error\" message=\"Build failed on darwin-arm64: @vscode/spdlog has no prebuild for Electron 39.\" source=\"DT Notify\" buttons=\"Open Session,Retry\" configure sticky no-animation></vsc-notification><vsc-notification severity=\"info\" message=\"Marked as done.\" source=\"DT Notify\" buttons=\"Undo\" configure sticky no-animation></vsc-notification></vsc-notification-toasts>",
+      "width": 470
+    }
+  ],
+  "references": [
+    {
+      "capture": "notification-toasts-dark",
+      "example": 0,
+      "theme": "dark-2026",
+      "width": 470,
+      "ignore": []
+    },
+    {
+      "capture": "notification-toasts-light",
+      "example": 0,
+      "theme": "light-2026",
+      "width": 470,
+      "ignore": []
+    }
+  ],
+  "status": "draft",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-27T22:58:12.690Z",
+    "compared": 156,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-27T22:54:11.198Z",
+  "updatedAt": "2026-10-27T22:58:12.690Z"
+}

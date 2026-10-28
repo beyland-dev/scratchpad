@@ -46,6 +46,8 @@ project, new prototypes and systems go into it automatically.
     prototype. Variants are linked with `variantOf`. A prototype and its variants
     form one family: the gallery shows a single card that opens the **newest**
     version, and the viewer labels versions V1, V2, … Latest by creation time.
+    Versions share the family's title (renaming one renames all), so put what a
+    variant changes in its `description`.
 - Never overwrite someone else's prototype to try an alternative. Create a variant.
 - Set `status` as work progresses: `draft` → `review` → `approved` (or `archived`).
 
@@ -59,6 +61,7 @@ project, new prototypes and systems go into it automatically.
   "tags": ["checkout"],
   "project": "web-app",
   "group": "checkout-redesign",
+  "system": "web-app-ui",
   "variantOf": "checkout-stepper",
   "entry": "index.html",
   "createdBy": { "kind": "agent", "name": "copilot" },
@@ -88,6 +91,10 @@ that product, **build it from the design system** instead of writing CSS from sc
 - `component_search` / `component_get` show components, their attributes and states, and a ready-to-paste snippet.
 - `token_search` finds tokens (`var(--…)`) to style anything custom.
 - Each system also has a generated skill (`skills_install` puts it in `.github/skills`).
+- **Don't build theme toggles into prototypes.** Set the theme the prototype opens in (e.g. the
+  root context's `theme` attribute) and leave switching to design-tool's viewer, which offers the
+  system's themes for prototypes that use it. Set the prototype's `system` when it isn't obvious
+  (it's inferred from the `/s/<id>/system.js` it loads, or the project's only system).
 
 To create or extend a design system from a codebase, follow the **design-system-audit** skill
 (MCP resource `design-tool://skills/design-system-audit`, or `skills_install`).

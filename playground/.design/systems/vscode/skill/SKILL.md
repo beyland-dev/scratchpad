@@ -1,6 +1,6 @@
 ---
 name: vscode-design-system
-description: Build design-tool prototypes that look exactly like VS Code, using its codified design system — 48 web components (<vsc-chat-view>, <vsc-workbench>, <vsc-editor>, <vsc-search-view>, <vsc-sidebar>, <vsc-chat-model-picker>, …) and 3373 theme tokens. Use when creating or editing a prototype that should match VS Code, or when looking up its components, states, tokens, or icons.
+description: Build design-tool prototypes that look exactly like VS Code, using its codified design system — 60 web components (<vsc-chat-view>, <vsc-workbench>, <vsc-notification-toasts>, <vsc-editor>, <vsc-search-view>, <vsc-sidebar>, …) and 3379 theme tokens. Use when creating or editing a prototype that should match VS Code, or when looking up its components, states, tokens, or icons.
 ---
 
 # VS Code design system
@@ -26,7 +26,7 @@ Everything goes inside the root context, which applies the theme:
 </vsc-workbench>
 ```
 
-Themes: `dark-2026` (Dark 2026), `light-2026` (Light 2026). Default: `dark-2026`.
+Themes: `dark-2026` (Dark 2026), `light-2026` (Light 2026). Default: `dark-2026`. Set the theme the prototype should open in on <vsc-workbench>, and don't build a theme toggle: design-tool's viewer switches between the themes (it sets `theme` on every <vsc-workbench>, from `?theme=<id>` in the URL or live via `postMessage`).
 
 ## Rules
 
@@ -80,6 +80,7 @@ Open one page per theme (`?folder=/tmp/dt-vsc/ws&dt-theme=dark` / `dt-theme=ligh
 |---|---|---|---|
 | `<vsc-chat-view>` | Chat view: The chat view pane (secondary side bar): `.chat-viewpane > .chat-controls-container > .interactive-session`. |  | `vsc-workbench` |
 | `<vsc-workbench>` | Workbench: Root of every VS Code UI: the `.monaco-workbench` element. | theme=dark-2026\\|light-2026 |  |
+| `<vsc-notification-toasts>` | Notification toasts: The workbench's notification toast stack (`.monaco-workbench > .notifications-toasts`): pinned to the bottom-right (or bottom-left / top-right) corner, newest toast on top, at most 3 toasts (NotificationsToasts.MAX_NOTIFICATIONS). | position=bottom-right\\|bottom-left\\|top-right, static | `vsc-workbench` |
 | `<vsc-editor>` | Editor area: The editor part and active editor group (`.part.editor > .content > .editor-group-container`). | empty | `vsc-workbench` |
 | `<vsc-search-view>` | Search view: The Search view container: search widget (`.search-widget > .search-container`) above the results. |  | `vsc-workbench` › `vsc-sidebar` |
 | `<vsc-sidebar>` | Side bar: The primary side bar part with an optional view title (`.composite.title`) and a single pane body for view content. | heading=…, position=left\\|right | `vsc-workbench` |
@@ -88,15 +89,24 @@ Open one page per theme (`?folder=/tmp/dt-vsc/ws&dt-theme=dark` / `dt-theme=ligh
 
 | Tag | What | Key attributes | Must be inside |
 |---|---|---|---|
+| `<vsc-chat-markdown>` | Chat markdown: A rendered markdown part of a chat response (`.chat-markdown-part.rendered-markdown`): paragraphs, headings, lists, bold, inline code, tables and code blocks styled like the product's chat renderer. |  | `vsc-workbench` › `vsc-chat-view` › `vsc-chat-response` |
 | `<vsc-chat-model-picker>` | Model picker: Language model picker in the chat input toolbar (split button: model name + configuration). | label=…, badge=… | `vsc-workbench` › `vsc-chat-view` |
 | `<vsc-chat-picker>` | Chat picker: Dropdown picker in the chat input toolbars: icon + label (agent mode, session target, permissions, …). | kind=mode\\|target\\|, icon=…, label=…, disabled | `vsc-workbench` › `vsc-chat-view` |
+| `<vsc-chat-question-carousel>` | Chat question carousel: The chat question carousel ("ask user a question" widget): an agent's question with a header (optional carousel message, title, skip and collapse buttons), a scrollable answer area (optional detailed message, numbered single- or multi-select options or a text input, plus a numbered "Enter custom answer" row) and a footer with the submit hint and Submit button. | question=…, message=…, multi, required, no-freeform, no-skip | `vsc-workbench` › `vsc-chat-view` |
+| `<vsc-chat-question-option>` | Chat question option: One answer in a chat question carousel's list (`.chat-question-list-item`): number, label (with optional description), and either a selection check (single-select) or a checkbox (multi-select). | label=…, description=…, selected, index=…, multi | `vsc-workbench` › `vsc-chat-view` › `vsc-chat-question-carousel` |
+| `<vsc-chat-question-summary>` | Chat question summary: An answered question in a chat transcript (`.chat-question-carousel-container.chat-question-carousel-used`): "Question: …" with the chosen answer below on a connector ("Answered: …"). | question=…, answer=… | `vsc-workbench` › `vsc-chat-view` › `vsc-chat-response` |
+| `<vsc-chat-request>` | Chat request: The user's message in a chat transcript (`.interactive-item-container.interactive-request`): a right-aligned rounded bubble with the rendered markdown request, plus the (hover-revealed) timestamp row and empty footer toolbar. | timestamp=… | `vsc-workbench` › `vsc-chat-view` |
+| `<vsc-chat-response>` | Chat response: The agent's turn in a chat transcript (`.interactive-item-container.interactive-response`): a full-width column of content parts (markdown, tool chains, question summaries), optionally headed by the collapsed "Completed N steps" disclosure with +added/-removed edit stats. | summary=…, added=…, removed=…, expanded | `vsc-workbench` › `vsc-chat-view` |
 | `<vsc-chat-submit>` | Send button: Chat send button (arrow up), disabled while the input is empty. | disabled, label=… | `vsc-workbench` › `vsc-chat-view` |
+| `<vsc-chat-tool-call>` | Chat tool call: One completed tool call in a chat response (`.chat-thinking-tool-wrapper`): a compact codicon and a past-tense message, optionally followed by a file pill. | icon=…, file=…, edit, added=…, removed=…, running | `vsc-workbench` › `vsc-chat-view` › `vsc-chat-response` › `vsc-chat-tool-chain` |
+| `<vsc-chat-tool-chain>` | Chat tool chain: A group of consecutive tool calls in a chat response (`.chat-used-context.chat-thinking-box.chat-tool-chain`). |  | `vsc-workbench` › `vsc-chat-view` › `vsc-chat-response` |
 | `<vsc-chat-welcome>` | Chat welcome: Empty-state of the chat view: icon, title, message and disclaimer. | heading=…, message=…, icon=… | `vsc-workbench` › `vsc-chat-view` |
 | `<vsc-icon>` | Icon (codicon): A codicon glyph from @vscode/codicons (16px icon font). | name=…, spin |  |
 | `<vsc-hover>` | Hover (tooltip): Workbench hover / tooltip, e.g. | text=… | `vsc-workbench` |
 | `<vsc-menu>` | Context menu: Context menu (`.monaco-menu`): items with keybindings, separators, check marks and submenus. | x=…, y=…, label=… | `vsc-workbench` |
 | `<vsc-menu-item>` | Menu item: A context menu entry: check mark, label, keybinding or submenu chevron. | label=…, keys=…, checked, disabled, submenu, focused | `vsc-workbench` › `vsc-menu` |
 | `<vsc-menu-separator>` | Menu separator: Horizontal rule between menu groups. |  | `vsc-workbench` › `vsc-menu` |
+| `<vsc-notification>` | Notification toast: A notification toast (bottom-right / bottom-left stack in the workbench): severity icon, message, toolbar (⚙ More Actions when configure, expand/collapse chevron, ✕ Clear) and, while expanded, a details row with "Source: …" and buttons (first primary). | severity=info\\|warning\\|error, message=…, buttons=…, source=…, expanded, configure | `vsc-workbench` › `vsc-notification-toasts` |
 | `<vsc-notifications-center>` | Notifications center: Notification center panel (bottom right) with header actions and a list of notifications. | heading=… | `vsc-workbench` |
 | `<vsc-quick-pick-item>` | Quick pick item: A row in the quick input list: optional file icon, label with match highlight, description, keybinding, group separator label and row actions. | label=…, highlight=…, description=…, keys=…, separator=…, file=… | `vsc-workbench` › `vsc-quick-input` |
 | `<vsc-setting>` | Setting: A row in the Settings editor: category + label, description (rich text allowed) and a control (checkbox, number/text input or select). | type=bool\\|number\\|text\\|enum, category=…, label=…, key=…, value=…, options=… | `vsc-workbench` › `vsc-settings-editor` |
@@ -124,6 +134,8 @@ Open one page per theme (`?folder=/tmp/dt-vsc/ws&dt-theme=dark` / `dt-theme=ligh
 | `<vsc-tab>` | Editor tab: One editor tab: file icon, label (italic when preview) and close action; the active tab connects to the editor. | label=…, active, preview, dirty | `vsc-workbench` › `vsc-editor` › `vsc-tabs` |
 | `<vsc-tabs>` | Editor tabs: Editor group title: connected tabs, editor actions and breadcrumbs (`.title.tabs`). | breadcrumbs=…, no-breadcrumbs | `vsc-workbench` › `vsc-editor` |
 | `<vsc-titlebar>` | Title bar: Window title bar with navigation, the command center (search box + agent status pill) and layout controls. | label=…, can-go-back, can-go-forward, no-layout-controls | `vsc-workbench` |
+| `<vsc-view-tab>` | View tab: One tab in a <vsc-view-tabs> bar: a panel-style composite bar item (`li.action-item > a.action-label`, hidden badge and `.active-item-indicator`). | value=…, label=…, count=…, checked | `vsc-workbench` › `vsc-view-tabs` |
+| `<vsc-view-tabs>` | View tabs: A row of view-switcher tabs styled like the bottom panel's (Problems / Output / Debug Console / Terminal) and the Settings editor scope tabs in the modern UI: borderless text tabs where the active one sits on a rounded pill. | active=…, label=… | `vsc-workbench` |
 | `<vsc-watermark-entry>` | Watermark entry: Shortcut hint row in the editor watermark: icon, label and keybinding. | icon=…, label=…, keys=… | `vsc-workbench` › `vsc-editor` › `vsc-watermark` |
 
 ### Patterns
@@ -141,7 +153,7 @@ Full API (attributes, slots, states, examples): [references/components.md](refer
 
 ## Tokens
 
-3373 tokens, available as CSS custom properties and themed per theme. Largest groups: icon (2321), editor (43), testing (34), chat (33), symbolIcon (33), terminal (30), tab (29), statusBarItem (25), editorOverviewRuler (24), list (24), settings (21), inlineEdit (20), terminalSymbolIcon (19), notebook (17), debugIcon (15), diffEditor (14), editorGutter (14), editorIndentGuide (14), spacing (14), mergeEditor (13), scmGraph (13), agents (12), editorBracketPairGuide (12), statusBar (11).
+3379 tokens, available as CSS custom properties and themed per theme. Largest groups: icon (2321), editor (43), chat (39), testing (34), symbolIcon (33), terminal (30), tab (29), statusBarItem (25), editorOverviewRuler (24), list (24), settings (21), inlineEdit (20), terminalSymbolIcon (19), notebook (17), debugIcon (15), diffEditor (14), editorGutter (14), editorIndentGuide (14), spacing (14), mergeEditor (13), scmGraph (13), agents (12), editorBracketPairGuide (12), statusBar (11).
 
 Find tokens with the `token_search` tool (e.g. query "button background") or in [references/tokens.md](references/tokens.md).
 

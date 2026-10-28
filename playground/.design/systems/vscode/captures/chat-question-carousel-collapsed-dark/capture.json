@@ -1,0 +1,142 @@
+{
+  "label": "chat-question-carousel-collapsed-dark",
+  "url": "http://localhost:5123/___explorer?fixture=chat/chatQuestionCarousel",
+  "selector": "#dt-target",
+  "theme": "dark-2026",
+  "state": "collapsed (resting: not focused or hovered)",
+  "capturedAt": "2026-10-27T21:59:11.807Z",
+  "rect": {
+    "x": 324,
+    "y": 454,
+    "w": 376,
+    "h": 41
+  },
+  "parentWidth": 376,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "chat-question-carousel-widget-container",
+      "w": 376,
+      "h": 41,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "interactive-input-part",
+      "w": 376,
+      "h": 49,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "component-fixture-container component-fixture monaco-workbench mac disable-animations vs-dark vscode-theme-defaults--extensions-theme-defaults-themes-2026-dark-json file-icons-enabled interactive-session",
+      "w": 416,
+      "h": 65,
+      "display": "flex",
+      "bg": "rgb(37, 37, 38)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "component-fixture-file-icon-theme-vs-seti",
+      "w": 416,
+      "h": 65,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "",
+      "w": 416,
+      "h": 65,
+      "display": "inline-block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "root",
+      "classes": "",
+      "w": 1400,
+      "h": 1400,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "",
+      "w": 1400,
+      "h": 1400,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(191, 191, 191)",
+    "font-family": "-apple-system, \"system-ui\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "auto"
+  },
+  "vars": {
+    "--vscode-scrollbarSlider-background": "rgba(168, 169, 170, 0.52)",
+    "--vscode-scrollbarSlider-hoverBackground": "rgba(168, 169, 170, 0.56)",
+    "--vscode-scrollbarSlider-activeBackground": "rgba(168, 169, 170, 0.61)",
+    "--vscode-input-placeholderForeground": "#555555",
+    "--vscode-icon-foreground": "#8c8c8c",
+    "--vscode-focusBorder": "rgba(57, 148, 188, 0.7)",
+    "--vscode-button-border": "#297aa0",
+    "--vscode-button-secondaryBorder": "#333536",
+    "--vscode-strokeThickness": "1px",
+    "--vscode-input-border": "#333536",
+    "--vscode-chat-requestBorder": "rgba(255, 255, 255, 0.1)",
+    "--vscode-cornerRadius-large": "8px",
+    "--vscode-panel-background": "#191a1b",
+    "--vscode-spacing-size80": "8px",
+    "--vscode-spacing-size160": "16px",
+    "--vscode-fontSize-heading3": "13px",
+    "--vscode-fontWeight-semiBold": "600",
+    "--vscode-toolbar-hoverBackground": "rgba(90, 93, 94, 0.31)",
+    "--vscode-cornerRadius-medium": "6px",
+    "--vscode-list-activeSelectionForeground": "#ededed",
+    "--vscode-foreground": "#bfbfbf",
+    "--vscode-fontSize-body2": "11px",
+    "--vscode-fontWeight-regular": "400",
+    "--vscode-descriptionForeground": "#8c8c8c",
+    "--vscode-list-hoverBackground": "rgba(255, 255, 255, 0.08)",
+    "--vscode-list-inactiveSelectionBackground": "#2c2d2e",
+    "--vscode-list-inactiveSelectionForeground": "#ededed",
+    "--vscode-list-activeSelectionBackground": "rgba(255, 255, 255, 0.13)",
+    "--vscode-input-background": "#191a1b",
+    "--vscode-input-foreground": "#bfbfbf",
+    "--vscode-chat-font-size-body-s": "0.923em",
+    "--vscode-button-background": "#297aa0",
+    "--vscode-button-foreground": "#ffffff",
+    "--vscode-button-hoverBackground": "#2b7da3",
+    "--vscode-editorWarning-foreground": "#cca700"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"/bundled/assets/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "http://localhost:5123/bundled/assets/codicon.ttf"
+      ]
+    }
+  ],
+  "rules": 80,
+  "scale": 2,
+  "viewport": {
+    "width": 1400,
+    "height": 1400
+  }
+}

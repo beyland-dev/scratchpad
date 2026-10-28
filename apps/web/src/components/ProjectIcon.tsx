@@ -1,5 +1,6 @@
 import type { JSX } from "preact";
 import { UNSORTED, type ProjectEntry } from "../store.ts";
+import { Icon } from "./Icon.tsx";
 
 /** Gradient pairs for generated icons; a project's id picks one (and a pattern) deterministically. */
 const PALETTES: [string, string][] = [
@@ -95,19 +96,8 @@ export function ProjectIcon({ project, size = 32 }: { project: ProjectEntry; siz
   const style = { width: `${size}px`, height: `${size}px` };
   if (project.id === UNSORTED) {
     return (
-      <span class="project-icon unsorted" style={style} aria-hidden="true">
-        <svg
-          viewBox="0 0 24 24"
-          width={size * 0.55}
-          height={size * 0.55}
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.75"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M4 13h4l1.5 2.5h5L16 13h4M5.5 6h13L21 13v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5z" />
-        </svg>
+      <span class="project-icon trash" style={style} aria-hidden="true">
+        <Icon name="trash" size={Math.round(size * 0.55)} />
       </span>
     );
   }

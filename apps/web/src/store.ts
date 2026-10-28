@@ -1,5 +1,5 @@
 import { computed, signal } from "@preact/signals";
-import { familyOf as sharedFamilyOf, groupFamilies } from "@design-tool/core/family";
+import { familyOf as sharedFamilyOf, groupFamilies, versionLabel } from "@design-tool/core/family";
 import { call, subscribe } from "./api.ts";
 import type { ProjectSummary, PrototypeWithUrls, WorkspaceInfo } from "./types.ts";
 
@@ -133,6 +133,18 @@ export function familyOf(
   return sharedFamilyOf(all, id);
 }
 
+/** A prototype's name: its family's (versions share one, told apart as V1, V2, … Latest). */
+export function familyTitle(proto: PrototypeWithUrls): string {
+  return familyOf(proto.id)[0]?.title ?? proto.title;
+}
+
+/** "V1", "V2", … "Latest" for a version of a family; undefined for a prototype without variants. */
+export function versionLabelOf(proto: PrototypeWithUrls): string | undefined {
+  const family = familyOf(proto.id);
+  const index = family.findIndex((p) => p.id === proto.id);
+  return family.length > 1 && index >= 0 ? versionLabel(index, family.length) : undefined;
+}
+
 /** All variant families, oldest → newest within each family. */
 export const families = computed(() => groupFamilies(prototypes.value));
 
@@ -147,10 +159,10 @@ export function sandboxUrlFor(proto: PrototypeWithUrls, page?: string): string {
 
 // ---- Projects ----------------------------------------------------------------
 
-/** Pseudo-project for prototypes and systems that don't belong to an existing project. */
+/** Pseudo-project ("Trash" in the sidebar) for prototypes and systems that don't belong to an existing project. */
 export const UNSORTED = "~unsorted";
 
-/** The project an item shows up under: its own if that project exists, otherwise Unsorted. */
+/** The project an item shows up under: its own if that project exists, otherwise Trash. */
 export function projectIdOf(item: { project?: string }): string {
   return item.project && projects.value.some((p) => p.id === item.project)
     ? item.project
@@ -168,7 +180,7 @@ export interface ProjectEntry {
   systems: number;
 }
 
-/** Projects as listed in the sidebar, plus "Unsorted" when some items have no project. */
+/** Projects as listed in the sidebar, plus "Trash" when some items have no project. */
 export const projectEntries = computed<ProjectEntry[]>(() => {
   const entries: ProjectEntry[] = projects.value.map((p) => ({
     id: p.id,
@@ -187,7 +199,7 @@ export const projectEntries = computed<ProjectEntry[]>(() => {
   if (unsortedPrototypes || unsortedSystems) {
     entries.push({
       id: UNSORTED,
-      name: "Unsorted",
+      name: "Trash",
       description: "Prototypes and design systems that aren't in a project",
       prototypes: unsortedPrototypes,
       systems: unsortedSystems,
@@ -209,9 +221,12 @@ export function homeProjectId(): string | undefined {
   return entries.find((p) => p.id === last)?.id ?? entries[0]?.id;
 }
 
-export function projectHref(id: string, section: "prototypes" | "systems" = "prototypes"): string {
+/** The per-project sections, in header-tab order. */
+export type ProjectSection = "prototypes" | "systems" | "feedback" | "handoff";
+
+export function projectHref(id: string, section: ProjectSection = "prototypes"): string {
   const base = `/projects/${encodeURIComponent(id)}`;
-  return section === "systems" ? `${base}/systems` : base;
+  return section === "prototypes" ? base : `${base}/${section}`;
 }
 
 /** The design systems list of the project that `systemId` belongs to. */

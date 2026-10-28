@@ -2,10 +2,13 @@ import { versionLabel } from "@design-tool/core/family";
 import { useEffect, useState } from "preact/hooks";
 import { useLocation, useRoute } from "preact-iso";
 import { call } from "../api.ts";
-import { Frame } from "../components/Frame.tsx";
+import { PrototypeFrame } from "../components/PrototypeFrame.tsx";
+import { ThemePicker } from "../components/ThemePicker.tsx";
 import { DeletePrototypeDialog, PrototypeDialog } from "../components/Dialogs.tsx";
 import { Icon } from "../components/Icon.tsx";
+import { openNewVariant } from "../components/NewVariant.tsx";
 import { StatusSelect } from "../components/StatusBadge.tsx";
+import { VersionSwitcher } from "../components/VersionSwitcher.tsx";
 import {
   byId,
   familyOf,
@@ -18,6 +21,7 @@ import {
   systems,
   workspace,
 } from "../store.ts";
+import { prototypeHref, themeOptions, withTheme, type ThemeReady } from "../prototype-theme.ts";
 import type { PrototypeDetails, PrototypeWithUrls } from "../types.ts";
 import {
   DEFAULT_DEVICE,
@@ -31,13 +35,6 @@ import {
 
 const STAGE_PADDING = 32;
 const PANEL_KEY = "dt.viewer.details";
-
-function withQuery(path: string, query: Record<string, string | undefined>): string {
-  const params = new URLSearchParams();
-  for (const [k, v] of Object.entries(query)) if (v) params.set(k, v);
-  const qs = params.toString();
-  return qs ? `${path}?${qs}` : path;
-}
 
 function useDetails(id: string, revision: number) {
   const [details, setDetails] = useState<PrototypeDetails | null>(null);
@@ -74,8 +71,13 @@ export function Viewer() {
   const family = proto ? familyOf(proto.id) : [];
   const familyIndex = family.findIndex((p) => p.id === id);
 
-  const go = (nextId: string, extra: Record<string, string | undefined> = {}) =>
-    route(withQuery(`/p/${encodeURIComponent(nextId)}`, { device: query.device, ...extra }), true);
+  // What the prototype's design system runtime reported (its themes), if it has one.
+  const [themeReady, setThemeReady] = useState<ThemeReady | null>(null);
+  const theme = query.theme;
+
+  /** Another version or page, keeping the viewport and theme. */
+  const go = (nextId: string, extra: { page?: string } = {}) =>
+    route(prototypeHref(nextId, { device: query.device, theme, ...extra }), true);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -114,6 +116,7 @@ export function Viewer() {
 
   const pages = (details?.files ?? []).filter((f) => /\.html?$/i.test(f.path)).map((f) => f.path);
   const src = sandboxUrlFor(proto, page);
+  const themes = themeOptions(proto.resolvedSystem, themeReady);
   const availableW = Math.max(stage.width - STAGE_PADDING * 2, 0);
   const availableH = Math.max(stage.height - STAGE_PADDING * 2, 0);
   const scale = Math.min(1, availableW / device.width, availableH / device.height);
@@ -131,26 +134,8 @@ export function Viewer() {
           <Icon name="arrow-left" />
         </a>
         <h1 class="viewer-title" title={proto.description ?? proto.title}>
-          {proto.title}
+          {family[0]?.title ?? proto.title}
         </h1>
-
-        {family.length > 1 && (
-          <div class="segmented" role="tablist" aria-label="Versions (← → or 1–9)">
-            {family.map((member, i) => (
-              <button
-                type="button"
-                role="tab"
-                key={member.id}
-                aria-selected={member.id === id}
-                class={member.id === id ? "active" : ""}
-                title={`${member.title}${i < 9 ? ` (${i + 1})` : ""}`}
-                onClick={() => go(member.id)}
-              >
-                {versionLabel(i, family.length)}
-              </button>
-            ))}
-          </div>
-        )}
 
         <span class="toolbar-spacer" />
 
@@ -172,6 +157,31 @@ export function Viewer() {
             ))}
           </select>
         )}
+        <VersionSwitcher family={family} currentId={id} onSelect={(next) => go(next)} />
+        <button
+          type="button"
+          class="button ghost new-variant"
+          aria-label="New variant"
+          title={
+            family.length > 1
+              ? `New variant: fork ${versionLabel(familyIndex, family.length)} or another version`
+              : "New variant: fork this prototype"
+          }
+          onClick={() => openNewVariant(id)}
+        >
+          <Icon name="fork" />
+          <span class="new-variant-label">New variant</span>
+        </button>
+        <span class="bar-divider" />
+        {themes && (
+          <ThemePicker
+            themes={themes}
+            theme={theme ?? themeReady?.theme ?? ""}
+            onChange={(t) =>
+              route(prototypeHref(id, { device: query.device, theme: t, page }), true)
+            }
+          />
+        )}
         <div class="segmented" role="group" aria-label="Viewport">
           {DEVICES.map((d) => (
             <button
@@ -182,8 +192,9 @@ export function Viewer() {
               title={`${d.width}×${d.height}`}
               onClick={() =>
                 route(
-                  withQuery(`/p/${encodeURIComponent(id)}`, {
+                  prototypeHref(id, {
                     device: d.id === DEFAULT_DEVICE.id ? undefined : d.id,
+                    theme,
                     page,
                   }),
                   true,
@@ -206,7 +217,7 @@ export function Viewer() {
         </button>
         <a
           class="button ghost icon-only"
-          href={src}
+          href={withTheme(src, theme)}
           target="_blank"
           rel="noopener noreferrer"
           title="Open in a new tab"
@@ -217,7 +228,7 @@ export function Viewer() {
         {family.length > 1 && (
           <a
             class="button ghost icon-only"
-            href={`/compare?ids=${family.map((p) => encodeURIComponent(p.id)).join(",")}`}
+            href={`/compare?ids=${family.map((p) => encodeURIComponent(p.id)).join(",")}${theme ? `&theme=${encodeURIComponent(theme)}` : ""}`}
             title="Compare versions side by side"
             aria-label="Compare versions"
           >
@@ -240,8 +251,10 @@ export function Viewer() {
       <div class="viewer-body">
         <div class="stage" ref={stageRef}>
           {stage.width > 0 && (
-            <Frame
+            <PrototypeFrame
               src={src}
+              theme={theme}
+              onThemeReady={setThemeReady}
               title={proto.title}
               width={device.width}
               height={device.height}

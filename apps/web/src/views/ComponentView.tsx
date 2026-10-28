@@ -9,7 +9,8 @@ import { ComponentDialog, DeleteComponentDialog } from "../components/Dialogs.ts
 import { MenuButton } from "../components/Menu.tsx";
 import type { ComponentSummary, DesignComponent, DesignSystem, Token } from "../types.ts";
 import { relativeTime } from "../util.ts";
-import { ThemePicker, systemTabHref, useSystemTheme } from "./SystemView.tsx";
+import { ThemePicker } from "../components/ThemePicker.tsx";
+import { systemTabHref, useSystemTheme } from "./SystemView.tsx";
 import { TokenSwatch } from "./TokensView.tsx";
 
 interface ComponentDetails {
@@ -104,7 +105,7 @@ export function ComponentView() {
           />
           {sys.themes.length > 1 && (
             <ThemePicker
-              system={sys}
+              themes={sys.themes}
               allOption
               theme={allThemes ? "all" : theme}
               onChange={(t) => {

@@ -30,6 +30,27 @@ Build out the prototype "${proto.title}" (id "${proto.id}")${scope}: ${proto.des
 
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
+/** Hand-off for a variant forked in the app: its files are a copy of `source`, so the agent edits rather than starts over. */
+export function variantPrompt(
+  variant: {
+    id: string;
+    title: string;
+    description?: string;
+    framework?: "react";
+    system?: string;
+  },
+  source: { id: string; title: string },
+): string {
+  return `${START}
+Revise the prototype variant "${variant.title}" (id "${variant.id}"): ${variant.description?.trim() || "<describe what this variant should change>"}
+- It's a fork of "${source.title}" (id "${source.id}"): its files start as a copy. Read them with prototype_get and prototype_readFile, then change only what this variant explores with prototype_writeFile. Never edit "${source.id}".${
+    variant.framework
+      ? `\n- It's a React prototype built with the design system "${variant.system}": edit main.tsx and its modules, using the system's components (component_search).`
+      : ""
+  }
+- When it's done, update its description with prototype_update if the change grew, and share the viewer URL.`;
+}
+
 /**
  * The starting index.html of a prototype made in the app: its brief plus the agent prompt, so the
  * hand-off can't be dismissed by accident. An agent replaces it when it builds the prototype.
@@ -154,7 +175,7 @@ Set up the design system "${system.name}" (id "${system.id}"${system.project ? `
 1. Install: run \`npm install\` in ${dir}.
 2. ${setup}
 3. ${customize}
-4. Describe each component: write stories/<name>.stories.tsx exporting one React component per example, then component_create { system: "${system.id}", name, tag: "Button", title, description, import, story, docsUrl, examples: [{ title, html: "<the example's JSX>", story: "<export name>" }] }.
+4. Describe each component: write stories/<name>.stories.tsx exporting one React component per example, then component_create { system: "${system.id}", name, tag: "Button", title, description, import, story, docsUrl, examples: [{ title, html: "<the example's JSX>", story: "<export name>" }] }. The first story is the component's card preview, so it should show the component itself.
 5. Run system_build and fix any errors. Tokens come from src/index.css automatically.
 Then prototypes use it with prototype_create { framework: "react", system: "${system.id}" }.`;
 }

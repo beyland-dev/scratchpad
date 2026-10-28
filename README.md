@@ -62,17 +62,19 @@ Prototypes appear in the gallery live as the agent writes them.
 | **Workspace**     | A folder containing `.design/`. Commit it to git, or keep it next to your product repo.                                                                                                                                                                                               |
 | **Prototype**     | A self-contained folder of HTML/CSS/JS (`.design/prototypes/<id>/`) with a `prototype.json` for metadata.                                                                                                                                                                             |
 | **Group**         | A free-form exploration name clustering related prototypes (e.g. `checkout-redesign`).                                                                                                                                                                                                |
-| **Variant**       | A prototype linked to another via `variantOf`. A prototype and its variants form one family: one gallery card that opens the latest version.                                                                                                                                          |
+| **Variant**       | A prototype linked to another via `variantOf`. A prototype and its variants form one family with one name, told apart as V1, V2, … Latest: one gallery card that opens the latest version.                                                                                            |
 | **Source**        | A product codebase (local path or git URL) used as a read-only reference for tokens, components, and styles.                                                                                                                                                                          |
 | **Design system** | Either tokens and verified web components codified from a running product, or an existing library (shadcn/ui, Primer, …) installed and customized for React prototypes (`.design/systems/<id>/`), plus a generated agent skill. See [docs/design-systems.md](docs/design-systems.md). |
 
 ## The app
 
-- **Projects:** a sidebar lists projects as icon tiles (collapsible to a narrow rail; press `[`). Each project has its own prototypes and design systems.
+- **Projects:** a sidebar lists projects as icon tiles (collapsible to a narrow rail; press `[`). Each project has tabs for its prototypes, design systems, feedback and handoff (the last two are placeholders for now).
 - **Gallery:** a grid with one card per variant family: single prototypes show their preview, and families show a folder of their newest versions. Filter by status and group, search titles, descriptions, groups and tags (press `/`), and select 2+ cards to compare.
-- **Viewer:** a full-window stage with device presets (Desktop / Laptop / Tablet / Mobile), multi-page navigation, a version switcher (V1, V2, … Latest; ← → or 1–9), and an optional details panel (status, group, tags, files).
+- **Viewer:** a full-window stage with device presets (Desktop / Laptop / Tablet / Mobile), multi-page navigation, a version switcher (V1, V2, … Latest as tabs, or a ‹ V3 · 3/9 › stepper with a list of every version for large families; ← → or 1–9), and an optional details panel (status, group, tags, files).
+- **Variants:** **New variant** in the viewer, or in a card's ⋯ menu, forks a version of the prototype: the new variant starts as a copy of its files, and the app gives you a prompt that asks an agent for the change. For families with several versions, you pick which one to fork.
 - **Compare:** up to 4 prototypes side by side at the same viewport.
 - **Design systems:** browse components with examples in every theme, explore tokens visually (colors, type scale, spacing, shadows, icons) with per-token details, and watch an audit live (progress, what needs attention, captures with screenshot, DOM, matched CSS and geometry, activity) with verification results.
+- **Settings:** in the sidebar. Choose the app's theme (System, Light or Dark), saved in this browser.
 - **Live updates:** edits from agents, the CLI, or your editor appear immediately. The app only shows the connection status when it's lost.
 - **Sandboxing:** prototypes run in sandboxed iframes on a separate origin (port `7421`), so untrusted agent code can't reach the app or API.
 

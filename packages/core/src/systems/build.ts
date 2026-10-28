@@ -11,6 +11,7 @@ import {
   widenTypeSelectors,
 } from "./css.ts";
 import { RUNTIME_JS } from "./runtime.ts";
+import { SPECIMEN_FIT_SCRIPT } from "./specimen-fit.ts";
 import type { DesignComponent, DesignSystem, Theme, Token } from "./schemas.ts";
 import { writeSkill } from "./skill.ts";
 import { DIST_DIR, SKILL_DIR, type SystemStore } from "./store.ts";
@@ -111,7 +112,8 @@ const SPECIMEN_HTML = `<!doctype html>
     </style>
     <script type="module" src="system.js"></script>
     <script type="module">
-      // ?component=<name>&example=<n>&theme=<id>[&bare][&fill][&width=px][&frame=<id>] or ?html=<markup>
+      // ?component=<name>&example=<n>&theme=<id>[&bare][&fill][&width=px][&frame=<id>][&maxh=px] or ?html=<markup>
+      ${SPECIMEN_FIT_SCRIPT}
       const params = new URLSearchParams(location.search);
       const catalog = await (await fetch("catalog.json", { cache: "no-store" })).json();
       const { system } = catalog;
@@ -123,10 +125,18 @@ const SPECIMEN_HTML = `<!doctype html>
         html = example ? example.html : "<" + component.tag + "></" + component.tag + ">";
       }
       html = html || "";
+      const fitting = !params.has("bare") && (params.has("fill") || params.has("frame"));
+      if (fitting) {
+        // Mark the example's own top-level elements, so fitting can tell them from their contexts.
+        const parsed = document.createElement("template");
+        parsed.innerHTML = html;
+        for (const el of parsed.content.children) el.setAttribute("data-dt-example", "");
+        html = parsed.innerHTML;
+      }
       const contexts = component ? [...component.requires] : [];
       if (system.rootContext && component?.tag !== system.rootContext && !contexts.includes(system.rootContext)) contexts.unshift(system.rootContext);
       for (const tag of [...contexts].reverse()) {
-        if (!new RegExp("<" + tag + "[\\\\s>/]").test(html)) html = "<" + tag + ">" + html + "</" + tag + ">";
+        if (!new RegExp("<" + tag + "[\\\\s>/]").test(html)) html = "<" + tag + (fitting ? " data-dt-context>" : ">") + html + "</" + tag + ">";
       }
       if (params.has("bare")) document.body.classList.add("bare");
       else if (params.has("fill")) document.body.classList.add("fill");
@@ -149,33 +159,17 @@ const SPECIMEN_HTML = `<!doctype html>
           }
         }
       };
-      // Center vertically by the content's full extent (absolutely positioned parts like menus
-      // overflow the root), falling back to top alignment when it's taller than the frame.
-      const center = () => {
-        document.body.style.paddingTop = "0px";
-        let bottom = 0;
-        for (const el of document.body.querySelectorAll("*")) {
-          const rect = el.getBoundingClientRect();
-          if (rect.height && rect.bottom > bottom) bottom = rect.bottom;
-        }
-        const offset = Math.floor((innerHeight - bottom) / 2);
-        document.body.style.paddingTop = Math.max(0, offset) + "px";
-      };
-      const settle = () => {
-        paint();
-        if (params.has("fill")) center();
-      };
-      if (!params.has("bare")) {
-        settle();
-        requestAnimationFrame(settle);
-        if (root && params.has("fill")) {
-          new ResizeObserver(center).observe(root);
-          addEventListener("resize", center);
-        }
-      }
       const frame = params.get("frame");
       if (frame) document.body.classList.add("framed");
-      if (frame && parent !== window) {
+      if (!params.has("bare")) {
+        paint();
+        requestAnimationFrame(paint);
+      }
+      // Embedded in the app (a card or a detail page): fit and center the example in its frame.
+      if (root && fitting) {
+        dtFit({ root, mode: params.has("fill") ? "fill" : "frame", frame, maxHeight: Number(params.get("maxh")) || 900 });
+      } else if (frame && parent !== window) {
+        // Bare (as captured): report the natural height.
         const report = () => parent.postMessage({ type: "dt-specimen-size", frame, height: Math.ceil(document.documentElement.scrollHeight) }, "*");
         new ResizeObserver(report).observe(document.body);
         report();

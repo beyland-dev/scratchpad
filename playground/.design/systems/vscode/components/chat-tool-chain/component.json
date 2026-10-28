@@ -1,0 +1,45 @@
+{
+  "tag": "vsc-chat-tool-chain",
+  "kind": "component",
+  "title": "Chat tool chain",
+  "category": "chat",
+  "description": "A group of consecutive tool calls in a chat response (`.chat-used-context.chat-thinking-box.chat-tool-chain`). Each call shows its icon, and a thin connector line joins the icons of consecutive calls.",
+  "usage": "Inside <vsc-chat-response>, wrapping one or more <vsc-chat-tool-call>. Start a new chain after each markdown part, like the product does.",
+  "attributes": [],
+  "slots": [
+    {
+      "name": "",
+      "description": "<vsc-chat-tool-call> elements"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "hostTag": "div",
+  "cssCaptures": [],
+  "requires": [
+    "vsc-workbench",
+    "vsc-chat-view",
+    "vsc-chat-response"
+  ],
+  "tokens": [],
+  "uses": [
+    "vsc-chat-tool-call"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatThinkingContentPart.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Read then edit",
+      "html": "<vsc-chat-response><vsc-chat-tool-chain><vsc-chat-tool-call icon=\"book-compact\" file=\"renderer.ts\">Read</vsc-chat-tool-call><vsc-chat-tool-call edit icon=\"pencil\" file=\"renderer.ts\" added=\"14\" removed=\"3\"></vsc-chat-tool-call></vsc-chat-tool-chain></vsc-chat-response>",
+      "width": 720
+    }
+  ],
+  "references": [],
+  "status": "stable",
+  "createdAt": "2026-10-27T23:52:11.185Z",
+  "updatedAt": "2026-10-27T23:52:11.185Z"
+}

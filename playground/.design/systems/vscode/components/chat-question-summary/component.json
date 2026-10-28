@@ -1,0 +1,50 @@
+{
+  "tag": "vsc-chat-question-summary",
+  "kind": "component",
+  "title": "Chat question summary",
+  "category": "chat",
+  "description": "An answered question in a chat transcript (`.chat-question-carousel-container.chat-question-carousel-used`): \"Question: …\" with the chosen answer below on a connector (\"Answered: …\"). It replaces the question carousel once the user answers.",
+  "usage": "Inside <vsc-chat-response>, where a <vsc-chat-question-carousel> was answered.",
+  "attributes": [
+    {
+      "name": "question",
+      "type": "string",
+      "description": "Question title"
+    },
+    {
+      "name": "answer",
+      "type": "string",
+      "description": "Chosen answer (or freeform text)"
+    }
+  ],
+  "slots": [],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "hostTag": "div",
+  "cssCaptures": [],
+  "requires": [
+    "vsc-workbench",
+    "vsc-chat-view",
+    "vsc-chat-response"
+  ],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatQuestionCarouselPart.ts",
+      "note": "renderConversationSummary"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Answered",
+      "html": "<vsc-chat-response><vsc-chat-question-summary question=\"Continue with the rendering changes?\" answer=\"Confirm (Recommended)\"></vsc-chat-question-summary></vsc-chat-response>",
+      "width": 720
+    }
+  ],
+  "references": [],
+  "status": "stable",
+  "createdAt": "2026-10-27T23:52:11.153Z",
+  "updatedAt": "2026-10-27T23:52:11.153Z"
+}

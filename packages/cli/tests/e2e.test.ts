@@ -88,7 +88,7 @@ test("an agent over stdio MCP creates prototypes that the running server sees an
     expect(created.isError).toBeFalsy();
     await client.callTool({
       name: "prototype_createVariant",
-      arguments: { id: "agent-idea", title: "Agent Idea B" },
+      arguments: { id: "agent-idea", description: "Idea B" },
     });
   } finally {
     await client.close();

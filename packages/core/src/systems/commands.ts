@@ -63,6 +63,7 @@ function summarize(c: DesignComponent) {
     requires: c.requires,
     uses: c.uses,
     story: c.story,
+    examples: c.examples.length,
     issues: c.issues,
   };
 }

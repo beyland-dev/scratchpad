@@ -16,7 +16,11 @@ export type {
   Source,
 } from "@design-tool/core";
 
-export type PrototypeWithUrls = Prototype & { urls: PrototypeUrls };
+export type PrototypeWithUrls = Prototype & {
+  urls: PrototypeUrls;
+  /** The design system it uses: its `system`, or the one inferred from its HTML or project. */
+  resolvedSystem?: string;
+};
 
 export type ProjectSummary = Project & { prototypes: number; systems: number; urls: ProjectUrls };
 
@@ -53,6 +57,8 @@ export interface ComponentSummary {
   uses: string[];
   /** Package systems: the module with its examples. */
   story?: string;
+  /** How many examples it has (contexts without any show a placeholder). */
+  examples?: number;
   issues?: string[];
 }
 

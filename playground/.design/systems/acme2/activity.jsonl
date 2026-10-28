@@ -1,2 +1,0 @@
-{"at":"2026-10-27T17:02:22.477Z","kind":"system","title":"Created design system acme2"}
-{"at":"2026-10-27T17:02:22.781Z","kind":"build","title":"Built 0 components · specimen 0 KB","detail":"Dependencies aren't installed yet: run `npm install` in /Users/hawkticehurst/Code/adt/playground/.design/systems/acme2","status":"warn"}

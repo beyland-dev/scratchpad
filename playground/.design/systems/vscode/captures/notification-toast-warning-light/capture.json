@@ -1,0 +1,102 @@
+{
+  "label": "notification-toast-warning-light",
+  "url": "http://127.0.0.1:8457/?folder=/tmp/dt-vsc/ws",
+  "selector": "#dt-warn",
+  "theme": "light-2026",
+  "state": "warning, collapsed",
+  "capturedAt": "2026-10-27T22:51:24.864Z",
+  "rect": {
+    "x": 976,
+    "y": 654,
+    "w": 460,
+    "h": 40
+  },
+  "parentWidth": 460,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "notifications-toasts visible bottom-right",
+      "w": 460,
+      "h": 214,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-enable-motion modern-ui modern-ui-tabs modern-ui-connected-editor-tabs modern-ui-notifications-dialogs monaco-workbench mac web chromium nopanel fullscreen floating-panels panel-position-bottom panel-alignment-center file-icons-enabled vs vscode-theme-defaults-themes-2026-light-json",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(250, 250, 253)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "agent-status-enabled unified-agents-bar",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(32, 32, 32)",
+    "font-family": "-apple-system, \"system-ui\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-scrollbarSlider-background": "rgba(100, 100, 100, 0.75)",
+    "--vscode-scrollbarSlider-hoverBackground": "rgba(100, 100, 100, 0.82)",
+    "--vscode-scrollbarSlider-activeBackground": "rgba(100, 100, 100, 0.88)",
+    "--vscode-cornerRadius-medium": "6px",
+    "--vscode-disabledForeground": "#bbbbbb",
+    "--vscode-spacing-size60": "6px",
+    "--vscode-spacing-size20": "2px",
+    "--vscode-codiconFontSize": "16px",
+    "--vscode-spacing-size80": "8px",
+    "--vscode-descriptionForeground": "#606060",
+    "--vscode-spacing-size240": "24px",
+    "--vscode-spacing-sizeNone": "0px",
+    "--vscode-cornerRadius-large": "8px",
+    "--vscode-cornerRadius-small": "4px",
+    "--vscode-icon-foreground": "#606060",
+    "--vscode-focusBorder": "#0069cc",
+    "--vscode-toolbar-hoverBackground": "rgba(0, 0, 0, 0.12)",
+    "--vscode-toolbar-activeBackground": "#d6d6d8",
+    "--vscode-notifications-foreground": "#202020",
+    "--vscode-notifications-background": "#fafafd",
+    "--vscode-shadow-lg": "0 0 12px rgba(0, 0, 0, .14)",
+    "--vscode-notificationsWarningIcon-foreground": "#b69500",
+    "--vscode-list-focusBackground": "rgba(0, 0, 0, 0.14)",
+    "--vscode-list-focusForeground": "#202020",
+    "--vscode-list-activeSelectionBackground": "rgba(0, 0, 0, 0.14)",
+    "--vscode-list-activeSelectionForeground": "#202020",
+    "--vscode-list-activeSelectionIconForeground": "#000000",
+    "--vscode-list-inactiveSelectionBackground": "rgba(218, 218, 218, 0.6)",
+    "--vscode-list-inactiveSelectionForeground": "#202020",
+    "--vscode-list-focusAndSelectionOutline": "#005fb8",
+    "--vscode-list-focusOutline": "#0069cc"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"../../../../media/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "http://127.0.0.1:8457/insider-a3797664749856829367927a93d65834507e4d12/static/out/media/codicon.ttf"
+      ]
+    }
+  ],
+  "rules": 92,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

@@ -6,6 +6,7 @@ import { DeletePrototypeDialog, PrototypeDialog } from "./Dialogs.tsx";
 import { Frame } from "./Frame.tsx";
 import { Icon } from "./Icon.tsx";
 import { MenuButton } from "./Menu.tsx";
+import { openNewVariant } from "./NewVariant.tsx";
 
 const THUMB_WIDTH = 1280;
 const THUMB_HEIGHT = 800;
@@ -25,6 +26,8 @@ export function PrototypeCard({
 }) {
   const [dialog, setDialog] = useState<"edit" | "delete" | null>(null);
   const latest = family[family.length - 1]!;
+  // Versions share the family's name (the original's).
+  const title = family[0]!.title;
   const isFamily = family.length > 1;
   const selected = selection.value.includes(latest.id);
   const updatedAt = familyUpdatedAt(family);
@@ -42,16 +45,22 @@ export function PrototypeCard({
         {isFamily ? (
           <FamilyFolder family={family} />
         ) : (
-          <Thumb proto={latest} class="card-thumb" title={latest.description} />
+          <PrototypeThumb
+            proto={latest}
+            class="card-thumb"
+            title={latest.description}
+            href={thumbHref(latest)}
+          />
         )}
         <label class="card-select" title="Select to compare">
           <input type="checkbox" checked={selected} onChange={toggle} />
-          <span class="visually-hidden">Select {latest.title} to compare</span>
+          <span class="visually-hidden">Select {title} to compare</span>
         </label>
         <MenuButton
           class="card-menu"
-          label={`${latest.title} options`}
+          label={`${title} options`}
           items={[
+            { label: "New variant…", onSelect: () => openNewVariant(latest.id) },
             { label: "Edit details…", onSelect: () => setDialog("edit") },
             {
               label: isFamily ? "Delete latest version…" : "Delete…",
@@ -62,8 +71,8 @@ export function PrototypeCard({
         />
       </div>
       <div class="card-body">
-        <a href={href} class="card-title" title={latest.title}>
-          {latest.title}
+        <a href={href} class="card-title" title={title}>
+          {title}
         </a>
         {issues.length ? (
           <span
@@ -92,42 +101,46 @@ export function PrototypeCard({
   );
 }
 
-/** A decorative, scaled-down render of a prototype that links to it. */
-function Thumb({
+/** A decorative, scaled-down render of a prototype; a link to it when `href` is given. */
+export function PrototypeThumb({
   proto,
   class: className,
   title,
+  href,
 }: {
   proto: PrototypeWithUrls;
   class: string;
   title?: string;
+  href?: string;
 }) {
-  const [ref, size] = useElementSize<HTMLAnchorElement>();
+  const [ref, size] = useElementSize<HTMLElement>();
   const scale = size.width ? size.width / THUMB_WIDTH : 0;
+  const frame = scale > 0 && (
+    <Frame
+      src={proto.urls.raw}
+      title={`${proto.title} preview`}
+      width={THUMB_WIDTH}
+      height={THUMB_HEIGHT}
+      scale={scale}
+      revision={revisionOf(proto.id)}
+      interactive={false}
+      lazy
+    />
+  );
+  if (!href)
+    return (
+      <span class={className} ref={ref} aria-hidden="true">
+        {frame}
+      </span>
+    );
   return (
-    <a
-      href={`/p/${encodeURIComponent(proto.id)}`}
-      class={className}
-      ref={ref}
-      tabIndex={-1}
-      aria-hidden="true"
-      title={title}
-    >
-      {scale > 0 && (
-        <Frame
-          src={proto.urls.raw}
-          title={`${proto.title} preview`}
-          width={THUMB_WIDTH}
-          height={THUMB_HEIGHT}
-          scale={scale}
-          revision={revisionOf(proto.id)}
-          interactive={false}
-          lazy
-        />
-      )}
+    <a href={href} class={className} ref={ref} tabIndex={-1} aria-hidden="true" title={title}>
+      {frame}
     </a>
   );
 }
+
+const thumbHref = (proto: PrototypeWithUrls) => `/p/${encodeURIComponent(proto.id)}`;
 
 const FOLDER_SLOTS = 4;
 
@@ -143,10 +156,11 @@ function FamilyFolder({ family }: { family: PrototypeWithUrls[] }) {
         const isLast = i === FOLDER_SLOTS - 1 && hidden > 0;
         return (
           <div class="folder-cell" key={item.proto.id}>
-            <Thumb
+            <PrototypeThumb
               proto={item.proto}
               class="folder-thumb"
-              title={`V${item.version}: ${item.proto.title}`}
+              href={thumbHref(item.proto)}
+              title={`V${item.version}${item.proto.description ? `: ${item.proto.description}` : ""}`}
             />
             {isLast && <span class="folder-more">+{hidden + 1}</span>}
           </div>

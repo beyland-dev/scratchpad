@@ -1,0 +1,72 @@
+{
+  "tag": "vsc-chat-request",
+  "kind": "component",
+  "title": "Chat request",
+  "category": "chat",
+  "description": "The user's message in a chat transcript (`.interactive-item-container.interactive-request`): a right-aligned rounded bubble with the rendered markdown request, plus the (hover-revealed) timestamp row and empty footer toolbar. Mirrors ChatListItemRenderer's request template.",
+  "usage": "Put one per user turn inside a <vsc-chat-view>, followed by its <vsc-chat-response>. Children are the request text (plain text is wrapped in a paragraph; block HTML such as <p> or <ul> is used as is).",
+  "attributes": [
+    {
+      "name": "timestamp",
+      "type": "string",
+      "description": "Sent time shown on hover, e.g. \"8:00 AM\""
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "Request text or markdown-like HTML"
+    }
+  ],
+  "states": [],
+  "variants": [],
+  "hostDisplay": "block",
+  "hostTag": "div",
+  "cssCaptures": [
+    "chat-request-dark",
+    "chat-request-light"
+  ],
+  "requires": [
+    "vsc-workbench",
+    "vsc-chat-view"
+  ],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/chatListRenderer.ts",
+      "note": "renderTemplate / renderChatRequest"
+    },
+    {
+      "path": "src/vs/workbench/test/browser/componentFixtures/chat/chatRendering.fixture.ts",
+      "note": "captured from chat/chatRendering/Wide"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Request",
+      "html": "<vsc-chat-request timestamp=\"8:00 AM\">Check the chat rendering</vsc-chat-request>",
+      "width": 720
+    }
+  ],
+  "references": [
+    {
+      "capture": "chat-request-dark",
+      "example": 0,
+      "theme": "dark-2026",
+      "width": 720,
+      "ignore": []
+    }
+  ],
+  "status": "stable",
+  "verification": {
+    "status": "verified",
+    "checkedAt": "2026-10-27T23:53:12.128Z",
+    "compared": 6,
+    "diffs": 0,
+    "theme": "dark-2026",
+    "summary": []
+  },
+  "createdAt": "2026-10-27T23:52:11.152Z",
+  "updatedAt": "2026-10-27T23:53:12.128Z"
+}

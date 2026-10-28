@@ -92,7 +92,7 @@ ${example?.import?.split("\n")[0] ?? ""}
 createRoot(document.getElementById("root")!).render(<App />);
 \`\`\`
 
-Themes: ${system.themes.map((t) => `\`${t.id}\`${t.classes ? ` (class \`${t.classes}\` on <html>)` : ""}`).join(", ")}. Default: \`${system.defaultTheme}\`.
+Themes: ${system.themes.map((t) => `\`${t.id}\`${t.classes ? ` (class \`${t.classes}\` on <html>)` : ""}`).join(", ")}. Default: \`${system.defaultTheme}\`. Don't build a theme toggle: design-tool's viewer switches between the themes (it sets \`data-theme\` and the theme's classes on <html>).
 
 ## Rules
 
@@ -181,7 +181,11 @@ Everything goes inside the root context, which applies the theme:
 `
     : ""
 }
-Themes: ${themes}. Default: \`${system.defaultTheme}\`.
+Themes: ${themes}. Default: \`${system.defaultTheme}\`.${
+    root
+      ? ` Set the theme the prototype should open in on <${root}>, and don't build a theme toggle: design-tool's viewer switches between the themes (it sets \`theme\` on every <${root}>, from \`?theme=<id>\` in the URL or live via \`postMessage\`).`
+      : ""
+  }
 
 ## Rules
 

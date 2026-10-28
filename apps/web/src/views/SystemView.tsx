@@ -14,6 +14,7 @@ import { packageSetupPrompt, systemAuditPrompt } from "../prompts.ts";
 import { ActivityTab, useCaptures } from "./discovery.tsx";
 import { TokensTab } from "./TokensView.tsx";
 import type { ComponentSummary, DesignSystem } from "../types.ts";
+import { ThemePicker } from "../components/ThemePicker.tsx";
 
 export interface SystemDetails {
   system: DesignSystem;
@@ -55,39 +56,6 @@ export function useSystemTheme(
     route(`${path}?${params.toString()}`, true);
   };
   return [theme, setTheme];
-}
-
-export function ThemePicker({
-  system,
-  theme,
-  onChange,
-  allOption = false,
-}: {
-  system: DesignSystem;
-  theme: string;
-  onChange: (t: string) => void;
-  /** Adds an "All" option (value "all") that shows every theme side by side. */
-  allOption?: boolean;
-}) {
-  const options = [
-    ...(allOption ? [{ id: "all", label: "All themes" }] : []),
-    ...system.themes.map((t) => ({ id: t.id, label: t.label })),
-  ];
-  return (
-    <div class="segmented" role="group" aria-label="Theme">
-      {options.map((t) => (
-        <button
-          type="button"
-          key={t.id}
-          class={t.id === theme ? "active" : ""}
-          aria-pressed={t.id === theme}
-          onClick={() => onChange(t.id)}
-        >
-          {t.label}
-        </button>
-      ))}
-    </div>
-  );
 }
 
 export function SystemView() {
@@ -309,7 +277,7 @@ function ComponentsTab({
         )}
         <span class="toolbar-spacer" />
         {system.themes.length > 1 && (
-          <ThemePicker system={system} theme={theme} onChange={onTheme} />
+          <ThemePicker themes={system.themes} theme={theme} onChange={onTheme} />
         )}
       </div>
       {visible.length === 0 && <p class="page-message">No components match “{search}”.</p>}
@@ -327,7 +295,7 @@ function ComponentsTab({
                 return (
                   <article class="component-card" key={c.name}>
                     <a class="component-preview" href={href} tabIndex={-1} aria-hidden="true">
-                      {kind !== "context" ? (
+                      {kind !== "context" || c.examples ? (
                         <Specimen
                           system={id}
                           component={c.name}

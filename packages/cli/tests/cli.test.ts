@@ -75,8 +75,21 @@ describe("dt", () => {
       "<h1>From file</h1>",
     );
 
-    const variant = await run(["prototype", "create-variant", "home", "--title", "Home B"]);
-    expect(variant.stdout).toContain("Created variant home-v2 of home");
+    const variant = await run([
+      "prototype",
+      "create-variant",
+      "home",
+      "--description",
+      "Bigger hero",
+      "--json",
+    ]);
+    // Versions share the family's name; the description says what changed.
+    expect(JSON.parse(variant.stdout).prototype).toMatchObject({
+      id: "home-v2",
+      variantOf: "home",
+      title: "Home",
+      description: "Bigger hero",
+    });
 
     expect(
       (await run(["prototype.update", "home-v2", "--status", "review", "--group", "null"])).code,

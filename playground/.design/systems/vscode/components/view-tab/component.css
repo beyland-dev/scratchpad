@@ -1,0 +1,17 @@
+/* Authored: plain-text count after a tab label (not part of the captured panel; VS Code panel tabs use a hidden activity badge instead). */
+vsc-view-tab .action-label .view-tab-count {
+  margin-left: 6px;
+  font-size: var(--vscode-agents-fontSize-label2, 11px);
+  color: var(--vscode-descriptionForeground);
+  font-weight: var(--vscode-fontWeight-regular);
+}
+
+/* Authored: the focus ring shows for keyboard focus only (:focus-visible), never while a tab is pressed or after a click.
+   (The product approximates this with a "clicked" class set on mousedown.) */
+/* The tab's own ring is on .active-item-indicator; drop the workbench's generic [tabindex]:focus outline on the host. */
+.monaco-workbench vsc-view-tab.action-item:focus {
+  outline: none;
+}
+.monaco-workbench vsc-view-tab.action-item:focus:not(:focus-visible) > .active-item-indicator {
+  outline: none !important;
+}

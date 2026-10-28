@@ -1,0 +1,159 @@
+{
+  "tag": "vsc-chat-response",
+  "kind": "component",
+  "title": "Chat response",
+  "category": "chat",
+  "description": "The agent's turn in a chat transcript (`.interactive-item-container.interactive-response`): a full-width column of content parts (markdown, tool chains, question summaries), optionally headed by the collapsed \"Completed N steps\" disclosure with +added/-removed edit stats. Holds the CSS for all of its parts.",
+  "usage": "After each <vsc-chat-request> inside a <vsc-chat-view>. Children are parts: <vsc-chat-markdown>, <vsc-chat-tool-chain>, <vsc-chat-question-summary>, <vsc-chat-question-carousel>. With summary, children in slot=\"steps\" are the collapsed steps (shown when expanded); the final answer goes in the default slot.",
+  "attributes": [
+    {
+      "name": "summary",
+      "type": "string",
+      "description": "Collapsed steps label, e.g. \"Completed 5 steps in 48s\""
+    },
+    {
+      "name": "added",
+      "type": "number",
+      "description": "Lines added, shown after the summary"
+    },
+    {
+      "name": "removed",
+      "type": "number",
+      "description": "Lines removed, shown after the summary"
+    },
+    {
+      "name": "expanded",
+      "type": "boolean",
+      "description": "Show the steps under the summary (toggled by clicking it)"
+    }
+  ],
+  "slots": [
+    {
+      "name": "",
+      "description": "Response parts"
+    },
+    {
+      "name": "steps",
+      "description": "Parts hidden behind the summary disclosure"
+    }
+  ],
+  "states": [
+    {
+      "name": "expanded",
+      "description": "Steps disclosure open",
+      "trigger": "click the summary or set expanded"
+    }
+  ],
+  "variants": [],
+  "hostDisplay": "block",
+  "hostTag": "div",
+  "cssCaptures": [
+    "chat-response-tools-dark",
+    "chat-response-tools-light",
+    "chat-response-markdown-dark",
+    "chat-response-markdown-light",
+    "chat-response-summary-dark",
+    "chat-response-summary-light"
+  ],
+  "requires": [
+    "vsc-workbench",
+    "vsc-chat-view"
+  ],
+  "tokens": [],
+  "uses": [
+    "vsc-chat-markdown",
+    "vsc-chat-tool-chain",
+    "vsc-chat-tool-call",
+    "vsc-chat-question-summary"
+  ],
+  "sources": [
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/chatListRenderer.ts",
+      "note": "renderChatResponseBasic / completed response disclosure"
+    },
+    {
+      "path": "src/vs/workbench/test/browser/componentFixtures/chat/chatRendering.fixture.ts",
+      "note": "captured from chat/chatRendering Wide, AutopilotCompletion, CompletedSummaryWithEdits"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Tools, markdown and an answered question",
+      "html": "<vsc-chat-response><vsc-chat-tool-chain><vsc-chat-tool-call icon=\"search-compact\">Searched for <strong>Manifestation preview</strong></vsc-chat-tool-call></vsc-chat-tool-chain><vsc-chat-markdown>The response must remain below the complete search title.</vsc-chat-markdown><vsc-chat-tool-chain><vsc-chat-tool-call icon=\"book-compact\" file=\"renderer.ts\">Read</vsc-chat-tool-call><vsc-chat-tool-call edit icon=\"pencil\" file=\"renderer.ts\" added=\"14\" removed=\"3\"></vsc-chat-tool-call></vsc-chat-tool-chain><vsc-chat-question-summary question=\"Continue with the rendering changes?\" answer=\"Confirm (Recommended)\"></vsc-chat-question-summary></vsc-chat-response>",
+      "width": 720
+    },
+    {
+      "title": "Completed summary with edits",
+      "html": "<vsc-chat-response summary=\"Completed 5 steps in 48s\" added=\"14\" removed=\"3\"><vsc-chat-tool-chain slot=\"steps\"><vsc-chat-tool-call icon=\"book-compact\">Read the renderer</vsc-chat-tool-call></vsc-chat-tool-chain><vsc-chat-markdown>The task is complete. The final response remains below the completed steps.</vsc-chat-markdown></vsc-chat-response>",
+      "width": 320
+    }
+  ],
+  "references": [
+    {
+      "capture": "chat-response-tools-dark",
+      "example": 0,
+      "theme": "dark-2026",
+      "width": 720,
+      "ignore": []
+    },
+    {
+      "capture": "chat-response-summary-dark",
+      "example": 1,
+      "theme": "dark-2026",
+      "width": 320,
+      "ignore": []
+    }
+  ],
+  "status": "stable",
+  "verification": {
+    "status": "drift",
+    "checkedAt": "2026-10-27T23:53:12.428Z",
+    "compared": 59,
+    "diffs": 128,
+    "theme": "dark-2026",
+    "summary": [
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > chat-confirmation-widget-container",
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > chat-confirmation-widget-container > chat-confirmation-widget.chat-confirmation-widget-collapsible.collapsed",
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > chat-confirmation-widget-container > chat-confirmation-widget.chat-confirmation-widget-collapsible.collapsed > chat-confirmation-widget-title.monaco-button.monaco-icon-button.monaco-text-button",
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > chat-confirmation-widget-container > chat-confirmation-widget.chat-confirmation-widget-collapsible.collapsed > chat-confirmation-widget-title.monaco-button.monaco-icon-button.monaco-text-button > monaco-button-mdlabel",
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > chat-confirmation-widget-container > chat-confirmation-widget.chat-confirmation-widget-collapsible.collapsed > chat-confirmation-widget-title.monaco-button.monaco-icon-button.monaco-text-button > monaco-button-mdlabel > chat-confirmation-widget-title-inner.chat-progress-animation.chat-query-title-part",
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > chat-confirmation-widget-container > chat-confirmation-widget.chat-confirmation-widget-collapsible.collapsed > chat-confirmation-widget-title.monaco-button.monaco-icon-button.monaco-text-button > monaco-button-mdlabel > chat-confirmation-widget-title-inner.chat-progress-animation.chat-query-title-part > rendered-markdown",
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > chat-confirmation-widget-container > chat-confirmation-widget.chat-confirmation-widget-collapsible.collapsed > chat-confirmation-widget-title.monaco-button.monaco-icon-button.monaco-text-button > monaco-button-mdlabel > chat-confirmation-widget-title-inner.chat-progress-animation.chat-query-title-part > rendered-markdown > p",
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > chat-confirmation-widget-container > chat-confirmation-widget.chat-confirmation-widget-collapsible.collapsed > chat-confirmation-widget-title.monaco-button.monaco-icon-button.monaco-text-button > monaco-button-mdlabel > chat-confirmation-widget-title-inner.chat-progress-animation.chat-query-title-part > rendered-markdown > p > strong",
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > chat-confirmation-widget-container > chat-confirmation-widget.chat-confirmation-widget-collapsible.collapsed > chat-confirmation-widget-title.monaco-button.monaco-icon-button.monaco-text-button > monaco-button-mdlabel > chat-confirmation-widget-title-inner.chat-progress-animation.chat-query-title-part > rendered-markdown > p > code",
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > chat-confirmation-widget-container > chat-confirmation-widget.chat-confirmation-widget-collapsible.collapsed > chat-confirmation-widget-title.monaco-button.monaco-icon-button.monaco-text-button > chat-collapsible-hover-chevron.codicon.codicon-chevron-right-compact",
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[1] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] > chat-tool-call-with-icon.chat-tool-invocation-part > progress-container > progress-step.rendered-markdown > p > chat-inline-anchor-widget.show-file-icons > ext-file-icon.file-icon.icon.name-file-icon.renderer.ts-name-file-icon.ts-ext-file-icon.unknown-lang-file-icon.workspace-name-dir-icon",
+      "[chat-response-tools-dark] missing: value > chat-thinking-box.chat-tool-chain.chat-used-context[1] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[1] > chat-codeblock-pill-container.chat-tool-call-with-icon > chat-codeblock-pill-row > chat-codeblock-pill-widget.show-file-icons > ext-file-icon.file-icon.icon.name-file-icon.renderer.ts-name-file-icon.ts-ext-file-icon.unknown-lang-file-icon.workspace-name-dir-icon",
+      "[chat-response-tools-dark] missing: value > chat-card-large.chat-question-carousel-container.chat-question-carousel-conversation.chat-question-carousel-used[0]",
+      "[chat-response-tools-dark] missing: value > chat-card-large.chat-question-carousel-container.chat-question-carousel-conversation.chat-question-carousel-used[0] > chat-question-carousel-conversation-summary.chat-question-carousel-summary",
+      "[chat-response-tools-dark] missing: value > chat-card-large.chat-question-carousel-container.chat-question-carousel-conversation.chat-question-carousel-used[0] > chat-question-carousel-conversation-summary.chat-question-carousel-summary > chat-question-summary-item",
+      "[chat-response-tools-dark] ROOT h: expected 331.91, got 247.7",
+      "[chat-response-tools-dark] value h: expected 273.91, got 189.7",
+      "[chat-response-tools-dark] value > chat-thinking-box.chat-tool-chain.chat-used-context[0] h: expected 40, got 19.5",
+      "[chat-response-tools-dark] value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list h: expected 40, got 19.5",
+      "[chat-response-tools-dark] value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper h: expected 40, got 19.5",
+      "[chat-response-tools-dark] value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part h: expected 40, got 19.5",
+      "[chat-response-tools-dark] value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > div y: expected 54, got 33.5",
+      "[chat-response-tools-dark] value > chat-markdown-part.rendered-markdown y: expected 70, got 49.5",
+      "[chat-response-tools-dark] value > chat-markdown-part.rendered-markdown > p y: expected 70, got 49.5",
+      "[chat-response-tools-dark] value > chat-thinking-box.chat-tool-chain.chat-used-context[1] y: expected 105.5, got 85",
+      "[chat-response-tools-dark] value > chat-thinking-box.chat-tool-chain.chat-used-context[1] > chat-thinking-collapsible.chat-used-context-list y: expected 105.5, got 85",
+      "[chat-response-tools-dark] value > chat-thinking-box.chat-tool-chain.chat-used-context[1] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] y: expected 105.5, got 85",
+      "[chat-response-tools-dark] value > chat-thinking-box.chat-tool-chain.chat-used-context[1] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] > chat-thinking-icon.codicon.codicon-book-compact y: expected 109.25, got 88.75",
+      "[chat-response-tools-dark] value > chat-thinking-box.chat-tool-chain.chat-used-context[1] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] > chat-tool-call-with-icon.chat-tool-invocation-part y: expected 105.5, got 85",
+      "[chat-response-tools-dark] value > chat-thinking-box.chat-tool-chain.chat-used-context[1] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] > chat-tool-call-with-icon.chat-tool-invocation-part > progress-container y: expected 105.5, got 85",
+      "[chat-response-tools-dark] extra (not in reference): value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > progress-container, value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > progress-container > progress-step.rendered-markdown, value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > progress-container > progress-step.rendered-markdown > p, value > chat-thinking-box.chat-tool-chain.chat-used-context[0] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper > chat-tool-call-with-icon.chat-tool-invocation-part > progress-container > progress-step.rendered-markdown > p > strong, value > chat-thinking-box.chat-tool-chain.chat-used-context[1] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] > chat-tool-call-with-icon.chat-tool-invocation-part > progress-container > progress-step.rendered-markdown > p > chat-inline-anchor-widget.show-file-icons > ext-file-icon.file-icon.icon.name-file-icon.ts-ext-file-icon, value > chat-thinking-box.chat-tool-chain.chat-used-context[1] > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[1] > chat-codeblock-pill-container.chat-tool-call-with-icon > chat-codeblock-pill-row > chat-codeblock-pill-widget.show-file-icons > ext-file-icon.file-icon.icon.name-file-icon.ts-ext-file-icon, value > chat-card-large.chat-question-carousel-container.chat-question-carousel-conversation.chat-question-carousel-used, value > chat-card-large.chat-question-carousel-container.chat-question-carousel-conversation.chat-question-carousel-used > chat-question-carousel-conversation-summary.chat-question-carousel-summary, value > chat-card-large.chat-question-carousel-container.chat-question-carousel-conversation.chat-question-carousel-used > chat-question-carousel-conversation-summary.chat-question-carousel-summary > chat-question-summary-item, value > chat-card-large.chat-question-carousel-container.chat-question-carousel-conversation.chat-question-carousel-used > chat-question-carousel-conversation-summary.chat-question-carousel-summary > chat-question-summary-item > chat-question-summary-question, …",
+      "[chat-response-summary-dark] missing: value > completed-response-disclosure > chat-thinking-box.chat-tool-chain.chat-used-context > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0]",
+      "[chat-response-summary-dark] missing: value > completed-response-disclosure > chat-thinking-box.chat-tool-chain.chat-used-context > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] > chat-thinking-icon.codicon.codicon-book-compact",
+      "[chat-response-summary-dark] missing: value > completed-response-disclosure > chat-thinking-box.chat-tool-chain.chat-used-context > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] > chat-tool-call-with-icon.chat-tool-invocation-part",
+      "[chat-response-summary-dark] missing: value > completed-response-disclosure > chat-thinking-box.chat-tool-chain.chat-used-context > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] > chat-tool-call-with-icon.chat-tool-invocation-part > progress-container",
+      "[chat-response-summary-dark] missing: value > completed-response-disclosure > chat-thinking-box.chat-tool-chain.chat-used-context > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] > chat-tool-call-with-icon.chat-tool-invocation-part > progress-container > progress-step.rendered-markdown",
+      "[chat-response-summary-dark] missing: value > completed-response-disclosure > chat-thinking-box.chat-tool-chain.chat-used-context > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] > chat-tool-call-with-icon.chat-tool-invocation-part > progress-container > progress-step.rendered-markdown > p",
+      "[chat-response-summary-dark] missing: value > completed-response-disclosure > chat-thinking-box.chat-tool-chain.chat-used-context > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[0] > chat-tool-call-with-icon.chat-tool-invocation-part > div",
+      "[chat-response-summary-dark] missing: value > completed-response-disclosure > chat-thinking-box.chat-tool-chain.chat-used-context > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[1]",
+      "[chat-response-summary-dark] missing: value > completed-response-disclosure > chat-thinking-box.chat-tool-chain.chat-used-context > chat-thinking-collapsible.chat-used-context-list > chat-thinking-tool-wrapper[1] > chat-thinking-icon.codicon.codicon-book-compact"
+    ]
+  },
+  "createdAt": "2026-10-27T23:52:11.184Z",
+  "updatedAt": "2026-10-27T23:53:12.428Z"
+}

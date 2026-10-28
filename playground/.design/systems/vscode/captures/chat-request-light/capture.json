@@ -1,0 +1,197 @@
+{
+  "label": "chat-request-light",
+  "url": "http://localhost:5123/___explorer?fixture=chat%2FchatRendering%2FWide%2FLight&mode=embedded",
+  "selector": ".interactive-item-container.interactive-request",
+  "theme": "light-2026",
+  "capturedAt": "2026-10-27T23:49:05.729Z",
+  "rect": {
+    "x": 0,
+    "y": 0,
+    "w": 720,
+    "h": 77.5
+  },
+  "parentWidth": 720,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-tl-contents",
+      "w": 720,
+      "h": 78,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-tl-row",
+      "w": 720,
+      "h": 78,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "list_id_1_0",
+      "classes": "monaco-list-row request",
+      "w": 720,
+      "h": 78,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-list-rows",
+      "w": 720,
+      "h": 410,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-scrollable-element  mac",
+      "w": 720,
+      "h": 892,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "monaco-list list_id_1 mouse-support selection-none",
+      "w": 720,
+      "h": 892,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "interactive-list chat-list-at-bottom chat-list-scrolled-to-bottom",
+      "w": 720,
+      "h": 892,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "interactive-session",
+      "w": 720,
+      "h": 900,
+      "display": "flex",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "content",
+      "w": 720,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "part auxiliarybar",
+      "w": 720,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "component-fixture-container component-fixture monaco-workbench mac disable-animations vs vscode-theme-defaults--extensions-theme-defaults-themes-light_modern-json file-icons-enabled",
+      "w": 720,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(248, 248, 248)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "component-fixture-file-icon-theme-vs-seti",
+      "w": 720,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "root",
+      "classes": "",
+      "w": 720,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "",
+      "w": 1000,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(59, 59, 59)",
+    "font-family": "-apple-system, \"system-ui\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "text"
+  },
+  "vars": {
+    "--vscode-icon-foreground": "#3b3b3b",
+    "--vscode-focusBorder": "#005fb8",
+    "--vscode-fontSize-heading3": "13px",
+    "--vscode-fontWeight-semiBold": "600",
+    "--vscode-chat-font-size-body-s": "0.923em",
+    "--vscode-descriptionForeground": "#3b3b3b",
+    "--vscode-cornerRadius-circle": "9999px",
+    "--vscode-strokeThickness": "1px",
+    "--vscode-chat-requestBorder": "rgba(0, 0, 0, 0.1)",
+    "--vscode-chat-avatarBackground": "#f2f2f2",
+    "--vscode-chat-avatarForeground": "#3b3b3b",
+    "--vscode-codiconFontSize": "16px",
+    "--vscode-chat-font-size-body-xs": "0.846em",
+    "--vscode-spacing-size20": "2px",
+    "--vscode-chat-font-size-body-m": "1em",
+    "--vscode-spacing-size60": "6px",
+    "--vscode-spacing-size160": "16px",
+    "--vscode-chat-requestBubbleBackground": "rgba(173, 214, 255, 0.3)",
+    "--vscode-cornerRadius-medium": "6px",
+    "--vscode-fontSize-label3": "10px",
+    "--vscode-editor-background": "#ffffff",
+    "--vscode-cornerRadius-large": "8px",
+    "--vscode-spacing-size40": "4px",
+    "--vscode-input-background": "#ffffff",
+    "--vscode-fontSize-label1": "12px",
+    "--vscode-spacing-size200": "20px",
+    "--vscode-spacing-size120": "12px",
+    "--vscode-chat-requestBubbleHoverBackground": "rgba(173, 214, 255, 0.6)"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"/bundled/assets/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "http://localhost:5123/bundled/assets/codicon.ttf"
+      ]
+    }
+  ],
+  "rules": 72,
+  "scale": 2,
+  "viewport": {
+    "width": 1000,
+    "height": 900
+  }
+}

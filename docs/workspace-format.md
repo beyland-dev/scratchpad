@@ -68,13 +68,14 @@ workspace. While a workspace has exactly one project, new prototypes and systems
 - `color` (optional) tints the generated icon used when the project has no icon file, and `pattern`
   (optional, an integer) picks its abstract pattern. Without them, both are derived from the id.
 - The icon is served from the sandbox origin, never the app origin, since it may be agent-written SVG.
-- Items whose `project` is missing or unknown show up under **Unsorted** in the app.
+- Items whose `project` is missing or unknown show up under **Trash** in the app.
 - A folder without `project.json` is still a project (name inferred from the id, issue reported).
 
 ## Prototype ids
 
 The folder name is the id. Ids match `^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$`. Generated ids are
-lowercase slugs of the title, made unique with `-2`, `-3`, and so on. Variants default to `<source-id>-v<n>`.
+lowercase slugs of the title, made unique with `-2`, `-3`, and so on. Variants default to `<root-id>-v<n>`, where
+`<root-id>` is the family's original prototype and `<n>` is the family size after the fork.
 
 ## `prototype.json`
 
@@ -95,20 +96,20 @@ lowercase slugs of the title, made unique with `-2`, `-3`, and so on. Variants d
 }
 ```
 
-| Field                    | Required | Notes                                                                                                                                                      |
-| ------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `title`                  | yes      | Inferred from the entry's `<title>` or the folder name if missing.                                                                                         |
-| `status`                 | no       | `draft` (default), `review`, `approved`, or `archived`.                                                                                                    |
-| `tags`                   | no       | Free-form strings.                                                                                                                                         |
-| `project`                | no       | Id of the project it belongs to.                                                                                                                           |
-| `group`                  | no       | Exploration name used to cluster prototypes.                                                                                                               |
-| `variantOf`              | no       | Id of the prototype this is an alternative of. A prototype and all its variants form a family, ordered by `createdAt`; the newest is the "Latest" version. |
-| `entry`                  | no       | Entry file, default `index.html`.                                                                                                                          |
-| `createdBy`              | no       | `{ kind: "agent" \| "human", name? }`.                                                                                                                     |
-| `sourceRefs`             | no       | Ids of workspace sources used as references.                                                                                                               |
-| `framework`              | no       | `react`: the entry is an HTML shell loading `main.tsx`, built on demand with a package design system (see docs/design-systems.md).                         |
-| `system`                 | no       | With `framework`: the package design system it's built with (defaults to the project's only one).                                                          |
-| `createdAt`, `updatedAt` | yes      | ISO timestamps. Inferred from the filesystem if missing.                                                                                                   |
+| Field                    | Required | Notes                                                                                                                                                                                                                                                                |
+| ------------------------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`                  | yes      | Inferred from the entry's `<title>` or the folder name if missing.                                                                                                                                                                                                   |
+| `status`                 | no       | `draft` (default), `review`, `approved`, or `archived`.                                                                                                                                                                                                              |
+| `tags`                   | no       | Free-form strings.                                                                                                                                                                                                                                                   |
+| `project`                | no       | Id of the project it belongs to.                                                                                                                                                                                                                                     |
+| `group`                  | no       | Exploration name used to cluster prototypes.                                                                                                                                                                                                                         |
+| `variantOf`              | no       | Id of the prototype this is an alternative of. A prototype and all its variants form a family, ordered by `createdAt`; the newest is the "Latest" version. Versions share the family's `title` (renaming one renames all); `description` says what each one changes. |
+| `entry`                  | no       | Entry file, default `index.html`.                                                                                                                                                                                                                                    |
+| `createdBy`              | no       | `{ kind: "agent" \| "human", name? }`.                                                                                                                                                                                                                               |
+| `sourceRefs`             | no       | Ids of workspace sources used as references.                                                                                                                                                                                                                         |
+| `framework`              | no       | `react`: the entry is an HTML shell loading `main.tsx`, built on demand with a package design system (see docs/design-systems.md).                                                                                                                                   |
+| `system`                 | no       | With `framework`: the package design system it's built with (defaults to the project's only one).                                                                                                                                                                    |
+| `createdAt`, `updatedAt` | yes      | ISO timestamps. Inferred from the filesystem if missing.                                                                                                                                                                                                             |
 
 ### Lenient loading
 

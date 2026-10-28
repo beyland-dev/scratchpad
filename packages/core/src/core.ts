@@ -1,9 +1,10 @@
+import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { CommandRegistry } from "./registry.ts";
 import { builtinCommands } from "./commands.ts";
 import { buildSystem, type BuildResult } from "./systems/build.ts";
-import { buildInto, buildSignature, runVite } from "./systems/package.ts";
+import { buildInto, buildSignature, prototypeHeadScript, runVite } from "./systems/package.ts";
 import type { Prototype } from "./schemas.ts";
 import { systemCommands } from "./systems/commands.ts";
 import { SystemStore } from "./systems/store.ts";
@@ -188,6 +189,27 @@ export class Core {
     return run;
   }
 
+  /**
+   * The design system a prototype uses (for its theme options in the viewer): its `system`; for a
+   * framework prototype, the package system it builds against; else the system its entry HTML
+   * loads (`/s/<id>/system.css` or `system.js`); else its project's only design system.
+   */
+  resolvePrototypeSystem(proto: Prototype): string | undefined {
+    if (proto.system && this.systems.has(proto.system)) return proto.system;
+    if (proto.framework) {
+      try {
+        return this.prototypeSystem(proto);
+      } catch {
+        return undefined;
+      }
+    }
+    const loaded = this.prototypes.systemRefs(proto.id).find((id) => this.systems.has(id));
+    if (loaded) return loaded;
+    if (!proto.project) return undefined;
+    const inProject = this.systems.list().filter((s) => s.project === proto.project);
+    return inProject.length === 1 ? inProject[0]!.id : undefined;
+  }
+
   /** The package design system a framework prototype builds against. */
   prototypeSystem(proto: Prototype): string {
     if (proto.system) {
@@ -223,9 +245,11 @@ export class Core {
         const proto = this.prototypes.get(id);
         if (!proto.framework)
           throw new CoreError("INVALID_INPUT", `Prototype ${id} is plain HTML; it isn't built`);
-        const systemDir = this.systems.dirOf(this.prototypeSystem(proto));
+        const systemId = this.prototypeSystem(proto);
+        const systemDir = this.systems.dirOf(systemId);
         const protoDir = this.prototypes.dirOf(id);
-        const signature = await buildSignature([
+        const headScript = prototypeHeadScript(this.systems.get(systemId));
+        const sources = await buildSignature([
           { dir: protoDir },
           {
             dir: systemDir,
@@ -235,6 +259,8 @@ export class Core {
               (rel.startsWith("node_modules/") && rel !== "node_modules/.package-lock.json"),
           },
         ]);
+        // The injected script is part of the output too: rebuild when design-tool changes it.
+        const signature = `${sources}:${createHash("sha256").update(headScript).digest("hex").slice(0, 16)}`;
         const target = path.join(this.workspace.cacheDir, "builds", id);
         const stamp = path.join(target, ".signature");
         if ((await readFile(stamp, "utf8").catch(() => "")) === signature) return target;
@@ -245,7 +271,7 @@ export class Core {
           .filter((f) => /\.html?$/i.test(f));
         try {
           await buildInto(target, async (outDir) => {
-            await runVite({ systemDir, root: protoDir, inputs, outDir });
+            await runVite({ systemDir, root: protoDir, inputs, headScript, outDir });
             await writeFile(path.join(outDir, ".signature"), signature);
           });
           this.#prototypeFailures.delete(id);

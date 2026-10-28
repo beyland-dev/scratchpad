@@ -96,7 +96,11 @@ export const PrototypeFileSchema = z.object({
    * plain files. The entry stays an HTML shell that loads e.g. main.tsx.
    */
   framework: z.enum(["react"]).optional(),
-  /** Package design system it's built against (its components, styles and node_modules). */
+  /**
+   * Design system it uses. Framework prototypes build against this package system (its
+   * components, styles and node_modules); plain HTML prototypes load this system's system.css and
+   * system.js. The viewer offers the system's themes. When unset, it's inferred.
+   */
   system: SlugSchema.optional(),
   /** Free-form exploration name used to group related prototypes. */
   group: z.string().optional(),

@@ -48,6 +48,7 @@ export interface CreatePrototypeInput {
 
 export interface UpdatePrototypeInput {
   title?: string;
+  system?: string | null;
   description?: string | null;
   status?: PrototypeStatus;
   tags?: string[];
@@ -76,6 +77,8 @@ export interface ReadFileResult {
 export class PrototypeStore {
   readonly #ws: Workspace;
   #index = new Map<string, Prototype>();
+  /** Design systems each prototype's entry HTML loads (/s/<id>/system.css or system.js). */
+  #systemRefs = new Map<string, string[]>();
 
   constructor(workspace: Workspace) {
     this.#ws = workspace;
@@ -104,12 +107,20 @@ export class PrototypeStore {
     if (!ID_PATTERN.test(id)) return undefined;
     const proto = await this.#readFromDisk(id);
     if (proto) this.#index.set(id, proto);
-    else this.#index.delete(id);
+    else {
+      this.#index.delete(id);
+      this.#systemRefs.delete(id);
+    }
     return proto;
   }
 
   has(id: string): boolean {
     return this.#index.has(id);
+  }
+
+  /** Ids of the design systems a prototype's entry HTML loads, in order of appearance. */
+  systemRefs(id: string): string[] {
+    return this.#systemRefs.get(id) ?? [];
   }
 
   list(filter: PrototypeFilter = {}): Prototype[] {
@@ -191,16 +202,22 @@ export class PrototypeStore {
     return (await this.reloadOne(id))!;
   }
 
+  /**
+   * Update metadata. Versions of a family share one name: renaming any version renames all of
+   * them, and joining a family (`variantOf`) takes on its name.
+   */
   async update(id: string, patch: UpdatePrototypeInput): Promise<Prototype> {
     const current = this.get(id);
+    let title = patch.title;
     if (patch.variantOf) {
       if (patch.variantOf === id)
         throw new CoreError("INVALID_INPUT", "A prototype cannot be a variant of itself");
       this.get(patch.variantOf);
+      title ??= this.family(patch.variantOf)[0]?.title;
     }
     this.#assertSources(patch.sourceRefs);
     const next: PrototypeFile = { ...toFile(current) };
-    if (patch.title !== undefined) next.title = patch.title;
+    if (title !== undefined) next.title = title;
     if (patch.status !== undefined) next.status = patch.status;
     if (patch.tags !== undefined) next.tags = patch.tags;
     if (patch.entry !== undefined) next.entry = normalizeRel(patch.entry);
@@ -209,12 +226,25 @@ export class PrototypeStore {
     applyNullable(next, "project", patch.project);
     applyNullable(next, "group", patch.group);
     applyNullable(next, "variantOf", patch.variantOf);
+    applyNullable(next, "system", patch.system);
     next.updatedAt = nowIso();
     await writeJson(
       path.join(this.dirOf(id), PROTOTYPE_META_FILE),
       PrototypeFileSchema.parse(next),
     );
-    return (await this.reloadOne(id))!;
+    const updated = (await this.reloadOne(id))!;
+    if (title !== undefined) {
+      // A rename isn't an edit of the other versions' designs, so their updatedAt stays.
+      for (const member of this.family(id)) {
+        if (member.id === id || member.title === title) continue;
+        await writeJson(path.join(this.dirOf(member.id), PROTOTYPE_META_FILE), {
+          ...toFile(member),
+          title,
+        });
+        await this.reloadOne(member.id);
+      }
+    }
+    return updated;
   }
 
   async writeFile(
@@ -250,15 +280,22 @@ export class PrototypeStore {
     };
   }
 
+  /**
+   * Fork `id` into a new version of its family: a copy of its files, linked by `variantOf`. Versions
+   * share the family's name (they're told apart as V1, V2, … Latest); `description` says what
+   * this one changes.
+   */
   async createVariant(
     id: string,
-    input: { id?: string; title?: string; description?: string; createdBy?: Author } = {},
+    input: { id?: string; description?: string; createdBy?: Author } = {},
   ): Promise<Prototype> {
     const source = this.get(id);
-    const familySize = this.family(id).length;
-    const title = input.title ?? `${source.title} (variant ${familySize + 1})`;
+    const family = this.family(id);
+    // Named after the family's original, so forking "checkout-v2" gives "checkout-v3", not "checkout-v2-v3".
+    const root = family[0] ?? source;
+    const title = root.title;
     const newId = await this.#claimDir(
-      input.id ?? `${source.id}-v${familySize + 1}`,
+      input.id ?? `${root.id}-v${family.length + 1}`,
       input.id !== undefined,
     );
     const dir = this.dirOf(newId);
@@ -416,6 +453,9 @@ export class PrototypeStore {
     }
     if (!files.some((f) => f.path === normalizeRel(meta.entry))) {
       issues.push(`Entry file ${meta.entry} not found`);
+      this.#systemRefs.delete(id);
+    } else {
+      this.#systemRefs.set(id, await readSystemRefs(path.join(dir, normalizeRel(meta.entry))));
     }
     return { id, ...meta, ...(issues.length ? { issues } : {}) };
   }
@@ -426,7 +466,7 @@ function toFile(proto: Prototype): PrototypeFile {
   return rest;
 }
 
-function applyNullable<K extends "description" | "project" | "group" | "variantOf">(
+function applyNullable<K extends "description" | "project" | "group" | "variantOf" | "system">(
   target: PrototypeFile,
   key: K,
   value: string | null | undefined,
@@ -434,6 +474,14 @@ function applyNullable<K extends "description" | "project" | "group" | "variantO
   if (value === undefined) return;
   if (value === null || value === "") delete target[key];
   else target[key] = value as PrototypeFile[K];
+}
+
+const SYSTEM_REF = /\/s\/([a-zA-Z0-9][a-zA-Z0-9._-]*)\/system\.(?:css|js)\b/g;
+
+async function readSystemRefs(file: string): Promise<string[]> {
+  if (!/\.html?$/i.test(file)) return [];
+  const html = await readFile(file, "utf8").catch(() => "");
+  return [...new Set([...html.matchAll(SYSTEM_REF)].map((m) => m[1]!))];
 }
 
 export function normalizeRel(rel: string): string {

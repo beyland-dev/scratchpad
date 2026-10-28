@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Inbox One — Bottom composer</title>
+<link rel="stylesheet" href="/s/vscode/system.css" />
+<script type="module" src="/s/vscode/system.js"></script>
+<script src="data.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #121314; overflow: hidden; }
+  #wb {
+    /* Toast insets, as the Agents window sets them (src/vs/sessions/browser/media/workbench.css), widened to 16px so toasts clear the floating panel edge. */
+    --modern-ui-notifications-inline-inset: var(--vscode-spacing-size160);
+    --modern-ui-notifications-block-end-inset: var(--vscode-spacing-size160); position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column;
+        background: var(--vscode-agents-background); color: var(--vscode-foreground); font-size: var(--vscode-agents-fontSize-body1); }
+  #wb button { font: inherit; color: inherit; }
+  /* border-box only on prototype-owned elements: VS Code widgets rely on content-box */
+  :is(.cc, .avatar, .chip, .tab, .row, .tag, .row-actions, .preview, .cmd, .search, .dock, .inbox) { box-sizing: border-box; }
+  .muted { color: var(--vscode-descriptionForeground); }
+  .grow { flex: 1; }
+  code, .mono { font-family: var(--monaco-monospace-font, ui-monospace, "SF Mono", Menlo, Consolas, monospace); font-size: 12px; }
+  code { padding: 1px 4px; border-radius: var(--vscode-cornerRadius-small); background: var(--vscode-textPreformat-background); }
+
+  .tb { height: 38px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 10px; }
+  .tb-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; }
+  /* Session pill, after src/vs/sessions/contrib/sessions/browser/media/sessionsTitleBarWidget.css. */
+  .cc { width: 31vw; max-width: 600px; height: 22px; display: flex; align-items: center; border-radius: var(--vscode-cornerRadius-medium); cursor: pointer;
+        border: 1px solid var(--vscode-commandCenter-border); background: transparent; color: var(--vscode-commandCenter-foreground); }
+  .cc:hover { background: var(--vscode-commandCenter-activeBackground); }
+  .cc-pill { display: flex; align-items: center; gap: 6px; padding: 0 8px; min-width: 0; opacity: 0.6; }
+  .cc-pill .codicon { font-size: var(--vscode-codiconFontSize-compact, 14px) !important; }
+  .cc-label { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .avatar { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; font-weight: 600; flex: none;
+            background: var(--vscode-chat-avatarBackground); color: var(--vscode-chat-avatarForeground); border: 1px solid var(--vscode-agentsCard-border); }
+  .avatar-photo { padding: 0; overflow: hidden; cursor: pointer; }
+  .avatar-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .page { flex: 1; min-height: 0; margin: 0 6px 6px; border-radius: var(--vscode-cornerRadius-large); overflow-y: auto;
+          background: var(--vscode-agentsPanel-background); color: var(--vscode-agentsPanel-foreground); border: 1px solid var(--vscode-agentsPanel-border); }
+  /* Home: greeting and inbox from the top of the panel, with the new-session composer docked to its bottom edge. */
+  #home { min-height: 100%; display: flex; flex-direction: column; }
+  .greet { margin: 0 0 12px; padding-top: 24px; font-size: var(--vscode-agents-fontSize-heading1); font-weight: 400; letter-spacing: -0.015em; }
+  /* Full-width backdrop so rows scrolling underneath are fully covered; the composer itself uses the session composer's
+     column (800px, 16px input inset) so it doesn't jump when a session opens. */
+  .dock { position: sticky; bottom: 0; z-index: 4; width: 100%; margin-top: auto; padding: 8px 0 12px; background: var(--vscode-agentsPanel-background); }
+  .dock::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 16px; pointer-events: none;
+                  background: linear-gradient(to bottom, transparent, var(--vscode-agentsPanel-background)); }
+  .dock vsc-chat-view { background: transparent; display: block; max-width: 800px; margin: 0 auto; }
+  .dock vsc-chat-input.interactive-input-part { margin-inline: 16px; }
+  .chip { height: 26px; padding: 0 10px; display: inline-flex; align-items: center; gap: 6px; border-radius: var(--vscode-cornerRadius-circle); cursor: pointer;
+          border: 1px solid var(--vscode-agentsCard-border); background: transparent; font-size: 12px; }
+  .chip:hover { background: var(--vscode-list-hoverBackground); }
+  .chip.on { background: var(--vscode-list-activeSelectionBackground); border-color: transparent; }
+
+  .inbox { width: 100%; max-width: 1040px; margin: 0 auto; padding: 0 24px 24px; }
+  .tabs { display: flex; align-items: center; gap: 2px; position: sticky; top: 0; z-index: 3; background: var(--vscode-agentsPanel-background); padding: 8px 0 6px; }
+  .tabs-r { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+  .search { height: 26px; width: 200px; display: flex; align-items: center; gap: 6px; padding: 0 8px; border-radius: var(--vscode-cornerRadius-medium);
+            background: var(--vscode-input-background); border: 1px solid var(--vscode-input-border); color: var(--vscode-input-foreground); }
+  .search:focus-within { border-color: var(--vscode-focusBorder); }
+  .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; font-size: 12px; }
+  .search input::placeholder { color: var(--vscode-input-placeholderForeground); }
+
+  /* Rows share the list's column tracks (subgrid) so harness/workspace, tags and time line up across rows. */
+  .rows { padding-top: 4px; display: grid; grid-template-columns: 22px minmax(0, 1fr) 190px auto 70px; column-gap: 10px; }
+  .rows > .preview, .rows > .empty { grid-column: 1 / -1; }
+  .row { position: relative; display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: center; height: 40px; padding: 0 10px 0 8px;
+         border-radius: var(--vscode-cornerRadius-medium); cursor: pointer; }
+  /* Inset separator so it doesn't run into rounded corners; hidden around hovered/open rows. */
+  .row::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: 0; height: 1px; background: var(--vscode-agentsCard-border); pointer-events: none; }
+  .row:hover::after, .row.open::after, .row:has(+ .row:hover)::after, .row:has(+ .row.open)::after,
+  .row.cur::after, .row:has(+ .row.cur)::after { opacity: 0; }
+  .row:hover { background: var(--vscode-list-hoverBackground); }
+  .row.open { background: var(--vscode-list-inactiveSelectionBackground); border-radius: var(--vscode-cornerRadius-medium) var(--vscode-cornerRadius-medium) 0 0; }
+  /* Focus ring on the current row, drawn as a pseudo-element so it keeps all four rounded corners
+     even when an open row's background squares off its bottom edge. */
+  .row.cur::before { content: ""; position: absolute; inset: 0; border: 1px solid var(--vscode-focusBorder); border-radius: var(--vscode-cornerRadius-medium); pointer-events: none; }
+  /* The list loses focus while typing in a composer, search box or answering a question, so drop its focus ring. */
+  .page:has(:is(input, textarea, [contenteditable]):focus, vsc-chat-question-carousel:focus-within) .row.cur::before { display: none; }
+  .status { display: flex; justify-content: center; }
+  .status > span { display: flex; align-items: center; }
+  .from { display: flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; color: var(--vscode-descriptionForeground); }
+  .from .ws { overflow: hidden; text-overflow: ellipsis; }
+  .row.unread .from { color: var(--vscode-foreground); font-weight: 600; }
+  .subj { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--vscode-descriptionForeground); }
+  .subj .t { color: var(--vscode-foreground); }
+  .row.unread .subj .t { font-weight: 600; }
+  .tags { display: flex; gap: 5px; }
+  .time { text-align: right; font-size: var(--vscode-agents-fontSize-label2); color: var(--vscode-descriptionForeground); white-space: nowrap; }
+  .row.unread .time { color: var(--vscode-foreground); font-weight: 600; }
+  .row-actions { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: none; padding: 1px; border-radius: var(--vscode-cornerRadius-medium);
+                 background: var(--vscode-agentsPanel-background); border: 1px solid var(--vscode-agentsCard-border); }
+  .row:hover .row-actions { display: flex; }
+  .row:hover .time { visibility: hidden; }
+  .tag { height: 18px; display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; border-radius: var(--vscode-cornerRadius-small); font-size: var(--vscode-agents-fontSize-label2);
+         border: 1px solid var(--vscode-agentsCard-border); color: var(--vscode-descriptionForeground); white-space: nowrap; }
+  .tag .codicon { font-size: 12px !important; }
+  /* Icon wrappers inside tags center the 12px glyph instead of sitting on the 18px line's baseline. */
+  .tag > span:has(> .codicon) { display: inline-flex; align-items: center; }
+  .st-input, .tag.st-input { color: var(--vscode-list-warningForeground); }
+  .st-working, .tag.st-working { color: var(--vscode-textLink-foreground); }
+  .st-error, .tag.st-error { color: var(--vscode-errorForeground); }
+  .st-done, .tag.st-done { color: var(--vscode-testing-iconPassed); }
+  .st-unread { color: var(--vscode-textLink-foreground); }
+  .st-read { color: var(--vscode-agentSessionReadIndicator-foreground); }
+  .add { color: var(--vscode-chat-linesAddedForeground); } .del { color: var(--vscode-chat-linesRemovedForeground); }
+  .pr-open { color: var(--vscode-charts-green); } .pr-merged { color: var(--vscode-charts-purple); }
+  :is(.st-input, .st-working, .st-error, .st-done, .st-unread, .st-read, .add, .del, .pr-open, .pr-merged) .codicon { color: inherit !important; }
+
+  /* Left padding matches where the title column starts inside the row (its padding is absorbed by the shared subgrid tracks). */
+  .preview { padding: 6px 16px 16px 32px; margin-bottom: 10px; background: var(--vscode-list-inactiveSelectionBackground); border-radius: 0 0 var(--vscode-cornerRadius-medium) var(--vscode-cornerRadius-medium); line-height: 1.55; }
+  .preview p { margin: 0 0 8px; max-width: 760px; }
+  /* Question card and reply composer share one width: both are capped at 760px and the input part's 12px side margins are removed. */
+  .ask { margin: 4px 0 0; max-width: 760px; }
+  /* Tight 4px gap when the reply composer directly follows a question (offsets the card margin and the input part's top padding). */
+  .ask vsc-chat-question-carousel { margin-bottom: 0; }
+  .ask + .reply { margin-top: -8px; }
+  .ask vsc-chat-view { background: transparent; display: block; }
+  .steps { margin: 2px 0 10px; display: grid; gap: 4px; }
+  .step { display: flex; align-items: center; gap: 8px; }
+  .step.todo { color: var(--vscode-descriptionForeground); }
+  a.link { color: var(--vscode-textLink-foreground); text-decoration: none; cursor: pointer; }
+  a.link:hover { text-decoration: underline; }
+  .reply { margin-top: 12px; max-width: 760px; }
+  .reply vsc-chat-view { background: transparent; display: block; }
+  .preview .reply vsc-chat-input.interactive-input-part { margin-inline: 0; }
+  /* Opens the expanded session's full chat; floats beside the first paragraph so it costs no extra row. */
+  .open-full { float: right; margin: -2px -6px 4px 16px; height: 24px; display: inline-flex; align-items: center; gap: 4px; padding: 0 6px 0 8px;
+               border: 0; border-radius: var(--vscode-cornerRadius-medium); background: transparent; color: var(--vscode-textLink-foreground); font: inherit; font-size: 12px; cursor: pointer; }
+  .open-full:hover { background: var(--vscode-toolbar-hoverBackground); }
+  .open-full:focus-visible { outline: 1px solid var(--vscode-focusBorder); outline-offset: -1px; }
+  .open-full .codicon { font-size: 14px !important; color: inherit !important; }
+
+  /* Full session: header, transcript and a composer pinned to the bottom of the panel. */
+  #home[hidden], .session[hidden] { display: none; }
+  .session { min-height: 100%; display: flex; flex-direction: column; }
+  /* Session title bar: status, title and an overflow menu (navigation lives in the window title bar). */
+  /* Same column as the transcript and composer: 800px max, with the chat items' 16px side padding. */
+  .s-head { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 8px; box-sizing: border-box; width: 100%; max-width: 800px; height: 40px;
+            margin: 0 auto; padding: 0 16px; background: var(--vscode-agentsPanel-background); }
+  .s-status { display: flex; }
+  .s-head h2 { flex: 1; min-width: 0; margin: 0; font-size: 13px; font-weight: 400; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .s-chat { flex: 1; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 8px; }
+  .s-chat vsc-chat-view, .s-composer vsc-chat-view { background: transparent; display: block; }
+  .s-composer { position: sticky; bottom: 0; z-index: 2; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 12px; background: var(--vscode-agentsPanel-background); }
+  .s-composer vsc-chat-input.interactive-input-part { margin-inline: 16px; }
+  /* A pending question sits just above the composer (like the product's chat input), not in the transcript. */
+  /* The card's 8px bottom margin plus the input part's top padding would leave 12px; pull the composer up to a 4px gap. */
+  .s-ask { margin: 0 16px -8px; }
+
+  .empty { padding: 56px 24px; text-align: center; color: var(--vscode-descriptionForeground); }
+  .empty .codicon { font-size: 28px !important; display: block; margin-bottom: 8px; }
+
+  /* Menu item under the pointer (VS Code applies these selection colors from JS). */
+  vsc-menu vsc-menu-item.focused > a.action-menu-item { background: var(--vscode-menu-selectionBackground); border-radius: var(--vscode-cornerRadius-medium); }
+  vsc-menu vsc-menu-item.focused > a.action-menu-item, vsc-menu vsc-menu-item.focused > a.action-menu-item > span { color: var(--vscode-menu-selectionForeground) !important; }
+  /* From vs/base/browser/ui/dialog/dialog.css (not part of the captured component CSS). */
+  vsc-dialog.monaco-dialog-modal-block { position: fixed; height: 100%; width: 100%; left: 0; top: 0; z-index: 2575; display: flex; justify-content: center; align-items: center; }
+  vsc-dialog.monaco-dialog-modal-block.dimmed { background: rgba(0, 0, 0, 0.5); }
+  @media (max-width: 1100px) { .rows { grid-template-columns: 22px minmax(0, 1fr) 140px 64px; } .row .tags { display: none; } }
+
+  /* ---- Phone (≤ 640px) ---- */
+  @media (max-width: 640px) {
+    /* Title bar: sidebar toggle, session pill (fills the space), theme toggle and avatar. Navigation, run and layout actions are desktop-only. */
+    .tb { gap: 6px; padding: 0 8px; }
+    .tb-center { position: static; transform: none; flex: 1; min-width: 0; }
+    .tb-center + .grow { display: none; }
+    .tb-nav, .tb-run, .tb-layout { display: none; }
+    .cc { width: auto; flex: 1; min-width: 0; }
+
+    .page { margin: 0 4px 4px; }
+    .greet { font-size: 22px; padding-top: 16px; margin-bottom: 8px; }
+    .inbox { padding: 0 8px 16px; }
+    .dock { padding: 6px 0 8px; }
+    .dock vsc-chat-input.interactive-input-part { margin-inline: 8px; }
+
+    /* Tabs scroll horizontally on their own row; search (filling the width) and the filter button sit below. */
+    .tabs { flex-wrap: wrap; row-gap: 6px; padding: 6px 0; }
+    .tabs vsc-view-tabs { flex: 1 1 100%; min-width: 0; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain;
+                          mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); }
+    .tabs vsc-view-tabs::-webkit-scrollbar { display: none; }
+    .tabs vsc-view-tabs .composite.title { width: max-content; }
+    .tabs-r { flex: 1 1 100%; margin-left: 0; flex-direction: row-reverse; }
+    .search { flex: 1; width: auto; height: 28px; }
+    .search input { font-size: 13px; }
+
+    /* Rows: status, title and time only. Actions show on the open row instead of on hover (no hover on touch). */
+    .rows { grid-template-columns: 18px minmax(0, 1fr) auto; column-gap: 8px; }
+    .row .from, .row .tags { display: none; }
+    .row { height: 44px; padding: 0 8px 0 6px; }
+    .row:hover .row-actions { display: none; }
+    .row:hover .time { visibility: visible; }
+    .row.open .row-actions { display: flex; }
+    .row.open .time { visibility: hidden; }
+
+    /* Expanded content uses the full width. */
+    .preview { padding: 2px 10px 12px; }
+    .preview p { max-width: none; }
+
+
+    /* Toasts span the window width (as in the Agents window phone layout, src/vs/sessions/browser/media/phoneLayout.css). */
+    #toasts { left: 8px; right: 8px; }
+    #toasts .notifications-list-container { width: auto !important; }
+    #toasts .notification-toast { width: auto; }
+  }
+</style>
+</head>
+<body>
+<vsc-workbench id="wb" theme="dark-2026" class="nostatusbar">
+  <header class="tb">
+    <vsc-toolbar label="Window"><vsc-action icon="layout-sidebar-left-off" label="Show Sessions Sidebar"></vsc-action></vsc-toolbar>
+    <div class="tb-center">
+      <vsc-toolbar class="tb-nav" label="Session Navigation"><vsc-action icon="arrow-left" label="Go Back" id="nav-back"></vsc-action><vsc-action icon="arrow-right" label="Go Forward" id="nav-fwd" disabled></vsc-action></vsc-toolbar>
+      <div class="cc" role="button" tabindex="0" aria-label="Show Sessions: No workspace"><div class="cc-pill"><span class="codicon codicon-comment-discussion" aria-hidden="true"></span><span class="cc-label">No workspace</span></div></div>
+      <vsc-toolbar class="tb-run" label="Session Actions"><vsc-action icon="play" label="Run" disabled></vsc-action><vsc-action icon="vscode-insiders" label="Open in VS Code - Insiders"></vsc-action></vsc-toolbar>
+    </div>
+    <div class="grow"></div>
+    <vsc-toolbar class="tb-layout" label="Layout">
+      <vsc-action icon="layout-panel-off" label="Show Panel (⌘J)"></vsc-action>
+      <vsc-action icon="layout-sidebar-right-off" label="Toggle Side Panel (⌥⌘B)"></vsc-action>
+      <vsc-action icon="radio-tower" label="Remote Access"></vsc-action>
+    </vsc-toolbar>
+    <button class="avatar avatar-photo" title="hawkticehurst" aria-label="Accounts: hawkticehurst"><img src="assets/profile.jpg" alt="" /></button>
+  </header>
+  <main class="page" id="page">
+    <div id="home">
+    <section class="inbox" aria-label="Inbox">
+      <h1 class="greet" id="greet">Good afternoon, Hawk</h1>
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="rows" id="rows" role="list"></div>
+    </section>
+    <section class="dock" aria-label="New session">
+      <vsc-chat-view><vsc-chat-input id="composer" placeholder="What should agents work on?">
+        <vsc-chat-picker slot="secondary" icon="folder" label="vscode" id="pick-ws"></vsc-chat-picker>
+        <vsc-chat-picker slot="secondary" kind="target" icon="vm-compact" label="Worktree" id="pick-env"></vsc-chat-picker>
+        <vsc-chat-picker slot="secondary" icon="shield-compact" label="Default permissions"></vsc-chat-picker>
+      </vsc-chat-input></vsc-chat-view>
+    </section>
+    </div>
+    <section class="session" id="session" aria-label="Session" hidden></section>
+  </main>
+  <vsc-notification-toasts id="toasts" position="bottom-right"></vsc-notification-toasts>
+</vsc-workbench>
+
+<script type="module">
+const D = window.INBOX_DATA;
+const H = D.harnesses;
+const WS = Object.fromEntries(D.workspaces.map(w => [w.id, w]));
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const md = (s) => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
+const icon = (n, extra = "") => `<vsc-icon name="${n}"${extra}></vsc-icon>`;
+
+const wb = $("#wb");
+
+const state = { tab: "ready", q: "", open: null, cur: null, view: null, lastView: null, homeScroll: 0, sessions: D.sessions.map(s => ({ ...s })), seq: 100, ws: 0, env: 1, showDone: true };
+const ENVS = [["vm-compact", "Local"], ["worktree", "Worktree"], ["cloud", "Cloud"], ["remote", "devbox-1"]];
+
+// On-hold sessions live only in the On hold tab until taken off hold, marked done or replied to.
+const TABS = [
+  { id: "ready", label: "Ready for you", test: s => !s.onHold && !s.merging && (s.state === "input" || s.state === "review" || s.state === "error") },
+  { id: "working", label: "Working", test: s => !s.onHold && !s.merging && s.state === "working" },
+  { id: "merge", label: "Ready to merge", test: s => !!s.merging && s.state !== "done" },
+  { id: "hold", label: "On hold", test: s => s.onHold && !s.merging && s.state !== "done" },
+  { id: "done", label: "Done", test: s => s.state === "done" },
+];
+
+// Filter menu (mirrors the Agents window's Filter Sessions menu: unchecked options are excluded).
+// Environments: Local and Worktree both run on This Computer; anything other than Cloud is a remote agent host (e.g. devbox-1).
+const environmentOf = (s) => s.env === "Local" || s.env === "Worktree" ? "local" : s.env === "Cloud" ? "cloud" : s.env;
+const remoteHosts = [...new Set(D.sessions.map(environmentOf).filter(e => e !== "local" && e !== "cloud"))];
+const FILTER_GROUPS = [
+  { id: "env", label: "Environment", options: [["local", "This Computer"], ["cloud", "Cloud"], ...remoteHosts.map(h => [h, h])], value: environmentOf },
+  { id: "ws", label: "Workspace", options: D.workspaces.map(w => [w.id, w.label]), value: s => s.workspace },
+  { id: "harness", label: "Harness", options: Object.entries(H).map(([id, h]) => [id, h.label]), value: s => s.harness },
+];
+const excluded = Object.fromEntries(FILTER_GROUPS.map(g => [g.id, new Set()]));
+const hasFilters = () => FILTER_GROUPS.some(g => excluded[g.id].size) || !state.showDone;
+const visibleTabs = () => TABS.filter(t => t.id !== "done" || state.showDone);
+const passesFilters = (s) => FILTER_GROUPS.every(g => !excluded[g.id].has(g.value(s)));
+
+const visible = () => {
+  const t = TABS.find(x => x.id === state.tab).test, q = state.q.toLowerCase();
+  const list = state.sessions.filter(s => t(s) && passesFilters(s) && (!q || [s.title, s.preview, s.branch, WS[s.workspace].label].join(" ").toLowerCase().includes(q)));
+  // In Ready for you, sessions waiting on an answer come first; otherwise by recency.
+  const rank = (s) => state.tab === "ready" && s.state === "input" ? 0 : 1;
+  return list.map((s, i) => [s, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([s]) => s);
+};
+
+// Mirrors SessionsListModelService.getStatusIcon in microsoft/vscode (src/vs/sessions).
+function statusIcon(s) {
+  if (s.state === "input") return `<span class="st-input" title="Needs input">${icon("report-question")}</span>`;
+  if (s.state === "working") return `<span class="st-working" title="In progress">${icon("session-in-progress")}</span>`;
+  if (s.state === "error") return `<span class="st-error" title="Failed">${icon("error")}</span>`;
+  if (s.state === "done") return `<span class="st-read" title="Done">${icon("pass-filled")}</span>`;
+  return s.unread ? `<span class="st-unread" title="Unread">${icon("circle-filled")}</span>` : `<span class="st-read" title="Read">${icon("circle-small-filled")}</span>`;
+}
+const diffStat = (s) => ({ a: s.files.reduce((n, f) => n + f[1], 0), d: s.files.reduce((n, f) => n + f[2], 0), n: s.files.length });
+function tags(s) {
+  const out = [];
+  if (s.merging) out.push(`<span class="tag">${icon("git-merge")}${esc(s.merging.status)}</span>`);
+  else if (s.state === "working") { const d = s.steps.filter(x => x[1] === "done").length; out.push(`<span class="tag st-working">${d + 1}/${s.steps.length}</span>`); }
+  if (s.pr) out.push(`<span class="tag"><span class="${s.pr.status === "Merged" ? "pr-merged" : "pr-open"}">${icon("git-pull-request")}</span>#${s.pr.num}</span>`);
+  const { a, d, n } = diffStat(s);
+  if (n) out.push(`<span class="tag"><span class="add">+${a}</span><span class="del">−${d}</span></span>`);
+  return out.join("");
+}
+
+// Hover actions per bucket. "redo" always means "send it back where it came from".
+function rowActions(s) {
+  const a = (ic, label, act) => `<vsc-action icon="${ic}" label="${label}" data-act="${act}"></vsc-action>`;
+  if (s.state === "done") return a("redo", "Restore", "done") + a("trash", "Delete... (Delete)", "delete");
+  if (s.merging) return a("redo", `Move Back to ${s.state === "working" ? "Working" : "Ready for You"} (M)`, "merge") + a("check", "Mark as Done (E)", "done");
+  if (s.onHold) return a("redo", "Take Off Hold (H)", "hold") + a("check", "Mark as Done (E)", "done");
+  return a("clock", "Put On Hold (H)", "hold") + (s.state === "review" ? a("git-merge", "Ready to Merge (M)", "merge") : "") + a("check", "Mark as Done (E)", "done");
+}
+
+// Ready to merge: an agent babysits the PR; this simulates it merging a little later, which moves the session to Done.
+const MERGE_DELAY_MS = 15000;
+function scheduleMerge(s) {
+  clearTimeout(s._mergeTimer);
+  s._mergeTimer = setTimeout(() => {
+    if (!s.merging || s.state === "done") return;
+    s.merging = null; s.state = "done"; s.unread = false; s.onHold = false; s.time = "now";
+    if (s.pr) s.pr.status = "Merged";
+    if (state.open === s.id) state.open = null;
+    render(); toast(`${s.pr ? `#${s.pr.num}` : `"${s.title}"`} merged. Moved to Done.`);
+  }, MERGE_DELAY_MS);
+}
+
+function renderGreeting() {
+  const h = new Date().getHours();
+  $("#greet").textContent = `Good ${h < 12 ? "morning" : h < 18 ? "afternoon" : "evening"}, ${D.user.name}`;
+}
+function renderTabs() {
+  $("#tabs").innerHTML = `<vsc-view-tabs label="Inbox" active="${state.tab}">${visibleTabs().map(t => {
+    const items = state.sessions.filter(t.test), unread = items.filter(s => s.unread).length;
+    const count = t.id === "done" ? "" : ` count="${t.id === "ready" && unread ? unread : items.length}"`;
+    return `<vsc-view-tab value="${t.id}"${count}>${t.label}</vsc-view-tab>`;
+  }).join("")}</vsc-view-tabs>` + `<div class="tabs-r"><vsc-toolbar label="Inbox"><vsc-action icon="filter" label="Filter Sessions" id="filter-btn" dropdown${hasFilters() ? " checked" : ""}></vsc-action></vsc-toolbar>
+    <label class="search"><input id="q" placeholder="Search" value="${esc(state.q)}" autocomplete="off" /></label></div>`;
+  $("#q").addEventListener("input", (e) => { state.q = e.target.value; renderRows(); });
+  // In the scrolling tab strip (phones), keep the active tab in view.
+  requestAnimationFrame(() => {
+    const bar = $("#tabs vsc-view-tabs"), tab = bar?.querySelector("vsc-view-tab.checked");
+    if (!bar || !tab || bar.scrollWidth <= bar.clientWidth) return;
+    const b = bar.getBoundingClientRect(), t = tab.getBoundingClientRect();
+    if (t.right > b.right - 24) bar.scrollLeft += t.right - b.right + 32;
+    else if (t.left < b.left) bar.scrollLeft -= b.left - t.left + 8;
+  });
+}
+
+function detailHtml(s) {
+  let body = `<button class="open-full" data-open-full title="Open the full chat session">Open session${icon("arrow-right")}</button>`;
+  for (const r of s.replies || []) body += `<p class="muted">${icon("reply")} You replied: ${esc(r)}</p>`;
+  if (s.state === "working") {
+    body += `<div class="steps">${s.steps.map(([l, st]) => `<div class="step ${st}">${st === "done" ? `<span class="st-done">${icon("pass")}</span>` : st === "active" ? `<span class="st-working">${icon("loading", " spin")}</span>` : icon("circle-large-outline")}${md(l)}</div>`).join("")}</div>`;
+  } else {
+    body += (s.body || []).map(p => `<p>${p}</p>`).join("");
+  }
+  if (s.state === "input") body += `<div class="ask"><vsc-chat-view>${carouselHtml(s)}</vsc-chat-view></div>`;
+  if (s.state !== "done") body += `<div class="reply"><vsc-chat-view>${composerHtml(s)}</vsc-chat-view></div>`;
+  return `<div class="preview">${body}</div>`;
+}
+// Design-system chat question carousel; the first option starts selected, like the product's auto-select on focus.
+function carouselHtml(s) {
+  return `<vsc-chat-question-carousel question="${esc(s.question.text)}">
+      ${s.question.command ? `<div slot="detail"><pre><code>${esc(s.question.command)}</code></pre></div>` : ""}
+      ${s.question.options.map((o, i) => `<vsc-chat-question-option label="${esc(o)}"${i ? "" : " selected"}></vsc-chat-question-option>`).join("")}
+    </vsc-chat-question-carousel>`;
+}
+function composerHtml(s) {
+  const envIcon = { Cloud: "cloud-compact", Worktree: "worktree-compact", Local: "vm-compact" }[s.env] ?? "remote-compact";
+  return `<vsc-chat-input placeholder="Reply to ${H[s.harness].label}…">
+      <vsc-action slot="toolbar" menu icon="add-compact" label="Add Context..."></vsc-action>
+      <vsc-chat-picker slot="toolbar" kind="mode" icon="agent-compact" label="Agent"></vsc-chat-picker>
+      <vsc-chat-model-picker slot="toolbar" label="${s.model}"></vsc-chat-model-picker>
+      <vsc-action slot="toolbar" menu class="toolbar-shrinkable-item" icon="settings-compact" label="Configure Tools..."></vsc-action>
+      <vsc-chat-picker slot="secondary" kind="target" icon="${envIcon}" label="${s.env}"></vsc-chat-picker>
+      <vsc-chat-picker slot="secondary" icon="shield-compact" label="Default permissions"></vsc-chat-picker>
+    </vsc-chat-input>`;
+}
+
+// ---- Full session: the chat transcript rebuilt from the session's data with the design system's chat parts ----
+const stepsTime = (n) => { const t = 14 + (n * 37) % 150; return t < 60 ? `${t}s` : `${Math.floor(t / 60)}m ${t % 60}s`; };
+function transcriptHtml(s) {
+  const replies = s.replies || [];
+  const out = [`<vsc-chat-request timestamp="${esc(s.time)}">${md(s.prompt)}</vsc-chat-request>`];
+  if (s.body?.length) {
+    // The finished turn: its tool calls collapse behind "Completed N steps", the final answer stays visible.
+    const calls = [
+      ...s.files.map(([p]) => `<vsc-chat-tool-call icon="book-compact" file="${esc(p)}">Read</vsc-chat-tool-call>`),
+      ...s.files.map(([p, a, d]) => `<vsc-chat-tool-call edit icon="pencil" file="${esc(p)}" added="${a}" removed="${d}"></vsc-chat-tool-call>`),
+      ...(s.checks || []).map(([name, st]) => `<vsc-chat-tool-call icon="terminal-compact">${st === "fail" ? "Checks failed on" : "Ran checks on"} <code>${esc(name)}</code></vsc-chat-tool-call>`),
+      ...(s.pr ? [`<vsc-chat-tool-call icon="git-pull-request">Opened pull request <strong>#${s.pr.num}</strong> ${esc(s.pr.title)}</vsc-chat-tool-call>`] : []),
+    ];
+    const { a, d } = diffStat(s), n = calls.length;
+    const summary = n ? ` summary="Completed ${n} step${n > 1 ? "s" : ""} in ${stepsTime(n + s.title.length)}"${a || d ? ` added="${a}" removed="${d}"` : ""}` : "";
+    let parts = n ? `<vsc-chat-tool-chain slot="steps">${calls.join("")}</vsc-chat-tool-chain>` : "";
+    parts += `<vsc-chat-markdown>${s.body.map(p => `<p>${p}</p>`).join("")}</vsc-chat-markdown>`;
+    if (s.question && s.answerIndex != null) parts += `<vsc-chat-question-summary question="${esc(s.question.text)}" answer="${esc(replies[s.answerIndex])}"></vsc-chat-question-summary>`;
+    out.push(`<vsc-chat-response${summary}>${parts}</vsc-chat-response>`);
+  }
+  replies.forEach((r, i) => { if (i !== s.answerIndex) out.push(`<vsc-chat-request>${esc(r)}</vsc-chat-request>`); });
+  if (s.state === "working") {
+    // Still running: finished steps as tool calls, then the current one with a spinner. Upcoming steps aren't shown yet.
+    out.push(`<vsc-chat-response><vsc-chat-tool-chain>${s.steps.filter(x => x[1] !== "todo").map(([l, st]) =>
+      `<vsc-chat-tool-call icon="tools"${st === "active" ? " running" : ""}>${md(l)}</vsc-chat-tool-call>`).join("")}</vsc-chat-tool-chain></vsc-chat-response>`);
+  }
+  return out.join("");
+}
+function updateTitlebar(s) {
+  const label = s ? s.title.replace(/`/g, "") : "No workspace";
+  $(".cc-label").textContent = label;
+  $(".cc").setAttribute("aria-label", `Show Sessions: ${label}`);
+  const fwd = !state.view && state.sessions.some(x => x.id === state.lastView);
+  fwd ? $("#nav-fwd").removeAttribute("disabled") : $("#nav-fwd").setAttribute("disabled", "");
+}
+function renderSession() {
+  const sec = $("#session");
+  let s = state.sessions.find(x => x.id === state.view);
+  if (!s) state.view = null;
+  $("#home").hidden = !!s; sec.hidden = !s;
+  updateTitlebar(s);
+  if (!s) { sec.innerHTML = ""; sec._key = null; return; }
+  const head = `<div class="s-status">${statusIcon(s)}</div><h2>${md(s.title)}</h2>
+    <vsc-toolbar label="Session"><vsc-action icon="ellipsis" label="More Actions..." id="session-more"></vsc-action></vsc-toolbar>`;
+  // Only rebuild the transcript when the conversation changed, so picks in the question card and composer drafts survive other updates.
+  const key = JSON.stringify([s.id, s.state, replies(s), s.answerIndex, s.steps]);
+  if (sec._key === key) { sec.querySelector(".s-head").innerHTML = head; return; }
+  const opening = sec._id !== s.id;
+  sec._key = key; sec._id = s.id;
+  sec.innerHTML = `<div class="s-head">${head}</div><div class="s-chat"><vsc-chat-view>${transcriptHtml(s)}</vsc-chat-view></div>` +
+    (s.state !== "done" ? `<div class="s-composer">${s.state === "input" && s.answerIndex == null ? `<div class="s-ask"><vsc-chat-view>${carouselHtml(s)}</vsc-chat-view></div>` : ""}<vsc-chat-view>${composerHtml(s)}</vsc-chat-view></div>` : "");
+  wireComposer(sec.querySelector(".s-composer"), (t) => reply(s, t));
+  // Like a chat view, open (and follow new turns) at the latest message.
+  requestAnimationFrame(() => $("#page").scrollTo({ top: $("#page").scrollHeight, behavior: opening ? "instant" : "smooth" }));
+}
+const replies = (s) => s.replies || [];
+// The session title bar's "..." menu holds the same actions as the inbox row (per bucket).
+function sessionMenuItems(s) {
+  const i = (label, act, keys = "") => `<vsc-menu-item label="${label}" data-act="${act}"${keys ? ` keys="${keys}"` : ""}></vsc-menu-item>`;
+  if (s.state === "done") return i("Restore", "done") + `<vsc-menu-separator></vsc-menu-separator>` + i("Delete...", "delete");
+  if (s.merging) return i(`Move Back to ${s.state === "working" ? "Working" : "Ready for You"}`, "merge") + i("Mark as Done", "done");
+  if (s.onHold) return i("Take Off Hold", "hold") + i("Mark as Done", "done");
+  return i("Put On Hold", "hold") + (s.state === "review" ? i("Ready to Merge", "merge") : "") + i("Mark as Done", "done");
+}
+function openSessionMenu(s) {
+  closeMenus();
+  const btn = relRect($("#session-more"));
+  const m = createMenu(sessionMenuItems(s), btn.left, btn.bottom + 4, "Session Actions");
+  menus = [m];
+  // Right-align the menu with the button, like a toolbar overflow menu.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const box = m.querySelector(".monaco-scrollable-element"); if (!box) return;
+    m.setAttribute("x", Math.round(Math.max(8, btn.right - box.getBoundingClientRect().width)));
+  }));
+  m.addEventListener("mouseover", (e) => { const item = e.target.closest("vsc-menu-item"); if (item) focusItem(m, item); });
+  m.addEventListener("click", (e) => {
+    if (e.target.closest(".context-view-block")) { closeMenus(); return; }
+    const item = e.target.closest("vsc-menu-item[data-act]"); if (!item) return;
+    closeMenus(); act(s, item.dataset.act);
+  });
+}
+function openSession(id) {
+  const s = state.sessions.find(x => x.id === id);
+  if (!s) return;
+  closeMenus();
+  if (!state.view) state.homeScroll = $("#page").scrollTop;
+  state.view = id; state.cur = id;
+  if (s.unread && s.state !== "working") s.unread = false;
+  render();
+}
+function closeSession() {
+  if (!state.view) return;
+  state.lastView = state.view; state.view = null;
+  render();
+  $("#page").scrollTop = state.homeScroll;
+}
+// Answering a question goes back to the agent like a reply; the transcript shows it as the question's answer.
+function answer(s, text) { s.answerIndex = replies(s).length; reply(s, text); }
+function renderRows() {
+  const list = visible();
+  if (!list.length) {
+    $("#rows").innerHTML = `<div class="empty">${icon(state.tab === "ready" ? "check-all" : state.tab === "hold" ? "clock" : state.tab === "merge" ? "git-merge" : "inbox")}${state.q || hasFilters() ? "No sessions match your search or filters." : state.tab === "ready" ? "You're all caught up." : state.tab === "working" ? "No agents are working. Start one below." : state.tab === "merge" ? "Nothing waiting to merge. Mark finished work Ready to merge and an agent will babysit it through reviews and CI." : state.tab === "hold" ? "Nothing on hold. Put a session on hold when it's waiting on something outside the agent, like feedback or research." : "Nothing here yet."}</div>`;
+    return;
+  }
+  $("#rows").innerHTML = list.map(s => {
+    const h = H[s.harness], w = WS[s.workspace], open = state.open === s.id;
+    return `<div class="row ${s.unread ? "unread" : ""} ${open ? "open" : ""} ${state.cur === s.id ? "cur" : ""}" data-id="${s.id}" role="listitem" aria-expanded="${open}">
+      <div class="status">${statusIcon(s)}</div>
+      <div class="subj"><span class="t">${md(s.title)}</span></div>
+      <div class="from">${icon(h.icon)}<span>${h.label}</span><span class="muted" style="font-weight:400">·</span><span class="ws" style="font-weight:400" title="${w.repo}">${w.label}</span></div>
+      <div class="tags">${tags(s)}</div>
+      <div class="time">${s.time}</div>
+      <div class="row-actions"><vsc-toolbar label="Session actions">
+${rowActions(s)}
+      </vsc-toolbar></div>
+    </div>${open ? detailHtml(s) : ""}`;
+  }).join("");
+  const s = state.sessions.find(x => x.id === state.open);
+  if (s && list.includes(s)) wireComposer($("#rows .preview"), (t) => reply(s, t));
+}
+
+function render() { renderGreeting(); renderTabs(); renderRows(); renderSession(); }
+
+function wireComposer(root, onSend) {
+  if (!root) return;
+  customElements.whenDefined("vsc-chat-input").then(() => requestAnimationFrame(() => {
+    const ed = root.querySelector(".dt-editor-text"), submit = root.querySelector("vsc-chat-submit");
+    if (!ed || ed.dataset.wired) return;
+    ed.dataset.wired = "1";
+    const send = () => { const t = ed.textContent.trim(); if (t) { onSend(t); ed.textContent = ""; ed.dispatchEvent(new Event("input")); } };
+    ed.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } });
+    submit?.addEventListener("click", send);
+  }));
+}
+
+// Product notifications via the design system's <vsc-notification-toasts> (bottom-right, VS Code's default position).
+// Confirmations use the compact variant: Undo inline, no ✕, auto-dismissed after 5s.
+function toast(text, undoFn, severity = "info") {
+  const t = $("#toasts").show({ severity, message: text, buttons: undoFn ? ["Undo"] : [], compact: true });
+  if (undoFn) t.addEventListener("action", (e) => { if (e.detail.label === "Undo") { undoFn(); render(); } });
+  return t;
+}
+
+function reply(s, text) {
+  s.replies = [...(s.replies || []), text];
+  s.state = "working"; s.unread = false; s.onHold = false; clearTimeout(s._mergeTimer); s.merging = null; s.time = "now"; s.preview = "Working on your reply…";
+  s.steps = [["Read your reply", "done"], ["Continue the task", "active"], ["Run tests and hygiene", "todo"]];
+  render(); toast(`Sent to ${H[s.harness].label}. It moved to Working.`);
+}
+function act(s, a) {
+  const list = visible(), i = list.indexOf(s), next = list[i + 1] || list[i - 1];
+  // The row leaves the current tab: close it and move keyboard focus to its neighbour.
+  const leave = () => { if (state.open === s.id) state.open = null; state.cur = next?.id; };
+  if (a === "unread") s.unread = !s.unread;
+  if (a === "delete") { confirmDelete(s, leave); return; }
+  if (a === "merge") {
+    if (s.merging) {
+      const was = s.merging;
+      clearTimeout(s._mergeTimer); s.merging = null; leave();
+      toast(`Moved back to ${s.state === "working" ? "Working" : "Ready for you"}.`, () => { s.merging = was; state.cur = s.id; });
+    } else {
+      s.merging = { status: s.pr ? "Waiting on checks" : "Opening pull request" }; s.unread = false; s.onHold = false; leave();
+      scheduleMerge(s);
+      toast("Moved to Ready to merge. An agent will see it through to merge.", () => { clearTimeout(s._mergeTimer); s.merging = null; state.cur = s.id; });
+    }
+  }
+  if (a === "hold") {
+    const was = s.onHold;
+    s.onHold = !was; leave();
+    toast(was ? "Taken off hold." : "Moved to On hold.", () => { s.onHold = was; state.cur = s.id; });
+  }
+  if (a === "done") {
+    const prev = s.state, prevHold = s.onHold;
+    if (prev === "done") { s.state = "review"; leave(); toast("Moved back to Ready for you."); }
+    else {
+      s.state = "done"; s.unread = false; s.onHold = false; clearTimeout(s._mergeTimer); const prevMerge = s.merging; s.merging = null; leave();
+      toast("Marked as done.", () => { s.state = prev; s.onHold = prevHold; s.merging = prevMerge; state.open = null; state.cur = s.id; });
+    }
+  }
+  render();
+}
+// Mirrors the Agents window's "Delete..." action: confirm first, then remove the session permanently (no undo).
+let dialog = null;
+function closeDialog() { dialog?.remove(); dialog = null; }
+function confirmDelete(s, leave) {
+  closeDialog();
+  dialog = document.createElement("vsc-dialog");
+  dialog.setAttribute("severity", "warning");
+  dialog.setAttribute("message", "Are you sure you want to delete this session?");
+  dialog.setAttribute("buttons", "Cancel,Delete");
+  dialog.textContent = "This action cannot be undone.";
+  wb.append(dialog);
+  requestAnimationFrame(() => [...dialog?.querySelectorAll(".monaco-button") ?? []].find(b => b.textContent === "Delete")?.focus());
+  dialog.addEventListener("click", (e) => {
+    const btn = e.target.closest(".monaco-button, .codicon-dialog-close"); if (!btn) return;
+    closeDialog();
+    if (btn.textContent !== "Delete") return;
+    leave();
+    state.sessions = state.sessions.filter(x => x !== s);
+    render(); toast("Session deleted.");
+  });
+}
+document.addEventListener("keydown", (e) => {
+  if (!dialog) return;
+  e.stopImmediatePropagation();
+  if (e.key === "Escape") { e.preventDefault(); closeDialog(); }
+  else if (e.key === "Enter" && e.target.closest?.(".monaco-button")) { e.preventDefault(); e.target.click(); }
+}, true);
+
+function toggle(id) {
+  state.cur = id; state.open = state.open === id ? null : id;
+  const s = state.sessions.find(x => x.id === id);
+  if (state.open && s.unread && s.state !== "working") s.unread = false;
+  render();
+  $(`.row[data-id="${id}"]`)?.scrollIntoView({ block: "nearest" });
+}
+function setTab(id) { state.tab = id; state.open = state.cur = null; render(); }
+
+$("#tabs").addEventListener("click", (e) => {
+  if (e.target.closest("#filter-btn")) { menus.length ? closeMenus() : openFilterMenu(); return; }
+});
+$("#tabs").addEventListener("change", (e) => { if (e.target.localName === "vsc-view-tabs") setTab(e.detail.value); });
+
+// Filter Sessions menu, built from <vsc-menu>; submenus open on hover like VS Code context menus.
+let menus = [];
+function closeMenus() { menus.forEach(m => m.remove()); menus = []; }
+function createMenu(html, x, y, label = "Filter Sessions") {
+  const m = document.createElement("vsc-menu");
+  m.setAttribute("label", label);
+  m.setAttribute("x", Math.round(x)); m.setAttribute("y", Math.round(y));
+  m.innerHTML = html;
+  wb.append(m);
+  // Keep the menu inside the window (narrow windows): a submenu that would overflow flips to the other side of its parent.
+  requestAnimationFrame(() => {
+    const box = m.querySelector(".monaco-scrollable-element"); if (!box) return;
+    const r = relRect(box), maxX = wb.clientWidth - 8;
+    if (r.right > maxX) {
+      const w = r.right - r.left, parent = m.dataset.flipFrom ? Number(m.dataset.flipFrom) : null;
+      if (parent !== null && parent - w - 2 >= 8) m.setAttribute("x", Math.round(parent - w - 2));
+      else {
+        m.setAttribute("x", Math.round(Math.max(8, maxX - w)));
+        // No room on either side (phones): drop the submenu below its parent menu so the parent stays usable.
+        if (m.dataset.below) m.setAttribute("y", m.dataset.below);
+      }
+    }
+  });
+  return m;
+}
+const relRect = (el) => { const r = el.getBoundingClientRect(), w = wb.getBoundingClientRect(); return { left: r.left - w.left, right: r.right - w.left, top: r.top - w.top, bottom: r.bottom - w.top }; };
+function focusItem(menu, item) { menu.querySelectorAll("vsc-menu-item").forEach(i => i.classList.toggle("focused", i === item)); }
+
+function openFilterMenu() {
+  closeMenus();
+  const btn = relRect($("#filter-btn"));
+  const root = createMenu(`${FILTER_GROUPS.map(g => `<vsc-menu-item label="${g.label}" submenu data-group="${g.id}"></vsc-menu-item>`).join("")}
+    <vsc-menu-separator></vsc-menu-separator>
+    <vsc-menu-item label="Show Done" data-show-done${state.showDone ? " checked" : ""}></vsc-menu-item>
+    <vsc-menu-separator></vsc-menu-separator>
+    <vsc-menu-item label="Reset Filters" data-reset${hasFilters() ? "" : " disabled"}></vsc-menu-item>`, btn.left, btn.bottom + 4);
+  menus = [root];
+  root.addEventListener("mouseover", (e) => {
+    const item = e.target.closest("vsc-menu-item"); if (!item || item.hasAttribute("disabled")) return;
+    focusItem(root, item);
+    if (item.dataset.group) openSubmenu(item); else closeSubmenu();
+  });
+  root.addEventListener("click", (e) => {
+    if (e.target.closest(".context-view-block")) { closeMenus(); return; }
+    const item = e.target.closest("vsc-menu-item"); if (!item || item.hasAttribute("disabled")) return;
+    if (item.dataset.group) { openSubmenu(item); return; }
+    if (item.hasAttribute("data-show-done")) { setShowDone(!state.showDone); closeMenus(); return; }
+    if (item.hasAttribute("data-reset")) { FILTER_GROUPS.forEach(g => excluded[g.id].clear()); closeMenus(); setShowDone(true); }
+  });
+}
+// Hiding Done removes its tab; if it was the active tab, fall back to Ready for you.
+function setShowDone(show) {
+  state.showDone = show;
+  if (!show && state.tab === "done") { setTab("ready"); return; }
+  renderTabs(); renderRows();
+}
+function closeSubmenu() { if (menus[1]) { menus[1].remove(); menus.length = 1; } }
+function openSubmenu(parentItem, force) {
+  const group = FILTER_GROUPS.find(g => g.id === parentItem.dataset.group);
+  if (!force && menus[1]?.dataset.group === group.id) return;
+  closeSubmenu();
+  const box = relRect(menus[0].querySelector(".monaco-scrollable-element")), item = relRect(parentItem);
+  const sub = createMenu(group.options.map(([id, label]) => `<vsc-menu-item label="${esc(label)}" data-opt="${id}"${excluded[group.id].has(id) ? "" : " checked"}></vsc-menu-item>`).join(""), box.right + 2, item.top - 4);
+  sub.dataset.flipFrom = String(Math.round(box.left));
+  sub.dataset.below = String(Math.round(box.bottom + 4));
+  sub.dataset.group = group.id;
+  // Only the root menu's click-catcher should close the menus; the submenu's would cover the root.
+  requestAnimationFrame(() => { const block = sub.querySelector(".context-view-block"); if (block) block.style.display = "none"; });
+  menus[1] = sub;
+  sub.addEventListener("mouseover", (e) => { const i = e.target.closest("vsc-menu-item"); if (i) focusItem(sub, i); });
+  sub.addEventListener("click", (e) => {
+    const i = e.target.closest("vsc-menu-item"); if (!i) return;
+    const set = excluded[group.id], id = i.dataset.opt;
+    set.has(id) ? set.delete(id) : set.add(id);
+    const resetItem = menus[0].querySelector("[data-reset]");
+    hasFilters() ? resetItem.removeAttribute("disabled") : resetItem.setAttribute("disabled", "");
+    renderTabs(); renderRows();
+    openSubmenu(parentItem, true);
+    focusItem(menus[1], menus[1].querySelector(`[data-opt="${id}"]`));
+  });
+}
+$("#page").addEventListener("scroll", closeMenus, { passive: true });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && menus.length) { e.stopImmediatePropagation(); closeMenus(); } }, true);
+$("#rows").addEventListener("click", (e) => {
+  if (e.target.closest("[data-open-full]")) { openSession(state.open); return; }
+  const a = e.target.closest("[data-act]");
+  const row = e.target.closest(".row"), id = row?.dataset.id || state.open;
+  const s = state.sessions.find(x => x.id === id);
+  if (a && s) { e.stopPropagation(); act(s, a.dataset.act); return; }
+  if (row) toggle(row.dataset.id);
+});
+// Answers from the question carousel go back to the agent like a reply; skipping lets it continue with its defaults.
+$("#rows").addEventListener("submit", (e) => {
+  const s = state.sessions.find(x => x.id === state.open);
+  if (s && e.target.localName === "vsc-chat-question-carousel" && e.detail.answer) answer(s, e.detail.answer);
+});
+$("#rows").addEventListener("skip", () => {
+  const s = state.sessions.find(x => x.id === state.open);
+  if (s) answer(s, "Skipped the question");
+});
+$("#session").addEventListener("click", (e) => {
+  const s = state.sessions.find(x => x.id === state.view);
+  if (s && e.target.closest("#session-more")) { menus.length ? closeMenus() : openSessionMenu(s); }
+});
+$("#session").addEventListener("submit", (e) => {
+  const s = state.sessions.find(x => x.id === state.view);
+  if (s && e.target.localName === "vsc-chat-question-carousel" && e.detail.answer) answer(s, e.detail.answer);
+});
+$("#session").addEventListener("skip", () => {
+  const s = state.sessions.find(x => x.id === state.view);
+  if (s) answer(s, "Skipped the question");
+});
+$("#nav-back").addEventListener("click", closeSession);
+$("#nav-fwd").addEventListener("click", () => { if (!state.view && state.lastView) openSession(state.lastView); });
+
+// Workspace and target pickers cycle through options (stand-in for their dropdowns).
+$("#pick-ws").addEventListener("click", () => { state.ws = (state.ws + 1) % D.workspaces.length; $("#pick-ws").setAttribute("label", D.workspaces[state.ws].label); });
+$("#pick-env").addEventListener("click", () => { state.env = (state.env + 1) % ENVS.length; $("#pick-env").setAttribute("icon", ENVS[state.env][0]); $("#pick-env").setAttribute("label", ENVS[state.env][1]); });
+wireComposer($(".dock"), (text) => {
+  const ws = D.workspaces[state.ws].id, env = ENVS[state.env][1];
+  const id = "n" + state.seq++;
+  state.sessions.unshift({
+    id, state: "working", unread: false, time: "now", day: "Today", title: text.length > 64 ? text.slice(0, 62) + "…" : text,
+    harness: "copilot", model: "Auto", workspace: ws, env,
+    branch: "agents/" + text.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 28).replace(/-$/, ""), prompt: text, preview: "Planning…",
+    steps: [["Understand the task and explore the codebase", "active"], ["Make the change", "todo"], ["Run tests and hygiene", "todo"]], files: [],
+  });
+  // Only the counts update; the visible list, open row and focus stay as they are.
+  renderTabs(); toast("Session started. It'll land in Ready for you when it's done.");
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.target.closest("input, textarea, [contenteditable], vsc-chat-question-carousel") || e.metaKey || e.ctrlKey || e.altKey) { if (e.key === "Escape") e.target.blur?.(); return; }
+  // In a full session, Escape goes back to the inbox; the inbox shortcuts don't apply.
+  if (state.view) { if (e.key === "Escape") { e.preventDefault(); closeSession(); } return; }
+  const list = visible(), i = list.findIndex(s => s.id === state.cur), s = list[i];
+  const move = (n) => { if (!n) return; state.cur = n.id; if (state.open) { state.open = n.id; if (n.unread && n.state !== "working") n.unread = false; } render(); $(`.row[data-id="${n.id}"]`)?.scrollIntoView({ block: "nearest" }); };
+  if (e.key === "j" || e.key === "ArrowDown") { e.preventDefault(); move(list[i + 1]); }
+  else if (e.key === "k" || e.key === "ArrowUp") { e.preventDefault(); move(list[i - 1]); }
+  else if ((e.key === "Enter" || e.key === "o") && s) toggle(s.id);
+  else if (e.key === "e" && s) act(s, "done");
+  else if (e.key === "u" && s && s.state !== "done") act(s, "unread");
+  else if ((e.key === "Delete" || e.key === "Backspace") && s && s.state === "done") { e.preventDefault(); act(s, "delete"); }
+  else if (e.key === "h" && s && s.state !== "done" && !s.merging) act(s, "hold");
+  else if (e.key === "m" && s && (s.merging || s.state === "review")) act(s, "merge");
+  else if (e.key === "c") { e.preventDefault(); $("#composer .dt-editor-text")?.focus(); }
+  else if (e.key === "/") { e.preventDefault(); $("#q").focus(); }
+  else if (visibleTabs()[+e.key - 1] && /^[1-5]$/.test(e.key)) setTab(visibleTabs()[+e.key - 1].id);
+});
+
+render();
+</script>
+</body>
+</html>

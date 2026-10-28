@@ -56,7 +56,11 @@ interface Tip {
 }
 
 export function Sidebar() {
-  const active = useActiveProject();
+  const { path } = useLocation();
+  const onSettings = path === "/settings";
+  const activeProject = useActiveProject();
+  // Settings isn't part of a project, so no project is highlighted there.
+  const active = onSettings ? undefined : activeProject;
   const expanded = sidebarExpanded.value;
   const entries = projectEntries.value;
   const [tip, setTip] = useState<Tip | null>(null);
@@ -164,6 +168,17 @@ export function Sidebar() {
       </ul>
 
       <div class="sidebar-foot">
+        <a
+          href="/settings"
+          class={`sidebar-toggle sidebar-settings ${onSettings ? "active" : ""}`}
+          aria-label="Settings"
+          aria-current={onSettings ? "page" : undefined}
+          onClick={() => setTip(null)}
+          {...(expanded ? {} : tipHandlers("Settings"))}
+        >
+          <Icon name="settings" />
+          {expanded && <span>Settings</span>}
+        </a>
         <button
           type="button"
           class="sidebar-toggle"

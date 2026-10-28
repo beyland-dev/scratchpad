@@ -1,13 +1,23 @@
+import { useState } from "preact/hooks";
 import { useLocation, useRoute } from "preact-iso";
-import { Frame } from "../components/Frame.tsx";
 import { Icon } from "../components/Icon.tsx";
+import { PrototypeFrame } from "../components/PrototypeFrame.tsx";
+import { ThemePicker } from "../components/ThemePicker.tsx";
 import { StatusBadge } from "../components/StatusBadge.tsx";
-import { byId, loaded, prototypes, revisionOf } from "../store.ts";
+import { byId, familyTitle, loaded, prototypes, revisionOf, versionLabelOf } from "../store.ts";
+import type { PrototypeWithUrls } from "../types.ts";
+import { prototypeHref, themeOptions, type ThemeReady } from "../prototype-theme.ts";
 import { DEFAULT_DEVICE, DEVICES, deviceById, useElementSize } from "../util.ts";
 
 const MAX_COLUMNS = 4;
 const GAP = 16;
 const HEADER_HEIGHT = 40;
+
+/** "Inbox One · V2": versions share their family's name. */
+function nameOf(proto: PrototypeWithUrls): string {
+  const version = versionLabelOf(proto);
+  return version ? `${familyTitle(proto)} · ${version}` : familyTitle(proto);
+}
 
 export function Compare() {
   const { query } = useRoute();
@@ -15,16 +25,25 @@ export function Compare() {
   const ids = (query.ids ?? "").split(",").filter(Boolean).slice(0, MAX_COLUMNS);
   const device = deviceById(query.device);
   const [areaRef, area] = useElementSize<HTMLDivElement>();
+  const theme = query.theme;
+  // What each frame's design system runtime reported, by prototype id.
+  const [ready, setReady] = useState<Record<string, ThemeReady>>({});
 
-  const update = (nextIds: string[], deviceId = device.id) => {
+  const update = (nextIds: string[], deviceId = device.id, nextTheme = theme) => {
     const params = new URLSearchParams({ ids: nextIds.join(",") });
     if (deviceId !== DEFAULT_DEVICE.id) params.set("device", deviceId);
+    if (nextTheme) params.set("theme", nextTheme);
     route(`/compare?${params.toString().replaceAll("%2C", ",")}`, true);
   };
 
   if (!loaded.value) return <p class="page-message">Loading…</p>;
 
   const columns = ids.map((id) => ({ id, proto: byId.value.get(id) }));
+  // One control for every frame: the themes of the first themable prototype. Frames of other
+  // systems ignore theme ids they don't know.
+  const themes = columns
+    .map(({ id, proto }) => themeOptions(proto?.resolvedSystem, ready[id]))
+    .find(Boolean);
   const candidates = prototypes.value.filter((p) => !ids.includes(p.id));
   const columnWidth = columns.length
     ? (area.width - GAP * (columns.length - 1)) / columns.length
@@ -53,10 +72,17 @@ export function Compare() {
             <option value="">Add prototype…</option>
             {candidates.map((p) => (
               <option value={p.id} key={p.id}>
-                {p.title}
+                {nameOf(p)}
               </option>
             ))}
           </select>
+        )}
+        {themes && (
+          <ThemePicker
+            themes={themes}
+            theme={theme ?? columns.map(({ id }) => ready[id]?.theme).find(Boolean) ?? ""}
+            onChange={(t) => update(ids, device.id, t)}
+          />
         )}
         <div class="segmented" role="group" aria-label="Viewport">
           {DEVICES.map((d) => (
@@ -88,11 +114,11 @@ export function Compare() {
                 {proto ? (
                   <>
                     <a
-                      href={`/p/${encodeURIComponent(id)}?device=${device.id}`}
+                      href={prototypeHref(id, { device: device.id, theme })}
                       class="compare-title"
-                      title={proto.title}
+                      title={proto.description ?? nameOf(proto)}
                     >
-                      {proto.title}
+                      {nameOf(proto)}
                     </a>
                     {proto.status !== "draft" && <StatusBadge status={proto.status} />}
                   </>
@@ -102,7 +128,7 @@ export function Compare() {
                 <button
                   type="button"
                   class="icon-button"
-                  aria-label={`Remove ${proto?.title ?? id}`}
+                  aria-label={`Remove ${proto ? nameOf(proto) : id}`}
                   title="Remove"
                   onClick={() => update(ids.filter((x) => x !== id))}
                 >
@@ -110,8 +136,10 @@ export function Compare() {
                 </button>
               </header>
               {proto && (
-                <Frame
+                <PrototypeFrame
                   src={proto.urls.raw}
+                  theme={theme}
+                  onThemeReady={(r) => setReady((prev) => ({ ...prev, [id]: r }))}
                   title={proto.title}
                   width={device.width}
                   height={device.height}

@@ -1,0 +1,17 @@
+/* Authored (design-tool addition, not in VS Code): compact variant. Buttons sit in the main row after the message, using the
+   captured notification button styles; the row keeps the 34px compact height, so buttons are trimmed to fit the 22px line. */
+.monaco-workbench .notifications-list-container .notification-list-item.compact .notification-list-item-message {
+  white-space: nowrap;
+}
+.monaco-workbench .notifications-list-container .notification-list-item.compact > .notification-list-item-main-row > .notification-list-item-buttons-container {
+  flex: none;
+  align-items: center;
+  gap: var(--vscode-spacing-size40);
+  margin-left: var(--vscode-spacing-size80);
+  margin-right: var(--vscode-spacing-size60);
+}
+.monaco-workbench .notifications-list-container .notification-list-item.compact > .notification-list-item-main-row > .notification-list-item-buttons-container > .monaco-button {
+  margin: 0;
+  padding-block: 0;
+  line-height: 20px;
+}
