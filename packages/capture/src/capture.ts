@@ -6,7 +6,7 @@ import {
   type ComponentReference,
   type Core,
   type DesignComponent,
-} from "@design-tool/core";
+} from "@beyland/scratchpad-core";
 import { rulesToCss } from "./annotate.ts";
 import { settle, withPage, type Target } from "./browser.ts";
 import {
@@ -136,7 +136,7 @@ export interface StoredCapture {
   viewport?: { width: number; height: number };
 }
 
-/** Persist a capture under `.design/systems/<id>/captures/<label>/`. */
+/** Persist a capture under `projects/<project>/systems/<id>/captures/<label>/`. */
 export async function storeCapture(
   core: Core,
   system: string,
@@ -275,7 +275,7 @@ export async function verifyComponent(
   const theme = reference.theme ?? capture.theme ?? sys.defaultTheme;
   const width = reference.width ?? capture.parentWidth;
   const sandbox = await core.sandboxUrl();
-  const url = `${sandbox}/s/${encodeURIComponent(system)}/specimen.html?component=${encodeURIComponent(component.name)}&example=${reference.example}&theme=${encodeURIComponent(theme)}&bare&width=${Math.round(width * 100) / 100}`;
+  const url = `${sandbox}/projects/${encodeURIComponent(sys.project)}/systems/${encodeURIComponent(sys.id)}/specimen.html?component=${encodeURIComponent(component.name)}&example=${reference.example}&theme=${encodeURIComponent(theme)}&bare&width=${Math.round(width * 100) / 100}`;
   const rootSelector = reference.root ?? component.tag;
   const ignore = reference.ignore ?? [];
   const actual = await withPage(

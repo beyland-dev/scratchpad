@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const WORKSPACE_FORMAT_VERSION = 1;
+export const WORKSPACE_FORMAT_VERSION = 2;
 
 /** Ids are folder names, so keep them URL- and filesystem-safe. */
 export const ID_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$/;
@@ -22,7 +22,7 @@ export const SourceSchema = z.object({
   id: SlugSchema,
   name: z.string().min(1),
   kind: SourceKindSchema,
-  /** Local path (absolute or relative to the workspace root) or git URL. */
+  /** Absolute local path or git URL. */
   location: z.string().min(1),
   notes: z.string().optional(),
   addedAt: z.string(),
@@ -36,17 +36,16 @@ export const ServerSettingsSchema = z.object({
 });
 export type ServerSettings = z.infer<typeof ServerSettingsSchema>;
 
+/** Contents of `~/.scratchpad/config.json`: machine-local settings, never committed. */
 export const WorkspaceConfigSchema = z.object({
   version: z.literal(WORKSPACE_FORMAT_VERSION),
-  name: z.string().min(1),
-  description: z.string().optional(),
   sources: z.array(SourceSchema).default([]),
   server: ServerSettingsSchema.optional(),
 });
 export type WorkspaceConfig = z.infer<typeof WorkspaceConfigSchema>;
 
-/** Contents of `.design/projects/<id>/project.json`. A project is a product or effort that
- * prototypes and design systems belong to (via their `project` field). */
+/** Contents of `projects/<id>/project.json`. A project is a product or effort; its prototypes,
+ * design systems and reviews live in its folder, which can be its own git repo. */
 export const ProjectFileSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
@@ -83,14 +82,12 @@ export const AuthorSchema = z.object({
 });
 export type Author = z.infer<typeof AuthorSchema>;
 
-/** Contents of `.design/prototypes/<id>/prototype.json`. */
+/** Contents of `projects/<project>/prototypes/<id>/prototype.json`. */
 export const PrototypeFileSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
   status: PrototypeStatusSchema.default("draft"),
   tags: z.array(z.string()).default([]),
-  /** Id of the project this prototype belongs to. */
-  project: SlugSchema.optional(),
   /**
    * Built with a framework (bundled by the design system's Vite on demand) instead of served as
    * plain files. The entry stays an HTML shell that loads e.g. main.tsx.
@@ -104,7 +101,7 @@ export const PrototypeFileSchema = z.object({
   system: SlugSchema.optional(),
   /** Free-form exploration name used to group related prototypes. */
   group: z.string().optional(),
-  /** Id of the prototype this one is a variant of. */
+  /** Id of the prototype (in the same project) this one is a variant of. */
   variantOf: SlugSchema.optional(),
   /** Entry file, relative to the prototype folder. */
   entry: z.string().default("index.html"),
@@ -118,6 +115,8 @@ export type PrototypeFile = z.infer<typeof PrototypeFileSchema>;
 
 export const PrototypeSchema = PrototypeFileSchema.extend({
   id: SlugSchema,
+  /** The project whose folder it lives in. */
+  project: SlugSchema,
   /** Problems found while loading (e.g. missing or invalid prototype.json). */
   issues: z.array(z.string()).optional(),
 });

@@ -1,4 +1,5 @@
 import { useState } from "preact/hooks";
+import { prototypeHref } from "../prototype-theme.ts";
 import { revisionOf, selection } from "../store.ts";
 import type { PrototypeWithUrls } from "../types.ts";
 import { editedAgo, useElementSize } from "../util.ts";
@@ -32,7 +33,7 @@ export function PrototypeCard({
   const selected = selection.value.includes(latest.id);
   const updatedAt = familyUpdatedAt(family);
   const issues = family.flatMap((p) => p.issues ?? []);
-  const href = `/p/${encodeURIComponent(latest.id)}`;
+  const href = prototypeHref(latest.id);
   const toggle = () => {
     selection.value = selected
       ? selection.value.filter((id) => id !== latest.id)
@@ -140,7 +141,7 @@ export function PrototypeThumb({
   );
 }
 
-const thumbHref = (proto: PrototypeWithUrls) => `/p/${encodeURIComponent(proto.id)}`;
+const thumbHref = (proto: PrototypeWithUrls) => prototypeHref(proto.id);
 
 const FOLDER_SLOTS = 4;
 

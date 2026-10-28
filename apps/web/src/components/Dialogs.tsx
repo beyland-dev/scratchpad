@@ -1,13 +1,15 @@
 import { useState } from "preact/hooks";
 import { useLocation } from "preact-iso";
 import { call } from "../api.ts";
+import { prototypeHref } from "../prototype-theme.ts";
 import {
-  UNSORTED,
   familyOf,
   familyTitle,
+  normalizePrototype,
   projectHref,
-  projectIdOf,
+  refOf,
   refresh,
+  systemHref,
   systems,
   versionLabelOf,
   workspace,
@@ -82,6 +84,9 @@ export function ProjectDialog({
   );
   const [icon, setIcon] = useState<IconUpload | null>(null);
   const [removeIcon, setRemoveIcon] = useState(false);
+  // New projects can start empty, or from a repo a collaborator shared.
+  const [mode, setMode] = useState<"new" | "clone">("new");
+  const [repoUrl, setRepoUrl] = useState("");
   const [iconError, setIconError] = useState<string | null>(null);
   const hasIcon = Boolean(icon || (project?.iconUrl && !removeIcon));
   const { busy, error, submit } = useSubmit(async () => {
@@ -99,6 +104,13 @@ export function ProjectDialog({
       });
       await refresh();
       onClose();
+    } else if (mode === "clone") {
+      const { project: cloned } = await call<{ project: { id: string } }>("project.clone", {
+        url: repoUrl.trim(),
+      });
+      await refresh();
+      onClose();
+      route(projectHref(cloned.id));
     } else {
       const { project: created } = await call<{ project: { id: string } }>("project.create", {
         name: name.trim(),
@@ -126,116 +138,151 @@ export function ProjectDialog({
     <Modal title={project ? "Edit project" : "New project"} onClose={onClose}>
       <form onSubmit={submit}>
         <div class="dialog-body">
-          <Field
-            label="Name"
-            value={name}
-            onInput={setName}
-            required
-            autoFocus
-            placeholder="e.g. Web app"
-          />
-          <Field
-            label="Description"
-            value={description}
-            onInput={setDescription}
-            multiline
-            placeholder="What's this product, and what are you exploring?"
-          />
-          <div class="field" role="group" aria-label="Icon">
-            <span class="field-label">Icon</span>
-            <div class="icon-picker">
-              <div class="icon-preview">
-                <ProjectIcon project={preview} size={48} />
-                {!hasIcon && (
-                  <button
-                    type="button"
-                    class="icon-remix"
-                    aria-label="Next icon style"
-                    title="Next style"
-                    onClick={() =>
-                      setPattern(((pattern ?? patternOf(preview)) + 1) % PATTERN_COUNT)
-                    }
-                  >
-                    <Icon name="shuffle" size={18} />
-                  </button>
-                )}
-              </div>
-              <div class="icon-picker-controls">
-                <div class="icon-picker-buttons">
-                  <label class="button small">
-                    <Icon name="upload" size={14} />
-                    {hasIcon ? "Replace image" : "Upload image"}
-                    <input
-                      type="file"
-                      accept={Object.keys(ICON_TYPES).join(",")}
-                      class="visually-hidden"
-                      onChange={async (e) => {
-                        const file = e.currentTarget.files?.[0];
-                        e.currentTarget.value = "";
-                        if (!file) return;
-                        try {
-                          setIcon(await readIcon(file));
-                          setRemoveIcon(false);
-                          setIconError(null);
-                        } catch (err) {
-                          setIconError((err as Error).message);
-                        }
-                      }}
-                    />
-                  </label>
-                  {hasIcon && (
-                    <button
-                      type="button"
-                      class="button small ghost"
-                      onClick={() => {
-                        setIcon(null);
-                        setRemoveIcon(true);
-                      }}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-                {!hasIcon && (
-                  <div class="swatches" role="radiogroup" aria-label="Icon color">
-                    <button
-                      type="button"
-                      role="radio"
-                      aria-checked={!color}
-                      class={`swatch-option auto ${!color ? "active" : ""}`}
-                      title="Automatic"
-                      onClick={() => setColor("")}
-                    >
-                      Auto
-                    </button>
-                    {ICON_COLORS.map(([c, colorName]) => (
+          {!project && (
+            <div class="segmented source-modes" role="radiogroup" aria-label="Start from">
+              {(
+                [
+                  ["new", "Start a new project"],
+                  ["clone", "Clone from a repo"],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  type="button"
+                  role="radio"
+                  key={value}
+                  aria-checked={mode === value}
+                  class={mode === value ? "active" : ""}
+                  onClick={() => setMode(value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+          {mode === "clone" ? (
+            <Field
+              label="Repository URL"
+              value={repoUrl}
+              onInput={setRepoUrl}
+              required
+              autoFocus
+              placeholder="git@github.com:owner/repo.git"
+              hint="A project a collaborator shared. It's cloned into your projects folder; sync changes from the header."
+            />
+          ) : (
+            <>
+              <Field
+                label="Name"
+                value={name}
+                onInput={setName}
+                required
+                autoFocus
+                placeholder="e.g. Web app"
+              />
+              <Field
+                label="Description"
+                value={description}
+                onInput={setDescription}
+                multiline
+                placeholder="What's this product, and what are you exploring?"
+              />
+              <div class="field" role="group" aria-label="Icon">
+                <span class="field-label">Icon</span>
+                <div class="icon-picker">
+                  <div class="icon-preview">
+                    <ProjectIcon project={preview} size={48} />
+                    {!hasIcon && (
                       <button
                         type="button"
-                        role="radio"
-                        key={c}
-                        aria-checked={color === c}
-                        aria-label={colorName}
-                        title={colorName}
-                        class={`swatch-option ${color === c ? "active" : ""}`}
-                        style={{ "--swatch": c }}
-                        onClick={() => setColor(c)}
-                      />
-                    ))}
+                        class="icon-remix"
+                        aria-label="Next icon style"
+                        title="Next style"
+                        onClick={() =>
+                          setPattern(((pattern ?? patternOf(preview)) + 1) % PATTERN_COUNT)
+                        }
+                      >
+                        <Icon name="shuffle" size={18} />
+                      </button>
+                    )}
                   </div>
-                )}
-                <span class="field-hint">
-                  {iconError ?? "SVG, PNG, WebP or JPEG, up to 1 MB. Square works best."}
-                </span>
+                  <div class="icon-picker-controls">
+                    <div class="icon-picker-buttons">
+                      <label class="button small">
+                        <Icon name="upload" size={14} />
+                        {hasIcon ? "Replace image" : "Upload image"}
+                        <input
+                          type="file"
+                          accept={Object.keys(ICON_TYPES).join(",")}
+                          class="visually-hidden"
+                          onChange={async (e) => {
+                            const file = e.currentTarget.files?.[0];
+                            e.currentTarget.value = "";
+                            if (!file) return;
+                            try {
+                              setIcon(await readIcon(file));
+                              setRemoveIcon(false);
+                              setIconError(null);
+                            } catch (err) {
+                              setIconError((err as Error).message);
+                            }
+                          }}
+                        />
+                      </label>
+                      {hasIcon && (
+                        <button
+                          type="button"
+                          class="button small ghost"
+                          onClick={() => {
+                            setIcon(null);
+                            setRemoveIcon(true);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                    {!hasIcon && (
+                      <div class="swatches" role="radiogroup" aria-label="Icon color">
+                        <button
+                          type="button"
+                          role="radio"
+                          aria-checked={!color}
+                          class={`swatch-option auto ${!color ? "active" : ""}`}
+                          title="Automatic"
+                          onClick={() => setColor("")}
+                        >
+                          Auto
+                        </button>
+                        {ICON_COLORS.map(([c, colorName]) => (
+                          <button
+                            type="button"
+                            role="radio"
+                            key={c}
+                            aria-checked={color === c}
+                            aria-label={colorName}
+                            title={colorName}
+                            class={`swatch-option ${color === c ? "active" : ""}`}
+                            style={{ "--swatch": c }}
+                            onClick={() => setColor(c)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    <span class="field-hint">
+                      {iconError ?? "SVG, PNG, WebP or JPEG, up to 1 MB. Square works best."}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
         <FormActions
-          submitLabel={project ? "Save" : "Create project"}
+          submitLabel={project ? "Save" : mode === "clone" ? "Clone project" : "Create project"}
           busy={busy}
           error={error}
           onCancel={onClose}
-          disabled={!name.trim()}
+          disabled={mode === "clone" ? !repoUrl.trim() : !name.trim()}
         />
       </form>
     </Modal>
@@ -267,12 +314,8 @@ export function DeleteProjectDialog({
       }}
     >
       <p>
-        The project moves to <code>.design/.trash/</code>.{" "}
-        {contents.length
-          ? `Its ${contents.join(" and ")} ${
-              project.prototypes + project.systems === 1 ? "isn't" : "aren't"
-            } deleted; ${project.prototypes + project.systems === 1 ? "it moves" : "they move"} to Trash.`
-          : "It's empty."}
+        The project folder{contents.length ? `, with its ${contents.join(" and ")},` : ""} moves to{" "}
+        <code>~/.scratchpad/.trash/</code>, where it can be restored.
       </p>
     </ConfirmDialog>
   );
@@ -301,7 +344,7 @@ export function PrototypeDialog({
   const [tags, setTags] = useState(proto?.tags.join(", ") ?? "");
   // Package design systems of the project: new prototypes can be React prototypes built with one.
   const packageSystems = systems.value.filter(
-    (sys) => sys.kind === "package" && (projectId ?? UNSORTED) === projectIdOf(sys),
+    (sys) => sys.kind === "package" && sys.project === (proto?.project ?? projectId),
   );
   const [builtWith, setBuiltWith] = useState(packageSystems[0]?.id ?? "html");
   const { busy, error, submit } = useSubmit(async () => {
@@ -319,14 +362,16 @@ export function PrototypeDialog({
       await refresh();
       onClose();
     } else {
-      const { prototype } = await call<{ prototype: PrototypeWithUrls }>("prototype.create", {
+      const builtWithSystem = packageSystems.find((sys) => sys.id === builtWith);
+      const created = await call<{ prototype: PrototypeWithUrls }>("prototype.create", {
         title: title.trim(),
         ...(description.trim() ? { description: description.trim() } : {}),
         ...(group.trim() ? { group: group.trim() } : {}),
-        ...(builtWith !== "html" ? { framework: "react", system: builtWith } : {}),
-        project: projectId && projectId !== UNSORTED ? projectId : null,
+        ...(builtWithSystem ? { framework: "react", system: builtWithSystem.localId } : {}),
+        project: projectId,
         createdBy: { kind: "human" },
       });
+      const prototype = normalizePrototype(created.prototype);
       // The id is only known after creation, and the prompt names it.
       const prompt = prototypePrompt(prototype);
       await call("prototype.writeFile", {
@@ -337,7 +382,7 @@ export function PrototypeDialog({
       });
       await refresh();
       onClose();
-      route(`/p/${encodeURIComponent(prototype.id)}`);
+      route(prototypeHref(prototype.id));
     }
   });
   return (
@@ -456,7 +501,7 @@ export function DeletePrototypeDialog({
       }}
     >
       <p>
-        Its folder moves to <code>.design/.trash/</code>, where it can be restored.
+        Its folder moves to the project's <code>.trash/</code>, where it can be restored.
         {versions > 1 ? ` The other ${versions - 1} version${versions === 2 ? "" : "s"} stay.` : ""}
       </p>
     </ConfirmDialog>
@@ -622,7 +667,7 @@ function SourcePicker({
             : value.mode === "git"
               ? "The agent clones it into this system's folder (gitignored) and reads it from there."
               : (hint ??
-                "You can add one later: dt source add <path-or-url>, or ask the agent to."))}
+                "You can add one later: sp source add <path-or-url>, or ask the agent to."))}
       </span>
     </div>
   );
@@ -696,11 +741,11 @@ export function SystemDialog({
         ...(isPackage ? { library } : { prefix: prefix ?? autoPrefix }),
         ...(description.trim() ? { description: description.trim() } : {}),
         ...(sourceId ? { sourceId } : {}),
-        project: projectId && projectId !== UNSORTED ? projectId : null,
+        project: projectId,
       });
       await refresh();
       onClose();
-      route(`/systems/${encodeURIComponent(systemId)}`);
+      route(systemHref(refOf(projectId!, systemId)));
     }
   });
   return (
@@ -874,13 +919,13 @@ export function DeleteSystemDialog({
         await call("system.delete", { id: system.id });
         await refresh();
         onClose();
-        route(projectHref(system.project ?? UNSORTED, "systems"), true);
+        route(projectHref(system.project, "systems"), true);
       }}
     >
       <p>
         Its {system.components} components, {system.tokens.toLocaleString()} tokens and captures
-        move to <code>.design/.trash/</code>. Prototypes that include its <code>system.css</code>{" "}
-        stop rendering it.
+        move to the project's <code>.trash/</code>. Prototypes that include its{" "}
+        <code>system.css</code> stop rendering it.
       </p>
     </ConfirmDialog>
   );
@@ -960,13 +1005,13 @@ export function DeleteComponentDialog({
       onConfirm={async () => {
         await call("component.remove", { system: systemId, name: component.name });
         onClose();
-        route(`/systems/${encodeURIComponent(systemId)}`, true);
+        route(systemHref(systemId), true);
       }}
     >
       <p>
-        Its definition, examples and code move to <code>.design/.trash/</code>, and the system is
-        rebuilt without it. Prototypes using <code>&lt;{component.tag}&gt;</code> will render it as
-        an unknown element.
+        Its definition, examples and code move to the project's <code>.trash/</code>, and the system
+        is rebuilt without it. Prototypes using <code>&lt;{component.tag}&gt;</code> will render it
+        as an unknown element.
       </p>
     </ConfirmDialog>
   );

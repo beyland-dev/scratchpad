@@ -19,7 +19,7 @@ const ready: ThemeReady = {
 
 describe("prototype theme (viewer side)", () => {
   test("adds the theme to the frame URL, keeping its other parameters", () => {
-    const raw = "http://127.0.0.1:7421/p/inbox-one/";
+    const raw = "http://127.0.0.1:7421/projects/web/prototypes/inbox-one/";
     expect(withTheme(raw, "light-2026")).toBe(`${raw}?theme=light-2026`);
     expect(withTheme(`${raw}page.html?step=2&theme=old`, "dark-2026")).toBe(
       `${raw}page.html?step=2&theme=dark-2026`,
@@ -29,14 +29,15 @@ describe("prototype theme (viewer side)", () => {
   });
 
   test("keeps the theme (and viewport) when switching versions", () => {
-    expect(prototypeHref("inbox-one-v2", { device: "tablet", theme: "light-2026" })).toBe(
-      "/p/inbox-one-v2?device=tablet&theme=light-2026",
+    expect(prototypeHref("web/inbox-one-v2", { device: "tablet", theme: "light-2026" })).toBe(
+      "/projects/web/p/inbox-one-v2?device=tablet&theme=light-2026",
     );
-    expect(prototypeHref("inbox-one", {})).toBe("/p/inbox-one");
+    expect(prototypeHref("web/inbox-one", {})).toBe("/projects/web/p/inbox-one");
   });
 
   test("offers themes only for a prototype whose design system answered", () => {
     expect(themeOptions("vscode", ready)).toEqual(ready.themes);
+    expect(themeOptions("vscode-project/vscode", ready)).toEqual(ready.themes);
     // No system, no handshake, another system's handshake, or a single theme: hidden.
     expect(themeOptions(undefined, ready)).toBeNull();
     expect(themeOptions("vscode", null)).toBeNull();

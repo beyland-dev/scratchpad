@@ -1,7 +1,9 @@
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { CoreError } from "./errors.ts";
-import { pathExists, writeJson } from "./fs-utils.ts";
+import { atomicWrite, pathExists, writeJson } from "./fs-utils.ts";
+import { renderAgentsGuide } from "./guide.ts";
 import {
   WORKSPACE_FORMAT_VERSION,
   WorkspaceConfigSchema,
@@ -9,41 +11,51 @@ import {
   type WorkspaceConfig,
 } from "./schemas.ts";
 
-export const DESIGN_DIR = ".design";
-export const WORKSPACE_FILE = "workspace.json";
-export const PROTOTYPES_DIR = "prototypes";
+/** Name of the folder in the user's home directory that holds everything. */
+export const HOME_DIR_NAME = ".scratchpad";
+export const CONFIG_FILE = "config.json";
+export const AGENTS_FILE = "AGENTS.md";
 export const PROJECTS_DIR = "projects";
+export const PROTOTYPES_DIR = "prototypes";
+export const REVIEWS_DIR = "reviews";
 export const TRASH_DIR = ".trash";
 export const CACHE_DIR = ".cache";
 
-export function designDirOf(root: string): string {
-  return path.join(root, DESIGN_DIR);
+/** The workspace root: `$SCRATCHPAD_HOME`, else `~/.scratchpad`. */
+export function defaultWorkspaceRoot(env: NodeJS.ProcessEnv = process.env): string {
+  return env.SCRATCHPAD_HOME
+    ? path.resolve(env.SCRATCHPAD_HOME)
+    : path.join(os.homedir(), HOME_DIR_NAME);
 }
 
-export function workspaceFileOf(root: string): string {
-  return path.join(root, DESIGN_DIR, WORKSPACE_FILE);
+export function configFileOf(root: string): string {
+  return path.join(root, CONFIG_FILE);
 }
 
-/** Walk up from `start` looking for a folder containing `.design/workspace.json`. */
-export async function findWorkspaceRoot(start: string): Promise<string | undefined> {
-  let current = path.resolve(start);
-  while (true) {
-    if (await pathExists(workspaceFileOf(current))) return current;
-    const parent = path.dirname(current);
-    if (parent === current) return undefined;
-    current = parent;
-  }
+export function defaultWorkspaceConfig(): WorkspaceConfig {
+  return { version: WORKSPACE_FORMAT_VERSION, sources: [] };
+}
+
+/** Create the workspace folder (config, agent guide, projects/) if it doesn't exist yet. */
+export async function ensureWorkspace(root: string): Promise<{ root: string; created: boolean }> {
+  const resolved = path.resolve(root);
+  const file = configFileOf(resolved);
+  if (await pathExists(file)) return { root: resolved, created: false };
+  await mkdir(path.join(resolved, PROJECTS_DIR), { recursive: true });
+  await writeJson(file, defaultWorkspaceConfig());
+  await atomicWrite(path.join(resolved, AGENTS_FILE), renderAgentsGuide());
+  return { root: resolved, created: true };
 }
 
 export async function readWorkspaceConfig(root: string): Promise<WorkspaceConfig> {
-  const file = workspaceFileOf(root);
+  const file = configFileOf(root);
   let raw: string;
   try {
     raw = await readFile(file, "utf8");
   } catch {
     throw new CoreError(
       "NO_WORKSPACE",
-      `No design workspace found at ${root} (missing ${DESIGN_DIR}/${WORKSPACE_FILE}). Run \`dt init\` first.`,
+      `No Scratchpad workspace at ${root} (missing ${CONFIG_FILE}).`,
     );
   }
   let json: unknown;
@@ -63,27 +75,35 @@ export async function readWorkspaceConfig(root: string): Promise<WorkspaceConfig
   return parsed.data;
 }
 
+/**
+ * The workspace: one folder per machine (`~/.scratchpad`) holding machine-local settings and
+ * every project. Each project folder is self-contained and can be its own git repo.
+ */
 export class Workspace {
   readonly root: string;
-  readonly designDir: string;
-  readonly prototypesDir: string;
   readonly projectsDir: string;
   readonly trashDir: string;
   readonly cacheDir: string;
+  readonly configFile: string;
   #config: WorkspaceConfig;
 
   private constructor(root: string, config: WorkspaceConfig) {
     this.root = root;
-    this.designDir = designDirOf(root);
-    this.prototypesDir = path.join(this.designDir, PROTOTYPES_DIR);
-    this.projectsDir = path.join(this.designDir, PROJECTS_DIR);
-    this.trashDir = path.join(this.designDir, TRASH_DIR);
-    this.cacheDir = path.join(this.designDir, CACHE_DIR);
+    this.projectsDir = path.join(root, PROJECTS_DIR);
+    this.trashDir = path.join(root, TRASH_DIR);
+    this.cacheDir = path.join(root, CACHE_DIR);
+    this.configFile = configFileOf(root);
     this.#config = config;
   }
 
+  /** Open the workspace, creating it on first use. */
   static async open(root: string): Promise<Workspace> {
-    const resolved = path.resolve(root);
+    const { root: resolved } = await ensureWorkspace(root);
+    await mkdir(path.join(resolved, PROJECTS_DIR), { recursive: true });
+    // The guide is generated: keep it in step with this version of Scratchpad.
+    const guide = path.join(resolved, AGENTS_FILE);
+    const text = renderAgentsGuide();
+    if ((await readFile(guide, "utf8").catch(() => "")) !== text) await atomicWrite(guide, text);
     return new Workspace(resolved, await readWorkspaceConfig(resolved));
   }
 
@@ -98,7 +118,7 @@ export class Workspace {
 
   async update(mutate: (config: WorkspaceConfig) => WorkspaceConfig): Promise<WorkspaceConfig> {
     const next = WorkspaceConfigSchema.parse(mutate(structuredClone(this.#config)));
-    await writeJson(workspaceFileOf(this.root), next);
+    await writeJson(this.configFile, next);
     this.#config = next;
     return next;
   }
@@ -113,13 +133,4 @@ export class Workspace {
   resolveSourceLocation(source: Source): string {
     return source.kind === "local" ? path.resolve(this.root, source.location) : source.location;
   }
-}
-
-export function defaultWorkspaceConfig(name: string, description?: string): WorkspaceConfig {
-  return {
-    version: WORKSPACE_FORMAT_VERSION,
-    name,
-    ...(description ? { description } : {}),
-    sources: [],
-  };
 }

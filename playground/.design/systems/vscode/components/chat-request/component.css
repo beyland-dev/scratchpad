@@ -1,4 +1,0 @@
-/* The product pads the first list row (div[data-index="0"]); here the first request in the transcript stands in for it. */
-.interactive-session .interactive-item-container.interactive-request:first-child:not(.editing) {
-  padding-top: var(--vscode-spacing-size200);
-}

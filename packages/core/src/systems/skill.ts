@@ -76,10 +76,10 @@ ${system.name} is ${library}${system.library?.docsUrl ? ` ([docs](${system.libra
 
 ## Setup
 
-Create the prototype as a React prototype; design-tool builds it with the system's Vite and shared node_modules:
+Create the prototype as a React prototype; Scratchpad builds it with the system's Vite and shared node_modules:
 
 \`\`\`
-prototype_create { title, framework: "react", system: "${system.id}", files: [{ path: "main.tsx", content }] }
+prototype_create { title, project: "${system.project}", framework: "react", system: "${system.id}", files: [{ path: "main.tsx", content }] }
 \`\`\`
 
 The entry \`index.html\` is a shell that loads \`main.tsx\`. In \`main.tsx\`:
@@ -92,14 +92,14 @@ ${example?.import?.split("\n")[0] ?? ""}
 createRoot(document.getElementById("root")!).render(<App />);
 \`\`\`
 
-Themes: ${system.themes.map((t) => `\`${t.id}\`${t.classes ? ` (class \`${t.classes}\` on <html>)` : ""}`).join(", ")}. Default: \`${system.defaultTheme}\`. Don't build a theme toggle: design-tool's viewer switches between the themes (it sets \`data-theme\` and the theme's classes on <html>).
+Themes: ${system.themes.map((t) => `\`${t.id}\`${t.classes ? ` (class \`${t.classes}\` on <html>)` : ""}`).join(", ")}. Default: \`${system.defaultTheme}\`. Don't build a theme toggle: Scratchpad's viewer switches between the themes (it sets \`data-theme\` and the theme's classes on <html>).
 
 ## Rules
 
 1. **Compose from the components below**, imported from \`@/components/…\`. Don't restyle them; use their variants and props.
 2. **Use the theme for anything custom**: Tailwind utilities backed by the tokens (\`bg-primary\`, \`text-muted-foreground\`, \`border\`, \`rounded-lg\`) or \`var(--…)\`, never literal colors.
 3. **Don't install packages from a prototype.** Dependencies live in the design system; ask for anything missing.
-4. **Check your work** in design-tool's viewer, in each theme.
+4. **Check your work** in Scratchpad's viewer, in each theme.
 ${system.notes ? `\n## Notes\n\n${system.notes.trim()}\n` : ""}
 ## Components
 
@@ -125,7 +125,7 @@ ${example.examples[0]!.html.trim()}
 }
 ## Tools
 
-When the design-tool MCP server is connected: \`system_get\` (overview), \`component_search\` / \`component_get\` (components and examples), \`token_search\` (theme tokens), \`prototype_create\` / \`prototype_writeFile\` (build the prototype).
+When the Scratchpad MCP server is connected: \`system_get\` (overview), \`component_search\` / \`component_get\` (components and examples), \`token_search\` (theme tokens), \`prototype_create\` / \`prototype_writeFile\` (build the prototype).
 `;
 }
 
@@ -146,7 +146,7 @@ function renderSkill(system: DesignSystem, components: DesignComponent[], tokens
 
   return `---
 name: ${name}
-description: Build design-tool prototypes that look exactly like ${system.name}, using its codified design system — ${components.length} web components (${components
+description: Build Scratchpad prototypes that look exactly like ${system.name}, using its codified design system — ${components.length} web components (${components
     .slice(0, 6)
     .map((c) => `<${c.tag}>`)
     .join(
@@ -162,11 +162,11 @@ This library was codified from the real product${system.capturedFrom?.product ? 
 
 ## Setup
 
-In a prototype's \`index.html\` (design-tool serves these paths on the prototype sandbox):
+Create the prototype in the **${system.project}** project. In its \`index.html\` (\`prototypes/<id>/index.html\`), load the system with relative paths (add a \`../\` per folder level for pages in subfolders):
 
 \`\`\`html
-<link rel="stylesheet" href="/s/${system.id}/system.css" />
-<script type="module" src="/s/${system.id}/system.js"></script>
+<link rel="stylesheet" href="../../systems/${system.id}/system.css" />
+<script type="module" src="../../systems/${system.id}/system.js"></script>
 \`\`\`
 ${
   root
@@ -183,7 +183,7 @@ Everything goes inside the root context, which applies the theme:
 }
 Themes: ${themes}. Default: \`${system.defaultTheme}\`.${
     root
-      ? ` Set the theme the prototype should open in on <${root}>, and don't build a theme toggle: design-tool's viewer switches between the themes (it sets \`theme\` on every <${root}>, from \`?theme=<id>\` in the URL or live via \`postMessage\`).`
+      ? ` Set the theme the prototype should open in on <${root}>, and don't build a theme toggle: Scratchpad's viewer switches between the themes (it sets \`theme\` on every <${root}>, from \`?theme=<id>\` in the URL or live via \`postMessage\`).`
       : ""
   }
 
@@ -194,7 +194,7 @@ Themes: ${themes}. Default: \`${system.defaultTheme}\`.${
 3. **Use tokens for anything custom.** Style custom parts with \`var(--…)\` tokens (see references/tokens.md or the \`token_search\` tool), never literal colors or sizes, so both themes work.
 4. **Load \`system.js\` as a module** (as above), and put components in the HTML or create them with \`document.createElement\`. Attributes are reactive; children are read when an element first connects.
 5. **Use real states.** Set state attributes (\`disabled\`, \`checked\`, \`focused\`, …) instead of restyling.
-6. **Check your work.** View the prototype in design-tool (and take a screenshot if your tools allow) in each theme.
+6. **Check your work.** View the prototype in Scratchpad (and take a screenshot if your tools allow) in each theme.
 ${system.notes ? `\n## Notes\n\n${system.notes.trim()}\n` : ""}
 ## Components
 ${contexts.length ? `\n### Contexts\n\n${componentTable(contexts)}\n` : ""}${parts.length ? `\n### Components\n\n${componentTable(parts)}\n` : ""}${patterns.length ? `\n### Patterns\n\n${componentTable(patterns)}\n` : ""}
@@ -220,7 +220,7 @@ ${root && !example.html.includes(`<${root}`) ? `<${root} theme="${system.default
 }
 ## Tools
 
-When the design-tool MCP server is connected: \`system_get\` (overview), \`component_search\` / \`component_get\` (find and read components), \`token_search\` (find tokens), \`prototype_create\` / \`prototype_writeFile\` (build the prototype).
+When the Scratchpad MCP server is connected: \`system_get\` (overview), \`component_search\` / \`component_get\` (find and read components), \`token_search\` (find tokens), \`prototype_create\` / \`prototype_writeFile\` (build the prototype).
 `;
 }
 

@@ -38,7 +38,7 @@ async function makeSystem() {
 
 beforeEach(async () => {
   root = await mkdtemp(path.join(tmpdir(), "dt-sys-"));
-  await initWorkspace(root, { name: "Systems", example: false });
+  await initWorkspace(root, { project: "Systems", example: false });
   core = await Core.open({ root });
 });
 
@@ -165,7 +165,7 @@ describe("design systems", () => {
     });
     expect(updated.system.notes).toBe("Run the app first.");
     const json = JSON.parse(
-      await readFile(path.join(root, ".design/systems/acme/system.json"), "utf8"),
+      await readFile(path.join(root, "projects/systems/systems/acme/system.json"), "utf8"),
     );
     expect(json).toMatchObject({
       name: "Acme",
@@ -382,7 +382,7 @@ describe("design systems", () => {
     );
     expect(result.warnings.join("\n")).toMatch(/<acme-badge> has no component.js/);
 
-    const dist = path.join(root, ".design/systems/acme/dist");
+    const dist = path.join(root, "projects/systems/systems/acme/dist");
     const css = await readFile(path.join(dist, "system.css"), "utf8");
     expect(css).toContain(":root {\n  --acme-radius-large: 8px;\n}");
     expect(css).toContain(".acme-root.vs-dark {\n  --acme-button-background: #0e639c;\n}");
@@ -402,12 +402,15 @@ describe("design systems", () => {
     expect(await readFile(path.join(dist, "assets/icons.ttf"))).toEqual(Buffer.from([1, 2, 3]));
     expect(await readFile(path.join(dist, "specimen.html"), "utf8")).toContain("dt-specimen-size");
 
-    const skill = await readFile(path.join(root, ".design/systems/acme/skill/SKILL.md"), "utf8");
+    const skill = await readFile(
+      path.join(root, "projects/systems/systems/acme/skill/SKILL.md"),
+      "utf8",
+    );
     expect(skill).toMatch(/^---\nname: acme-design-system\ndescription: /);
-    expect(skill).toContain('<link rel="stylesheet" href="/s/acme/system.css" />');
+    expect(skill).toContain('<link rel="stylesheet" href="../../systems/acme/system.css" />');
     expect(skill).toContain("| `<acme-button>` |");
     const tokensMd = await readFile(
-      path.join(root, ".design/systems/acme/skill/references/tokens.md"),
+      path.join(root, "projects/systems/systems/acme/skill/references/tokens.md"),
       "utf8",
     );
     expect(tokensMd).toContain(
@@ -419,9 +422,10 @@ describe("design systems", () => {
       target: "github",
     });
     expect(exported.relative).toBe(path.join(".github", "skills", "acme-design-system"));
-    expect(await readFile(path.join(root, exported.relative, "SKILL.md"), "utf8")).toContain(
-      "name: acme-design-system",
-    );
+    // Relative to the project folder, which is where the project repo's agents load skills from.
+    expect(
+      await readFile(path.join(root, "projects/systems", exported.relative, "SKILL.md"), "utf8"),
+    ).toContain("name: acme-design-system");
     expect(core.lastBuild("acme")).toMatchObject({ ok: true });
 
     const coverage = await core.run<{
@@ -446,7 +450,7 @@ describe("design systems", () => {
         { name: "bg", type: "color", cssVar: "--acme-bg", values: { dark: "#000", light: "#fff" } },
       ],
     });
-    const caps = path.join(root, ".design/systems/acme/captures");
+    const caps = path.join(root, "projects/systems/systems/acme/captures");
     for (const [label, theme, index, color] of [
       ["bar-dark", "dark", 4, "#111"],
       ["bar-light", "light", 5, "#eee"],
@@ -479,7 +483,10 @@ describe("design systems", () => {
     }>("system.build", { id: "acme" });
     expect(result.warnings.join("\n")).toContain('capture "missing" not found');
     expect(result.css).toMatchObject({ captured: 3, duplicates: 1 });
-    const css = await readFile(path.join(root, ".design/systems/acme/dist/system.css"), "utf8");
+    const css = await readFile(
+      path.join(root, "projects/systems/systems/acme/dist/system.css"),
+      "utf8",
+    );
     expect(css).toContain(".bar > :is(li, acme-item) { flex: none; }");
     expect(css).toContain(
       "/* @capture theme~dark@4 */\n.acme-root:where(.vs-dark) .bar { color: #111; }",
@@ -504,7 +511,7 @@ describe("design systems", () => {
     await core.startWatching();
     const events: CoreEvent[] = [];
     core.events.subscribe((e) => events.push(e));
-    const file = path.join(root, ".design/systems/acme/components/button/component.json");
+    const file = path.join(root, "projects/systems/systems/acme/components/button/component.json");
     const json = JSON.parse(await readFile(file, "utf8"));
     await writeFile(file, JSON.stringify({ ...json, title: "Fancy Button" }));
     await expect
@@ -515,12 +522,15 @@ describe("design systems", () => {
         timeout: 4000,
       })
       .toBe(true);
-    const css = await readFile(path.join(root, ".design/systems/acme/dist/system.css"), "utf8");
+    const css = await readFile(
+      path.join(root, "projects/systems/systems/acme/dist/system.css"),
+      "utf8",
+    );
     expect(css).toContain(".x{}");
 
     // Captures and the activity log notify without reloading or rebuilding.
     events.length = 0;
-    const capDir = path.join(root, ".design/systems/acme/captures/bar-dark");
+    const capDir = path.join(root, "projects/systems/systems/acme/captures/bar-dark");
     await mkdir(capDir, { recursive: true });
     await writeFile(path.join(capDir, "capture.json"), "{}");
     await core.systems.logActivity("acme", { kind: "capture", title: "Captured bar-dark" });
@@ -572,7 +582,10 @@ describe("design systems", () => {
     expect(result.warnings.join("\n")).toContain(
       "<acme-list-item> component.js has a syntax error and was skipped",
     );
-    const js = await readFile(path.join(root, ".design/systems/acme/dist/system.js"), "utf8");
+    const js = await readFile(
+      path.join(root, "projects/systems/systems/acme/dist/system.js"),
+      "utf8",
+    );
     // The bundle still parses (vm.Script only compiles; it doesn't run).
     expect(() => new vm.Script(js)).not.toThrow();
     expect(js).toContain("ds.define('acme-list'");
@@ -582,7 +595,7 @@ describe("design systems", () => {
     });
     expect(got.snippet).toContain("<acme-list>");
     expect(
-      await readFile(path.join(root, ".design/systems/acme/dist/specimen.html"), "utf8"),
+      await readFile(path.join(root, "projects/systems/systems/acme/dist/specimen.html"), "utf8"),
     ).toContain(String.raw`"[\\s>/]"`);
   });
 

@@ -6,13 +6,13 @@ import {
   renderAgentsGuide,
   type AnyCommand,
   type Core,
-} from "@design-tool/core";
+} from "@beyland/scratchpad-core";
 import { createMcpHandler, McpServer, type McpHttpHandler } from "@modelcontextprotocol/server";
 import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
 
-export const AUDIT_SKILL_RESOURCE = "design-tool://skills/design-system-audit";
+export const AUDIT_SKILL_RESOURCE = "scratchpad://skills/design-system-audit";
 
-export const MCP_SERVER_NAME = "design-tool";
+export const MCP_SERVER_NAME = "scratchpad";
 export const MCP_SERVER_VERSION = "0.0.0";
 
 /** MCP tool names can't contain dots in many clients, so `prototype.create` becomes `prototype_create`. */
@@ -20,10 +20,17 @@ export function toolNameFor(commandName: string): string {
   return commandName.replaceAll(".", "_");
 }
 
-const DESTRUCTIVE = new Set(["prototype.delete", "source.remove"]);
+const DESTRUCTIVE = new Set([
+  "prototype.delete",
+  "source.remove",
+  "project.delete",
+  "system.delete",
+  "component.remove",
+  "review.delete",
+]);
 
-const INSTRUCTIONS = `design-tool manages a workspace of design prototypes (self-contained HTML folders) plus read-only reference sources (product codebases).
-Start with workspace_info, and read the ${AGENTS_GUIDE_RESOURCE} resource for conventions.
+const INSTRUCTIONS = `Scratchpad manages projects of design prototypes (self-contained HTML folders) and design systems, plus read-only reference sources (product codebases).
+Start with workspace_info, and read the ${AGENTS_GUIDE_RESOURCE} resource for conventions. Ids are unique within a project: pass project/id when several projects have the same id.
 Create alternatives with prototype_createVariant instead of overwriting, and share the returned viewer URL with the user.`;
 
 function toolResult(value: unknown) {
@@ -101,8 +108,8 @@ export function createMcpServer(core: Core): McpServer {
     "guide",
     AGENTS_GUIDE_RESOURCE,
     {
-      title: "Design workspace guide",
-      description: "Conventions for creating and iterating on prototypes in this workspace.",
+      title: "Scratchpad guide",
+      description: "Conventions for creating and iterating on prototypes in Scratchpad.",
       mimeType: "text/markdown",
     },
     async (uri) => ({
@@ -110,7 +117,7 @@ export function createMcpServer(core: Core): McpServer {
         {
           uri: uri.href,
           mimeType: "text/markdown",
-          text: renderAgentsGuide(core.workspace.config.name),
+          text: renderAgentsGuide(),
         },
       ],
     }),
@@ -120,8 +127,7 @@ export function createMcpServer(core: Core): McpServer {
     AUDIT_SKILL_RESOURCE,
     {
       title: "Design system audit skill",
-      description:
-        "How to audit a codebase into a verified design-system library with design-tool.",
+      description: "How to audit a codebase into a verified design-system library with Scratchpad.",
       mimeType: "text/markdown",
     },
     async (uri) => ({
@@ -133,7 +139,7 @@ export function createMcpServer(core: Core): McpServer {
     {
       title: "Audit a codebase into a design system",
       description:
-        "Start (or continue) auditing a registered source codebase into a design-tool design system.",
+        "Start (or continue) auditing a registered source codebase into a Scratchpad design system.",
       argsSchema: z.object({
         source: z.string().optional().describe("Workspace source id of the codebase"),
         system: z.string().optional().describe("Design system id to create or continue"),
@@ -158,7 +164,7 @@ export function createMcpServer(core: Core): McpServer {
   return server;
 }
 
-/** Serve MCP over stdio (for `dt mcp`). Resolves when the transport closes. */
+/** Serve MCP over stdio (for `sp mcp`). Resolves when the transport closes. */
 export async function serveStdio(core: Core): Promise<void> {
   const server = createMcpServer(core);
   const transport = new StdioServerTransport();

@@ -18,7 +18,7 @@ export async function call<T>(name: string, input: unknown = {}): Promise<T> {
       body: JSON.stringify(input),
     });
   } catch {
-    throw new ApiError("NETWORK", "Can't reach the design-tool server. Is `dt serve` running?");
+    throw new ApiError("NETWORK", "Can't reach the Scratchpad server. Is `sp serve` running?");
   }
   const body = (await response.json().catch(() => undefined)) as
     | { ok: true; result: T }
@@ -30,14 +30,24 @@ export async function call<T>(name: string, input: unknown = {}): Promise<T> {
 }
 
 export type ServerEvent =
-  | { type: "prototype.changed"; data: { id: string; exists: boolean; paths: string[] } }
+  | {
+      type: "prototype.changed";
+      data: { project: string; id: string; exists: boolean; paths: string[] };
+    }
   | { type: "workspace.changed"; data: Record<string, never> }
-  | { type: "project.changed"; data: { id: string; exists: boolean } }
+  | { type: "review.changed"; data: { project: string; id: string; exists: boolean } }
+  | { type: "project.changed"; data: { id: string; exists: boolean; contents?: boolean } }
   | {
       type: "system.changed";
-      data: { id: string; exists: boolean; paths: string[]; built?: boolean };
+      data: {
+        project: string;
+        id: string;
+        exists: boolean;
+        paths: string[];
+        built?: boolean;
+      };
     }
-  | { type: "ready"; data: { name: string } };
+  | { type: "ready"; data: { root: string } };
 
 /** Subscribe to live server events. EventSource reconnects automatically. */
 export function subscribe(
@@ -57,6 +67,7 @@ export function subscribe(
     "prototype.changed": forward("prototype.changed"),
     "workspace.changed": forward("workspace.changed"),
     "project.changed": forward("project.changed"),
+    "review.changed": forward("review.changed"),
     "system.changed": forward("system.changed"),
   };
   for (const [type, handler] of Object.entries(handlers))

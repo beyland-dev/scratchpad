@@ -1,7 +1,7 @@
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { Core, initWorkspace } from "@design-tool/core";
+import { Core, initWorkspace } from "@beyland/scratchpad-core";
 import { Client, InMemoryTransport } from "@modelcontextprotocol/client";
 import { afterEach, beforeEach, expect, test } from "vite-plus/test";
 import { createMcpServer, toolNameFor } from "../src/index.ts";
@@ -11,8 +11,8 @@ let core: Core;
 let client: Client;
 
 beforeEach(async () => {
-  root = await mkdtemp(path.join(tmpdir(), "dt-mcp-"));
-  await initWorkspace(root, { name: "MCP Test", example: false });
+  root = await mkdtemp(path.join(tmpdir(), "sp-mcp-"));
+  await initWorkspace(root, { project: "MCP Test", example: false });
   core = await Core.open({ root });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await createMcpServer(core).connect(serverTransport);
@@ -72,13 +72,13 @@ test("reports errors as tool errors", async () => {
 });
 
 test("serves the workspace guide resource", async () => {
-  const result = await client.readResource({ uri: "design-tool://guide" });
+  const result = await client.readResource({ uri: "scratchpad://guide" });
   const first = result.contents[0];
-  expect(first && "text" in first ? first.text : "").toContain("# Design workspace: MCP Test");
+  expect(first && "text" in first ? first.text : "").toContain("# Scratchpad");
 });
 
 test("serves the audit skill as a resource and a prompt", async () => {
-  const resource = await client.readResource({ uri: "design-tool://skills/design-system-audit" });
+  const resource = await client.readResource({ uri: "scratchpad://skills/design-system-audit" });
   const first = resource.contents[0];
   expect(first && "text" in first ? first.text : "").toContain("name: design-system-audit");
   const prompt = await client.getPrompt({

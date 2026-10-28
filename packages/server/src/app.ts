@@ -1,6 +1,6 @@
 import path from "node:path";
-import { isCoreError, type Core, type CoreErrorCode } from "@design-tool/core";
-import { createMcpHttpHandler } from "@design-tool/mcp";
+import { isCoreError, type Core, type CoreErrorCode } from "@beyland/scratchpad-core";
+import { createMcpHttpHandler } from "@beyland/scratchpad-mcp";
 import { Hono } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { streamSSE } from "hono/streaming";
@@ -46,7 +46,7 @@ export function createApp(options: AppOptions): Hono {
   app.use("/api/*", guard);
   app.use("/mcp", mcpGuard);
 
-  app.get("/api/health", (c) => c.json({ ok: true, name: core.workspace.config.name }));
+  app.get("/api/health", (c) => c.json({ ok: true, root: core.workspace.root }));
 
   app.get("/api/commands", (c) => c.json({ ok: true, result: core.registry.describe() }));
 
@@ -101,7 +101,7 @@ export function createApp(options: AppOptions): Hono {
           STATUS_BY_CODE[error.code],
         );
       }
-      console.error(`[design-tool] command ${name} failed`, error);
+      console.error(`[scratchpad] command ${name} failed`, error);
       return c.json(
         {
           ok: false,
@@ -123,7 +123,7 @@ export function createApp(options: AppOptions): Hono {
       );
       await stream.writeSSE({
         event: "ready",
-        data: JSON.stringify({ name: core.workspace.config.name }),
+        data: JSON.stringify({ root: core.workspace.root }),
       });
       await new Promise<void>((resolve) => stream.onAbort(resolve));
       clearInterval(heartbeat);
@@ -159,10 +159,10 @@ export function createApp(options: AppOptions): Hono {
   return app;
 }
 
-const MISSING_UI_HTML = `<!doctype html><meta charset="utf-8"><title>design-tool</title>
+const MISSING_UI_HTML = `<!doctype html><meta charset="utf-8"><title>Scratchpad</title>
 <body style="font-family:system-ui;max-width:40rem;margin:4rem auto;padding:0 1rem;line-height:1.5">
-<h1>design-tool</h1>
-<p>The API is running, but the web UI hasn't been built. Run <code>pnpm build</code> in the design-tool repo,
+<h1>Scratchpad</h1>
+<p>The API is running, but the web UI hasn't been built. Run <code>pnpm build</code> in the Scratchpad repo,
 or use <code>pnpm dev</code> for the development UI.</p>
 <p>API: <a href="/api/commands">/api/commands</a> · MCP: <code>/mcp</code></p>
 </body>`;

@@ -1,7 +1,7 @@
 {
-  "name": "@design-tool/core",
+  "name": "@beyland/scratchpad-core",
   "version": "0.0.0",
-  "description": "Headless core for design-tool: workspace model, file storage, and command registry.",
+  "description": "Headless core for Scratchpad: workspace model, file storage, and command registry.",
   "license": "MIT",
   "files": [
     "dist"
@@ -10,12 +10,14 @@
   "exports": {
     ".": "./src/index.ts",
     "./family": "./src/family.ts",
+    "./review-manifest": "./src/review-manifest.ts",
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "exports": {
       ".": "./dist/index.mjs",
       "./family": "./dist/family.mjs",
+      "./review-manifest": "./dist/review-manifest.mjs",
       "./package.json": "./package.json"
     },
     "access": "public"

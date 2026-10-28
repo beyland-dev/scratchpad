@@ -57,7 +57,7 @@ export const CapturedFromSchema = z.object({
   notes: z.string().optional(),
 });
 
-/** Contents of `.design/systems/<id>/system.json`. */
+/** Contents of `projects/<project>/systems/<id>/system.json`. */
 /**
  * - `captured`: components reverse-engineered from a running product into custom elements
  *   (dist/system.css + system.js, usable from plain HTML).
@@ -93,8 +93,6 @@ export const SystemFileSchema = z.object({
   description: z.string().optional(),
   /** Workspace source (codebase) this system was audited from. */
   sourceId: z.string().optional(),
-  /** Id of the project this system belongs to. */
-  project: SystemIdSchema.optional(),
   /** Custom element tag prefix, e.g. "vsc". */
   prefix: z.string().regex(/^[a-z][a-z0-9]*$/),
   themes: z.array(ThemeSchema).min(1),
@@ -125,6 +123,8 @@ export type SystemFile = z.infer<typeof SystemFileSchema>;
 
 export const SystemSchema = SystemFileSchema.extend({
   id: SystemIdSchema,
+  /** The project whose folder it lives in. */
+  project: SystemIdSchema,
   issues: z.array(z.string()).optional(),
 });
 export type DesignSystem = z.infer<typeof SystemSchema>;
@@ -235,7 +235,7 @@ export const VerificationSchema = z.object({
 });
 export type Verification = z.infer<typeof VerificationSchema>;
 
-/** Contents of `.design/systems/<id>/components/<name>/component.json`. */
+/** Contents of `projects/<project>/systems/<id>/components/<name>/component.json`. */
 export const ComponentFileSchema = z.object({
   tag: ComponentTagSchema,
   kind: ComponentKindSchema.default("component"),

@@ -1,5 +1,7 @@
+import path from "node:path";
 import { z } from "zod";
 import { defineCommand } from "./registry.ts";
+import { REF_PATTERN, refKey } from "./refs.ts";
 import { pathExists, slugify, uniqueSlug, nowIso } from "./fs-utils.ts";
 import { CoreError } from "./errors.ts";
 import {
@@ -18,8 +20,11 @@ import {
 import { AGENTS_GUIDE_RESOURCE } from "./guide.ts";
 import type { Core } from "./core.ts";
 
-const IdInput = SlugSchema.describe("Prototype id (its folder name under .design/prototypes/)");
-const ProjectRef = SlugSchema.describe("Project id (its folder name under .design/projects/)");
+const IdInput = z
+  .string()
+  .regex(REF_PATTERN, "Use id or project/id")
+  .describe("Prototype id (its folder name), or project/id when several projects have that id");
+const ProjectRef = SlugSchema.describe("Project id (its folder name under projects/)");
 
 const ProjectIconInput = z
   .object({
@@ -41,7 +46,7 @@ function withUrls(core: Core, proto: Prototype): PrototypeWithUrls {
   const resolvedSystem = core.resolvePrototypeSystem(proto);
   return {
     ...proto,
-    urls: core.prototypeUrls(proto.id),
+    urls: core.prototypeUrls(refKey(proto.project, proto.id)),
     ...(resolvedSystem ? { resolvedSystem } : {}),
   };
 }
@@ -51,10 +56,12 @@ function describeSource(core: Core, source: Source) {
 }
 
 function describeProject(core: Core, project: Project) {
+  const scope = core.projects.scope(project.id);
   return {
     ...project,
-    prototypes: core.prototypes.list({ project: project.id }).length,
-    systems: core.systems.list().filter((s) => s.project === project.id).length,
+    dir: scope.dir,
+    prototypes: scope.prototypes.list().length,
+    systems: scope.systems.list().length,
     urls: core.projectUrls(project.id),
   };
 }
@@ -62,44 +69,43 @@ function describeProject(core: Core, project: Project) {
 function line(proto: Prototype): string {
   const bits = [
     proto.status,
-    proto.project && `project:${proto.project}`,
     proto.group && `group:${proto.group}`,
     proto.variantOf && `variant-of:${proto.variantOf}`,
   ]
     .filter(Boolean)
     .join("  ");
-  return `${proto.id.padEnd(32)} ${proto.title}${bits ? `  (${bits})` : ""}${proto.issues?.length ? "  ⚠" : ""}`;
+  return `${refKey(proto.project, proto.id).padEnd(40)} ${proto.title}${bits ? `  (${bits})` : ""}${proto.issues?.length ? "  ⚠" : ""}`;
 }
 
 export const workspaceInfo = defineCommand({
   name: "workspace.info",
   title: "Workspace info",
   description:
-    "Get an overview of the design workspace: name, projects, reference sources (product codebases), prototype counts, groups, tags, and the app URLs. Call this first to orient yourself.",
+    "Get an overview of the Scratchpad workspace: projects, reference sources (product codebases), prototype counts, groups, tags, and the app URLs. Call this first to orient yourself.",
   kind: "query",
   input: z.object({}),
   handler: (_input, core) => {
     const prototypes = core.prototypes.list();
     const config = core.workspace.config;
     return {
-      name: config.name,
-      description: config.description,
       root: core.workspace.root,
-      designDir: core.workspace.designDir,
-      projects: core.projects
-        .list()
-        .map((p) => ({ id: p.id, name: p.name, description: p.description })),
+      projects: core.projects.list().map((p) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        dir: core.projects.scope(p.id).dir,
+      })),
       sources: config.sources.map((s) => describeSource(core, s)),
       prototypeCount: prototypes.length,
       groups: [...new Set(prototypes.flatMap((p) => (p.group ? [p.group] : [])))].sort(),
       tags: [...new Set(prototypes.flatMap((p) => p.tags))].sort(),
       urls: core.urls,
-      guide: `Read the ${AGENTS_GUIDE_RESOURCE} MCP resource or .design/AGENTS.md for workspace conventions.`,
+      guide: `Read the ${AGENTS_GUIDE_RESOURCE} MCP resource or ${path.join(core.workspace.root, "AGENTS.md")} for conventions.`,
     };
   },
   format: (out) =>
     [
-      `${out.name}  (${out.root})`,
+      `Scratchpad  (${out.root})`,
       `${out.projects.length} project(s), ${out.prototypeCount} prototype(s), ${out.sources.length} source(s)`,
       out.projects.length ? `Projects: ${out.projects.map((p) => p.id).join(", ")}` : "",
       `App: ${out.urls.app}`,
@@ -135,7 +141,7 @@ export const sourceList = defineCommand({
               `${s.id.padEnd(24)} ${s.kind.padEnd(6)} ${s.resolvedLocation}${s.available === false ? "  (missing)" : ""}`,
           )
           .join("\n")
-      : "No sources registered. Add one with `dt source add <location>`.",
+      : "No sources registered. Add one with `sp source add <location>`.",
 });
 
 export const sourceAdd = defineCommand({
@@ -149,7 +155,7 @@ export const sourceAdd = defineCommand({
     location: z
       .string()
       .min(1)
-      .describe("Local path (absolute or relative to the workspace root) or git URL"),
+      .describe("Local path (absolute, or relative to the current directory) or git URL"),
     name: z
       .string()
       .min(1)
@@ -180,7 +186,7 @@ export const sourceAdd = defineCommand({
       id: input.id ?? uniqueSlug(slugify(name), (c) => taken.has(c)),
       name,
       kind,
-      location: input.location,
+      location: kind === "local" ? path.resolve(input.location) : input.location,
       ...(input.notes ? { notes: input.notes } : {}),
       addedAt: nowIso(),
     };
@@ -238,11 +244,12 @@ export const prototypeGet = defineCommand({
   input: z.object({ id: IdInput }),
   handler: async (input, core) => {
     const proto = core.prototypes.get(input.id);
+    const ref = refKey(proto.project, proto.id);
     return {
       prototype: withUrls(core, proto),
-      files: await core.prototypes.listFiles(input.id),
+      files: await core.prototypes.listFiles(ref),
       family: core.prototypes
-        .family(input.id)
+        .family(ref)
         .map((p) => ({ id: p.id, title: p.title, variantOf: p.variantOf, status: p.status })),
     };
   },
@@ -270,11 +277,9 @@ export const prototypeCreate = defineCommand({
     title: z.string().min(1),
     description: z.string().optional().describe("What this prototype explores and why"),
     id: SlugSchema.optional().describe("Explicit id (defaults to a slug of the title)"),
-    project: ProjectRef.nullable()
-      .optional()
-      .describe(
-        "Project it belongs to. Defaults to the workspace's only project when there is exactly one; null for none",
-      ),
+    project: ProjectRef.optional().describe(
+      "Project it goes into. Required unless the workspace has exactly one project",
+    ),
     framework: z
       .enum(["react"])
       .optional()
@@ -282,12 +287,14 @@ export const prototypeCreate = defineCommand({
         "Build it with a framework against a package design system: the entry is an HTML shell loading main.tsx, which imports the system's components (`@/components/...`) and styles (`@/index.css`). Omit for plain HTML",
       ),
     system: SlugSchema.optional().describe(
-      "Design system it uses. With a framework: the package system to build against (defaults to the project's only package system). For plain HTML: the captured system whose /s/<id>/system.css and system.js it loads (inferred from the HTML when omitted). The viewer offers its themes",
+      "Design system (in the same project) it uses. With a framework: the package system to build against (defaults to the project's only package system). For plain HTML: the captured system whose ../../systems/<id>/system.css and system.js it loads (inferred from the HTML when omitted). The viewer offers its themes",
     ),
     group: z.string().optional().describe("Exploration name used to group related prototypes"),
     tags: z.array(z.string()).optional(),
     status: PrototypeStatusSchema.optional(),
-    variantOf: SlugSchema.optional().describe("Id of the prototype this is a variant of"),
+    variantOf: SlugSchema.optional().describe(
+      "Id of the prototype (in the same project) this is a variant of",
+    ),
     entry: z.string().optional().describe("Entry file (default index.html)"),
     sourceRefs: z
       .array(z.string())
@@ -299,23 +306,18 @@ export const prototypeCreate = defineCommand({
   }),
   handler: async ({ project, ...input }, core) => {
     const projectId = core.resolveProject(project);
+    const scope = core.projects.scope(projectId);
     if (input.framework) {
-      const system = core.prototypeSystem({
+      input.system = core.prototypeSystem({
         id: input.id ?? input.title,
+        project: projectId,
         framework: input.framework,
         ...(input.system ? { system: input.system } : {}),
-        ...(projectId ? { project: projectId } : {}),
-      } as Prototype);
-      input.system = system;
+      });
     } else if (input.system) {
-      core.systems.get(input.system);
+      scope.systems.get(input.system);
     }
-    return {
-      prototype: withUrls(
-        core,
-        await core.prototypes.create({ ...input, ...(projectId ? { project: projectId } : {}) }),
-      ),
-    };
+    return { prototype: withUrls(core, await core.prototypes.create(projectId, input)) };
   },
   format: (out) =>
     `Created ${out.prototype.id}\n  viewer: ${out.prototype.urls.viewer}\n  raw:    ${out.prototype.urls.raw}`,
@@ -325,7 +327,7 @@ export const prototypeUpdate = defineCommand({
   name: "prototype.update",
   title: "Update prototype",
   description:
-    "Update prototype metadata (title, description, status, tags, project, system, group, variantOf, entry, sourceRefs). Pass null to clear optional fields. Versions of a family share one title: renaming one renames all, and setting `variantOf` takes on the family's title.",
+    "Update prototype metadata (title, description, status, tags, system, group, variantOf, entry, sourceRefs), or move it to another project with `project`. Pass null to clear optional fields. Versions of a family share one title: renaming one renames all, and setting `variantOf` takes on the family's title.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({
@@ -334,24 +336,33 @@ export const prototypeUpdate = defineCommand({
     description: z.string().nullable().optional(),
     status: PrototypeStatusSchema.optional(),
     tags: z.array(z.string()).optional(),
-    project: ProjectRef.nullable().optional().describe("Move to another project (null for none)"),
+    project: ProjectRef.optional().describe(
+      "Move it to another project (its folder moves; links that don't hold there are dropped)",
+    ),
     system: SlugSchema.nullable()
       .optional()
-      .describe("Design system it uses (null to infer it from its HTML or project)"),
+      .describe(
+        "Design system (in its project) it uses (null to infer it from its HTML or project)",
+      ),
     group: z.string().nullable().optional(),
     variantOf: SlugSchema.nullable().optional(),
     entry: z.string().optional(),
     sourceRefs: z.array(z.string()).optional(),
   }),
-  handler: async ({ id, ...patch }, core) => {
-    if (patch.project) core.projects.get(patch.project);
+  handler: async ({ id, project, ...patch }, core) => {
+    let proto = core.prototypes.get(id);
+    if (project && project !== proto.project) {
+      proto = await core.movePrototype(refKey(proto.project, proto.id), project);
+    }
+    const ref = refKey(proto.project, proto.id);
     if (patch.system) {
-      const proto = core.prototypes.get(id);
       // Framework prototypes build against it, so it must be a package system.
       if (proto.framework) core.prototypeSystem({ ...proto, system: patch.system });
-      else core.systems.get(patch.system);
+      else core.projects.scope(proto.project).systems.get(patch.system);
     }
-    return { prototype: withUrls(core, await core.prototypes.update(id, patch)) };
+    if (!Object.values(patch).some((v) => v !== undefined))
+      return { prototype: withUrls(core, proto) };
+    return { prototype: withUrls(core, await core.prototypes.update(ref, patch)) };
   },
   format: (out) => `Updated ${out.prototype.id}`,
 });
@@ -369,10 +380,14 @@ export const prototypeWriteFile = defineCommand({
     content: z.string(),
     encoding: FileEncodingSchema.default("utf8"),
   }),
-  handler: async (input, core) => ({
-    file: await core.prototypes.writeFile(input.id, input.path, input.content, input.encoding),
-    urls: core.prototypeUrls(input.id),
-  }),
+  handler: async (input, core) => {
+    const proto = core.prototypes.get(input.id);
+    const ref = refKey(proto.project, proto.id);
+    return {
+      file: await core.prototypes.writeFile(ref, input.path, input.content, input.encoding),
+      urls: core.prototypeUrls(ref),
+    };
+  },
   format: (out) => `Wrote ${out.file.path} (${out.file.size} bytes)`,
 });
 
@@ -423,7 +438,7 @@ export const prototypeDelete = defineCommand({
   name: "prototype.delete",
   title: "Delete prototype",
   description:
-    "Move a prototype to the workspace trash (.design/.trash). Recoverable by moving the folder back.",
+    "Move a prototype to its project's trash (projects/<project>/.trash). Recoverable by moving the folder back.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({ id: IdInput }),
@@ -460,7 +475,7 @@ export const projectList = defineCommand({
               `${p.id.padEnd(24)} ${p.name}  (${p.prototypes} prototypes, ${p.systems} systems)${p.issues?.length ? "  ⚠" : ""}`,
           )
           .join("\n")
-      : "No projects yet. Create one with `dt project create --name <name>`.",
+      : "No projects yet. Create one with `sp project create --name <name>`.",
 });
 
 export const projectGet = defineCommand({
@@ -472,12 +487,12 @@ export const projectGet = defineCommand({
   input: z.object({ id: ProjectRef }),
   handler: (input, core) => {
     const project = core.projects.get(input.id);
+    const scope = core.projects.scope(project.id);
     return {
       project: describeProject(core, project),
-      prototypes: core.prototypes.list({ project: project.id }).map((p) => withUrls(core, p)),
-      systems: core.systems
+      prototypes: scope.prototypes.list().map((p) => withUrls(core, p)),
+      systems: scope.systems
         .list()
-        .filter((s) => s.project === project.id)
         .map((s) => ({ id: s.id, name: s.name, description: s.description })),
     };
   },
@@ -497,7 +512,7 @@ export const projectCreate = defineCommand({
   name: "project.create",
   title: "Create project",
   description:
-    "Create a project: a product or effort (e.g. a web app, a marketing site) that groups prototypes and design systems. Then pass its id as `project` when creating prototypes and systems.",
+    "Create a project: a product or effort (e.g. a web app, a marketing site). Its prototypes and design systems live in its folder (projects/<id>/), which can be its own git repo. Pass its id as `project` when creating prototypes and systems.",
   kind: "mutation",
   input: z.object({
     name: z.string().min(1),
@@ -528,7 +543,7 @@ export const projectUpdate = defineCommand({
   name: "project.update",
   title: "Update project",
   description:
-    "Update a project's name, description, color or icon. Pass null to clear description, color or icon. To move prototypes or systems between projects, update their `project` field.",
+    "Update a project's name, description, color or icon. Pass null to clear description, color or icon. To move a prototype to another project, use prototype.update with `project`.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({
@@ -553,7 +568,7 @@ export const projectDelete = defineCommand({
   name: "project.delete",
   title: "Delete project",
   description:
-    "Move a project folder to the workspace trash. Its prototypes and design systems are kept (the app lists them under Trash) until they're moved to another project.",
+    "Move a project folder, with all its prototypes and design systems, to the workspace trash (~/.scratchpad/.trash). Recoverable by moving the folder back.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({ id: ProjectRef }),

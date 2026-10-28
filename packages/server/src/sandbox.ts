@@ -6,8 +6,10 @@ import {
   SPECIMEN_HTML,
   isCoreError,
   safeJoin,
+  ID_PATTERN,
+  refKey,
   type Core,
-} from "@design-tool/core";
+} from "@beyland/scratchpad-core";
 import { Hono } from "hono";
 import { fileResponse } from "./static.ts";
 
@@ -46,12 +48,25 @@ export function createSandboxApp(options: SandboxOptions): Hono {
     await next();
   });
 
-  app.get("/p/:id", (c) => c.redirect(`/p/${encodeURIComponent(c.req.param("id"))}/`, 301));
+  /** The rest of the path after `prefix`, decoded; undefined when it's malformed. */
+  const restOf = (path: string, prefix: string): string | undefined => {
+    try {
+      return (path.startsWith(prefix) ? path.slice(prefix.length) : "")
+        .split("/")
+        .map(decodeURIComponent)
+        .join("/");
+    } catch {
+      return undefined;
+    }
+  };
+
+  const scopeOf = (project: string) =>
+    core.projects.has(project) ? core.projects.scope(project) : undefined;
 
   // Project icons. Agent-written SVGs are untrusted, so they're served here (never on the app
   // origin) and with a CSP that blocks scripts if one is opened directly.
-  app.get("/projects/:id/icon", async (c) => {
-    const id = c.req.param("id");
+  app.get("/projects/:project/~icon", async (c) => {
+    const id = c.req.param("project");
     if (!core.projects.has(id)) return c.text("Not found", 404, SANDBOX_HEADERS);
     const file = core.projects.iconPathOf(id);
     const response = file
@@ -63,20 +78,25 @@ export function createSandboxApp(options: SandboxOptions): Hono {
     return response ?? c.text("Not found", 404, SANDBOX_HEADERS);
   });
 
-  // Design system builds: /s/<system>/system.css, system.js, specimen.html, assets/…
-  app.get("/s/:id/*", async (c) => {
+  app.get("/projects/:project/prototypes/:id", (c) =>
+    c.redirect(
+      `/projects/${encodeURIComponent(c.req.param("project"))}/prototypes/${encodeURIComponent(c.req.param("id"))}/`,
+      301,
+    ),
+  );
+
+  // Design system builds: /projects/<project>/systems/<system>/system.css, system.js,
+  // specimen.html, assets/…, the same relative layout prototypes link to.
+  app.get("/projects/:project/systems/:id/*", async (c) => {
+    const project = c.req.param("project");
     const id = c.req.param("id");
-    const prefix = `/s/${encodeURIComponent(id)}/`;
-    let rest: string;
-    try {
-      rest = (c.req.path.startsWith(prefix) ? c.req.path.slice(prefix.length) : "")
-        .split("/")
-        .map(decodeURIComponent)
-        .join("/");
-    } catch {
-      return c.text("Bad path", 400, SANDBOX_HEADERS);
-    }
-    if (!core.systems.has(id)) return c.text("Not found", 404, SANDBOX_HEADERS);
+    const rest = restOf(
+      c.req.path,
+      `/projects/${encodeURIComponent(project)}/systems/${encodeURIComponent(id)}/`,
+    );
+    if (rest === undefined) return c.text("Bad path", 400, SANDBOX_HEADERS);
+    const scope = scopeOf(project);
+    if (!scope?.systems.has(id)) return c.text("Not found", 404, SANDBOX_HEADERS);
     // Captured references (screenshots, DOM) for side-by-side verification in the UI.
     const captureMatch =
       /^~captures\/([^/]+)\/(screenshot\.png|dom\.html|capture\.json|rules\.css|geometry\.json)$/.exec(
@@ -85,7 +105,7 @@ export function createSandboxApp(options: SandboxOptions): Hono {
     if (captureMatch) {
       try {
         const response = await fileResponse(
-          path.join(core.systems.captureDirOf(id, captureMatch[1]!), captureMatch[2]!),
+          path.join(scope.systems.captureDirOf(id, captureMatch[1]!), captureMatch[2]!),
           SANDBOX_HEADERS,
         );
         return response ?? c.text("Not found", 404, SANDBOX_HEADERS);
@@ -94,11 +114,12 @@ export function createSandboxApp(options: SandboxOptions): Hono {
       }
     }
     try {
-      const dist = path.join(core.systems.dirOf(id), DIST_DIR);
-      if (!(await pathExists(path.join(dist, "catalog.json")))) await core.buildSystem(id);
+      const dist = path.join(scope.systems.dirOf(id), DIST_DIR);
+      if (!(await pathExists(path.join(dist, "catalog.json"))))
+        await core.buildSystem(refKey(project, id));
       // Captured systems' specimen page doesn't depend on the system: serve this version's, so a
-      // build by an older design-tool process (e.g. a long-running MCP server) can't leave a stale one.
-      if ((rest === "" || rest === "specimen.html") && core.systems.get(id).kind !== "package")
+      // build by an older Scratchpad process (e.g. a long-running MCP server) can't leave a stale one.
+      if ((rest === "" || rest === "specimen.html") && scope.systems.get(id).kind !== "package")
         return c.html(SPECIMEN_HTML, 200, SANDBOX_HEADERS);
       const response = await fileResponse(safeJoin(dist, rest || "specimen.html"), SANDBOX_HEADERS);
       return response ?? c.text("Not found", 404, SANDBOX_HEADERS);
@@ -108,21 +129,21 @@ export function createSandboxApp(options: SandboxOptions): Hono {
     }
   });
 
-  app.get("/p/:id/*", async (c) => {
+  app.get("/projects/:project/prototypes/:id/*", async (c) => {
+    const project = c.req.param("project");
     const id = c.req.param("id");
-    const prefix = `/p/${encodeURIComponent(id)}/`;
-    const rawRest = c.req.path.startsWith(prefix) ? c.req.path.slice(prefix.length) : "";
-    let rest: string;
-    try {
-      rest = rawRest.split("/").map(decodeURIComponent).join("/");
-    } catch {
-      return c.text("Bad path", 400, SANDBOX_HEADERS);
-    }
-    const proto = core.prototypes.has(id) ? core.prototypes.get(id) : undefined;
+    const rest = restOf(
+      c.req.path,
+      `/projects/${encodeURIComponent(project)}/prototypes/${encodeURIComponent(id)}/`,
+    );
+    if (rest === undefined) return c.text("Bad path", 400, SANDBOX_HEADERS);
+    const scope = scopeOf(project);
+    if (!scope) return c.text("Not found", 404, SANDBOX_HEADERS);
+    const proto = scope.prototypes.has(id) ? scope.prototypes.get(id) : undefined;
     if (proto?.framework) {
       // Built by the design system's Vite on demand (cached until its files change).
       try {
-        const dir = await core.buildPrototype(id);
+        const dir = await core.buildPrototype(refKey(project, id));
         const relative = rest === "" ? proto.entry : rest;
         const response = await fileResponse(safeJoin(dir, relative), SANDBOX_HEADERS);
         return response ?? c.text("Not found", 404, SANDBOX_HEADERS);
@@ -133,7 +154,7 @@ export function createSandboxApp(options: SandboxOptions): Hono {
       }
     }
     try {
-      const dir = core.prototypes.dirOf(id);
+      const dir = scope.prototypes.dirOf(id);
       const entry = proto ? proto.entry : "index.html";
       const relative = rest === "" ? entry : rest;
       if (relative === PROTOTYPE_META_FILE) return c.text("Not found", 404, SANDBOX_HEADERS);
@@ -145,7 +166,27 @@ export function createSandboxApp(options: SandboxOptions): Hono {
     }
   });
 
-  app.get("*", (c) => c.text("design-tool prototype sandbox", 404, SANDBOX_HEADERS));
+  // Local previews of review exports (review.preview), exactly as reviewers will see them.
+  app.get("/review-previews/:project/:id/*", async (c) => {
+    const project = c.req.param("project");
+    const id = c.req.param("id");
+    const rest = restOf(
+      c.req.path,
+      `/review-previews/${encodeURIComponent(project)}/${encodeURIComponent(id)}/`,
+    );
+    if (rest === undefined || !ID_PATTERN.test(project) || !ID_PATTERN.test(id))
+      return c.text("Bad path", 400, SANDBOX_HEADERS);
+    try {
+      const dir = path.join(core.workspace.cacheDir, "review-previews", project, id);
+      const response = await fileResponse(safeJoin(dir, rest || "index.html"), SANDBOX_HEADERS);
+      return response ?? c.text("Not found", 404, SANDBOX_HEADERS);
+    } catch (error) {
+      if (isCoreError(error)) return c.text(error.message, 400, SANDBOX_HEADERS);
+      throw error;
+    }
+  });
+
+  app.get("*", (c) => c.text("Scratchpad prototype sandbox", 404, SANDBOX_HEADERS));
 
   return app;
 }

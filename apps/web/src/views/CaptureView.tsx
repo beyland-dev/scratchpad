@@ -2,7 +2,7 @@ import { Code } from "../components/Code.tsx";
 import { useEffect, useState } from "preact/hooks";
 import { useRoute } from "preact-iso";
 import { useCommand } from "../hooks/useCommand.ts";
-import { systemEventOf, systemsListHref } from "../store.ts";
+import { refOf, systemEventOf, systemsListHref } from "../store.ts";
 import type { DesignSystem } from "../types.ts";
 import { relativeTime } from "../util.ts";
 import { systemTabHref } from "./SystemView.tsx";
@@ -88,7 +88,8 @@ const TABS = [
 
 export function CaptureView() {
   const { params } = useRoute();
-  const id = params.id ?? "";
+  // The app identifies systems as project/id.
+  const id = refOf(params.project ?? "", params.id ?? "");
   const label = params.label ?? "";
   const rev = systemEventOf(id);
   const { data: sys } = useCommand<{ system: DesignSystem }>("system.get", { id }, []);

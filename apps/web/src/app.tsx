@@ -6,6 +6,7 @@ import { Sidebar } from "./components/Sidebar.tsx";
 import { homeProjectId, loaded, projectHref, startLiveUpdates } from "./store.ts";
 import { Compare } from "./views/Compare.tsx";
 import { Feedback } from "./views/Feedback.tsx";
+import { ReviewView } from "./views/ReviewView.tsx";
 import { Handoff } from "./views/Handoff.tsx";
 import { Settings } from "./views/Settings.tsx";
 import { CaptureView } from "./views/CaptureView.tsx";
@@ -23,25 +24,22 @@ function NotFound() {
   );
 }
 
-/** Sends "/" (and the old "/systems") to the last visited project. */
-function ToHomeProject({ section }: { section?: "systems" }) {
+/** Sends "/" to the last visited project. */
+function ToHomeProject() {
   const { route } = useLocation();
   const target = loaded.value ? homeProjectId() : undefined;
   useEffect(() => {
-    if (target) route(projectHref(target, section ?? "prototypes"), true);
+    if (target) route(projectHref(target), true);
   }, [target]);
   if (!loaded.value) return <p class="page-message">Loading…</p>;
   if (!target)
     return (
       <p class="page-message">
-        No projects yet. Create one with <code>dt project create --name "My product"</code>.
+        No projects yet. Create one from the sidebar, or with{" "}
+        <code>sp project create --name "My product"</code>.
       </p>
     );
   return null;
-}
-
-function ToHomeSystems() {
-  return <ToHomeProject section="systems" />;
 }
 
 function Shell() {
@@ -58,14 +56,14 @@ function Shell() {
             <Route path="/projects/:project" component={Gallery} />
             <Route path="/projects/:project/systems" component={Systems} />
             <Route path="/projects/:project/feedback" component={Feedback} />
+            <Route path="/projects/:project/feedback/:id" component={ReviewView} />
             <Route path="/projects/:project/handoff" component={Handoff} />
             <Route path="/settings" component={Settings} />
-            <Route path="/p/:id" component={Viewer} />
+            <Route path="/projects/:project/p/:id" component={Viewer} />
             <Route path="/compare" component={Compare} />
-            <Route path="/systems" component={ToHomeSystems} />
-            <Route path="/systems/:id" component={SystemView} />
-            <Route path="/systems/:id/c/:name" component={ComponentView} />
-            <Route path="/systems/:id/captures/:label" component={CaptureView} />
+            <Route path="/projects/:project/systems/:id" component={SystemView} />
+            <Route path="/projects/:project/systems/:id/c/:name" component={ComponentView} />
+            <Route path="/projects/:project/systems/:id/captures/:label" component={CaptureView} />
             <Route default component={NotFound} />
           </Router>
         </main>

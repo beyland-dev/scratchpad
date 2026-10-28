@@ -1,4 +1,4 @@
-import { versionLabel } from "@design-tool/core/family";
+import { versionLabel } from "@beyland/scratchpad-core/family";
 import { useRef, useState } from "preact/hooks";
 import type { PrototypeWithUrls } from "../types.ts";
 import { relativeTime } from "../util.ts";

@@ -6,7 +6,7 @@ import type {
   PrototypeUrls,
   Source,
   WorkspaceUrls,
-} from "@design-tool/core";
+} from "@beyland/scratchpad-core";
 
 export type {
   Prototype,
@@ -14,21 +14,30 @@ export type {
   PrototypeStatus,
   PrototypeUrls,
   Source,
-} from "@design-tool/core";
+} from "@beyland/scratchpad-core";
 
+/**
+ * A prototype as the app holds it. `id` is its workspace-unique `project/id` reference (what the
+ * app keys by and passes to commands), and `localId` its folder name; `variantOf`, `system` and
+ * `resolvedSystem` are qualified the same way.
+ */
 export type PrototypeWithUrls = Prototype & {
+  localId: string;
   urls: PrototypeUrls;
   /** The design system it uses: its `system`, or the one inferred from its HTML or project. */
   resolvedSystem?: string;
 };
 
-export type ProjectSummary = Project & { prototypes: number; systems: number; urls: ProjectUrls };
+export type ProjectSummary = Project & {
+  dir: string;
+  prototypes: number;
+  systems: number;
+  urls: ProjectUrls;
+};
 
 export interface WorkspaceInfo {
-  name: string;
-  description?: string;
   root: string;
-  designDir: string;
+  projects: { id: string; name: string; description?: string; dir: string }[];
   sources: (Source & { resolvedLocation: string })[];
   prototypeCount: number;
   groups: string[];
@@ -42,7 +51,7 @@ export interface PrototypeDetails {
   family: { id: string; title: string; variantOf?: string; status: string }[];
 }
 
-export type { DesignComponent, DesignSystem, Token } from "@design-tool/core";
+export type { DesignComponent, DesignSystem, Token } from "@beyland/scratchpad-core";
 
 export interface ComponentSummary {
   name: string;
@@ -85,4 +94,54 @@ export interface ActivityEntry {
   detail?: string;
   ref?: string;
   status?: "ok" | "warn" | "error";
+}
+
+export interface GitStatus {
+  project: string;
+  repo: boolean;
+  branch?: string;
+  remote?: string;
+  webUrl?: string;
+  upstream?: string;
+  ahead: number;
+  behind: number;
+  changes: { path: string; status: string }[];
+  conflicts: string[];
+  lastCommit?: { hash: string; subject: string; author: string; date: string };
+}
+
+export type { ReviewManifest } from "@beyland/scratchpad-core/review-manifest";
+
+export interface ReviewItem {
+  /** Prototype id in the review's project (a specific version). */
+  prototype: string;
+  label: string;
+  note?: string;
+}
+
+export interface ReviewRound {
+  round: number;
+  publishedAt: string;
+  target: "github-pages";
+  url?: string;
+  path: string;
+  prototypes: { id: string; updatedAt: string }[];
+}
+
+export interface Review {
+  id: string;
+  project: string;
+  title: string;
+  intro?: string;
+  questions: string[];
+  presentation: "sequence" | "compare" | "both";
+  device: "desktop" | "laptop" | "tablet" | "mobile";
+  theme?: string;
+  items: ReviewItem[];
+  slug?: string;
+  rounds: ReviewRound[];
+  createdAt: string;
+  updatedAt: string;
+  issues?: string[];
+  urls: { app: string; latest?: string };
 }

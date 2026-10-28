@@ -7,9 +7,50 @@ export * from "./commands.ts";
 export * from "./core.ts";
 export * from "./guide.ts";
 export * from "./init.ts";
-export { ProjectStore, PROJECT_META_FILE, MAX_ICON_BYTES } from "./projects.ts";
+export { ProjectStore, PROJECT_META_FILE, PROJECT_GITIGNORE, MAX_ICON_BYTES } from "./projects.ts";
+export { ProjectScope, type ScopeContext } from "./scope.ts";
+export { PrototypeIndex, ReviewIndex, SystemIndex, type Located } from "./indexes.ts";
+export { parseRef, qualify, refKey, REF_PATTERN, type Ref } from "./refs.ts";
+export {
+  ProjectGit,
+  cloneInto,
+  execRunner,
+  githubRepoOf,
+  type GitChange,
+  type GitStatus,
+  type Runner,
+} from "./git.ts";
+export { gitCommands, summarizeChanges } from "./git-commands.ts";
+export * from "./review-manifest.ts";
+export {
+  ReviewStore,
+  ReviewFileSchema,
+  ReviewItemSchema,
+  ReviewRoundSchema,
+  REVIEW_META_FILE,
+  type Review,
+  type ReviewFile,
+  type ReviewItem,
+  type ReviewRound,
+} from "./reviews.ts";
+export {
+  exportReview,
+  publishReview,
+  findReviewApp,
+  reviewAppCandidates,
+  PUBLISH_BRANCH,
+  type ExportResult,
+  type PublishResult,
+} from "./review-export.ts";
+export { reviewCommands } from "./review-commands.ts";
 export type { CreateProjectInput, UpdateProjectInput, ProjectIconInput } from "./projects.ts";
-export { PrototypeStore, PROTOTYPE_META_FILE, MAX_FILE_BYTES, normalizeRel } from "./prototypes.ts";
+export {
+  PrototypeStore,
+  PROTOTYPE_META_FILE,
+  MAX_FILE_BYTES,
+  normalizeRel,
+  systemRefsIn,
+} from "./prototypes.ts";
 export type {
   CreatePrototypeInput,
   UpdatePrototypeInput,
@@ -18,12 +59,14 @@ export type {
 } from "./prototypes.ts";
 export {
   Workspace,
-  findWorkspaceRoot,
+  defaultWorkspaceRoot,
+  ensureWorkspace,
   readWorkspaceConfig,
-  DESIGN_DIR,
+  HOME_DIR_NAME,
+  CONFIG_FILE,
   PROJECTS_DIR,
   PROTOTYPES_DIR,
-  WORKSPACE_FILE,
+  REVIEWS_DIR,
 } from "./workspace.ts";
 export { safeJoin, slugify } from "./fs-utils.ts";
 export * from "./systems/schemas.ts";
@@ -56,6 +99,6 @@ export {
   type ThemeScope,
 } from "./systems/css.ts";
 export { skillName, writeSkill, exportSkill } from "./systems/skill.ts";
-export { systemCommands } from "./systems/commands.ts";
+export { systemCommands, systemBaseUrl } from "./systems/commands.ts";
 export type { LastBuild } from "./core.ts";
 export { AUDIT_SKILL, AUDIT_SKILL_NAME } from "./systems/audit-skill.ts";

@@ -1,0 +1,25 @@
+{
+  "name": "@beyland/scratchpad-review",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Static reviewer app for shared Scratchpad prototype reviews.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp build",
+    "test": "vp test"
+  },
+  "dependencies": {
+    "preact": "catalog:"
+  },
+  "devDependencies": {
+    "@babel/core": "catalog:",
+    "@beyland/scratchpad-core": "workspace:*",
+    "@preact/preset-vite": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

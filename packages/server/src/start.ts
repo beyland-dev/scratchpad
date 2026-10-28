@@ -1,5 +1,10 @@
 import type { AddressInfo } from "node:net";
-import { DEFAULT_HOST, DEFAULT_PORT, DEFAULT_SANDBOX_PORT, type Core } from "@design-tool/core";
+import {
+  DEFAULT_HOST,
+  DEFAULT_PORT,
+  DEFAULT_SANDBOX_PORT,
+  type Core,
+} from "@beyland/scratchpad-core";
 import { createAdaptorServer, type ServerType } from "@hono/node-server";
 import type { Hono } from "hono";
 import { createApp } from "./app.ts";

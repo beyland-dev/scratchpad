@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { CoreError, type CommandDescriptor } from "@design-tool/core";
+import { CoreError, type CommandDescriptor } from "@beyland/scratchpad-core";
 
 interface JsonSchema {
   type?: string | string[];
@@ -114,7 +114,7 @@ export async function parseCommandInput(
   } catch (error) {
     throw new CoreError(
       "INVALID_INPUT",
-      `${(error as Error).message}. Run \`dt ${command.name} --help\` for usage.`,
+      `${(error as Error).message}. Run \`sp ${command.name} --help\` for usage.`,
     );
   }
   const { values, positionals } = parsed;
@@ -161,7 +161,7 @@ export function commandHelp(command: CommandDescriptor): string {
   const flags = flagsFor(command);
   const positional = command.positional.map((p) => `<${p}>`).join(" ");
   const lines = [
-    `dt ${command.name}${positional ? ` ${positional}` : ""} [options]`,
+    `sp ${command.name}${positional ? ` ${positional}` : ""} [options]`,
     "",
     command.description,
     "",

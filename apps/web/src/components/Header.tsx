@@ -2,11 +2,12 @@ import { useEffect, useState } from "preact/hooks";
 import { useLocation } from "preact-iso";
 import { connected, projectEntries, projectHref, type ProjectSection } from "../store.ts";
 import { ConnectAgentButton } from "./ConnectAgent.tsx";
+import { ProjectGitControl } from "./GitControl.tsx";
 import { useActiveProject } from "./Sidebar.tsx";
 
 /** Routes that render their own full-width toolbar instead of the app header. */
 export function isImmersive(path: string): boolean {
-  return path.startsWith("/p/") || path === "/compare";
+  return /^\/projects\/[^/]+\/p\//.test(path) || path === "/compare";
 }
 
 const SECTIONS: { id: ProjectSection; label: string }[] = [
@@ -18,7 +19,6 @@ const SECTIONS: { id: ProjectSection; label: string }[] = [
 
 /** The project section a path belongs to (a design system's pages count as "systems"). */
 function sectionOf(path: string): ProjectSection {
-  if (path.startsWith("/systems")) return "systems";
   const match = /^\/projects\/[^/]+\/([^/]+)/.exec(path);
   return SECTIONS.find((s) => s.id === match?.[1])?.id ?? "prototypes";
 }
@@ -48,6 +48,7 @@ export function Header() {
         </nav>
       )}
       <div class="app-header-end">
+        {project && <ProjectGitControl key={project.id} project={project.id} />}
         <ConnectAgentButton />
       </div>
     </header>

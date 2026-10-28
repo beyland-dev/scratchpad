@@ -3,8 +3,8 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import type { AddressInfo } from "node:net";
-import { Core, initWorkspace } from "@design-tool/core";
-import { startSandbox } from "@design-tool/server";
+import { Core, initWorkspace } from "@beyland/scratchpad-core";
+import { startSandbox } from "@beyland/scratchpad-server";
 import { afterAll, beforeAll, describe, expect, test } from "vite-plus/test";
 import { captureCommands, closeBrowser, inferTokenType } from "../src/index.ts";
 
@@ -36,8 +36,8 @@ beforeAll(async () => {
   await new Promise<void>((resolve) => fixture.listen(0, "127.0.0.1", resolve));
   fixtureUrl = `http://127.0.0.1:${(fixture.address() as AddressInfo).port}/`;
 
-  root = await mkdtemp(path.join(tmpdir(), "dt-capture-"));
-  await initWorkspace(root, { name: "Capture", example: false });
+  root = await mkdtemp(path.join(tmpdir(), "sp-capture-"));
+  await initWorkspace(root, { project: "Capture", example: false });
   core = await Core.open({ root, commands: captureCommands });
   sandbox = await startSandbox({ core });
   core.setSandboxProvider(async () => sandbox.url);
@@ -137,7 +137,7 @@ describe("capture", () => {
 
   test("components built from the capture verify against it, and drift is detected", async () => {
     const css = await readFile(
-      path.join(root, ".design/systems/ex/captures/toolbar/rules.css"),
+      path.join(root, "projects/capture/systems/ex/captures/toolbar/rules.css"),
       "utf8",
     );
     // The context's own styles (font, color, padding) are captured from the context element; unrelated descendants are excluded.
@@ -150,7 +150,7 @@ describe("capture", () => {
       screenshot: false,
     });
     const appCss = await readFile(
-      path.join(root, ".design/systems/ex/captures/app/rules.css"),
+      path.join(root, "projects/capture/systems/ex/captures/app/rules.css"),
       "utf8",
     );
     expect(appCss).not.toContain(".unrelated");
@@ -228,7 +228,7 @@ describe("capture", () => {
     );
     expect(shot.images[0]!.mimeType).toBe("image/png");
     expect(Buffer.from(shot.images[0]!.data, "base64").subarray(1, 4).toString()).toBe("PNG");
-    await core.prototypes.create({ title: "Shot", html: "<h1>Hello</h1>" });
+    await core.prototypes.create("capture", { title: "Shot", html: "<h1>Hello</h1>" });
     const proto = await core.run<{ saved: string; images: unknown[] }>("prototype.screenshot", {
       id: "shot",
       width: 400,

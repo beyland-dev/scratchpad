@@ -1,16 +1,28 @@
-import { groupFamilies } from "@design-tool/core/family";
+import { groupFamilies } from "@beyland/scratchpad-core/family";
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { useRoute } from "preact-iso";
+import { useLocation, useRoute } from "preact-iso";
 import { PrototypeDialog } from "../components/Dialogs.tsx";
 import { Icon } from "../components/Icon.tsx";
 import { PrototypeCard, familyUpdatedAt } from "../components/PrototypeCard.tsx";
 import { SearchInput } from "../components/SearchInput.tsx";
 import { STATUSES } from "../components/StatusBadge.tsx";
-import { loadError, loaded, projectEntries, projectIdOf, prototypes, selection } from "../store.ts";
+import {
+  byId,
+  familyTitle,
+  loadError,
+  loaded,
+  projectEntries,
+  projectIdOf,
+  prototypes,
+  reviewHref,
+  selection,
+} from "../store.ts";
+import { createReview } from "./Feedback.tsx";
 import type { PrototypeStatus, PrototypeWithUrls } from "../types.ts";
 
 export function Gallery() {
   const { params } = useRoute();
+  const { route } = useLocation();
   const projectId = params.project ?? "";
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<PrototypeStatus | "">("");
@@ -41,7 +53,7 @@ export function Gallery() {
     const matchesQuery = (p: PrototypeWithUrls) =>
       (!group || p.group === group) &&
       (!q ||
-        [p.id, p.title, p.description ?? "", p.group ?? "", ...p.tags].some((v) =>
+        [p.localId, p.title, p.description ?? "", p.group ?? "", ...p.tags].some((v) =>
           v.toLowerCase().includes(q),
         ));
     const searched = allFamilies.filter((family) => family.some(matchesQuery));
@@ -161,13 +173,29 @@ export function Gallery() {
           <span>
             {selected.length < 2 ? "Select one more to compare" : `${selected.length} selected`}
           </span>
+          <button
+            type="button"
+            class="button"
+            title="Package the selected versions as a review to share for feedback"
+            onClick={async () => {
+              const picked = selected
+                .map((id) => byId.value.get(id))
+                .filter((p) => p !== undefined);
+              const first = picked[0];
+              const review = await createReview(
+                projectId,
+                first ? `${familyTitle(first)} feedback` : "Untitled review",
+                picked.map((p) => p.localId),
+              );
+              selection.value = [];
+              route(reviewHref(review));
+            }}
+          >
+            <Icon name="message" size={14} /> Request feedback
+          </button>
           <a
             class={`button primary ${selected.length < 2 ? "disabled" : ""}`}
-            href={
-              selected.length >= 2
-                ? `/compare?ids=${selected.map(encodeURIComponent).join(",")}`
-                : undefined
-            }
+            href={selected.length >= 2 ? `/compare?ids=${selected.join(",")}` : undefined}
             aria-disabled={selected.length < 2}
           >
             Compare

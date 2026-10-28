@@ -1,7 +1,7 @@
 /**
  * Package design systems: an existing library (e.g. shadcn/ui) installed and configured in the
  * system's folder. The folder is a small Vite project; its node_modules are shared by every
- * prototype built against it. design-tool runs the system's own Vite (in a child process) to build
+ * prototype built against it. Scratchpad runs the system's own Vite (in a child process) to build
  * its specimen page and framework prototypes.
  */
 import { spawn } from "node:child_process";
@@ -46,7 +46,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
-// Used by design-tool to build this system's specimen page and every React prototype that uses it.
+// Used by Scratchpad to build this system's specimen page and every React prototype that uses it.
 // "@/…" resolves to src/ in components, stories and prototypes alike.
 export default defineConfig({
   plugins: [react(), tailwindcss()],
@@ -220,7 +220,7 @@ const inside = (dir, file) => {
 const ENTRY = "\0dt-entry";
 const scanned = [...new Set([systemDir, root])];
 const bridge = {
-  name: "design-tool-bridge",
+  name: "scratchpad-bridge",
   enforce: "pre",
   async resolveId(source, importer, options) {
     if (source === "virtual:dt-entry") return ENTRY;
@@ -361,7 +361,7 @@ fetch("catalog.json", { cache: "no-store" }).then((r) => r.json()).then((catalog
   host.className = "dt-specimen-root";
   const frame = params.get("frame");
   const fitting = !params.has("bare") && (params.has("fill") || frame);
-  // design-tool's wrapper, not part of the example: it doesn't count when fitting the example.
+  // Scratchpad's wrapper, not part of the example: it doesn't count when fitting the example.
   if (fitting) host.setAttribute("data-dt-context", "");
   if (params.get("width")) host.style.width = params.get("width") + "px";
   document.body.append(host);

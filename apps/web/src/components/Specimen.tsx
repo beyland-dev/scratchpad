@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "preact/hooks";
-import { systemRevisionOf, workspace } from "../store.ts";
+import { systemRevisionOf, systemSandboxUrl, workspace } from "../store.ts";
 import { Icon } from "./Icon.tsx";
 import { SANDBOX_FLAGS } from "./Frame.tsx";
 
@@ -91,7 +91,7 @@ export function Specimen({
   else if (fill) params.set("fill", "");
   else params.set("maxh", String(maxHeight));
   if (width) params.set("width", String(width));
-  const src = `${sandbox}/s/${encodeURIComponent(system)}/specimen.html?${params.toString()}`;
+  const src = `${systemSandboxUrl(system)}/specimen.html?${params.toString()}`;
   return (
     <iframe
       key={`${src}#${systemRevisionOf(system)}`}

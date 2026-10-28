@@ -4,7 +4,17 @@ import { Icon } from "../components/Icon.tsx";
 import { PrototypeFrame } from "../components/PrototypeFrame.tsx";
 import { ThemePicker } from "../components/ThemePicker.tsx";
 import { StatusBadge } from "../components/StatusBadge.tsx";
-import { byId, familyTitle, loaded, prototypes, revisionOf, versionLabelOf } from "../store.ts";
+import {
+  byId,
+  familyTitle,
+  homeProjectId,
+  loaded,
+  projectHref,
+  prototypes,
+  revisionOf,
+  splitRef,
+  versionLabelOf,
+} from "../store.ts";
 import type { PrototypeWithUrls } from "../types.ts";
 import { prototypeHref, themeOptions, type ThemeReady } from "../prototype-theme.ts";
 import { DEFAULT_DEVICE, DEVICES, deviceById, useElementSize } from "../util.ts";
@@ -34,7 +44,7 @@ export function Compare() {
     const params = new URLSearchParams({ ids: nextIds.join(",") });
     if (deviceId !== DEFAULT_DEVICE.id) params.set("device", deviceId);
     if (nextTheme) params.set("theme", nextTheme);
-    route(`/compare?${params.toString().replaceAll("%2C", ",")}`, true);
+    route(`/compare?${params.toString().replaceAll("%2C", ",").replaceAll("%2F", "/")}`, true);
   };
 
   if (!loaded.value) return <p class="page-message">Loading…</p>;
@@ -45,7 +55,11 @@ export function Compare() {
   const themes = columns
     .map(({ id, proto }) => themeOptions(proto?.resolvedSystem, ready[id]))
     .find(Boolean);
-  const candidates = prototypes.value.filter((p) => !ids.includes(p.id));
+  // Compare within the project of the first column.
+  const project = ids[0] ? splitRef(ids[0]).project : undefined;
+  const candidates = prototypes.value.filter(
+    (p) => !ids.includes(p.id) && (!project || p.project === project),
+  );
   const columnCount = Math.min(COLUMNS, Math.max(1, columns.length));
   const cellWidth = (area.width - GAP * (columnCount - 1)) / columnCount;
   // Each prototype fits its cell's width and the visible height, so one row is always fully in
@@ -58,7 +72,12 @@ export function Compare() {
   return (
     <div class="compare">
       <div class="viewer-bar">
-        <a href="/" class="button ghost icon-only" aria-label="Back to prototypes" title="Back">
+        <a
+          href={projectHref(ids[0] ? splitRef(ids[0]).project : (homeProjectId() ?? ""))}
+          class="button ghost icon-only"
+          aria-label="Back to prototypes"
+          title="Back"
+        >
           <Icon name="arrow-left" />
         </a>
         <h1 class="viewer-title">Compare</h1>
@@ -128,7 +147,7 @@ export function Compare() {
                     {proto.status !== "draft" && <StatusBadge status={proto.status} />}
                   </>
                 ) : (
-                  <span class="compare-title muted">Missing: {id}</span>
+                  <span class="compare-title muted">Missing: {splitRef(id).id}</span>
                 )}
                 <button
                   type="button"
