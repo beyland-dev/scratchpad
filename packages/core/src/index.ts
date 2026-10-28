@@ -38,7 +38,13 @@ export {
   SOURCE_CHECKOUT_DIR,
 } from "./systems/store.ts";
 export type { TokenQuery, ComponentQuery, ActivityEntry, ActivityKind } from "./systems/store.ts";
-export { buildSystem, themeSelector, catalogOf, type BuildResult } from "./systems/build.ts";
+export {
+  buildSystem,
+  themeSelector,
+  catalogOf,
+  SPECIMEN_HTML,
+  type BuildResult,
+} from "./systems/build.ts";
 export {
   splitCssBlocks,
   mergeStylesheets,

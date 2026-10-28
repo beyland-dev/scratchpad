@@ -1,6 +1,13 @@
 import { access } from "node:fs/promises";
 import path from "node:path";
-import { DIST_DIR, PROTOTYPE_META_FILE, isCoreError, safeJoin, type Core } from "@design-tool/core";
+import {
+  DIST_DIR,
+  PROTOTYPE_META_FILE,
+  SPECIMEN_HTML,
+  isCoreError,
+  safeJoin,
+  type Core,
+} from "@design-tool/core";
 import { Hono } from "hono";
 import { fileResponse } from "./static.ts";
 
@@ -89,6 +96,10 @@ export function createSandboxApp(options: SandboxOptions): Hono {
     try {
       const dist = path.join(core.systems.dirOf(id), DIST_DIR);
       if (!(await pathExists(path.join(dist, "catalog.json")))) await core.buildSystem(id);
+      // Captured systems' specimen page doesn't depend on the system: serve this version's, so a
+      // build by an older design-tool process (e.g. a long-running MCP server) can't leave a stale one.
+      if ((rest === "" || rest === "specimen.html") && core.systems.get(id).kind !== "package")
+        return c.html(SPECIMEN_HTML, 200, SANDBOX_HEADERS);
       const response = await fileResponse(safeJoin(dist, rest || "specimen.html"), SANDBOX_HEADERS);
       return response ?? c.text("Not found", 404, SANDBOX_HEADERS);
     } catch (error) {

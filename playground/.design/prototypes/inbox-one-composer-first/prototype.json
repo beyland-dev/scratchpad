@@ -1,6 +1,6 @@
 {
   "title": "Inbox One",
-  "description": "Homepage leads with a large composer (\"What should agents work on?\"), with the inbox below as single-column rows in Ready for you / Working / Ready to merge / On hold / Done tabs (vsc-view-tabs). Ready for you lists sessions waiting on an answer first, then finished or failed work. Ready to merge holds finished work an agent babysits through reviews and CI until it merges, then moves it to Done (simulated after 15s for sessions you move there). On hold holds sessions that are still active but waiting on something outside the session. Redo sends a session back from Ready to merge (to Working or Ready for you), On hold and Done. Filter Sessions menu (Environment / Workspace / Harness, Show Done, Reset Filters). Rows expand inline with the agent's message, its question (vsc-chat-question-carousel) and a reply composer. Keys: j/k, Enter/o expand, e done, m ready to merge / move back, h on hold, c compose, 1–5 tabs, /.",
+  "description": "Inbox One with the new-session composer first: greeting and the Agents window's new-session composer (environment, workspace, isolation | branch, harness, mode | permissions, model) above the inbox. Expanding a row shows an inline reply composer and an open session pins the session composer to the bottom, both in the session layout with that session's harness, model and permissions. Every picker opens its real options.",
   "status": "draft",
   "tags": [
     "vscode",
@@ -21,5 +21,5 @@
     "vscode"
   ],
   "createdAt": "2026-10-27T20:17:30.348Z",
-  "updatedAt": "2026-10-27T23:48:00.428Z"
+  "updatedAt": "2026-10-28T14:59:13.210Z"
 }

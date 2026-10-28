@@ -46,8 +46,7 @@
   .dock { position: sticky; bottom: 0; z-index: 4; width: 100%; margin-top: auto; padding: 8px 0 12px; background: var(--vscode-agentsPanel-background); }
   .dock::before { content: ""; position: absolute; left: 0; right: 0; bottom: 100%; height: 16px; pointer-events: none;
                   background: linear-gradient(to bottom, transparent, var(--vscode-agentsPanel-background)); }
-  .dock vsc-chat-view { background: transparent; display: block; max-width: 800px; margin: 0 auto; }
-  .dock vsc-chat-input.interactive-input-part { margin-inline: 16px; }
+  .dock vsc-session-view { max-width: 800px; margin: 0 auto; padding-inline: 16px; }
   .chip { height: 26px; padding: 0 10px; display: inline-flex; align-items: center; gap: 6px; border-radius: var(--vscode-cornerRadius-circle); cursor: pointer;
           border: 1px solid var(--vscode-agentsCard-border); background: transparent; font-size: 12px; }
   .chip:hover { background: var(--vscode-list-hoverBackground); }
@@ -123,8 +122,8 @@
   a.link { color: var(--vscode-textLink-foreground); text-decoration: none; cursor: pointer; }
   a.link:hover { text-decoration: underline; }
   .reply { margin-top: 12px; max-width: 760px; }
-  .reply vsc-chat-view { background: transparent; display: block; }
-  .preview .reply vsc-chat-input.interactive-input-part { margin-inline: 0; }
+  /* The reply composer sits flush with the preview's text, on the preview's own background. */
+  .reply vsc-session-view { --session-view-content-horizontal-padding: 0px; --vscode-activeSessionView-background: transparent; }
   /* Opens the expanded session's full chat; floats beside the first paragraph so it costs no extra row. */
   .open-full { float: right; margin: -2px -6px 4px 16px; height: 24px; display: inline-flex; align-items: center; gap: 4px; padding: 0 6px 0 8px;
                border: 0; border-radius: var(--vscode-cornerRadius-medium); background: transparent; color: var(--vscode-textLink-foreground); font: inherit; font-size: 12px; cursor: pointer; }
@@ -144,7 +143,8 @@
   .s-chat { flex: 1; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 8px; }
   .s-chat vsc-chat-view, .s-composer vsc-chat-view { background: transparent; display: block; }
   .s-composer { position: sticky; bottom: 0; z-index: 2; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 12px; background: var(--vscode-agentsPanel-background); }
-  .s-composer vsc-chat-input.interactive-input-part { margin-inline: 16px; }
+  /* The session composer centers its input part; inset it 16px like the session header and transcript. */
+  .s-composer vsc-session-view { --session-view-content-horizontal-padding: 16px; }
   /* A pending question sits just above the composer (like the product's chat input), not in the transcript. */
   /* The card's 8px bottom margin plus the input part's top padding would leave 12px; pull the composer up to a 4px gap. */
   .s-ask { margin: 0 16px -8px; }
@@ -173,7 +173,7 @@
     .greet { font-size: 22px; padding-top: 16px; margin-bottom: 8px; }
     .inbox { padding: 0 8px 16px; }
     .dock { padding: 6px 0 8px; }
-    .dock vsc-chat-input.interactive-input-part { margin-inline: 8px; }
+    .dock vsc-session-view { padding-inline: 8px; }
 
     /* Tabs scroll horizontally on their own row; search (filling the width) and the filter button sit below. */
     .tabs { flex-wrap: wrap; row-gap: 6px; padding: 6px 0; }
@@ -207,7 +207,7 @@
 </style>
 </head>
 <body>
-<vsc-workbench id="wb" theme="dark-2026" class="nostatusbar">
+<vsc-workbench id="wb" theme="dark-2026" window="agents" class="nostatusbar">
   <header class="tb">
     <vsc-toolbar label="Window"><vsc-action icon="layout-sidebar-left-off" label="Show Sessions Sidebar"></vsc-action></vsc-toolbar>
     <div class="tb-center">
@@ -231,11 +231,7 @@
       <div class="rows" id="rows" role="list"></div>
     </section>
     <section class="dock" aria-label="New session">
-      <vsc-chat-view><vsc-chat-input id="composer" placeholder="What should agents work on?">
-        <vsc-chat-picker slot="secondary" icon="folder" label="vscode" id="pick-ws"></vsc-chat-picker>
-        <vsc-chat-picker slot="secondary" kind="target" icon="vm-compact" label="Worktree" id="pick-env"></vsc-chat-picker>
-        <vsc-chat-picker slot="secondary" icon="shield-compact" label="Default permissions"></vsc-chat-picker>
-      </vsc-chat-input></vsc-chat-view>
+      <vsc-session-view variant="new"><vsc-chat-input id="composer" variant="new-session" placeholder="What should agents work on?" workspace="vscode" isolation="worktree"></vsc-chat-input></vsc-session-view>
     </section>
     </div>
     <section class="session" id="session" aria-label="Session" hidden></section>
@@ -254,8 +250,15 @@ const icon = (n, extra = "") => `<vsc-icon name="${n}"${extra}></vsc-icon>`;
 
 const wb = $("#wb");
 
-const state = { tab: "ready", q: "", open: null, cur: null, view: null, lastView: null, homeScroll: 0, sessions: D.sessions.map(s => ({ ...s })), seq: 100, ws: 0, env: 1, showDone: true };
-const ENVS = [["vm-compact", "Local"], ["worktree", "Worktree"], ["cloud", "Cloud"], ["remote", "devbox-1"]];
+const state = { tab: "ready", q: "", open: null, cur: null, view: null, lastView: null, homeScroll: 0, sessions: D.sessions.map(s => ({ ...s })), seq: 100, showDone: true };
+// The Agents window composer's picker data (harnesses, models, modes, workspaces), from the design system.
+const P = window.ds.vscode.chatPickers;
+const modelId = (name) => Object.values(P.data.models.catalog).find(m => m.name === name)?.id;
+// The new-session workspace picker lists real recent folders; a session started in one the inbox doesn't know yet gets an entry.
+function workspaceFor(id) {
+  if (!WS[id]) { const o = P.find(P.data.workspaces, id); WS[id] = { id, label: o && !o.noWorkspace ? o.label : "No workspace", repo: o?.description ?? "" }; }
+  return id;
+}
 
 // On-hold sessions live only in the On hold tab until taken off hold, marked done or replied to.
 const TABS = [
@@ -360,7 +363,7 @@ function detailHtml(s) {
     body += (s.body || []).map(p => `<p>${p}</p>`).join("");
   }
   if (s.state === "input") body += `<div class="ask"><vsc-chat-view>${carouselHtml(s)}</vsc-chat-view></div>`;
-  if (s.state !== "done") body += `<div class="reply"><vsc-chat-view>${composerHtml(s)}</vsc-chat-view></div>`;
+  if (s.state !== "done") body += `<div class="reply">${composerHtml(s)}</div>`;
   return `<div class="preview">${body}</div>`;
 }
 // Design-system chat question carousel; the first option starts selected, like the product's auto-select on focus.
@@ -370,16 +373,13 @@ function carouselHtml(s) {
       ${s.question.options.map((o, i) => `<vsc-chat-question-option label="${esc(o)}"${i ? "" : " selected"}></vsc-chat-question-option>`).join("")}
     </vsc-chat-question-carousel>`;
 }
+// An open session's composer: the Agents window's session layout with that session's harness, model, mode and permissions.
 function composerHtml(s) {
-  const envIcon = { Cloud: "cloud-compact", Worktree: "worktree-compact", Local: "vm-compact" }[s.env] ?? "remote-compact";
-  return `<vsc-chat-input placeholder="Reply to ${H[s.harness].label}…">
-      <vsc-action slot="toolbar" menu icon="add-compact" label="Add Context..."></vsc-action>
-      <vsc-chat-picker slot="toolbar" kind="mode" icon="agent-compact" label="Agent"></vsc-chat-picker>
-      <vsc-chat-model-picker slot="toolbar" label="${s.model}"></vsc-chat-model-picker>
-      <vsc-action slot="toolbar" menu class="toolbar-shrinkable-item" icon="settings-compact" label="Configure Tools..."></vsc-action>
-      <vsc-chat-picker slot="secondary" kind="target" icon="${envIcon}" label="${s.env}"></vsc-chat-picker>
-      <vsc-chat-picker slot="secondary" icon="shield-compact" label="Default permissions"></vsc-chat-picker>
-    </vsc-chat-input>`;
+  const attrs = {
+    variant: "session", placeholder: `Reply to ${H[s.harness].label}…`, harness: s.harness, model: modelId(s.model),
+    environment: s.env === "Cloud" ? "cloud" : "local", mode: s.mode, permissions: s.permissions, approvals: s.approvals, "agent-mode": s.agentMode, "data-session": s.id,
+  };
+  return `<vsc-session-view><vsc-chat-input ${Object.entries(attrs).filter(([, v]) => v).map(([k, v]) => `${k}="${esc(v)}"`).join(" ")} notice></vsc-chat-input></vsc-session-view>`;
 }
 
 // ---- Full session: the chat transcript rebuilt from the session's data with the design system's chat parts ----
@@ -432,7 +432,7 @@ function renderSession() {
   const opening = sec._id !== s.id;
   sec._key = key; sec._id = s.id;
   sec.innerHTML = `<div class="s-head">${head}</div><div class="s-chat"><vsc-chat-view>${transcriptHtml(s)}</vsc-chat-view></div>` +
-    (s.state !== "done" ? `<div class="s-composer">${s.state === "input" && s.answerIndex == null ? `<div class="s-ask"><vsc-chat-view>${carouselHtml(s)}</vsc-chat-view></div>` : ""}<vsc-chat-view>${composerHtml(s)}</vsc-chat-view></div>` : "");
+    (s.state !== "done" ? `<div class="s-composer">${s.state === "input" && s.answerIndex == null ? `<div class="s-ask"><vsc-chat-view>${carouselHtml(s)}</vsc-chat-view></div>` : ""}${composerHtml(s)}</div>` : "");
   wireComposer(sec.querySelector(".s-composer"), (t) => reply(s, t));
   // Like a chat view, open (and follow new turns) at the latest message.
   requestAnimationFrame(() => $("#page").scrollTo({ top: $("#page").scrollHeight, behavior: opening ? "instant" : "smooth" }));
@@ -505,16 +505,16 @@ ${rowActions(s)}
 
 function render() { renderGreeting(); renderTabs(); renderRows(); renderSession(); }
 
+// Delegated, because the Agents composer re-renders (replacing its editor) when one of its pickers changes.
 function wireComposer(root, onSend) {
-  if (!root) return;
-  customElements.whenDefined("vsc-chat-input").then(() => requestAnimationFrame(() => {
-    const ed = root.querySelector(".dt-editor-text"), submit = root.querySelector("vsc-chat-submit");
-    if (!ed || ed.dataset.wired) return;
-    ed.dataset.wired = "1";
-    const send = () => { const t = ed.textContent.trim(); if (t) { onSend(t); ed.textContent = ""; ed.dispatchEvent(new Event("input")); } };
-    ed.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } });
-    submit?.addEventListener("click", send);
-  }));
+  if (!root || root.dataset.wired) return;
+  root.dataset.wired = "1";
+  const send = () => {
+    const ed = root.querySelector(".dt-editor-text"), t = ed?.textContent.trim();
+    if (t) { onSend(t); ed.textContent = ""; ed.dispatchEvent(new Event("input")); }
+  };
+  root.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && e.target.classList?.contains("dt-editor-text")) { e.preventDefault(); send(); } });
+  root.addEventListener("click", (e) => { if (e.target.closest("vsc-chat-submit")) send(); });
 }
 
 // Product notifications via the design system's <vsc-notification-toasts> (bottom-right, VS Code's default position).
@@ -607,7 +607,12 @@ $("#tabs").addEventListener("change", (e) => { if (e.target.localName === "vsc-v
 
 // Filter Sessions menu, built from <vsc-menu>; submenus open on hover like VS Code context menus.
 let menus = [];
-function closeMenus() { menus.forEach(m => m.remove()); menus = []; }
+function closeMenus() {
+  menus.forEach(m => m.remove()); menus = [];
+  // The composer's picker popups close along with menus (scrolling, navigating, …).
+  window.ds.vscode.actionList.close();
+  document.querySelectorAll("vsc-chat-model-list").forEach(v => v.dispatchEvent(new CustomEvent("dismiss", { detail: { refocus: false } })));
+}
 function createMenu(html, x, y, label = "Filter Sessions") {
   const m = document.createElement("vsc-menu");
   m.setAttribute("label", label);
@@ -720,15 +725,17 @@ $("#session").addEventListener("skip", () => {
 $("#nav-back").addEventListener("click", closeSession);
 $("#nav-fwd").addEventListener("click", () => { if (!state.view && state.lastView) openSession(state.lastView); });
 
-// Workspace and target pickers cycle through options (stand-in for their dropdowns).
-$("#pick-ws").addEventListener("click", () => { state.ws = (state.ws + 1) % D.workspaces.length; $("#pick-ws").setAttribute("label", D.workspaces[state.ws].label); });
-$("#pick-env").addEventListener("click", () => { state.env = (state.env + 1) % ENVS.length; $("#pick-env").setAttribute("icon", ENVS[state.env][0]); $("#pick-env").setAttribute("label", ENVS[state.env][1]); });
 wireComposer($(".dock"), (text) => {
-  const ws = D.workspaces[state.ws].id, env = ENVS[state.env][1];
+  // The new-session composer's pickers decide the harness, model, workspace, where it runs and its mode.
+  const c = $("#composer"), get = (k, d) => c.getAttribute(k) || d;
+  const harness = get("harness", "copilot"), model = P.model(get("model", P.defaultModel(harness)), harness);
+  const env = get("environment", "local") === "cloud" ? "Cloud" : get("isolation", "branch") === "worktree" ? "Worktree" : "Local";
+  const ws = workspaceFor(get("workspace", "vscode"));
   const id = "n" + state.seq++;
   state.sessions.unshift({
     id, state: "working", unread: false, time: "now", day: "Today", title: text.length > 64 ? text.slice(0, 62) + "…" : text,
-    harness: "copilot", model: "Auto", workspace: ws, env,
+    harness, model: model.name, workspace: ws, env,
+    mode: get("mode"), permissions: get("permissions"), approvals: get("approvals"), agentMode: get("agent-mode"),
     branch: "agents/" + text.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 28).replace(/-$/, ""), prompt: text, preview: "Planning…",
     steps: [["Understand the task and explore the codebase", "active"], ["Make the change", "todo"], ["Run tests and hygiene", "todo"]], files: [],
   });
@@ -736,8 +743,21 @@ wireComposer($(".dock"), (text) => {
   renderTabs(); toast("Session started. It'll land in Ready for you when it's done.");
 });
 
+// Picker choices in a session's composer stick to that session (its composer is rebuilt after each reply).
+document.addEventListener("change", (e) => {
+  const input = e.target.localName === "vsc-chat-input" ? e.target : null;
+  const s = input?.dataset.session && state.sessions.find(x => x.id === input.dataset.session);
+  if (!s) return;
+  const d = e.detail || {};
+  if (d.model) s.model = P.model(d.model, s.harness)?.name ?? s.model;
+  if (d.mode) s.mode = d.mode;
+  if (d.permissions) s.permissions = d.permissions;
+  if (d.approvals) s.approvals = d.approvals;
+  if (d["agent-mode"]) s.agentMode = d["agent-mode"];
+});
+
 document.addEventListener("keydown", (e) => {
-  if (e.target.closest("input, textarea, [contenteditable], vsc-chat-question-carousel") || e.metaKey || e.ctrlKey || e.altKey) { if (e.key === "Escape") e.target.blur?.(); return; }
+  if (e.target.closest("input, textarea, [contenteditable], vsc-chat-question-carousel, vsc-action-list, vsc-chat-model-list") || e.metaKey || e.ctrlKey || e.altKey) { if (e.key === "Escape") e.target.blur?.(); return; }
   // In a full session, Escape goes back to the inbox; the inbox shortcuts don't apply.
   if (state.view) { if (e.key === "Escape") { e.preventDefault(); closeSession(); } return; }
   const list = visible(), i = list.findIndex(s => s.id === state.cur), s = list[i];

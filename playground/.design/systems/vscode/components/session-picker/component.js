@@ -66,4 +66,6 @@ class SessionPicker extends ds.Element {
     this.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { kind: this.attr("kind"), value: option.id, option } }));
   }
 }
+// Responsive state (ChatInputPickerResponsiveLayout): the picker's icon only.
+SessionPicker.prototype.setCompact = function (compact) { this.classList.toggle("compact-picker", compact); };
 ds.define("vsc-session-picker", SessionPicker);

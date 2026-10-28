@@ -1,0 +1,41 @@
+/*
+ * Responsive states (ChatInputPickerResponsiveLayout) from
+ * src/vs/workbench/contrib/chat/browser/widget/input/modelPicker/media/modelPicker.css. They weren't on screen when the
+ * picker was captured, so the rules are copied from source. Compact (icon + configuration summary) and minimal (icon
+ * only) drop the model name: the product stops rendering it, here the last rule hides it.
+ */
+.interactive-session .chat-input-toolbar .chat-input-picker-item .action-label.model-picker-split.icon-only .model-picker-section {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  justify-content: center;
+}
+
+.interactive-session .chat-input-toolbar .chat-input-picker-item.compact-picker .action-label.model-picker-split.compact {
+  justify-content: flex-start;
+}
+
+.chat-input-picker-item .action-label.model-picker-split.compact .model-picker-name {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  justify-content: center;
+}
+
+.chat-input-picker-item .action-label.model-picker-split.compact .model-picker-name > .codicon {
+  width: var(--vscode-codiconFontSize-compact);
+  height: var(--vscode-codiconFontSize-compact);
+  line-height: var(--vscode-codiconFontSize-compact);
+}
+
+.interactive-session .chat-input-toolbar .chat-input-picker-item .action-label.model-picker-split.icon-only.minimal .model-picker-name {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  justify-content: center;
+}
+
+.chat-input-picker-item .action-label.model-picker-split.compact .model-picker-name > :not(.codicon) {
+  display: none;
+}

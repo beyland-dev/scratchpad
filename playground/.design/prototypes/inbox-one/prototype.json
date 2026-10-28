@@ -1,6 +1,6 @@
 {
   "title": "Inbox One",
-  "description": "An exploration of a brand new homepage view for the VS Code agents window. It implements an email style inbox view for agent sessions list and a chat composer. V1 \u2014 three panes: a title-bar New button (\u2318N), a mailbox rail (V2's buckets: Ready for you, Working, Ready to merge, On hold, Done), a session list (search, Filter Sessions menu, two-line rows with hover actions) and a reading pane that shows the composer when nothing is selected, or the selected session's full chat (design-system chat parts, question above the composer). Keys: j/k, e done, h hold, m merge, u unread, Delete (Done), \u2318N or c new session, /, 1-5 mailboxes, Esc back. Phones show one pane at a time with the rail as a drawer.",
+  "description": "Mail-style Inbox One: mailbox rail, session list and a reading pane. Uses the Agents window composer: the reading pane's empty state is the new-session composer (environment, workspace, isolation | branch and harness pickers above the input; mode | permissions and model in its toolbar), and an open session uses the session composer with that session's harness, model and permissions. Every picker opens its real options; choices made on the new-session composer carry into the session it starts.",
   "status": "draft",
   "tags": [
     "vscode",
@@ -9,6 +9,7 @@
     "composer"
   ],
   "project": "vscode",
+  "system": "vscode",
   "group": "agents-inbox",
   "entry": "index.html",
   "createdBy": {
@@ -18,6 +19,5 @@
     "vscode"
   ],
   "createdAt": "2026-10-27T20:00:22.627Z",
-  "updatedAt": "2026-10-27T20:17:30.338Z",
-  "system": "vscode"
+  "updatedAt": "2026-10-28T14:59:13.163Z"
 }

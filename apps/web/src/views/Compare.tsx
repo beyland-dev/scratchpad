@@ -9,7 +9,8 @@ import type { PrototypeWithUrls } from "../types.ts";
 import { prototypeHref, themeOptions, type ThemeReady } from "../prototype-theme.ts";
 import { DEFAULT_DEVICE, DEVICES, deviceById, useElementSize } from "../util.ts";
 
-const MAX_COLUMNS = 4;
+/** Prototypes sit in a grid this many columns wide; more rows scroll. */
+const COLUMNS = 2;
 const GAP = 16;
 const HEADER_HEIGHT = 40;
 
@@ -22,7 +23,7 @@ function nameOf(proto: PrototypeWithUrls): string {
 export function Compare() {
   const { query } = useRoute();
   const { route } = useLocation();
-  const ids = (query.ids ?? "").split(",").filter(Boolean).slice(0, MAX_COLUMNS);
+  const ids = (query.ids ?? "").split(",").filter(Boolean);
   const device = deviceById(query.device);
   const [areaRef, area] = useElementSize<HTMLDivElement>();
   const theme = query.theme;
@@ -45,13 +46,13 @@ export function Compare() {
     .map(({ id, proto }) => themeOptions(proto?.resolvedSystem, ready[id]))
     .find(Boolean);
   const candidates = prototypes.value.filter((p) => !ids.includes(p.id));
-  const columnWidth = columns.length
-    ? (area.width - GAP * (columns.length - 1)) / columns.length
-    : 0;
-  const scale = Math.min(
-    1,
-    columnWidth / device.width,
-    Math.max(area.height - HEADER_HEIGHT, 0) / device.height,
+  const columnCount = Math.min(COLUMNS, Math.max(1, columns.length));
+  const cellWidth = (area.width - GAP * (columnCount - 1)) / columnCount;
+  // Each prototype fits its cell's width and the visible height, so one row is always fully in
+  // view; further rows scroll.
+  const scale = Math.max(
+    0,
+    Math.min(1, cellWidth / device.width, Math.max(area.height - HEADER_HEIGHT, 0) / device.height),
   );
 
   return (
@@ -62,7 +63,7 @@ export function Compare() {
         </a>
         <h1 class="viewer-title">Compare</h1>
         <span class="toolbar-spacer" />
-        {ids.length < MAX_COLUMNS && candidates.length > 0 && (
+        {candidates.length > 0 && (
           <select
             class="input add-select"
             aria-label="Add a prototype"
@@ -106,10 +107,14 @@ export function Compare() {
         </p>
       )}
 
-      <div class="compare-area" ref={areaRef} style={{ gap: `${GAP}px` }}>
+      <div
+        class="compare-area"
+        ref={areaRef}
+        style={{ gap: `${GAP}px`, gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
+      >
         {area.width > 0 &&
           columns.map(({ id, proto }) => (
-            <section class="compare-column" key={id} style={{ width: `${columnWidth}px` }}>
+            <section class="compare-column" key={id}>
               <header class="compare-header">
                 {proto ? (
                   <>

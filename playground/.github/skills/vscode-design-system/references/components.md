@@ -250,6 +250,7 @@ Copilot's combined Mode and Permissions picker in the Agents window composer: a 
 **States:**
 - `change (event)` (choose a mode, permission level or toggle sandboxing): detail: { mode, permissions, sandbox }
 - `configure-permissions (event)` (the Permissions section's gear): 
+- `compact` (the composer runs out of room): the mode's icon only, without the permissions half (compact-picker). Set by the composer's responsive pass; CSS from source (not captured).
 
 **Example — Interactive, Allow all**
 
@@ -334,6 +335,9 @@ Language model picker in the chat input toolbar: a split button, model name + co
 | `icon` | string |  | Provider codicon, e.g. chat-model-provider-openai |
 | `config` | string |  | Configuration summary, e.g. "High · 1M" |
 | `notice` | boolean |  | Show the mid-session prompt-cache notice in the list |
+
+**States:**
+- `compact` (the composer runs out of room): icon + configuration summary, then icon only (compact-picker; .model-picker-split.compact / .icon-only.minimal); its minimum width is the name (≤ 90px) + summary. Set by the composer's responsive pass; CSS from source (not captured).
 
 **Example — Default**
 
@@ -782,6 +786,7 @@ Agents window picker button (`.sessions-chat-picker-slot`): icon + label (+ chev
 - `open` (click, Enter, Space or ArrowDown): aria-expanded=true while its list is open
 - `disabled` (disabled attribute): 
 - `change (event)` (choose an option): detail: { kind, value, option }
+- `compact` (the composer runs out of room): its icon only (compact-picker). Set by the composer's responsive pass; CSS from source (not captured).
 
 **Example — New-session pickers**
 
@@ -1903,6 +1908,7 @@ The chat composer, in three layouts. Default: the workbench Chat view input (too
 - `can send` (non-empty value): 
 - `change (event)` (pick an option in any Agents picker): detail: the changed setting, e.g. { model }, { mode, permissions }, { harness }, { environment }
 - `add-context (event)` (choose an Add Context option): detail: { kind }
+- `responsive` (narrow the composer): Pickers collapse from right to left as their row runs out of room (ChatInputPickerResponsiveLayout): the model picker ellipsizes its name, then shows its icon + configuration, then just its icon; mode and session pickers show their icon; labeled pickers never squeeze.
 
 **Example — Default**
 

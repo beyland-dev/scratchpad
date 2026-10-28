@@ -184,7 +184,8 @@ ds.openModelList = (anchor, options) => {
   const onKey = (e) => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); if (view.hasAttribute("details") && !options.details) view.removeAttribute("details"); else close(true); } };
   document.addEventListener("keydown", onKey, true);
   view.reposition = () => ds.actionList.place(view, anchor, "above");
-  view.addEventListener("dismiss", () => close(true));
+  // `dismiss` with { refocus: false } closes it without moving focus (e.g. when the page scrolls).
+  view.addEventListener("dismiss", (e) => close(!(e.detail && e.detail.refocus === false)));
   view.addEventListener("select", (e) => {
     const item = e.detail.item;
     if (item.id === "section:other") { view.toggleAttribute("expanded"); return; }

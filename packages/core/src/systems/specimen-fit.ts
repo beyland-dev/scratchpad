@@ -14,7 +14,13 @@
  *   examples are shown from the top instead of shrinking past half size), horizontally on detail
  *   pages, whose frame height follows the content.
  * - On detail pages, the layout freezes once someone interacts (or after 3s), so content never
- *   jumps under the pointer; the frame only grows, e.g. while a menu is open.
+ *   jumps under the pointer; the frame only grows to keep what opens in view (menus, pickers).
+ *   Content that opens above the frame's top is shifted down by the same amount the frame grows,
+ *   and the report says so (`shift`), so the app can scroll the page to keep the example where it
+ *   was: the frame appears to grow upward. Growing doesn't fire `resize` in the example.
+ * - The frame's layout never scrolls: not the document, the root or the scaffolding around the
+ *   example (focusing a list in an open menu would otherwise scroll the example out of view, even
+ *   through `overflow: hidden`). The example's own scrolling containers still scroll.
  */
 export const SPECIMEN_FIT_SCRIPT = String.raw`
 function dtFit({ root, mode, frame, maxHeight }) {
@@ -26,13 +32,21 @@ function dtFit({ root, mode, frame, maxHeight }) {
   let locked = false;
   let base = 0;
   let reported = -1;
+  // The root's placement (set by fit, moved down by grow).
+  let tx = 0;
+  let ty = 0;
+  let s = 1;
+  const place = () => {
+    root.style.transform = "translate(" + Math.round(tx) + "px, " + Math.round(ty) + "px) scale(" + s + ")";
+  };
   // Elements whose style fit() changes; their style mutations don't trigger a refit.
   const touched = new WeakSet([root]);
-  const report = (height) => {
-    if (mode !== "frame" || !frame || parent === window || height === reported) return;
+  const report = (height, shift = 0) => {
+    if (mode !== "frame" || !frame || parent === window || (height === reported && !shift)) return;
     reported = height;
-    parent.postMessage({ type: "dt-specimen-size", frame, height }, "*");
+    parent.postMessage({ type: "dt-specimen-size", frame, height, shift }, "*");
   };
+
 
   const intersect = (a, b) => {
     const r = { l: Math.max(a.l, b.l), t: Math.max(a.t, b.t), r: Math.min(a.r, b.r), b: Math.min(a.b, b.b) };
@@ -108,6 +122,20 @@ function dtFit({ root, mode, frame, maxHeight }) {
     return box && { ...box, ink };
   };
 
+  // The frame is sized to show everything, so its layout never scrolls (programmatic scrolls too).
+  document.addEventListener(
+    "scroll",
+    (event) => {
+      const target = event.target;
+      if (target === document) {
+        if (scrollX || scrollY) scrollTo(0, 0);
+      } else if (target === root || target === document.body || scaffolding().has(target)) {
+        if (target.scrollTop || target.scrollLeft) target.scrollTo(0, 0);
+      }
+    },
+    true,
+  );
+
   const fit = () => {
     // An identity transform keeps the root the containing block for fixed parts while measuring.
     root.style.transform = "translate(0px, 0px)";
@@ -139,8 +167,6 @@ function dtFit({ root, mode, frame, maxHeight }) {
     const W = innerWidth;
     const H = innerHeight;
     const fitW = Math.min(1, (W - 2 * PAD) / w);
-    let s;
-    let ty;
     if (mode === "fill") {
       const availH = H - 2 * PAD;
       s = Math.min(fitW, Math.max(availH / h, fitW * 0.5));
@@ -160,16 +186,27 @@ function dtFit({ root, mode, frame, maxHeight }) {
       if (s > 0.97) s = 1;
       ty = PAD - s * y;
     }
-    const tx = (W - s * w) / 2 - s * x;
-    root.style.transform = "translate(" + Math.round(tx) + "px, " + Math.round(ty) + "px) scale(" + s + ")";
+    tx = (W - s * w) / 2 - s * x;
+    place();
     base = Math.ceil(s * h + 2 * PAD);
     report(base);
   };
 
-  // After the layout freezes, only grow the frame to keep new content (open menus) in view.
+  // After the layout freezes, only grow the frame to keep new content (open menus) in view:
+  // downward, or upward by shifting the content down (reported as "shift").
   const grow = () => {
     const e = extent();
-    report(e ? Math.max(base, Math.ceil(e.b + PAD)) : base);
+    if (!e) return report(Math.max(base, reported));
+    // Document coordinates (the frame may have scrolled before the scroll handler reset it).
+    const top = e.t + scrollY;
+    const bottom = e.b + scrollY;
+    const shift = Math.max(0, Math.ceil(PAD - top));
+    if (shift) {
+      ty += shift;
+      place();
+      base += shift;
+    }
+    report(Math.max(base, reported + shift, Math.ceil(bottom + shift + PAD)), shift);
   };
 
   let queued = false;
@@ -189,14 +226,23 @@ function dtFit({ root, mode, frame, maxHeight }) {
   requestAnimationFrame(update);
   document.fonts?.ready.then(update);
   addEventListener("load", update);
-  // Detail frames change height when they report it, so only a new width means a new layout.
+  // Detail frames change height when they report it, so only a new width means a new layout. To
+  // the example its window didn't change either: those resizes never reach it (overlays such as
+  // Radix's Select close on any window resize, so the select that grew the frame would close).
   let width = innerWidth;
-  addEventListener("resize", () => {
-    if (mode === "frame" && innerWidth === width) return;
-    width = innerWidth;
-    locked = false;
-    update();
-  });
+  addEventListener(
+    "resize",
+    (event) => {
+      if (mode === "frame" && innerWidth === width) {
+        event.stopImmediatePropagation();
+        return;
+      }
+      width = innerWidth;
+      locked = false;
+      update();
+    },
+    true,
+  );
   for (const type of ["pointerdown", "keydown", "focusin"]) addEventListener(type, lock, true);
   for (const type of ["transitionend", "animationend"]) addEventListener(type, update, true);
   const mutations = new MutationObserver((records) => {

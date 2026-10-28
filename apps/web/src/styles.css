@@ -2038,13 +2038,15 @@ textarea.field-input {
   font-size: 12px;
 }
 
+/* A two-column grid of prototypes; rows past the visible height scroll. */
 .compare-area {
   flex: 1;
   min-height: 0;
-  display: flex;
+  display: grid;
+  align-content: start;
   padding: 16px;
   background: var(--stage);
-  overflow: hidden;
+  overflow: auto;
 }
 
 .compare-column {
@@ -2935,8 +2937,16 @@ iframe.specimen {
   background: var(--border);
 }
 
+/* Cells of a row share its height: a frame that grew (an open menu) stretches its neighbors, which
+   fill the space with their own background instead of showing the stage. */
 .example-specimen {
+  display: flex;
+  flex-direction: column;
   background: var(--stage);
+}
+
+.example-specimen > iframe.specimen {
+  flex: 1 0 auto;
 }
 
 .example-specimen > .muted {

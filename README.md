@@ -72,7 +72,7 @@ Prototypes appear in the gallery live as the agent writes them.
 - **Gallery:** a grid with one card per variant family: single prototypes show their preview, and families show a folder of their newest versions. Filter by status and group, search titles, descriptions, groups and tags (press `/`), and select 2+ cards to compare.
 - **Viewer:** a full-window stage with device presets (Desktop / Laptop / Tablet / Mobile), multi-page navigation, a version switcher (V1, V2, … Latest as tabs, or a ‹ V3 · 3/9 › stepper with a list of every version for large families; ← → or 1–9), and an optional details panel (status, group, tags, files).
 - **Variants:** **New variant** in the viewer, or in a card's ⋯ menu, forks a version of the prototype: the new variant starts as a copy of its files, and the app gives you a prompt that asks an agent for the change. For families with several versions, you pick which one to fork.
-- **Compare:** up to 4 prototypes side by side at the same viewport.
+- **Compare:** prototypes in a two-column grid at the same viewport and theme; more than two scroll in further rows.
 - **Design systems:** browse components with examples in every theme, explore tokens visually (colors, type scale, spacing, shadows, icons) with per-token details, and watch an audit live (progress, what needs attention, captures with screenshot, DOM, matched CSS and geometry, activity) with verification results.
 - **Settings:** in the sidebar. Choose the app's theme (System, Light or Dark), saved in this browser.
 - **Live updates:** edits from agents, the CLI, or your editor appear immediately. The app only shows the connection status when it's lost.

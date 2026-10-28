@@ -54,6 +54,11 @@
     {
       "name": "configure-permissions (event)",
       "trigger": "the Permissions section's gear"
+    },
+    {
+      "name": "compact",
+      "description": "the mode's icon only, without the permissions half (compact-picker). Set by the composer's responsive pass; CSS from source (not captured).",
+      "trigger": "the composer runs out of room"
     }
   ],
   "variants": [],
@@ -89,5 +94,5 @@
   "references": [],
   "status": "draft",
   "createdAt": "2026-10-28T01:15:18.715Z",
-  "updatedAt": "2026-10-28T01:15:18.715Z"
+  "updatedAt": "2026-10-28T14:59:21.839Z"
 }

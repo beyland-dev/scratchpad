@@ -1,6 +1,6 @@
 {
   "title": "Inbox One",
-  "description": "Composer anchored to the bottom edge of the agent window (sticky, full-width backdrop with a fade so rows scroll under it; same 800px column as the session composer so it doesn't jump when opening a session). Inbox moved to the top of the window, with the \"Good evening\" greeting at the very top, left-aligned to the inbox's edge.",
+  "description": "Composer anchored to the bottom edge of the agent window (sticky, full-width backdrop with a fade so rows scroll under it; same 800px column as the session composer so it doesn't jump when opening a session). Inbox moved to the top of the window, with the \"Good evening\" greeting at the very top, left-aligned to the inbox's edge. The docked composer is the Agents window's new-session composer; inline replies and open sessions use the session composer with that session's harness, model and permissions. Every picker opens its real options.",
   "status": "draft",
   "tags": [
     "vscode",
@@ -20,5 +20,5 @@
     "vscode"
   ],
   "createdAt": "2026-10-28T00:15:59.349Z",
-  "updatedAt": "2026-10-28T00:23:58.318Z"
+  "updatedAt": "2026-10-28T14:59:13.237Z"
 }

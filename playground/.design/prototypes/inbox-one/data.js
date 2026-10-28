@@ -42,7 +42,7 @@ window.INBOX_DATA = {
     {
       id: "d2", state: "working", unread: false, time: "9m", day: "Today",
       title: "Bisect perf regression in `tsgo --build`",
-      harness: "codex", model: "GPT-6-Codex", workspace: "ts-go", env: "devbox-1", branch: "perf/bisect-build-regression",
+      harness: "codex", model: "GPT-5.3-Codex", workspace: "ts-go", env: "devbox-1", branch: "perf/bisect-build-regression",
       prompt: "`tsgo --build` on the VS Code repo got ~18% slower this week. Bisect the commits on devbox-1 and find the culprit.",
       preview: "Bisecting 46 commits, 4 steps left…",
       steps: [["Reproduce the slowdown on devbox-1 (3 runs each)", "done"], ["Bisect 46 commits between v7.0.0-dev.20261020 and main", "active"], ["Profile the first bad commit", "todo"], ["Summarize findings", "todo"]],
@@ -65,7 +65,7 @@ window.INBOX_DATA = {
     {
       id: "s3", state: "working", unread: false, time: "21m", day: "Today",
       title: "Add repository grouping to the sessions list",
-      harness: "copilot", model: "GPT-6", workspace: "vscode", env: "Cloud", branch: "copilot/repo-grouping", group: "agents-polish",
+      harness: "copilot", model: "GPT-6 Sol", workspace: "vscode", env: "Cloud", branch: "copilot/repo-grouping", group: "agents-polish",
       prompt: "Implement Repository grouping for the Sessions list per SESSIONS_LIST.md: group by the GitHub repository of the primary folder, fall back to the workspace section.",
       preview: "Wiring repository sections into ISessionSectionOrderService…",
       steps: [["Read SESSIONS_LIST.md and the grouping model", "done"], ["Add RepositoryGrouping to SessionsList", "done"], ["Wire sections into ISessionSectionOrderService", "active"], ["Disambiguate duplicate repository names", "todo"], ["Add tests and run hygiene", "todo"]],
@@ -88,7 +88,7 @@ window.INBOX_DATA = {
     {
       id: "s4", state: "working", unread: false, time: "38m", day: "Today",
       title: "Port control-flow narrowing for the `in` operator",
-      harness: "codex", model: "GPT-6-Codex", workspace: "ts-go", env: "Local", branch: "port/narrow-in-operator",
+      harness: "codex", model: "GPT-5.3-Codex", workspace: "ts-go", env: "Local", branch: "port/narrow-in-operator",
       prompt: "Port narrowTypeByInKeyword from checker.ts to internal/checker/flow.go and bring over the baselines.",
       preview: "Running baseline diff on 412 conformance tests…",
       steps: [["Locate narrowTypeByInKeyword in checker.ts", "done"], ["Port to internal/checker/flow.go", "done"], ["Run conformance baselines", "active"], ["Accept matching baselines", "todo"]],
@@ -137,7 +137,7 @@ window.INBOX_DATA = {
     {
       id: "s7", state: "review", unread: false, merging: { status: "Waiting on review" }, time: "2:10 PM", day: "Today",
       title: "Update @vscode/codicons to 0.0.48",
-      harness: "copilot", model: "Auto", workspace: "copilot-chat", env: "Cloud", branch: "deps/codicons-0.0.48",
+      harness: "copilot", model: "Copilot Fusion", workspace: "copilot-chat", env: "Cloud", branch: "deps/codicons-0.0.48",
       prompt: "Bump codicons and replace the custom sparkle SVGs with the new codicon-chat-sparkle glyphs.",
       preview: "Bumped to 0.0.48 and replaced 6 custom SVGs with codicon glyphs. Snapshot tests updated.",
       body: ["Bumped <code>@vscode/codicons</code> to 0.0.48 and replaced 6 inline sparkle SVGs with <code>codicon-chat-sparkle</code>. Updated 3 snapshot tests."],
@@ -148,7 +148,7 @@ window.INBOX_DATA = {
     {
       id: "s8", state: "error", unread: true, time: "11:05 AM", day: "Today",
       title: "Bump Electron to 39",
-      harness: "copilot", model: "GPT-6", workspace: "vscode", env: "Cloud", branch: "copilot/electron-39", group: "release",
+      harness: "copilot", model: "GPT-6 Sol", workspace: "vscode", env: "Cloud", branch: "copilot/electron-39", group: "release",
       prompt: "Update Electron to 39.x, fix any type or API breakages, and get the smoke tests green.",
       preview: "Build failed on darwin-arm64: native module @vscode/spdlog has no prebuild for Electron 39.",
       body: [
@@ -171,7 +171,7 @@ window.INBOX_DATA = {
     {
       id: "s10", state: "working", unread: false, merging: { status: "Fixing CI" }, time: "Yesterday", day: "Yesterday",
       title: "Refactor agentsColors.ts into a themable registry",
-      harness: "copilot", model: "GPT-6", workspace: "vscode", env: "Local", branch: "agents/colors-registry",
+      harness: "copilot", model: "GPT-6 Sol", workspace: "vscode", env: "Local", branch: "agents/colors-registry",
       prompt: "Group the agents window colors so themes can override them as a set.",
       preview: "Grouped 38 colors under agents.*, kept old ids as deprecated aliases.",
       body: ["Grouped 38 colors under the <code>agents.*</code> namespace and kept the old ids as deprecated aliases so existing themes keep working."],
@@ -193,7 +193,7 @@ window.INBOX_DATA = {
     {
       id: "s12", state: "review", unread: false, time: "Mon", day: "Earlier this week",
       title: "Add token search to the design-tool CLI",
-      harness: "codex", model: "GPT-6-Codex", workspace: "design-tool", env: "Local", branch: "feat/cli-token-search",
+      harness: "codex", model: "GPT-5.3-Codex", workspace: "design-tool", env: "Local", branch: "feat/cli-token-search",
       prompt: "Add `dt token search <query>` mirroring the token.search command.",
       preview: "Added `dt token search` with --group and --type filters and table output.",
       body: ["Added <code>dt token search</code> with <code>--group</code>, <code>--type</code> and <code>--json</code>. Output is a table of variable, dark and light values."],
@@ -203,7 +203,7 @@ window.INBOX_DATA = {
     {
       id: "s13", state: "done", unread: false, time: "Oct 22", day: "Older",
       title: "Fix titlebar overlap in fullscreen",
-      harness: "copilot", model: "Auto", workspace: "vscode", env: "Local", branch: "fix/titlebar-fullscreen",
+      harness: "copilot", model: "Copilot Fusion", workspace: "vscode", env: "Local", branch: "fix/titlebar-fullscreen",
       prompt: "The command center overlaps the window controls in fullscreen on macOS.",
       preview: "Merged in #283411.",
       body: ["Fixed and merged in #283411."],

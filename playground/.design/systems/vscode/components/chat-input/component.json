@@ -153,6 +153,11 @@
       "name": "add-context (event)",
       "description": "detail: { kind }",
       "trigger": "choose an Add Context option"
+    },
+    {
+      "name": "responsive",
+      "description": "Pickers collapse from right to left as their row runs out of room (ChatInputPickerResponsiveLayout): the model picker ellipsizes its name, then shows its icon + configuration, then just its icon; mode and session pickers show their icon; labeled pickers never squeeze.",
+      "trigger": "narrow the composer"
     }
   ],
   "variants": [],
@@ -311,7 +316,7 @@
   "status": "draft",
   "verification": {
     "status": "drift",
-    "checkedAt": "2026-10-28T01:36:52.778Z",
+    "checkedAt": "2026-10-28T14:59:00.353Z",
     "compared": 510,
     "diffs": 76,
     "theme": "dark-2026",
@@ -359,5 +364,5 @@
     ]
   },
   "createdAt": "2026-10-22T21:42:49.717Z",
-  "updatedAt": "2026-10-28T01:36:52.778Z"
+  "updatedAt": "2026-10-28T14:59:21.748Z"
 }

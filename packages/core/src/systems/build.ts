@@ -94,7 +94,12 @@ export function catalogOf(system: DesignSystem, components: DesignComponent[], t
   };
 }
 
-const SPECIMEN_HTML = `<!doctype html>
+/**
+ * The specimen page of captured systems. It's the same for every system (it loads the build's
+ * system.css, system.js and catalog.json), so the sandbox serves this copy, from the running
+ * version of design-tool, rather than the one in dist/.
+ */
+export const SPECIMEN_HTML = `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -146,6 +151,9 @@ const SPECIMEN_HTML = `<!doctype html>
         root.classList.add("dt-specimen-root");
         if (system.rootContext && root.localName === system.rootContext) root.setAttribute("theme", theme);
         else root.setAttribute("data-theme", theme);
+        // The root context stands in for the window, even when the example writes it: like the
+        // window, it doesn't clip what opens over it (menus, hovers) when fitted in the app.
+        if (fitting && system.rootContext && root.localName === system.rootContext) root.setAttribute("data-dt-context", "");
         if (params.get("width")) root.style.width = params.get("width") + "px";
       }
       // Paint the page with the specimen's own background (the first opaque one from the root

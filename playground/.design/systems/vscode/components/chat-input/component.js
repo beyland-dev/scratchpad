@@ -217,11 +217,15 @@ class ChatInput extends ds.Element {
       this.setAttribute(kind, value);
       this.fire({ [kind]: value });
     });
+    // The reveal fade-in plays once, like the product; re-renders after a picker change keep the composer in place.
+    const revealed = this._revealed;
+    this._revealed = true;
+    if (revealed) options.style.animation = "none";
     return [
       options,
       h("div.new-session-quick-chat-header.sessions-workspace-category-picker"),
       h("div.session-input-banners.new-session-feedback-banners"),
-      h("div.new-chat-input-container.sessions-shared-chat-input", null,
+      h("div.new-chat-input-container.sessions-shared-chat-input", { style: revealed ? "animation: none;" : undefined },
         h("div.sessions-shared-chat-widget", null,
           h("div.interactive-session.chat-view-getting-started-disabled", { style: "font-size: 13px;" },
             h("div.interactive-input-part.chat-input-surface-stack.chat-input-picker-focus-scope.chat-pet-host", null, this.renderInputPart("new-session"))))),
@@ -231,6 +235,69 @@ class ChatInput extends ds.Element {
           h("div.new-chat-status-toolbar.has-no-actions", null,
             h("div.monaco-toolbar", null, h("div.monaco-action-bar", null, h("ul.actions-container", { role: "toolbar" })))))),
     ];
+  }
+
+  updated() {
+    if (!this.attr("variant", "")) return;
+    if (!this._resize && typeof ResizeObserver === "function") {
+      this._resize = new ResizeObserver(() => { if (this.getBoundingClientRect().width !== this._fitWidth) this.fitPickers(); });
+      this._resize.observe(this);
+    }
+    requestAnimationFrame(() => this.fitPickers());
+  }
+
+  /**
+   * ChatInputPickerResponsiveLayout: expand every picker, then compact them from right to left until the toolbar row
+   * (and, for a new session, the session options row) fits its width without pickers overlapping.
+   */
+  fitPickers() {
+    if (!this.isConnected) return;
+    this._fitWidth = this.getBoundingClientRect().width;
+    // A row fits when its pickers, at their preferred widths, sit inside it without overlapping. Only the model picker
+    // may shrink (its name ellipsizes down to a minimum width); the others would squeeze their labels instead.
+    const fitsRow = (lane, elements) => {
+      const visible = elements.filter((e) => e.offsetWidth);
+      const rigid = visible.filter((e) => e.localName !== "vsc-chat-model-picker");
+      const saved = rigid.map((e) => e.style.flexShrink);
+      rigid.forEach((e) => { e.style.flexShrink = "0"; });
+      try {
+        const r = lane.getBoundingClientRect();
+        const squeezed = visible.some((e) => e.localName === "vsc-chat-model-picker" && e.getBoundingClientRect().width < parseFloat(e.style.minWidth || "0") - 0.5);
+        if (squeezed) return false;
+        const boxes = visible.map((e) => e.getBoundingClientRect()).sort((a, b) => a.left - b.left);
+        return boxes.every((b, i) => b.left >= r.left - 0.5 && b.right <= r.right + 0.5 && (i === 0 || b.left >= boxes[i - 1].right - 0.5));
+      } finally {
+        rigid.forEach((e, i) => { e.style.flexShrink = saved[i]; });
+      }
+    };
+    // Measure one picker set at a time: hold the other row's pickers at their preferred widths, so that a row which still
+    // overflows after compacting everything keeps its leftmost pickers labeled rather than squeezing every label.
+    const fit = (items, fits) => {
+      for (const item of items) item.set(0);
+      const ordered = items.filter((i) => i.el.offsetWidth).sort((a, b) => b.el.getBoundingClientRect().left - a.el.getBoundingClientRect().left);
+      for (const item of ordered) {
+        for (let level = 1; level <= item.levels && !fits(); level++) item.set(level);
+        if (fits()) return;
+      }
+    };
+    const row = this.querySelector(".chat-input-toolbars");
+    if (row) {
+      const items = [...row.querySelectorAll("vsc-chat-model-picker, vsc-chat-mode-picker, vsc-session-picker")].map((el) => el.localName === "vsc-chat-model-picker"
+        ? { el, levels: 2, set: (level) => el.setCompactLevel(level) }
+        : { el, levels: 1, set: (level) => el.setCompact(level > 0) });
+      fit(items, () => fitsRow(row, [...row.querySelectorAll(".action-item")].filter((li) => !li.querySelector(".action-item"))));
+    }
+    const options = this.querySelector(".new-session-workspace-picker-container");
+    if (options) {
+      // The strip is a rounded tab (max-width: 100% - 22px) whose padding must keep its pickers inside it.
+      const strip = options.querySelector(".new-chat-session-options") || options;
+      const items = [...options.querySelectorAll("vsc-session-picker")].map((el) => ({ el, levels: 1, set: (level) => el.setCompact(level > 0) }));
+      const inset = (() => { const cs = getComputedStyle(strip); return { l: parseFloat(cs.paddingLeft) || 0, r: parseFloat(cs.paddingRight) || 0 }; })();
+      const lane = { getBoundingClientRect: () => { const o = options.getBoundingClientRect(), max = parseFloat(getComputedStyle(strip).maxWidth); const s = strip.getBoundingClientRect(); const right = Math.min(o.right, s.left + (Number.isFinite(max) ? max : o.width)); return { left: s.left + inset.l, right: right - inset.r }; } };
+      fit(items, () => fitsRow(lane, [...options.querySelectorAll("vsc-session-picker, .new-chat-session-options-toggle")]));
+      // Pickers left labeled keep their full label; when even all-icons doesn't fit, the strip clips at its edge.
+      for (const { el } of items) el.style.flexShrink = el.classList.contains("compact-picker") ? "" : "0";
+    }
   }
 
   /** Context window usage ring (ChatContextUsageWidget), shown at the top right of an open session's input. */

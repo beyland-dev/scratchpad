@@ -30,7 +30,9 @@ class ChatModelPicker extends ds.Element {
         onConfigure: (detail, chosen) => { this._config = { ...chosen }; this.update(); this.dispatchEvent(new CustomEvent("configure", { bubbles: true, detail })); },
       });
     };
-    this.setClasses({ "toolbar-shrinkable-item": this.flag("shrinkable") });
+    this.setClasses({ "toolbar-shrinkable-item": this.flag("shrinkable"), "compact-picker": false });
+    this._nameMinWidth = agents ? "90px" : "max-content";
+    this._hasSummary = !!summary;
     return ds.h("div.action-label.model-picker-split.chat-input-picker-split" + (agents && summary ? ".has-config" : ""), { role: "group", tabindex: "-1", "aria-label": agents ? "Models, " + label : label },
       ds.h("a.chat-input-picker-split-button.chat-input-picker-split-primary.model-picker-section.model-picker-name", {
         role: "button", tabindex: "0", "aria-haspopup": "true", "aria-expanded": "false", "aria-label": agents ? "Models, " + label : label, style: agents ? "min-width: 90px;" : "min-width: max-content;",
@@ -46,4 +48,29 @@ class ChatModelPicker extends ds.Element {
       }, summary ? ds.h("span.chat-input-picker-label", null, summary) : null));
   }
 }
+ChatModelPicker.prototype.setCompactLevel = function (level) {
+  // Responsive states (ChatInputPickerResponsiveLayout): 0 = full, 1 = icon + configuration summary, 2 = icon only.
+  const split = this.querySelector(".model-picker-split");
+  if (!split) return;
+  const name = split.querySelector(".model-picker-name"), config = split.querySelector(".model-picker-config");
+  const hasIcon = !!name.querySelector(".codicon");
+  const compact = level >= 1 && hasIcon, minimal = level >= 2 && hasIcon;
+  this.classList.toggle("compact-picker", level >= 1);
+  split.classList.toggle("compact", compact);
+  split.classList.toggle("icon-only", minimal);
+  split.classList.toggle("minimal", minimal);
+  split.classList.toggle("has-config", this._hasSummary && !minimal);
+  name.style.minWidth = compact ? "22px" : this._nameMinWidth;
+  if (config) config.style.display = this._hasSummary && !minimal ? "" : "none";
+  // ModelPickerActionItem: the item may shrink (ellipsizing the name) down to name (at most 90px) + readout.
+  let nameWidth = 22;
+  if (!compact) {
+    const saved = [name.style.flex, name.style.width, name.style.minWidth];
+    Object.assign(name.style, { flex: "none", width: "max-content", minWidth: "0" });
+    nameWidth = Math.min(name.getBoundingClientRect().width || 90, 90);
+    [name.style.flex, name.style.width, name.style.minWidth] = saved;
+  }
+  const configWidth = config && config.offsetWidth ? config.getBoundingClientRect().width : 0;
+  this.style.minWidth = this._hasSummary || compact ? `${nameWidth + configWidth}px` : "";
+};
 ds.define("vsc-chat-model-picker", ChatModelPicker);

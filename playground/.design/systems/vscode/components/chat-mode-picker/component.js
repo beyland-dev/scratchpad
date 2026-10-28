@@ -61,4 +61,6 @@ class ChatModePicker extends ds.Element {
     });
   }
 }
+// Responsive state (ChatInputPickerResponsiveLayout): the mode's icon only, without the permissions half.
+ChatModePicker.prototype.setCompact = function (compact) { this.classList.toggle("compact-picker", compact); };
 ds.define("vsc-chat-mode-picker", ChatModePicker);

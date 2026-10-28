@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About Page</title>
+    <style>
+      :root { color-scheme: light dark; --bg: #f7f7f8; --card: #fff; --fg: #18181d; --muted: #6b6b78; --line: #e4e4e9; --code: #f3f3f6; --accent: #5b5bd6; }
+      @media (prefers-color-scheme: dark) { :root { --bg: #121216; --card: #1a1a20; --fg: #ececf1; --muted: #9b9ba9; --line: #2a2a33; --code: #222229; --accent: #8b8bf0; } }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 32px; font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--fg); background: var(--bg); }
+      main { width: min(680px, 100%); }
+      .eyebrow { margin: 0 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); }
+      h1 { margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: -.01em; }
+      .brief { margin: 10px 0 0; color: var(--muted); }
+      .card { margin-top: 28px; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+      h2 { margin: 0; font-size: 15px; }
+      .card > p { margin: 4px 0 14px; font-size: 14px; color: var(--muted); }
+      .prompt { border-radius: 10px; background: var(--code); }
+      .prompt-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0 16px; font-size: 12px; font-weight: 600; color: var(--muted); }
+      pre { margin: 0; padding: 8px 16px 14px; font: 12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; white-space: pre-wrap; word-break: break-word; }
+      button { padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--fg); font: 500 12px system-ui, sans-serif; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">New prototype</p>
+      <h1>About Page</h1>
+      
+      <section class="card">
+        <h2>Next: hand it to an agent</h2>
+        <p>Give this prompt to an agent connected to design-tool over MCP. It replaces this page, and the viewer updates live as it writes files.</p>
+        <div class="prompt">
+          <div class="prompt-head">Prompt <button type="button" id="copy">Copy</button></div>
+          <pre id="prompt">Use the design-tool MCP server. Read the design-tool://guide resource first.
+Build out the prototype &#34;About Page&#34; (id &#34;about-page&#34;) in project &#34;marketing-website&#34;: &#60;describe what it should show and the states that matter&#62;
+- Its index.html is a setup note (this prompt). Replace it with prototype_writeFile.
+- Match the project&#39;s design system if it has one (system_list with project &#34;marketing-website&#34;).
+- Use prototype_createVariant for alternatives, then share the viewer URL.</pre>
+        </div>
+      </section>
+    </main>
+    <script>
+      // Prototypes run sandboxed, where the async clipboard API may be blocked; fall back to execCommand.
+      const button = document.getElementById("copy");
+      button.addEventListener("click", async () => {
+        const text = document.getElementById("prompt").textContent;
+        let ok = false;
+        try { await navigator.clipboard.writeText(text); ok = true; } catch {}
+        if (!ok) {
+          const area = Object.assign(document.createElement("textarea"), { value: text });
+          document.body.append(area);
+          area.select();
+          ok = document.execCommand("copy");
+          area.remove();
+        }
+        if (!ok) getSelection().selectAllChildren(document.getElementById("prompt"));
+        button.textContent = ok ? "Copied" : "Press ⌘C";
+        setTimeout(() => (button.textContent = "Copy"), 1500);
+      });
+    </script>
+  </body>
+</html>
