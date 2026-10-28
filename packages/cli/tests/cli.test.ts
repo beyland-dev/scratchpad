@@ -9,7 +9,9 @@ let dir: string;
 function io(cwd = dir): CliIO & { out: string[]; err: string[] } {
   const out: string[] = [];
   const err: string[] = [];
-  return { out, err, stdout: (t) => out.push(t), stderr: (t) => err.push(t), cwd, env: {} };
+  // Never the real ~/.scratchpad.
+  const env = { SCRATCHPAD_HOME: path.join(dir, "home") };
+  return { out, err, stdout: (t) => out.push(t), stderr: (t) => err.push(t), cwd, env };
 }
 
 async function run(args: string[], cwd = dir) {
@@ -19,14 +21,14 @@ async function run(args: string[], cwd = dir) {
 }
 
 beforeEach(async () => {
-  dir = await mkdtemp(path.join(tmpdir(), "dt-cli-"));
+  dir = await mkdtemp(path.join(tmpdir(), "sp-cli-"));
 });
 
 afterEach(async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
-describe("dt", () => {
+describe("sp", () => {
   test("help and version work without a workspace", async () => {
     const help = await run(["help"]);
     expect(help.code).toBe(0);
@@ -37,24 +39,21 @@ describe("dt", () => {
     );
   });
 
-  test("errors clearly when no workspace exists", async () => {
-    const result = await run(["prototype", "list"]);
+  test("creates the workspace on first use; new work needs a project", async () => {
+    const empty = await run(["prototype", "list", "--json"]);
+    expect(empty.code).toBe(0);
+    expect(JSON.parse(empty.stdout).prototypes).toEqual([]);
+    expect(JSON.parse(await readFile(path.join(dir, "home/config.json"), "utf8"))).toEqual({
+      version: 2,
+      sources: [],
+    });
+    const result = await run(["prototype", "create", "--title", "X"]);
     expect(result.code).toBe(1);
-    expect(result.stderr).toContain("dt init");
+    expect(result.stderr).toContain("project.create");
   });
 
-  test("init, create, variant, update, and list", async () => {
-    expect(
-      (await run(["init", "--name", "CLI", "--no-example", "--mcp", "vscode,claude"])).code,
-    ).toBe(0);
-    const vscode = JSON.parse(await readFile(path.join(dir, ".vscode/mcp.json"), "utf8"));
-    expect(vscode.servers["design-tool"]).toMatchObject({ type: "stdio", command: "node" });
-    expect(vscode.servers["design-tool"].args).toEqual(
-      expect.arrayContaining(["mcp", "--workspace", dir]),
-    );
-    const claude = JSON.parse(await readFile(path.join(dir, ".mcp.json"), "utf8"));
-    expect(claude.mcpServers["design-tool"].args).toContain("mcp");
-
+  test("project, create, variant, update, and list", async () => {
+    expect((await run(["project", "create", "--name", "CLI"])).code).toBe(0);
     await writeFile(path.join(dir, "page.html"), "<h1>From file</h1>");
     const created = await run([
       "prototype",
@@ -70,15 +69,19 @@ describe("dt", () => {
       "--json",
     ]);
     expect(created.code).toBe(0);
-    expect(JSON.parse(created.stdout).prototype).toMatchObject({ id: "home", tags: ["a", "b"] });
-    expect(await readFile(path.join(dir, ".design/prototypes/home/index.html"), "utf8")).toBe(
-      "<h1>From file</h1>",
-    );
+    expect(JSON.parse(created.stdout).prototype).toMatchObject({
+      id: "home",
+      project: "cli",
+      tags: ["a", "b"],
+    });
+    expect(
+      await readFile(path.join(dir, "home/projects/cli/prototypes/home/index.html"), "utf8"),
+    ).toBe("<h1>From file</h1>");
 
     const variant = await run([
       "prototype",
       "create-variant",
-      "home",
+      "cli/home",
       "--description",
       "Bigger hero",
       "--json",
@@ -103,18 +106,36 @@ describe("dt", () => {
     expect(read.stdout).toBe("<h1>From file</h1>");
   });
 
-  test("finds the workspace from a nested directory and reports validation errors", async () => {
-    await run(["init", "--no-example"]);
-    const nested = path.join(dir, ".design");
-    const result = await run(["prototype", "create", "--title", "X", "--status", "bogus"], nested);
+  test("--home picks the workspace; validation errors are reported", async () => {
+    const other = path.join(dir, "other");
+    expect((await run(["--home", other, "project", "create", "--name", "Elsewhere"])).code).toBe(0);
+    expect(
+      JSON.parse(await readFile(path.join(other, "projects/elsewhere/project.json"), "utf8")),
+    ).toMatchObject({ name: "Elsewhere" });
+    const result = await run([
+      "--home",
+      other,
+      "prototype",
+      "create",
+      "--title",
+      "X",
+      "--status",
+      "bogus",
+    ]);
     expect(result.code).toBe(1);
     expect(result.stderr).toContain("status");
     const unknown = await run(["prototype", "create", "--nope", "1"]);
     expect(unknown.stderr).toContain("--nope");
   });
 
+  test("mcp-config passes --home only for a non-default workspace", async () => {
+    const out = await run(["mcp-config", "vscode", "--json"]);
+    expect(JSON.parse(out.stdout).launch.args).toEqual(
+      expect.arrayContaining(["mcp", "--home", path.join(dir, "home")]),
+    );
+  });
+
   test("source commands", async () => {
-    await run(["init", "--no-example"]);
     expect(
       (await run(["source", "add", "../product", "--notes", "tokens in src/theme"])).stdout,
     ).toContain("Added source product");

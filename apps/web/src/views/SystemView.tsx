@@ -6,7 +6,16 @@ import { Icon } from "../components/Icon.tsx";
 import { SearchInput } from "../components/SearchInput.tsx";
 import { Specimen, VerificationBadge } from "../components/Specimen.tsx";
 import { useCommand } from "../hooks/useCommand.ts";
-import { systemEventOf, systemRevisionOf, systems, systemsListHref, workspace } from "../store.ts";
+import {
+  projectDirOf,
+  refOf,
+  systemEventOf,
+  systemHref,
+  systemRevisionOf,
+  systems,
+  systemsListHref,
+  workspace,
+} from "../store.ts";
 import { AgentHandoff } from "../components/AgentHandoff.tsx";
 import { DeleteSystemDialog, SystemDialog } from "../components/Dialogs.tsx";
 import { MenuButton } from "../components/Menu.tsx";
@@ -41,7 +50,7 @@ const TAB_ALIASES: Record<string, { tab: TabId; extra?: Record<string, string> }
 export function systemTabHref(system: string, tab: TabId, query: Record<string, string> = {}) {
   const params = new URLSearchParams({ ...(tab === DEFAULT_TAB ? {} : { tab }), ...query });
   const qs = params.toString();
-  return `/systems/${encodeURIComponent(system)}${qs ? `?${qs}` : ""}`;
+  return systemHref(system, qs ? `?${qs}` : "");
 }
 
 export function useSystemTheme(
@@ -61,7 +70,8 @@ export function useSystemTheme(
 export function SystemView() {
   const { params, query, path } = useRoute();
   const { route } = useLocation();
-  const id = params.id ?? "";
+  // The app identifies systems as project/id.
+  const id = refOf(params.project ?? "", params.id ?? "");
   const revision = systemRevisionOf(id);
   const { data, error } = useCommand<SystemDetails>("system.get", { id }, [
     revision,
@@ -213,7 +223,7 @@ const KIND_LABELS: Record<string, string> = {
 };
 
 export function componentPageHref(system: string, name: string, theme: string): string {
-  return `/systems/${encodeURIComponent(system)}/c/${encodeURIComponent(name)}?theme=${encodeURIComponent(theme)}`;
+  return systemHref(system, `/c/${encodeURIComponent(name)}?theme=${encodeURIComponent(theme)}`);
 }
 
 function ComponentsTab({
@@ -245,8 +255,8 @@ function ComponentsTab({
         }
         prompt={
           system.kind === "package"
-            ? packageSetupPrompt(system, source, workspace.value?.designDir)
-            : systemAuditPrompt(system, source, workspace.value?.designDir)
+            ? packageSetupPrompt(system, source, projectDirOf(system.project))
+            : systemAuditPrompt(system, source, projectDirOf(system.project))
         }
       >
         {system.kind === "package" ? (
@@ -345,7 +355,7 @@ function UsageTab({ data }: { data: SystemDetails }) {
   const from = system.capturedFrom;
   const isPackage = system.kind === "package";
   const snippet = isPackage
-    ? `// A React prototype built with ${system.name}:\n// prototype_create { title, framework: "react", system: "${system.id}" }\n\n// main.tsx\nimport { createRoot } from "react-dom/client";\nimport "@/${(system.styles ?? "src/index.css").replace(/^src\//, "")}";\nimport { Button } from "@/components/ui/button";\n\ncreateRoot(document.getElementById("root")!).render(<Button>Hello</Button>);`
+    ? `// A React prototype built with ${system.name}:\n// prototype_create { title, project: "${system.project}", framework: "react", system: "${system.id}" }\n\n// main.tsx\nimport { createRoot } from "react-dom/client";\nimport "@/${(system.styles ?? "src/index.css").replace(/^src\//, "")}";\nimport { Button } from "@/components/ui/button";\n\ncreateRoot(document.getElementById("root")!).render(<Button>Hello</Button>);`
     : system.rootContext
       ? `${data.include}\n\n<${system.rootContext} theme="${system.defaultTheme}">\n  …\n</${system.rootContext}>`
       : data.include;
@@ -376,7 +386,7 @@ function UsageTab({ data }: { data: SystemDetails }) {
       <section>
         <h2 class="section-heading">For agents</h2>
         <p>
-          Install the generated skill <code>{data.skill}</code> with <code>dt skills install</code>,
+          Install the generated skill <code>{data.skill}</code> with <code>sp skills install</code>,
           or use the MCP tools <code>system_get</code>, <code>component_search</code>,{" "}
           <code>component_get</code> and <code>token_search</code>.
         </p>
@@ -416,7 +426,7 @@ function UsageTab({ data }: { data: SystemDetails }) {
               </dd>
               <dt>Folder</dt>
               <dd>
-                <code class="small">{`${workspace.value?.designDir ?? ".design"}/systems/${system.id}`}</code>
+                <code class="small">{`${projectDirOf(system.project)}/systems/${system.id}`}</code>
               </dd>
             </>
           )}

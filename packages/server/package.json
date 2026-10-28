@@ -1,7 +1,7 @@
 {
-  "name": "@design-tool/server",
+  "name": "@beyland/scratchpad-server",
   "version": "0.0.0",
-  "description": "Local HTTP API, live events, and sandboxed prototype server for design-tool.",
+  "description": "Local HTTP API, live events, and sandboxed prototype server for scratchpad.",
   "license": "MIT",
   "files": [
     "dist"
@@ -23,8 +23,8 @@
     "test": "vp test"
   },
   "dependencies": {
-    "@design-tool/core": "workspace:*",
-    "@design-tool/mcp": "workspace:*",
+    "@beyland/scratchpad-core": "workspace:*",
+    "@beyland/scratchpad-mcp": "workspace:*",
     "@hono/node-server": "catalog:",
     "hono": "catalog:"
   },

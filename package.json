@@ -1,20 +1,21 @@
 {
-  "name": "design-tool",
+  "name": "scratchpad",
   "version": "0.0.0",
   "private": true,
   "description": "Open-source, local-first, agent-drivable design prototyping workspace.",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/ensure-playground.ts && vp run -r --parallel dev",
+    "dev": "vp run -r --parallel dev",
     "build": "vp run -r build",
     "test": "vp run -r test",
     "check": "vp check",
     "ready": "vp check && vp run -r test && vp run -r build",
-    "dt": "node packages/cli/src/bin.ts"
+    "sp": "node packages/cli/src/bin.ts",
+    "scratchpad": "node packages/cli/src/bin.ts"
   },
   "devDependencies": {
-    "@design-tool/core": "workspace:*",
+    "@beyland/scratchpad-core": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:"

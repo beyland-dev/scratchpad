@@ -13,7 +13,7 @@ export function Settings() {
     <div class="page settings">
       <div class="page-head">
         <h1>Settings</h1>
-        <p class="muted">Preferences for design-tool in this browser.</p>
+        <p class="muted">Preferences for scratchpad in this browser.</p>
       </div>
 
       <section class="settings-section" aria-labelledby="appearance-heading">

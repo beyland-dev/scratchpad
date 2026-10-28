@@ -1,4 +1,4 @@
-import { versionLabel } from "@design-tool/core/family";
+import { versionLabel } from "@beyland/scratchpad-core/family";
 import { useEffect, useState } from "preact/hooks";
 import { useLocation, useRoute } from "preact-iso";
 import { call } from "../api.ts";
@@ -15,9 +15,12 @@ import {
   loaded,
   projectHref,
   projectIdOf,
+  projects,
   prototypes,
+  refOf,
   revisionOf,
   sandboxUrlFor,
+  systemHref,
   systems,
   workspace,
 } from "../store.ts";
@@ -54,7 +57,8 @@ function useDetails(id: string, revision: number) {
 export function Viewer() {
   const { params, query } = useRoute();
   const { route } = useLocation();
-  const id = params.id ?? "";
+  // The app identifies prototypes as project/id.
+  const id = refOf(params.project ?? "", params.id ?? "");
   const proto = byId.value.get(id);
   const revision = revisionOf(id);
   const { details, error } = useDetails(id, revision);
@@ -108,7 +112,8 @@ export function Viewer() {
     return (
       <div class="viewer">
         <p class="page-message">
-          No prototype <code>{id}</code>. <a href="/">Back to prototypes</a>
+          No prototype <code>{params.id}</code>.{" "}
+          <a href={projectHref(params.project ?? "")}>Back to prototypes</a>
         </p>
       </div>
     );
@@ -228,7 +233,7 @@ export function Viewer() {
         {family.length > 1 && (
           <a
             class="button ghost icon-only"
-            href={`/compare?ids=${family.map((p) => encodeURIComponent(p.id)).join(",")}${theme ? `&theme=${encodeURIComponent(theme)}` : ""}`}
+            href={`/compare?ids=${family.map((p) => p.id).join(",")}${theme ? `&theme=${encodeURIComponent(theme)}` : ""}`}
             title="Compare versions side by side"
             aria-label="Compare versions"
           >
@@ -302,7 +307,8 @@ function DetailsPanel({
   ].sort();
   const sources = workspace.value?.sources ?? [];
   const files = details?.files ?? [];
-  const folder = `.design/prototypes/${proto.id}/`;
+  const projectDir = projects.value.find((p) => p.id === proto.project)?.dir;
+  const folder = `${projectDir ? `${projectDir}/` : ""}prototypes/${proto.localId}/`;
   const [copied, setCopied] = useState(false);
 
   return (
@@ -335,7 +341,7 @@ function DetailsPanel({
               {proto.system && (
                 <>
                   {" · "}
-                  <a href={`/systems/${encodeURIComponent(proto.system)}`}>
+                  <a href={systemHref(proto.system)}>
                     {systems.value.find((s) => s.id === proto.system)?.name ?? proto.system}
                   </a>
                 </>

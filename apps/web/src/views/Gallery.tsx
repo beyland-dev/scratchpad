@@ -1,4 +1,4 @@
-import { groupFamilies } from "@design-tool/core/family";
+import { groupFamilies } from "@beyland/scratchpad-core/family";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { useRoute } from "preact-iso";
 import { PrototypeDialog } from "../components/Dialogs.tsx";
@@ -41,7 +41,7 @@ export function Gallery() {
     const matchesQuery = (p: PrototypeWithUrls) =>
       (!group || p.group === group) &&
       (!q ||
-        [p.id, p.title, p.description ?? "", p.group ?? "", ...p.tags].some((v) =>
+        [p.localId, p.title, p.description ?? "", p.group ?? "", ...p.tags].some((v) =>
           v.toLowerCase().includes(q),
         ));
     const searched = allFamilies.filter((family) => family.some(matchesQuery));
@@ -163,11 +163,7 @@ export function Gallery() {
           </span>
           <a
             class={`button primary ${selected.length < 2 ? "disabled" : ""}`}
-            href={
-              selected.length >= 2
-                ? `/compare?ids=${selected.map(encodeURIComponent).join(",")}`
-                : undefined
-            }
+            href={selected.length >= 2 ? `/compare?ids=${selected.join(",")}` : undefined}
             aria-disabled={selected.length < 2}
           >
             Compare

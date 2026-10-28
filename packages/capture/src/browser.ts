@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 import { chromium, type Browser, type BrowserContext, type Page } from "playwright-core";
 import { z } from "zod";
-import { CoreError } from "@design-tool/core";
+import { CoreError } from "@beyland/scratchpad-core";
 
 export const StepSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("goto"), url: z.string() }),
@@ -76,7 +76,7 @@ async function launchBrowser(): Promise<Browser> {
     if (/Executable doesn't exist|browserType\.launch/i.test(message)) {
       throw new CoreError(
         "INTERNAL",
-        "No Chromium for capture is installed. Run `dt capture.setup` (or `pnpm exec playwright-core install chromium-headless-shell`).",
+        "No Chromium for capture is installed. Run `sp capture.setup` (or `pnpm exec playwright-core install chromium-headless-shell`).",
       );
     }
     throw error;

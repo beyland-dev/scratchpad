@@ -3,7 +3,14 @@ import { useRoute } from "preact-iso";
 import { DeleteSystemDialog, SystemDialog } from "../components/Dialogs.tsx";
 import { MenuButton } from "../components/Menu.tsx";
 import { Icon } from "../components/Icon.tsx";
-import { loaded, projectEntries, projectIdOf, systems, type SystemSummary } from "../store.ts";
+import {
+  loaded,
+  projectEntries,
+  projectIdOf,
+  systemHref,
+  systems,
+  type SystemSummary,
+} from "../store.ts";
 
 export function Systems() {
   const { params } = useRoute();
@@ -40,7 +47,7 @@ export function Systems() {
         <div class="grid system-grid">
           {list.map((s) => (
             <div class="system-card-wrap" key={s.id}>
-              <a class="system-card" href={`/systems/${encodeURIComponent(s.id)}`}>
+              <a class="system-card" href={systemHref(s.id)}>
                 <div class="card-title">{s.name}</div>
                 {s.description && <p class="summary">{s.description}</p>}
                 <div class="card-meta">

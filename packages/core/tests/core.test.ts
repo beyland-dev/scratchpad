@@ -18,8 +18,8 @@ let root: string;
 let core: Core;
 
 beforeEach(async () => {
-  root = await mkdtemp(path.join(tmpdir(), "dt-core-"));
-  await initWorkspace(root, { name: "Test" });
+  root = await mkdtemp(path.join(tmpdir(), "sp-core-"));
+  await initWorkspace(root, { project: "Test" });
   core = await Core.open({ root });
 });
 
@@ -45,36 +45,48 @@ describe("utilities", () => {
 });
 
 describe("workspace", () => {
-  test("init creates config, guide, and example prototype", async () => {
-    const config = JSON.parse(await readFile(path.join(root, ".design/workspace.json"), "utf8"));
-    expect(config).toMatchObject({ version: 1, name: "Test", sources: [] });
-    expect(await readFile(path.join(root, ".design/AGENTS.md"), "utf8")).toContain(
-      "design-tool workspace",
+  test("init creates config, guide, a project with its .gitignore, and the example", async () => {
+    const config = JSON.parse(await readFile(path.join(root, "config.json"), "utf8"));
+    expect(config).toEqual({ version: 2, sources: [] });
+    expect(await readFile(path.join(root, "AGENTS.md"), "utf8")).toContain("# scratchpad");
+    expect(await readFile(path.join(root, "projects/test/.gitignore"), "utf8")).toContain(
+      "systems/*/node_modules/",
     );
-    expect(await readFile(path.join(root, "AGENTS.md"), "utf8")).toContain(".design/AGENTS.md");
-    expect(core.prototypes.list().map((p) => p.id)).toEqual(["welcome"]);
+    expect(core.prototypes.list().map((p) => [p.project, p.id])).toEqual([["test", "welcome"]]);
   });
 
-  test("init refuses to overwrite an existing workspace", async () => {
-    await expect(initWorkspace(root)).rejects.toMatchObject({ code: "CONFLICT" });
+  test("init refuses to overwrite an existing project", async () => {
+    await expect(initWorkspace(root, { project: "Test" })).rejects.toMatchObject({
+      code: "CONFLICT",
+    });
   });
 
-  test("open fails without a workspace", async () => {
-    const empty = await mkdtemp(path.join(tmpdir(), "dt-empty-"));
-    await expect(Core.open({ root: empty })).rejects.toMatchObject({ code: "NO_WORKSPACE" });
-    await rm(empty, { recursive: true });
+  test("opening a missing workspace creates it", async () => {
+    const empty = path.join(await mkdtemp(path.join(tmpdir(), "sp-empty-")), "home");
+    const fresh = await Core.open({ root: empty });
+    expect(fresh.projects.list()).toEqual([]);
+    expect(JSON.parse(await readFile(path.join(empty, "config.json"), "utf8"))).toEqual({
+      version: 2,
+      sources: [],
+    });
+    await expect(fresh.run("prototype.create", { title: "x" })).rejects.toMatchObject({
+      code: "INVALID_INPUT",
+    });
+    await fresh.close();
+    await rm(path.dirname(empty), { recursive: true });
   });
 
   test("source.add infers kind, name, and id", async () => {
     const local = await core.run<{
-      source: { id: string; kind: string; resolvedLocation: string };
+      source: { id: string; kind: string; location: string; resolvedLocation: string };
     }>("source.add", {
       location: "../my-app",
     });
     expect(local.source).toMatchObject({
       id: "my-app",
       kind: "local",
-      resolvedLocation: path.resolve(root, "../my-app"),
+      location: path.resolve("../my-app"),
+      resolvedLocation: path.resolve("../my-app"),
     });
     const git = await core.run<{ source: { id: string; kind: string } }>("source.add", {
       location: "https://github.com/acme/my-app.git",
@@ -103,11 +115,14 @@ describe("prototypes", () => {
       tags: ["a"],
     });
     expect(prototype.id).toBe("checkout-flow");
-    expect(prototype.urls.viewer).toBe("http://127.0.0.1:7420/p/checkout-flow");
-    expect(prototype.urls.raw).toBe("http://127.0.0.1:7421/p/checkout-flow/index.html");
-    const dir = path.join(root, ".design/prototypes/checkout-flow");
+    expect(prototype.urls.viewer).toBe("http://127.0.0.1:7420/projects/test/p/checkout-flow");
+    expect(prototype.urls.raw).toBe(
+      "http://127.0.0.1:7421/projects/test/prototypes/checkout-flow/index.html",
+    );
+    const dir = path.join(root, "projects/test/prototypes/checkout-flow");
     expect(await readFile(path.join(dir, "index.html"), "utf8")).toBe("<h1>Hi</h1>");
     const meta = JSON.parse(await readFile(path.join(dir, "prototype.json"), "utf8"));
+    expect(meta.project).toBeUndefined();
     expect(meta).toMatchObject({
       title: "Checkout Flow",
       status: "draft",
@@ -118,8 +133,8 @@ describe("prototypes", () => {
   });
 
   test("create without files writes a placeholder entry; ids are unique", async () => {
-    const a = await core.prototypes.create({ title: "Same" });
-    const b = await core.prototypes.create({ title: "Same" });
+    const a = await core.prototypes.create("test", { title: "Same" });
+    const b = await core.prototypes.create("test", { title: "Same" });
     expect([a.id, b.id]).toEqual(["same", "same-2"]);
     expect(a.issues).toBeUndefined();
     const file = await core.prototypes.readFile("same", "index.html");
@@ -127,13 +142,15 @@ describe("prototypes", () => {
   });
 
   test("explicit id conflicts are rejected", async () => {
-    await expect(core.prototypes.create({ title: "x", id: "welcome" })).rejects.toMatchObject({
+    await expect(
+      core.prototypes.create("test", { title: "x", id: "welcome" }),
+    ).rejects.toMatchObject({
       code: "CONFLICT",
     });
   });
 
   test("writeFile and readFile with binary content and path guards", async () => {
-    await core.prototypes.create({ title: "Files", html: "<p>x</p>" });
+    await core.prototypes.create("test", { title: "Files", html: "<p>x</p>" });
     const png = Buffer.from([0x89, 0x50, 0x4e, 0x47]).toString("base64");
     await core.run("prototype.writeFile", {
       id: "files",
@@ -154,7 +171,7 @@ describe("prototypes", () => {
   });
 
   test("update patches and clears fields", async () => {
-    await core.prototypes.create({ title: "Upd", group: "g", description: "d" });
+    await core.prototypes.create("test", { title: "Upd", group: "g", description: "d" });
     const updated = await core.prototypes.update("upd", {
       status: "review",
       group: null,
@@ -170,7 +187,7 @@ describe("prototypes", () => {
   });
 
   test("variants copy files and form a family", async () => {
-    await core.prototypes.create({ title: "Base", html: "<p>base</p>", group: "g" });
+    await core.prototypes.create("test", { title: "Base", html: "<p>base</p>", group: "g" });
     const v2 = await core.prototypes.createVariant("base");
     const v3 = await core.prototypes.createVariant(v2.id, { description: "Third" });
     const v4 = await core.prototypes.createVariant(v3.id);
@@ -195,28 +212,28 @@ describe("prototypes", () => {
     expect(core.prototypes.get("base").updatedAt).toBe(before);
 
     // Joining a family takes on its name.
-    await core.prototypes.create({ title: "Stray", html: "<p>stray</p>" });
+    await core.prototypes.create("test", { title: "Stray", html: "<p>stray</p>" });
     await core.run("prototype.update", { id: "stray", variantOf: "base" });
     expect(core.prototypes.get("stray").title).toBe("Renamed");
   });
 
-  test("delete moves to trash", async () => {
+  test("delete moves to the project's trash", async () => {
     const result = await core.run<{ trashedTo: string }>("prototype.delete", { id: "welcome" });
-    expect(result.trashedTo).toMatch(/^\.design\/\.trash\/welcome-\d+$/);
+    expect(result.trashedTo).toMatch(/^projects\/test\/\.trash\/prototype-welcome-\d+$/);
     expect(core.prototypes.has("welcome")).toBe(false);
   });
 
   test("folders written by hand are picked up with inferred or salvaged metadata", async () => {
-    const dir = path.join(root, ".design/prototypes/Hand_Made");
+    const dir = path.join(root, "projects/test/prototypes/Hand_Made");
     await mkdir(dir, { recursive: true });
     await writeFile(path.join(dir, "index.html"), "<title>From Title Tag</title>");
-    const bad = path.join(root, ".design/prototypes/bad-meta");
+    const bad = path.join(root, "projects/test/prototypes/bad-meta");
     await mkdir(bad, { recursive: true });
     await writeFile(
       path.join(bad, "prototype.json"),
       JSON.stringify({ title: "Kept", status: "nope" }),
     );
-    await core.prototypes.load();
+    await core.projects.load();
 
     expect(core.prototypes.get("Hand_Made")).toMatchObject({
       title: "From Title Tag",
@@ -229,8 +246,8 @@ describe("prototypes", () => {
   });
 
   test("list filters", async () => {
-    await core.prototypes.create({ title: "One", group: "g", tags: ["x"] });
-    await core.prototypes.create({ title: "Two", status: "review" });
+    await core.prototypes.create("test", { title: "One", group: "g", tags: ["x"] });
+    await core.prototypes.create("test", { title: "Two", status: "review" });
     expect(core.prototypes.list({ group: "g" }).map((p) => p.id)).toEqual(["one"]);
     expect(core.prototypes.list({ tag: "x" }).map((p) => p.id)).toEqual(["one"]);
     expect(core.prototypes.list({ status: "review" }).map((p) => p.id)).toEqual(["two"]);
@@ -256,7 +273,7 @@ describe("projects", () => {
       icon: { format: "svg", content: SVG },
     });
     expect(project).toMatchObject({ id: "web-app", icon: "icon.svg" });
-    expect(project.urls.icon).toMatch(/\/projects\/web-app\/icon\?v=/);
+    expect(project.urls.icon).toMatch(/\/projects\/web-app\/~icon\?v=/);
     expect(await readFile(core.projects.iconPathOf("web-app")!, "utf8")).toContain("<svg");
 
     const png = Buffer.from([0x89, 0x50, 0x4e, 0x47]).toString("base64");
@@ -295,7 +312,7 @@ describe("projects", () => {
     });
 
     const result = await core.run<{ trashedTo: string }>("project.delete", { id: "web-app" });
-    expect(result.trashedTo).toMatch(/^\.design\/\.trash\/project-web-app-\d+$/);
+    expect(result.trashedTo).toMatch(/^\.trash\/project-web-app-\d+$/);
     expect(core.projects.has("web-app")).toBe(false);
   });
 
@@ -304,22 +321,43 @@ describe("projects", () => {
       title: "One",
     });
     expect(one.prototype.project).toBe("test");
-    const none = await core.run<{ prototype: { project?: string } }>("prototype.create", {
-      title: "None",
-      project: null,
-    });
-    expect(none.prototype.project).toBeUndefined();
     await core.run("system.create", { id: "ds", name: "DS", prefix: "ds" });
     expect(core.systems.get("ds").project).toBe("test");
+    expect(
+      await readFile(path.join(root, "projects/test/systems/ds/system.json"), "utf8"),
+    ).not.toContain('"project"');
 
     await core.run("project.create", { name: "Second" });
-    const ambiguous = await core.run<{ prototype: { project?: string } }>("prototype.create", {
-      title: "Ambiguous",
+    await expect(core.run("prototype.create", { title: "Ambiguous" })).rejects.toMatchObject({
+      code: "INVALID_INPUT",
     });
-    expect(ambiguous.prototype.project).toBeUndefined();
     await expect(
       core.run("prototype.create", { title: "Typo", project: "nope" }),
     ).rejects.toMatchObject({ code: "NOT_FOUND" });
+  });
+
+  test("ids are unique per project; project/id disambiguates", async () => {
+    await core.run("project.create", { name: "Second" });
+    await core.run("prototype.create", { title: "Welcome", project: "second" });
+    expect(core.prototypes.get("second/welcome").project).toBe("second");
+    await expect(core.run("prototype.get", { id: "welcome" })).rejects.toMatchObject({
+      code: "INVALID_INPUT",
+      message: expect.stringContaining("second/welcome, test/welcome"),
+    });
+    const { prototype } = await core.run<{ prototype: { project: string; id: string } }>(
+      "prototype.get",
+      { id: "second/welcome" },
+    );
+    expect(prototype).toMatchObject({ project: "second", id: "welcome" });
+    await core.run("prototype.update", { id: "test/welcome", status: "review" });
+    expect(core.prototypes.get("test/welcome").status).toBe("review");
+    expect(core.prototypes.get("second/welcome").status).toBe("draft");
+    await expect(core.run("prototype.get", { id: "nope/welcome" })).rejects.toMatchObject({
+      code: "NOT_FOUND",
+    });
+    // Unique ids still work without the project.
+    await core.run("prototype.create", { title: "Only Here", project: "second" });
+    expect(core.prototypes.get("only-here").project).toBe("second");
   });
 
   test("prototypes resolve the design system they use (field, HTML reference, project)", async () => {
@@ -338,7 +376,7 @@ describe("projects", () => {
     expect(await resolved("welcome")).toBeUndefined();
     const linked = await core.run<Out>("prototype.create", {
       title: "Linked",
-      html: '<link rel="stylesheet" href="http://127.0.0.1:7421/s/other-ds/system.css" /><script src="/s/other-ds/system.js"></script>',
+      html: '<link rel="stylesheet" href="../../systems/other-ds/system.css" /><script src="../../systems/other-ds/system.js"></script>',
     });
     expect(linked.prototype.resolvedSystem).toBe("other-ds");
 
@@ -357,34 +395,45 @@ describe("projects", () => {
     await core.run("prototype.writeFile", {
       id: linked.prototype.id,
       path: "index.html",
-      content: '<script type="module" src="/s/ds/system.js"></script>',
+      content: '<script type="module" src="../../systems/ds/system.js"></script>',
     });
     expect(await resolved(linked.prototype.id)).toBe("ds");
   });
 
-  test("prototypes and systems move between projects; lists filter by project", async () => {
+  test("prototypes move between projects (their folder moves); lists filter by project", async () => {
     await core.run("project.create", { name: "Other" });
-    await core.run("prototype.update", { id: "welcome", project: "other" });
-    expect(core.prototypes.get("welcome").project).toBe("other");
-    expect(core.prototypes.list({ project: "test" })).toEqual([]);
+    await core.run("system.create", { id: "ds", name: "DS", prefix: "ds", project: "test" });
+    const base = await core.prototypes.createVariant("welcome");
+    await core.run("prototype.update", { id: base.id, system: "ds" });
+    await core.run("prototype.update", { id: base.id, project: "other", status: "review" });
+    const moved = core.prototypes.get(`other/${base.id}`);
+    // Links that don't hold in the other project are dropped.
+    expect(moved).toMatchObject({ project: "other", status: "review" });
+    expect(moved.variantOf).toBeUndefined();
+    expect(moved.system).toBeUndefined();
+    expect(
+      await readFile(path.join(root, "projects/other/prototypes", base.id, "index.html"), "utf8"),
+    ).toContain("Welcome");
+    expect(core.prototypes.list({ project: "test" }).map((p) => p.id)).toEqual(["welcome"]);
     await expect(
       core.run("prototype.update", { id: "welcome", project: "nope" }),
     ).rejects.toMatchObject({ code: "NOT_FOUND" });
+    await core.run("prototype.create", { title: "Welcome", project: "other" });
+    await expect(
+      core.run("prototype.update", { id: "test/welcome", project: "other" }),
+    ).rejects.toMatchObject({ code: "CONFLICT" });
 
-    await core.run("system.create", { id: "ds", name: "DS", prefix: "ds", project: "other" });
-    const listed = await core.run<{ systems: { id: string }[] }>("system.list", {
-      project: "other",
+    const listed = await core.run<{ systems: { id: string; project: string }[] }>("system.list", {
+      project: "test",
     });
-    expect(listed.systems.map((s) => s.id)).toEqual(["ds"]);
-    await core.run("system.update", { id: "ds", project: null });
-    expect(core.systems.get("ds").project).toBeUndefined();
+    expect(listed.systems.map((s) => [s.project, s.id])).toEqual([["test", "ds"]]);
 
     const { projects } = await core.run<{
       projects: { id: string; prototypes: number; systems: number }[];
     }>("project.list");
     expect(projects).toEqual([
-      expect.objectContaining({ id: "other", prototypes: 1, systems: 0 }),
-      expect.objectContaining({ id: "test", prototypes: 0, systems: 0 }),
+      expect.objectContaining({ id: "other", prototypes: 2, systems: 0 }),
+      expect.objectContaining({ id: "test", prototypes: 1, systems: 1 }),
     ]);
     const info = await core.run<{ projects: { id: string }[] }>("workspace.info");
     expect(info.projects.map((p) => p.id)).toEqual(["other", "test"]);
@@ -397,10 +446,10 @@ describe("projects", () => {
       system: "ds",
       name: "x",
     });
-    expect(removed.trashedTo).toMatch(/^\.design\/\.trash\/component-ds-x-\d+$/);
+    expect(removed.trashedTo).toMatch(/^projects\/test\/\.trash\/component-ds-x-\d+$/);
     expect(core.systems.components("ds")).toEqual([]);
     const deleted = await core.run<{ trashedTo: string }>("system.delete", { id: "ds" });
-    expect(deleted.trashedTo).toMatch(/^\.design\/\.trash\/system-ds-\d+$/);
+    expect(deleted.trashedTo).toMatch(/^projects\/test\/\.trash\/system-ds-\d+$/);
     expect(core.systems.has("ds")).toBe(false);
   });
 
@@ -408,8 +457,9 @@ describe("projects", () => {
     await core.startWatching();
     const events: CoreEvent[] = [];
     core.events.subscribe((e) => events.push(e));
-    const dir = path.join(root, ".design/projects/hand-made");
-    await mkdir(dir, { recursive: true });
+    const dir = path.join(root, "projects/hand-made");
+    await mkdir(path.join(dir, "prototypes/cloned"), { recursive: true });
+    await writeFile(path.join(dir, "prototypes/cloned/index.html"), "<title>Cloned</title>");
     await writeFile(path.join(dir, "icon.svg"), SVG);
 
     await expect.poll(() => core.projects.has("hand-made"), { timeout: 3000 }).toBe(true);
@@ -423,6 +473,8 @@ describe("projects", () => {
         timeout: 3000,
       })
       .toMatchObject({ data: { exists: true } });
+    // A project folder that appears (e.g. a clone) comes with its contents.
+    await expect.poll(() => core.prototypes.has("hand-made/cloned"), { timeout: 3000 }).toBe(true);
   });
 });
 
@@ -459,7 +511,7 @@ describe("package design systems", () => {
   test("tokens come from the theme stylesheet, per theme, merged with tokens.json", async () => {
     await core.run("system.create", { id: "acme-ui", name: "Acme UI", kind: "package" });
     await core.run("system.writeFile", { id: "acme-ui", path: "src/index.css", content: THEME });
-    await core.systems.reloadSystem("acme-ui");
+    await core.projects.scope("test").systems.reloadSystem("acme-ui");
     await core.run("token.import", {
       system: "acme-ui",
       tokens: [{ name: "primary", type: "color", cssVar: "--primary", description: "Brand" }],
@@ -562,7 +614,7 @@ describe("watcher", () => {
     const events: CoreEvent[] = [];
     core.events.subscribe((e) => events.push(e));
 
-    const dir = path.join(root, ".design/prototypes/external");
+    const dir = path.join(root, "projects/test/prototypes/external");
     await mkdir(dir, { recursive: true });
     await writeFile(path.join(dir, "index.html"), "<title>External</title>");
 
@@ -571,7 +623,7 @@ describe("watcher", () => {
       .poll(() => events.find((e) => e.type === "prototype.changed" && e.data.id === "external"), {
         timeout: 3000,
       })
-      .toMatchObject({ data: { exists: true } });
+      .toMatchObject({ data: { project: "test", exists: true } });
 
     await rm(dir, { recursive: true });
     await expect.poll(() => core.prototypes.has("external"), { timeout: 3000 }).toBe(false);

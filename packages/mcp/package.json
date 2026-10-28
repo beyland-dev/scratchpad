@@ -1,7 +1,7 @@
 {
-  "name": "@design-tool/mcp",
+  "name": "@beyland/scratchpad-mcp",
   "version": "0.0.0",
-  "description": "Model Context Protocol server for design-tool, generated from the core command registry.",
+  "description": "Model Context Protocol server for scratchpad, generated from the core command registry.",
   "license": "MIT",
   "files": [
     "dist"
@@ -23,7 +23,7 @@
     "test": "vp test"
   },
   "dependencies": {
-    "@design-tool/core": "workspace:*",
+    "@beyland/scratchpad-core": "workspace:*",
     "@modelcontextprotocol/server": "catalog:",
     "zod": "catalog:"
   },

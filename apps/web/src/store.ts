@@ -1,7 +1,43 @@
 import { computed, signal } from "@preact/signals";
-import { familyOf as sharedFamilyOf, groupFamilies, versionLabel } from "@design-tool/core/family";
+import {
+  familyOf as sharedFamilyOf,
+  groupFamilies,
+  versionLabel,
+} from "@beyland/scratchpad-core/family";
 import { call, subscribe } from "./api.ts";
 import type { ProjectSummary, PrototypeWithUrls, WorkspaceInfo } from "./types.ts";
+
+/** `project/id`: how the app identifies prototypes and design systems across projects. */
+export function refOf(project: string, id: string): string {
+  return `${project}/${id}`;
+}
+
+/** The parts of a `project/id` reference. */
+export function splitRef(ref: string): { project: string; id: string } {
+  const slash = ref.indexOf("/");
+  return { project: ref.slice(0, slash), id: ref.slice(slash + 1) };
+}
+
+type ApiPrototype = Omit<PrototypeWithUrls, "localId">;
+
+/** Qualify a prototype from the API: `id`, `variantOf` and its systems become `project/id`. */
+export function normalizePrototype(p: ApiPrototype): PrototypeWithUrls {
+  const q = (id: string | undefined) => (id ? refOf(p.project, id) : undefined);
+  return {
+    ...p,
+    id: refOf(p.project, p.id),
+    localId: p.id,
+    variantOf: q(p.variantOf),
+    system: q(p.system),
+    resolvedSystem: q(p.resolvedSystem),
+  };
+}
+
+type ApiSystem = Omit<SystemSummary, "localId">;
+
+function normalizeSystem(s: ApiSystem): SystemSummary {
+  return { ...s, id: refOf(s.project, s.id), localId: s.id };
+}
 
 export const workspace = signal<WorkspaceInfo | null>(null);
 export const prototypes = signal<PrototypeWithUrls[]>([]);
@@ -15,11 +51,14 @@ export const revisions = signal<Record<string, number>>({});
 export const selection = signal<string[]>([]);
 
 export interface SystemSummary {
+  /** `project/id`, see {@link refOf}. */
   id: string;
+  /** Its folder name. */
+  localId: string;
   name: string;
   description?: string;
   sourceId?: string;
-  project?: string;
+  project: string;
   kind: "captured" | "package";
   framework?: "react";
   library?: { name: string; package?: string; docsUrl?: string };
@@ -63,15 +102,15 @@ export async function refresh(): Promise<void> {
     try {
       const [info, list, systemList, projectList] = await Promise.all([
         call<WorkspaceInfo>("workspace.info"),
-        call<{ prototypes: PrototypeWithUrls[] }>("prototype.list"),
-        call<{ systems: SystemSummary[] }>("system.list").catch(() => ({ systems: [] })),
+        call<{ prototypes: ApiPrototype[] }>("prototype.list"),
+        call<{ systems: ApiSystem[] }>("system.list").catch(() => ({ systems: [] })),
         call<{ projects: ProjectSummary[] }>("project.list").catch(() => ({ projects: [] })),
       ]);
       workspace.value = info;
       projects.value = projectList.projects;
-      systems.value = systemList.systems;
-      prototypes.value = list.prototypes;
-      selection.value = selection.value.filter((id) => list.prototypes.some((p) => p.id === id));
+      systems.value = systemList.systems.map(normalizeSystem);
+      prototypes.value = list.prototypes.map(normalizePrototype);
+      selection.value = selection.value.filter((id) => prototypes.value.some((p) => p.id === id));
       loadError.value = null;
     } catch (error) {
       loadError.value = (error as Error).message;
@@ -96,26 +135,22 @@ export function startLiveUpdates(): void {
   subscribe(
     (event) => {
       if (event.type === "prototype.changed") {
-        revisions.value = { ...revisions.value, [event.data.id]: revisionOf(event.data.id) + 1 };
+        const ref = refOf(event.data.project, event.data.id);
+        revisions.value = { ...revisions.value, [ref]: revisionOf(ref) + 1 };
       }
       if (event.type === "system.changed") {
-        systemEvents.value = {
-          ...systemEvents.value,
-          [event.data.id]: systemEventOf(event.data.id) + 1,
-        };
-      }
-      // React prototypes are built with their design system, so reload them when it's rebuilt.
-      if (event.type === "system.changed" && event.data.built) {
-        const next = { ...revisions.value };
-        for (const p of prototypes.value)
-          if (p.framework && p.system === event.data.id) next[p.id] = (next[p.id] ?? 0) + 1;
-        revisions.value = next;
-      }
-      if (event.type === "system.changed" && (event.data.built || !event.data.exists)) {
-        systemRevisions.value = {
-          ...systemRevisions.value,
-          [event.data.id]: systemRevisionOf(event.data.id) + 1,
-        };
+        const ref = refOf(event.data.project, event.data.id);
+        systemEvents.value = { ...systemEvents.value, [ref]: systemEventOf(ref) + 1 };
+        // React prototypes are built with their design system, so reload them when it's rebuilt.
+        if (event.data.built) {
+          const next = { ...revisions.value };
+          for (const p of prototypes.value)
+            if (p.framework && p.system === ref) next[p.id] = (next[p.id] ?? 0) + 1;
+          revisions.value = next;
+        }
+        if (event.data.built || !event.data.exists) {
+          systemRevisions.value = { ...systemRevisions.value, [ref]: systemRevisionOf(ref) + 1 };
+        }
       }
       void refresh();
     },
@@ -150,23 +185,28 @@ export const families = computed(() => groupFamilies(prototypes.value));
 
 export function sandboxUrlFor(proto: PrototypeWithUrls, page?: string): string {
   if (!page) return proto.urls.raw;
-  const base = proto.urls.raw.slice(
-    0,
-    proto.urls.raw.indexOf(`/p/${encodeURIComponent(proto.id)}/`),
-  );
-  return `${base}/p/${encodeURIComponent(proto.id)}/${page.split("/").map(encodeURIComponent).join("/")}`;
+  const folder = `/prototypes/${encodeURIComponent(proto.localId)}/`;
+  const base = proto.urls.raw.slice(0, proto.urls.raw.indexOf(folder) + folder.length);
+  return `${base}${page.split("/").map(encodeURIComponent).join("/")}`;
+}
+
+/** Sandbox URL of a design system's build output (specimen page, system.css, captures). */
+export function systemSandboxUrl(ref: string): string {
+  const { project, id } = splitRef(ref);
+  return `${workspace.value?.urls.sandbox ?? ""}/projects/${encodeURIComponent(project)}/systems/${encodeURIComponent(id)}`;
+}
+
+/** The app page of a design system (`ref` is `project/id`), or one of its sub-pages. */
+export function systemHref(ref: string, sub = ""): string {
+  const { project, id } = splitRef(ref);
+  return `/projects/${encodeURIComponent(project)}/systems/${encodeURIComponent(id)}${sub}`;
 }
 
 // ---- Projects ----------------------------------------------------------------
 
-/** Pseudo-project ("Trash" in the sidebar) for prototypes and systems that don't belong to an existing project. */
-export const UNSORTED = "~unsorted";
-
-/** The project an item shows up under: its own if that project exists, otherwise Trash. */
-export function projectIdOf(item: { project?: string }): string {
-  return item.project && projects.value.some((p) => p.id === item.project)
-    ? item.project
-    : UNSORTED;
+/** The project an item belongs to. */
+export function projectIdOf(item: { project: string }): string {
+  return item.project;
 }
 
 export interface ProjectEntry {
@@ -180,9 +220,9 @@ export interface ProjectEntry {
   systems: number;
 }
 
-/** Projects as listed in the sidebar, plus "Trash" when some items have no project. */
+/** Projects as listed in the sidebar. */
 export const projectEntries = computed<ProjectEntry[]>(() => {
-  const entries: ProjectEntry[] = projects.value.map((p) => ({
+  return projects.value.map((p) => ({
     id: p.id,
     name: p.name,
     description: p.description,
@@ -192,20 +232,6 @@ export const projectEntries = computed<ProjectEntry[]>(() => {
     prototypes: families.value.filter((f) => f.some((x) => x.project === p.id)).length,
     systems: p.systems,
   }));
-  const known = new Set(projects.value.map((p) => p.id));
-  const orphan = (item: { project?: string }) => !item.project || !known.has(item.project);
-  const unsortedPrototypes = families.value.filter((f) => f.some(orphan)).length;
-  const unsortedSystems = systems.value.filter(orphan).length;
-  if (unsortedPrototypes || unsortedSystems) {
-    entries.push({
-      id: UNSORTED,
-      name: "Trash",
-      description: "Prototypes and design systems that aren't in a project",
-      prototypes: unsortedPrototypes,
-      systems: unsortedSystems,
-    });
-  }
-  return entries;
 });
 
 const LAST_PROJECT_KEY = "dt.lastProject";
@@ -229,8 +255,12 @@ export function projectHref(id: string, section: ProjectSection = "prototypes"):
   return section === "prototypes" ? base : `${base}/${section}`;
 }
 
-/** The design systems list of the project that `systemId` belongs to. */
-export function systemsListHref(systemId: string): string {
-  const system = systems.value.find((s) => s.id === systemId);
-  return projectHref(system ? projectIdOf(system) : (homeProjectId() ?? UNSORTED), "systems");
+/** A project's folder on disk (for showing paths), or `projects/<id>` before it's loaded. */
+export function projectDirOf(project: string): string {
+  return projects.value.find((p) => p.id === project)?.dir ?? `projects/${project}`;
+}
+
+/** The design systems list of the project that `systemRef` (`project/id`) belongs to. */
+export function systemsListHref(systemRef: string): string {
+  return projectHref(splitRef(systemRef).project, "systems");
 }

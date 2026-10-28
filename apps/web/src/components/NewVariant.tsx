@@ -1,11 +1,11 @@
 import { signal } from "@preact/signals";
-import { versionLabel } from "@design-tool/core/family";
+import { versionLabel } from "@beyland/scratchpad-core/family";
 import { useState } from "preact/hooks";
 import { useLocation } from "preact-iso";
 import { call } from "../api.ts";
 import { prototypeHref } from "../prototype-theme.ts";
 import { variantPrompt } from "../prompts.ts";
-import { byId, familyOf, refresh } from "../store.ts";
+import { byId, familyOf, normalizePrototype, refresh } from "../store.ts";
 import type { PrototypeWithUrls } from "../types.ts";
 import { editedAgo } from "../util.ts";
 import { Code } from "./Code.tsx";
@@ -45,14 +45,15 @@ function NewVariantDialog({ sourceId, onClose }: { sourceId: string; onClose: ()
   const from = family.find((p) => p.id === source) ?? family[family.length - 1]!;
   const fromLabel = family.length > 1 ? versionLabel(family.indexOf(from), family.length) : null;
   const { busy, error, submit } = useSubmit(async () => {
-    const { prototype } = await call<{ prototype: PrototypeWithUrls }>("prototype.createVariant", {
+    const created = await call<{ prototype: PrototypeWithUrls }>("prototype.createVariant", {
       id: from.id,
       ...(change.trim() ? { description: change.trim() } : {}),
       createdBy: { kind: "human" },
     });
+    const prototype = normalizePrototype(created.prototype);
     await refresh();
     // Keep the viewport and theme when forking from the viewer.
-    const inViewer = path.startsWith("/p/");
+    const inViewer = /^\/projects\/[^/]+\/p\//.test(path);
     route(
       prototypeHref(prototype.id, inViewer ? { device: query.device, theme: query.theme } : {}),
     );
@@ -66,7 +67,7 @@ function NewVariantDialog({ sourceId, onClose }: { sourceId: string; onClose: ()
           <p class="variant-created">
             The new version of <strong>{root.title}</strong> starts as a copy of{" "}
             <strong>{fromLabel ?? "the original"}</strong>. Give this prompt to an agent connected
-            to design-tool to make the change. The viewer updates live as it writes files.
+            to scratchpad to make the change. The viewer updates live as it writes files.
           </p>
           <Code code={created.prompt} lang="text" class="variant-prompt" />
         </div>

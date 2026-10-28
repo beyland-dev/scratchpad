@@ -2,14 +2,10 @@ import { signal } from "@preact/signals";
 import { useEffect, useState } from "preact/hooks";
 import { useLocation } from "preact-iso";
 import {
-  UNSORTED,
   homeProjectId,
   projectEntries,
   projectHref,
-  projectIdOf,
   rememberProject,
-  systems,
-  workspace,
   type ProjectEntry,
 } from "../store.ts";
 import { DeleteProjectDialog, ProjectDialog } from "./Dialogs.tsx";
@@ -30,14 +26,8 @@ function setExpanded(expanded: boolean): void {
 /** The project the current page belongs to (remembered as "home" for next time). */
 export function useActiveProject(): string | undefined {
   const { path } = useLocation();
-  let active: string | undefined;
   const project = /^\/projects\/([^/]+)/.exec(path);
-  const system = /^\/systems\/([^/]+)/.exec(path);
-  if (project) active = decodeURIComponent(project[1]!);
-  else if (system) {
-    const found = systems.value.find((s) => s.id === decodeURIComponent(system[1]!));
-    if (found) active = projectIdOf(found);
-  }
+  const active = project ? decodeURIComponent(project[1]!) : undefined;
   useEffect(() => {
     if (active) rememberProject(active);
   }, [active]);
@@ -92,7 +82,7 @@ export function Sidebar() {
     const rect = el.getBoundingClientRect();
     setTip({ text, sub, top: rect.top + rect.height / 2, left: rect.right + 10 });
   };
-  const workspaceName = workspace.value?.name ?? "design-tool";
+  const workspaceName = "scratchpad";
   const menuItems = (p: ProjectEntry): MenuItem[] => [
     { label: "Edit project…", onSelect: () => setDialog({ kind: "edit", project: p }) },
     {
@@ -123,7 +113,6 @@ export function Sidebar() {
             ...(p.systems ? [plural(p.systems, "system")] : []),
           ].join(" · ");
           const isActive = p.id === active;
-          const editable = p.id !== UNSORTED;
           return (
             <li key={p.id} class="project-item">
               <a
@@ -132,7 +121,6 @@ export function Sidebar() {
                 aria-current={isActive ? "page" : undefined}
                 aria-label={`${p.name}, ${counts}`}
                 onContextMenu={(e) => {
-                  if (!editable) return;
                   e.preventDefault();
                   setTip(null);
                   setMenu({ project: p, x: e.clientX, y: e.clientY });
@@ -142,7 +130,7 @@ export function Sidebar() {
                 <ProjectIcon project={p} size={expanded ? 22 : 36} />
                 {expanded && <span class="project-name">{p.name}</span>}
               </a>
-              {expanded && editable && (
+              {expanded && (
                 <MenuButton class="project-menu" label={`${p.name} options`} items={menuItems(p)} />
               )}
             </li>

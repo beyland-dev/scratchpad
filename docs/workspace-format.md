@@ -8,7 +8,7 @@ from the current directory, or from `--workspace <dir>` / `$DT_WORKSPACE`.
   AGENTS.md                       # created by `dt init` if missing; points agents at .design/AGENTS.md
   .design/
     workspace.json                # workspace config (below)
-    AGENTS.md                     # conventions for agents (also served as MCP resource design-tool://guide)
+    AGENTS.md                     # conventions for agents (also served as MCP resource scratchpad://guide)
     .gitignore                    # ignores .cache/ and .trash/
     projects/
       <id>/
@@ -45,7 +45,7 @@ from the current directory, or from `--workspace <dir>` / `$DT_WORKSPACE`.
 ```
 
 - `sources[].kind` is `local` (path, absolute or relative to the workspace root) or `git` (URL).
-  Sources are **read-only references**. design-tool never writes to them.
+  Sources are **read-only references**. scratchpad never writes to them.
 - `server` is optional and overrides the default ports and host for `dt serve`.
 
 ## Projects

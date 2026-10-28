@@ -1,5 +1,5 @@
 {
-  "name": "@design-tool/capture",
+  "name": "@beyland/scratchpad-capture",
   "version": "0.0.0",
   "description": "Capture components, CSS, tokens and screenshots from running apps (Playwright), and verify design-system components against them.",
   "license": "MIT",
@@ -23,12 +23,12 @@
     "test": "vp test"
   },
   "dependencies": {
-    "@design-tool/core": "workspace:*",
+    "@beyland/scratchpad-core": "workspace:*",
     "playwright-core": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@design-tool/server": "workspace:*",
+    "@beyland/scratchpad-server": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:"

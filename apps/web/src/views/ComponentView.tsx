@@ -4,7 +4,14 @@ import { useRoute } from "preact-iso";
 import { Icon } from "../components/Icon.tsx";
 import { Specimen, VerificationBadge } from "../components/Specimen.tsx";
 import { useCommand } from "../hooks/useCommand.ts";
-import { systemRevisionOf, systemsListHref, workspace } from "../store.ts";
+import {
+  refOf,
+  systemHref,
+  systemRevisionOf,
+  systemSandboxUrl,
+  systemsListHref,
+  workspace,
+} from "../store.ts";
 import { ComponentDialog, DeleteComponentDialog } from "../components/Dialogs.tsx";
 import { MenuButton } from "../components/Menu.tsx";
 import type { ComponentSummary, DesignComponent, DesignSystem, Token } from "../types.ts";
@@ -24,7 +31,8 @@ const ALL_THEMES_KEY = "dt.component.allThemes";
 
 export function ComponentView() {
   const { params } = useRoute();
-  const id = params.id ?? "";
+  // The app identifies systems as project/id.
+  const id = refOf(params.project ?? "", params.id ?? "");
   const name = params.name ?? "";
   const revision = systemRevisionOf(id);
   const system = useCommand<{ system: DesignSystem; components: ComponentSummary[] }>(
@@ -68,9 +76,7 @@ export function ComponentView() {
   const link = (tag: string) => {
     const target = byTag.get(tag);
     return target ? (
-      <a
-        href={`/systems/${encodeURIComponent(id)}/c/${encodeURIComponent(target.name)}?theme=${theme}`}
-      >
+      <a href={systemHref(id, `/c/${encodeURIComponent(target.name)}?theme=${theme}`)}>
         <code>&lt;{tag}&gt;</code>
       </a>
     ) : (
@@ -346,7 +352,7 @@ export function ComponentView() {
                   <figcaption>Captured from the product</figcaption>
                   {sandbox && (
                     <CaptureImage
-                      base={`${sandbox}/s/${encodeURIComponent(id)}/~captures/${encodeURIComponent(ref.capture)}`}
+                      base={`${systemSandboxUrl(id)}/~captures/${encodeURIComponent(ref.capture)}`}
                       alt={`Captured ${ref.capture}`}
                     />
                   )}

@@ -1,18 +1,18 @@
 # Architecture
 
-design-tool is an **open core with a thin UI**. All behavior lives in a headless core. The web UI,
+scratchpad is an **open core with a thin UI**. All behavior lives in a headless core. The web UI,
 HTTP API, MCP server, and CLI are thin adapters over it, so anything a person can do, an agent can do too.
 
 ```
                 ┌──────────────────────────────────────────────┐
-                │              @design-tool/core               │
+                │              @beyland/scratchpad-core               │
                 │  Workspace · PrototypeStore · EventBus       │
                 │  CommandRegistry (zod schemas + handlers)    │
                 │  File watcher (chokidar)                     │
                 └───────▲───────────────▲───────────────▲──────┘
                         │               │               │
           ┌─────────────┴───┐   ┌───────┴───────┐   ┌───┴──────────────┐
-          │ @design-tool/mcp│   │ @design-tool/ │   │ @design-tool/cli │
+          │ @beyland/scratchpad-mcp│   │ @scratchpad/ │   │ @beyland/scratchpad │
           │ tools+resources │   │ server (Hono) │   │ `dt` (generated  │
           │ stdio / HTTP    │   │ API·SSE·MCP   │   │ subcommands)     │
           └─────────────────┘   │ sandbox origin│   └──────────────────┘
@@ -26,13 +26,13 @@ HTTP API, MCP server, and CLI are thin adapters over it, so anything a person ca
 
 ## Packages
 
-| Package           | Responsibility                                                                                                                                                                                 |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/core`   | Workspace discovery/init, on-disk format, prototype storage, the command registry, the event bus, and the file watcher. No HTTP, no UI.                                                        |
-| `packages/mcp`    | Builds an `McpServer` from the registry: one tool per command (`prototype.create` → `prototype_create`), plus the `design-tool://guide` resource. Serves stdio or a web-standard HTTP handler. |
-| `packages/server` | Hono app server (`/api/commands/:name`, `/api/events` SSE, `/mcp`, built UI) and a separate **sandbox server** for prototype files.                                                            |
-| `packages/cli`    | The `dt` binary: `init`, `serve`, `mcp`, `mcp-config`, plus a subcommand per registry command, with flags derived from its JSON schema.                                                        |
-| `apps/web`        | Preact + signals UI. Calls commands over HTTP and live-updates from SSE.                                                                                                                       |
+| Package           | Responsibility                                                                                                                                                                                |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/core`   | Workspace discovery/init, on-disk format, prototype storage, the command registry, the event bus, and the file watcher. No HTTP, no UI.                                                       |
+| `packages/mcp`    | Builds an `McpServer` from the registry: one tool per command (`prototype.create` → `prototype_create`), plus the `scratchpad://guide` resource. Serves stdio or a web-standard HTTP handler. |
+| `packages/server` | Hono app server (`/api/commands/:name`, `/api/events` SSE, `/mcp`, built UI) and a separate **sandbox server** for prototype files.                                                           |
+| `packages/cli`    | The `dt` binary: `init`, `serve`, `mcp`, `mcp-config`, plus a subcommand per registry command, with flags derived from its JSON schema.                                                       |
+| `apps/web`        | Preact + signals UI. Calls commands over HTTP and live-updates from SSE.                                                                                                                      |
 
 ## One command, every surface
 

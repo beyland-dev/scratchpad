@@ -3,7 +3,7 @@ import { Icon } from "../components/Icon.tsx";
 import { SearchInput } from "../components/SearchInput.tsx";
 import { VerificationBadge } from "../components/Specimen.tsx";
 import { useCommand } from "../hooks/useCommand.ts";
-import { systemEventOf, workspace } from "../store.ts";
+import { systemEventOf, systemHref, systemSandboxUrl } from "../store.ts";
 import type { ActivityEntry, CaptureSummary, ComponentSummary, DesignSystem } from "../types.ts";
 import { relativeTime } from "../util.ts";
 import type { SystemDetails } from "./SystemView.tsx";
@@ -18,16 +18,15 @@ const KIND_LABEL: Record<ActivityEntry["kind"], string> = {
 };
 
 export function captureBase(system: string, label: string): string {
-  const sandbox = workspace.value?.urls.sandbox ?? "";
-  return `${sandbox}/s/${encodeURIComponent(system)}/~captures/${encodeURIComponent(label)}`;
+  return `${systemSandboxUrl(system)}/~captures/${encodeURIComponent(label)}`;
 }
 
 export function captureHref(system: string, label: string): string {
-  return `/systems/${encodeURIComponent(system)}/captures/${encodeURIComponent(label)}`;
+  return systemHref(system, `/captures/${encodeURIComponent(label)}`);
 }
 
 export function componentHref(system: string, name: string): string {
-  return `/systems/${encodeURIComponent(system)}/c/${encodeURIComponent(name)}`;
+  return systemHref(system, `/c/${encodeURIComponent(name)}`);
 }
 
 /** Re-render periodically so relative times stay fresh. */

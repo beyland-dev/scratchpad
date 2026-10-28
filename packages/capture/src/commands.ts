@@ -8,7 +8,7 @@ import {
   type Core,
   type TokenInput,
   type TokenType,
-} from "@design-tool/core";
+} from "@beyland/scratchpad-core";
 import { installBrowser, settle, TargetSchema, withPage } from "./browser.ts";
 import {
   captureElement,
@@ -82,7 +82,7 @@ export const captureElementCommand = defineCommand({
   name: "capture.element",
   title: "Capture element",
   description:
-    "Capture an element from a running app: its DOM, every CSS rule that applies to it or its descendants (including :hover/:focus/::before and state-class variants like .focused/.disabled) in cascade order with provenance annotations, resolved CSS variables, fonts, the ancestor chain, per-element geometry and a screenshot. With `system` + `label`, stores everything in .design/systems/<system>/captures/<label>/ (rules.css is ready to become a component's component.css; geometry.json is what capture.verify compares against).",
+    "Capture an element from a running app: its DOM, every CSS rule that applies to it or its descendants (including :hover/:focus/::before and state-class variants like .focused/.disabled) in cascade order with provenance annotations, resolved CSS variables, fonts, the ancestor chain, per-element geometry and a screenshot. With `system` + `label`, stores everything in projects/<project>/systems/<system>/captures/<label>/ (rules.css is ready to become a component's component.css; geometry.json is what capture.verify compares against).",
   kind: "mutation",
   input: z.object({
     target: TargetSchema,
@@ -368,7 +368,7 @@ export const prototypeScreenshot = defineCommand({
   handler: async ({ id, width, height, query, selector, fullPage, save }, core) => {
     const proto = core.prototypes.get(id);
     const sandbox = await core.sandboxUrl();
-    const url = `${sandbox}/p/${encodeURIComponent(id)}/${proto.entry.split("/").map(encodeURIComponent).join("/")}${query}`;
+    const url = `${sandbox}/projects/${encodeURIComponent(proto.project)}/prototypes/${encodeURIComponent(proto.id)}/${proto.entry.split("/").map(encodeURIComponent).join("/")}${query}`;
     const shot = await withPage({ url, width, height, scale: 1 }, async (page) => {
       await settle(page);
       return selector ? page.locator(selector).first().screenshot() : page.screenshot({ fullPage });
@@ -398,8 +398,9 @@ export const componentScreenshot = defineCommand({
     const component = core.systems.component(system, name);
     await core.buildSystem(system);
     const sandbox = await core.sandboxUrl();
-    const t = theme ?? core.systems.get(system).defaultTheme;
-    const url = `${sandbox}/s/${encodeURIComponent(system)}/specimen.html?component=${encodeURIComponent(name)}&example=${example}&theme=${encodeURIComponent(t)}&width=${width}`;
+    const sys = core.systems.get(system);
+    const t = theme ?? sys.defaultTheme;
+    const url = `${sandbox}/projects/${encodeURIComponent(sys.project)}/systems/${encodeURIComponent(sys.id)}/specimen.html?component=${encodeURIComponent(name)}&example=${example}&theme=${encodeURIComponent(t)}&width=${width}`;
     const shot = await withPage(
       { url, width: width + 32, height: 600, waitFor: "html[data-ready]" },
       async (page) => {

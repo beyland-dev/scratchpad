@@ -34,12 +34,15 @@ export function withQuery(path: string, query: Record<string, string | undefined
   return qs ? `${path}?${qs}` : path;
 }
 
-/** Viewer URL of a prototype, keeping the viewport and theme across versions. */
+/** Viewer URL of a prototype (`ref` is `project/id`), keeping the viewport and theme across versions. */
 export function prototypeHref(
-  id: string,
-  query: { device?: string; theme?: string; page?: string },
+  ref: string,
+  query: { device?: string; theme?: string; page?: string } = {},
 ): string {
-  return withQuery(`/p/${encodeURIComponent(id)}`, {
+  const slash = ref.indexOf("/");
+  const project = encodeURIComponent(ref.slice(0, slash));
+  const id = encodeURIComponent(ref.slice(slash + 1));
+  return withQuery(`/projects/${project}/p/${id}`, {
     device: query.device,
     theme: query.theme,
     page: query.page,
@@ -60,12 +63,14 @@ export function parseThemeReady(data: unknown): ThemeReady | null {
 /**
  * The themes to offer for a prototype: only when it resolves to a design system, that system's
  * runtime answered from the frame, and it has more than one theme. Otherwise the control is hidden.
+ * `resolvedSystem` may be a `project/id` reference; the runtime reports the system's own id.
  */
 export function themeOptions(
   resolvedSystem: string | undefined,
   ready: ThemeReady | null | undefined,
 ): ThemeOption[] | null {
-  if (!resolvedSystem || !ready || ready.system !== resolvedSystem) return null;
+  const system = resolvedSystem?.slice(resolvedSystem.indexOf("/") + 1);
+  if (!system || !ready || ready.system !== system) return null;
   return ready.themes.length > 1 ? ready.themes : null;
 }
 

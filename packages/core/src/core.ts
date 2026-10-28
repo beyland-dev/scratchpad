@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { CommandRegistry } from "./registry.ts";
 import { builtinCommands } from "./commands.ts";
@@ -7,12 +7,12 @@ import { buildSystem, type BuildResult } from "./systems/build.ts";
 import { buildInto, buildSignature, prototypeHeadScript, runVite } from "./systems/package.ts";
 import type { Prototype } from "./schemas.ts";
 import { systemCommands } from "./systems/commands.ts";
-import { SystemStore } from "./systems/store.ts";
 import type { AnyCommand } from "./registry.ts";
 import { EventBus } from "./events.ts";
 import { CoreError } from "./errors.ts";
+import { PrototypeIndex, SystemIndex } from "./indexes.ts";
 import { ProjectStore } from "./projects.ts";
-import { PrototypeStore } from "./prototypes.ts";
+import { refKey } from "./refs.ts";
 import type { ProjectUrls, PrototypeUrls, WorkspaceUrls } from "./schemas.ts";
 import { watchWorkspace } from "./watcher.ts";
 import { Workspace } from "./workspace.ts";
@@ -22,11 +22,11 @@ export const DEFAULT_PORT = 7420;
 export const DEFAULT_SANDBOX_PORT = 7421;
 
 export interface OpenCoreOptions {
-  /** Workspace root (the folder containing `.design/`). */
+  /** Workspace root (`~/.scratchpad` by default, see `defaultWorkspaceRoot`). Created if missing. */
   root: string;
   /** Watch the filesystem for external changes (and rebuild design systems when their sources change). */
   watch?: boolean;
-  /** Extra commands to register (e.g. capture commands from @design-tool/capture). */
+  /** Extra commands to register (e.g. capture commands from @beyland/scratchpad-capture). */
   commands?: AnyCommand[];
 }
 
@@ -40,9 +40,12 @@ export interface LastBuild {
 /** The headless application: workspace, stores, events, and the command registry. */
 export class Core {
   readonly workspace: Workspace;
+  /** Projects, each with the stores of its folder's contents (`projects.scope(id)`). */
   readonly projects: ProjectStore;
-  readonly prototypes: PrototypeStore;
-  readonly systems: SystemStore;
+  /** Prototypes across projects, addressed as `project/id` (or an id only one project has). */
+  readonly prototypes: PrototypeIndex;
+  /** Design systems across projects, addressed as `project/id` (or an id only one project has). */
+  readonly systems: SystemIndex;
   readonly events = new EventBus();
   readonly registry = new CommandRegistry().register(...builtinCommands, ...systemCommands);
   #urls: WorkspaceUrls | undefined;
@@ -57,16 +60,14 @@ export class Core {
   private constructor(workspace: Workspace) {
     this.workspace = workspace;
     this.projects = new ProjectStore(workspace);
-    this.prototypes = new PrototypeStore(workspace);
-    this.systems = new SystemStore(workspace);
+    this.prototypes = new PrototypeIndex(this);
+    this.systems = new SystemIndex(this);
   }
 
   static async open(options: OpenCoreOptions): Promise<Core> {
     const core = new Core(await Workspace.open(path.resolve(options.root)));
     if (options.commands?.length) core.registry.register(...options.commands);
     await core.projects.load();
-    await core.prototypes.load();
-    await core.systems.load();
     if (options.watch) await core.startWatching();
     return core;
   }
@@ -108,17 +109,16 @@ export class Core {
     return {
       app: `${this.urls.app}/projects/${encodeURIComponent(id)}`,
       ...(version
-        ? { icon: `${this.urls.sandbox}/projects/${encodeURIComponent(id)}/icon?v=${version}` }
+        ? { icon: `${this.urls.sandbox}/projects/${encodeURIComponent(id)}/~icon?v=${version}` }
         : {}),
     };
   }
 
   /**
-   * The project a new prototype or system goes into: the given one (which must exist), none when
-   * `null`, or, when omitted, the workspace's only project if it has exactly one.
+   * The project new work goes into: the given one (which must exist), or, when omitted, the
+   * workspace's only project.
    */
-  resolveProject(project: string | null | undefined): string | undefined {
-    if (project === null) return undefined;
+  resolveProject(project: string | undefined): string {
     if (project !== undefined) {
       if (!this.projects.has(project))
         throw new CoreError(
@@ -128,27 +128,41 @@ export class Core {
       return project;
     }
     const all = this.projects.list();
-    return all.length === 1 ? all[0]!.id : undefined;
+    if (all.length === 1) return all[0]!.id;
+    throw new CoreError(
+      "INVALID_INPUT",
+      all.length
+        ? `Pass a project: one of ${all.map((p) => p.id).join(", ")}`
+        : "There are no projects yet. Create one with project.create first.",
+    );
   }
 
-  prototypeUrls(id: string): PrototypeUrls {
-    const proto = this.prototypes.get(id);
+  /** Sandbox URL of a project's folder: prototypes and systems are served under it. */
+  projectSandboxUrl(project: string): string {
+    return `${this.urls.sandbox}/projects/${encodeURIComponent(project)}`;
+  }
+
+  prototypeUrls(ref: string): PrototypeUrls {
+    const proto = this.prototypes.get(ref);
     const entry = proto.entry.split("/").map(encodeURIComponent).join("/");
+    const project = encodeURIComponent(proto.project);
     return {
-      viewer: `${this.urls.app}/p/${encodeURIComponent(id)}`,
-      raw: `${this.urls.sandbox}/p/${encodeURIComponent(id)}/${entry}`,
+      viewer: `${this.urls.app}/projects/${project}/p/${encodeURIComponent(proto.id)}`,
+      raw: `${this.projectSandboxUrl(proto.project)}/prototypes/${encodeURIComponent(proto.id)}/${entry}`,
     };
   }
 
   /** Build a design system (serialized per system) and remember the outcome. */
-  buildSystem(id: string): Promise<BuildResult> {
-    const previous = this.#buildQueue.get(id) ?? Promise.resolve(undefined);
+  buildSystem(ref: string): Promise<BuildResult> {
+    const { store, id, scope } = this.systems.locate(ref);
+    const key = refKey(scope.id, id);
+    const previous = this.#buildQueue.get(key) ?? Promise.resolve(undefined);
     const run = previous
       .catch(() => undefined)
-      .then(() => buildSystem(this.systems, id))
+      .then(() => buildSystem(store, id))
       .then(
         async (result) => {
-          this.#builds.set(id, { ok: true, at: result.builtAt, result });
+          this.#builds.set(key, { ok: true, at: result.builtAt, result });
           const signature = JSON.stringify([
             result.css.bytes,
             result.js.bytes,
@@ -156,9 +170,9 @@ export class Core {
             result.tokens,
             result.warnings,
           ]);
-          if (this.#buildSignatures.get(id) !== signature) {
-            this.#buildSignatures.set(id, signature);
-            await this.systems.logActivity(id, {
+          if (this.#buildSignatures.get(key) !== signature) {
+            this.#buildSignatures.set(key, signature);
+            await store.logActivity(id, {
               kind: "build",
               title: `Built ${result.components} components · ${result.files.includes("system.css") ? "system.css" : "specimen"} ${(result.css.bytes / 1024).toFixed(0)} KB`,
               detail: result.warnings.length
@@ -167,17 +181,23 @@ export class Core {
               status: result.warnings.length ? "warn" : "ok",
             });
           }
-          this.events.emit("system.changed", { id, exists: true, paths: [], built: true });
+          this.events.emit("system.changed", {
+            project: scope.id,
+            id,
+            exists: true,
+            paths: [],
+            built: true,
+          });
           return result;
         },
         async (error: unknown) => {
-          await this.systems.logActivity(id, {
+          await store.logActivity(id, {
             kind: "build",
             title: "Build failed",
             detail: (error as Error).message,
             status: "error",
           });
-          this.#builds.set(id, {
+          this.#builds.set(key, {
             ok: false,
             at: new Date().toISOString(),
             error: (error as Error).message,
@@ -185,17 +205,18 @@ export class Core {
           throw error;
         },
       );
-    this.#buildQueue.set(id, run);
+    this.#buildQueue.set(key, run);
     return run;
   }
 
   /**
-   * The design system a prototype uses (for its theme options in the viewer): its `system`; for a
-   * framework prototype, the package system it builds against; else the system its entry HTML
-   * loads (`/s/<id>/system.css` or `system.js`); else its project's only design system.
+   * The design system (in its project) a prototype uses, for its theme options in the viewer: its
+   * `system`; for a framework prototype, the package system it builds against; else the system its
+   * entry HTML loads (`../../systems/<id>/system.css` or `system.js`); else its project's only one.
    */
   resolvePrototypeSystem(proto: Prototype): string | undefined {
-    if (proto.system && this.systems.has(proto.system)) return proto.system;
+    const systems = this.projects.scope(proto.project).systems;
+    if (proto.system && systems.has(proto.system)) return proto.system;
     if (proto.framework) {
       try {
         return this.prototypeSystem(proto);
@@ -203,17 +224,20 @@ export class Core {
         return undefined;
       }
     }
-    const loaded = this.prototypes.systemRefs(proto.id).find((id) => this.systems.has(id));
+    const scope = this.projects.scope(proto.project);
+    const loaded = scope.prototypes.has(proto.id)
+      ? scope.prototypes.systemRefs(proto.id).find((id) => systems.has(id))
+      : undefined;
     if (loaded) return loaded;
-    if (!proto.project) return undefined;
-    const inProject = this.systems.list().filter((s) => s.project === proto.project);
+    const inProject = systems.list();
     return inProject.length === 1 ? inProject[0]!.id : undefined;
   }
 
-  /** The package design system a framework prototype builds against. */
-  prototypeSystem(proto: Prototype): string {
+  /** The package design system (in its project) a framework prototype builds against. */
+  prototypeSystem(proto: Pick<Prototype, "id" | "project" | "system" | "framework">): string {
+    const systems = this.projects.scope(proto.project).systems;
     if (proto.system) {
-      const system = this.systems.get(proto.system);
+      const system = systems.get(proto.system);
       if (system.kind !== "package")
         throw new CoreError(
           "INVALID_INPUT",
@@ -221,9 +245,7 @@ export class Core {
         );
       return system.id;
     }
-    const candidates = this.systems
-      .list()
-      .filter((s) => s.kind === "package" && (!proto.project || s.project === proto.project));
+    const candidates = systems.list().filter((s) => s.kind === "package");
     if (candidates.length === 1) return candidates[0]!.id;
     throw new CoreError(
       "INVALID_INPUT",
@@ -237,18 +259,20 @@ export class Core {
    * Build a framework prototype with its design system's Vite (cached until its files or the
    * system's change). Returns the folder with the built HTML and assets.
    */
-  buildPrototype(id: string): Promise<string> {
-    const previous = this.#prototypeBuilds.get(id) ?? Promise.resolve("");
+  buildPrototype(ref: string): Promise<string> {
+    const { scope, store, id } = this.prototypes.locate(ref);
+    const key = refKey(scope.id, id);
+    const previous = this.#prototypeBuilds.get(key) ?? Promise.resolve("");
     const run = previous
       .catch(() => "")
       .then(async () => {
-        const proto = this.prototypes.get(id);
+        const proto = store.get(id);
         if (!proto.framework)
-          throw new CoreError("INVALID_INPUT", `Prototype ${id} is plain HTML; it isn't built`);
+          throw new CoreError("INVALID_INPUT", `Prototype ${key} is plain HTML; it isn't built`);
         const systemId = this.prototypeSystem(proto);
-        const systemDir = this.systems.dirOf(systemId);
-        const protoDir = this.prototypes.dirOf(id);
-        const headScript = prototypeHeadScript(this.systems.get(systemId));
+        const systemDir = scope.systems.dirOf(systemId);
+        const protoDir = store.dirOf(id);
+        const headScript = prototypeHeadScript(scope.systems.get(systemId));
         const sources = await buildSignature([
           { dir: protoDir },
           {
@@ -259,14 +283,15 @@ export class Core {
               (rel.startsWith("node_modules/") && rel !== "node_modules/.package-lock.json"),
           },
         ]);
-        // The injected script is part of the output too: rebuild when design-tool changes it.
+        // The injected script is part of the output too: rebuild when scratchpad changes it.
         const signature = `${sources}:${createHash("sha256").update(headScript).digest("hex").slice(0, 16)}`;
-        const target = path.join(this.workspace.cacheDir, "builds", id);
+        const target = path.join(this.workspace.cacheDir, "builds", scope.id, id);
+        await mkdir(path.dirname(target), { recursive: true });
         const stamp = path.join(target, ".signature");
         if ((await readFile(stamp, "utf8").catch(() => "")) === signature) return target;
-        const failed = this.#prototypeFailures.get(id);
+        const failed = this.#prototypeFailures.get(key);
         if (failed?.signature === signature) throw failed.error;
-        const inputs = (await this.prototypes.listFiles(id))
+        const inputs = (await store.listFiles(id))
           .map((f) => f.path)
           .filter((f) => /\.html?$/i.test(f));
         try {
@@ -274,30 +299,49 @@ export class Core {
             await runVite({ systemDir, root: protoDir, inputs, headScript, outDir });
             await writeFile(path.join(outDir, ".signature"), signature);
           });
-          this.#prototypeFailures.delete(id);
+          this.#prototypeFailures.delete(key);
           return target;
         } catch (error) {
-          this.#prototypeFailures.set(id, { signature, error: error as Error });
+          this.#prototypeFailures.set(key, { signature, error: error as Error });
           throw error;
         }
       });
-    this.#prototypeBuilds.set(id, run);
+    this.#prototypeBuilds.set(key, run);
     return run;
   }
 
-  lastBuild(id: string): LastBuild | undefined {
-    return this.#builds.get(id);
+  lastBuild(ref: string): LastBuild | undefined {
+    const { scope, id } = this.systems.locate(ref);
+    return this.#builds.get(refKey(scope.id, id));
+  }
+
+  /**
+   * Move a prototype to another project (its folder moves). Its `variantOf` link is dropped unless
+   * the target project has that prototype too, and so is its `system` unless the target has it.
+   */
+  async movePrototype(ref: string, toProject: string): Promise<Prototype> {
+    const { scope, store, id } = this.prototypes.locate(ref);
+    const target = this.projects.scope(toProject);
+    if (target.id === scope.id) return store.get(id);
+    const system = store.get(id).system;
+    const moved = await target.prototypes.adopt(store, id, {
+      keepSystem: system !== undefined && target.systems.has(system),
+    });
+    this.events.emit("prototype.changed", { project: scope.id, id, exists: false, paths: [] });
+    this.events.emit("prototype.changed", { project: target.id, id, exists: true, paths: [] });
+    return moved;
   }
 
   async startWatching(): Promise<void> {
     if (this.#stopWatching) return;
-    this.#stopWatching = await watchWorkspace(this.workspace, this.prototypes, this.events, {
-      projects: this.projects,
-      systems: this.systems,
-      onSystemChanged: (id, exists) => {
+    this.#stopWatching = await watchWorkspace(this.workspace, this.projects, this.events, {
+      onSystemChanged: (project, id, exists) => {
         if (exists)
-          this.buildSystem(id).catch((error: unknown) =>
-            console.error(`[design-tool] building ${id} failed:`, (error as Error).message),
+          this.buildSystem(refKey(project, id)).catch((error: unknown) =>
+            console.error(
+              `[scratchpad] building ${project}/${id} failed:`,
+              (error as Error).message,
+            ),
           );
       },
     });

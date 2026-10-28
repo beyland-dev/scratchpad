@@ -1,12 +1,21 @@
 export interface CoreEvents {
   /** A prototype's metadata or files changed (or it was created/removed). */
-  "prototype.changed": { id: string; exists: boolean; paths: string[] };
-  /** A project's metadata or icon changed (or it was created/removed). */
-  "project.changed": { id: string; exists: boolean };
-  /** `.design/workspace.json` changed. */
+  "prototype.changed": { project: string; id: string; exists: boolean; paths: string[] };
+  /**
+   * A project's metadata or icon changed, or it was created or removed. `contents` is set when its
+   * whole folder appeared or disappeared (e.g. a clone), so its contents changed too.
+   */
+  "project.changed": { id: string; exists: boolean; contents?: boolean };
+  /** `config.json` changed. */
   "workspace.changed": Record<string, never>;
   /** A design system's sources changed, or it was rebuilt. */
-  "system.changed": { id: string; exists: boolean; paths: string[]; built?: boolean };
+  "system.changed": {
+    project: string;
+    id: string;
+    exists: boolean;
+    paths: string[];
+    built?: boolean;
+  };
 }
 
 export type CoreEventName = keyof CoreEvents;
@@ -26,7 +35,7 @@ export class EventBus {
       try {
         listener(event);
       } catch (error) {
-        console.error("[design-tool] event listener failed", error);
+        console.error("[scratchpad] event listener failed", error);
       }
     }
   }

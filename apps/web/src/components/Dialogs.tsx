@@ -1,13 +1,15 @@
 import { useState } from "preact/hooks";
 import { useLocation } from "preact-iso";
 import { call } from "../api.ts";
+import { prototypeHref } from "../prototype-theme.ts";
 import {
-  UNSORTED,
   familyOf,
   familyTitle,
+  normalizePrototype,
   projectHref,
-  projectIdOf,
+  refOf,
   refresh,
+  systemHref,
   systems,
   versionLabelOf,
   workspace,
@@ -267,12 +269,8 @@ export function DeleteProjectDialog({
       }}
     >
       <p>
-        The project moves to <code>.design/.trash/</code>.{" "}
-        {contents.length
-          ? `Its ${contents.join(" and ")} ${
-              project.prototypes + project.systems === 1 ? "isn't" : "aren't"
-            } deleted; ${project.prototypes + project.systems === 1 ? "it moves" : "they move"} to Trash.`
-          : "It's empty."}
+        The project folder{contents.length ? `, with its ${contents.join(" and ")},` : ""} moves to{" "}
+        <code>~/.scratchpad/.trash/</code>, where it can be restored.
       </p>
     </ConfirmDialog>
   );
@@ -301,7 +299,7 @@ export function PrototypeDialog({
   const [tags, setTags] = useState(proto?.tags.join(", ") ?? "");
   // Package design systems of the project: new prototypes can be React prototypes built with one.
   const packageSystems = systems.value.filter(
-    (sys) => sys.kind === "package" && (projectId ?? UNSORTED) === projectIdOf(sys),
+    (sys) => sys.kind === "package" && sys.project === (proto?.project ?? projectId),
   );
   const [builtWith, setBuiltWith] = useState(packageSystems[0]?.id ?? "html");
   const { busy, error, submit } = useSubmit(async () => {
@@ -319,14 +317,16 @@ export function PrototypeDialog({
       await refresh();
       onClose();
     } else {
-      const { prototype } = await call<{ prototype: PrototypeWithUrls }>("prototype.create", {
+      const builtWithSystem = packageSystems.find((sys) => sys.id === builtWith);
+      const created = await call<{ prototype: PrototypeWithUrls }>("prototype.create", {
         title: title.trim(),
         ...(description.trim() ? { description: description.trim() } : {}),
         ...(group.trim() ? { group: group.trim() } : {}),
-        ...(builtWith !== "html" ? { framework: "react", system: builtWith } : {}),
-        project: projectId && projectId !== UNSORTED ? projectId : null,
+        ...(builtWithSystem ? { framework: "react", system: builtWithSystem.localId } : {}),
+        project: projectId,
         createdBy: { kind: "human" },
       });
+      const prototype = normalizePrototype(created.prototype);
       // The id is only known after creation, and the prompt names it.
       const prompt = prototypePrompt(prototype);
       await call("prototype.writeFile", {
@@ -337,7 +337,7 @@ export function PrototypeDialog({
       });
       await refresh();
       onClose();
-      route(`/p/${encodeURIComponent(prototype.id)}`);
+      route(prototypeHref(prototype.id));
     }
   });
   return (
@@ -456,7 +456,7 @@ export function DeletePrototypeDialog({
       }}
     >
       <p>
-        Its folder moves to <code>.design/.trash/</code>, where it can be restored.
+        Its folder moves to the project's <code>.trash/</code>, where it can be restored.
         {versions > 1 ? ` The other ${versions - 1} version${versions === 2 ? "" : "s"} stay.` : ""}
       </p>
     </ConfirmDialog>
@@ -622,7 +622,7 @@ function SourcePicker({
             : value.mode === "git"
               ? "The agent clones it into this system's folder (gitignored) and reads it from there."
               : (hint ??
-                "You can add one later: dt source add <path-or-url>, or ask the agent to."))}
+                "You can add one later: sp source add <path-or-url>, or ask the agent to."))}
       </span>
     </div>
   );
@@ -696,11 +696,11 @@ export function SystemDialog({
         ...(isPackage ? { library } : { prefix: prefix ?? autoPrefix }),
         ...(description.trim() ? { description: description.trim() } : {}),
         ...(sourceId ? { sourceId } : {}),
-        project: projectId && projectId !== UNSORTED ? projectId : null,
+        project: projectId,
       });
       await refresh();
       onClose();
-      route(`/systems/${encodeURIComponent(systemId)}`);
+      route(systemHref(refOf(projectId!, systemId)));
     }
   });
   return (
@@ -874,13 +874,13 @@ export function DeleteSystemDialog({
         await call("system.delete", { id: system.id });
         await refresh();
         onClose();
-        route(projectHref(system.project ?? UNSORTED, "systems"), true);
+        route(projectHref(system.project, "systems"), true);
       }}
     >
       <p>
         Its {system.components} components, {system.tokens.toLocaleString()} tokens and captures
-        move to <code>.design/.trash/</code>. Prototypes that include its <code>system.css</code>{" "}
-        stop rendering it.
+        move to the project's <code>.trash/</code>. Prototypes that include its{" "}
+        <code>system.css</code> stop rendering it.
       </p>
     </ConfirmDialog>
   );
@@ -960,13 +960,13 @@ export function DeleteComponentDialog({
       onConfirm={async () => {
         await call("component.remove", { system: systemId, name: component.name });
         onClose();
-        route(`/systems/${encodeURIComponent(systemId)}`, true);
+        route(systemHref(systemId), true);
       }}
     >
       <p>
-        Its definition, examples and code move to <code>.design/.trash/</code>, and the system is
-        rebuilt without it. Prototypes using <code>&lt;{component.tag}&gt;</code> will render it as
-        an unknown element.
+        Its definition, examples and code move to the project's <code>.trash/</code>, and the system
+        is rebuilt without it. Prototypes using <code>&lt;{component.tag}&gt;</code> will render it
+        as an unknown element.
       </p>
     </ConfirmDialog>
   );

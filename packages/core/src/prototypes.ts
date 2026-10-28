@@ -23,7 +23,8 @@ import {
   type PrototypeFileEntry,
   type PrototypeStatus,
 } from "./schemas.ts";
-import type { Workspace } from "./workspace.ts";
+import type { ScopeContext } from "./scope.ts";
+import { PROTOTYPES_DIR } from "./workspace.ts";
 
 export const PROTOTYPE_META_FILE = "prototype.json";
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -34,7 +35,6 @@ export interface CreatePrototypeInput {
   description?: string;
   status?: PrototypeStatus;
   tags?: string[];
-  project?: string;
   framework?: "react";
   system?: string;
   group?: string;
@@ -52,7 +52,6 @@ export interface UpdatePrototypeInput {
   description?: string | null;
   status?: PrototypeStatus;
   tags?: string[];
-  project?: string | null;
   group?: string | null;
   variantOf?: string | null;
   entry?: string;
@@ -60,7 +59,6 @@ export interface UpdatePrototypeInput {
 }
 
 export interface PrototypeFilter {
-  project?: string;
   group?: string;
   tag?: string;
   status?: PrototypeStatus;
@@ -74,25 +72,28 @@ export interface ReadFileResult {
   size: number;
 }
 
+/** The prototypes of one project: `projects/<project>/prototypes/<id>/`. */
 export class PrototypeStore {
-  readonly #ws: Workspace;
+  readonly #ctx: ScopeContext;
+  readonly dir: string;
   #index = new Map<string, Prototype>();
-  /** Design systems each prototype's entry HTML loads (/s/<id>/system.css or system.js). */
+  /** Design systems each prototype's entry HTML loads (…/systems/<id>/system.css or system.js). */
   #systemRefs = new Map<string, string[]>();
 
-  constructor(workspace: Workspace) {
-    this.#ws = workspace;
+  constructor(context: ScopeContext) {
+    this.#ctx = context;
+    this.dir = path.join(context.dir, PROTOTYPES_DIR);
   }
 
   dirOf(id: string): string {
     if (!ID_PATTERN.test(id))
       throw new CoreError("INVALID_INPUT", `Invalid prototype id: ${JSON.stringify(id)}`);
-    return path.join(this.#ws.prototypesDir, id);
+    return path.join(this.dir, id);
   }
 
   async load(): Promise<void> {
-    await mkdir(this.#ws.prototypesDir, { recursive: true });
-    const entries = await readdir(this.#ws.prototypesDir, { withFileTypes: true });
+    await mkdir(this.dir, { recursive: true });
+    const entries = await readdir(this.dir, { withFileTypes: true });
     const next = new Map<string, Prototype>();
     for (const entry of entries) {
       if (!entry.isDirectory() || !ID_PATTERN.test(entry.name)) continue;
@@ -126,7 +127,6 @@ export class PrototypeStore {
   list(filter: PrototypeFilter = {}): Prototype[] {
     const search = filter.search?.toLowerCase();
     return [...this.#index.values()]
-      .filter((p) => (filter.project === undefined ? true : p.project === filter.project))
       .filter((p) => (filter.group === undefined ? true : p.group === filter.group))
       .filter((p) => (filter.tag === undefined ? true : p.tags.includes(filter.tag)))
       .filter((p) => (filter.status === undefined ? true : p.status === filter.status))
@@ -142,7 +142,11 @@ export class PrototypeStore {
 
   get(id: string): Prototype {
     const proto = this.#index.get(id);
-    if (!proto) throw new CoreError("NOT_FOUND", `No prototype with id ${JSON.stringify(id)}`);
+    if (!proto)
+      throw new CoreError(
+        "NOT_FOUND",
+        `No prototype ${JSON.stringify(id)} in project ${JSON.stringify(this.#ctx.project)}`,
+      );
     return proto;
   }
 
@@ -169,7 +173,6 @@ export class PrototypeStore {
       ...(input.description ? { description: input.description } : {}),
       status: input.status ?? "draft",
       tags: input.tags ?? [],
-      ...(input.project ? { project: input.project } : {}),
       ...(input.framework ? { framework: input.framework } : {}),
       ...(input.system ? { system: input.system } : {}),
       ...(input.group ? { group: input.group } : {}),
@@ -223,7 +226,6 @@ export class PrototypeStore {
     if (patch.entry !== undefined) next.entry = normalizeRel(patch.entry);
     if (patch.sourceRefs !== undefined) next.sourceRefs = patch.sourceRefs;
     applyNullable(next, "description", patch.description);
-    applyNullable(next, "project", patch.project);
     applyNullable(next, "group", patch.group);
     applyNullable(next, "variantOf", patch.variantOf);
     applyNullable(next, "system", patch.system);
@@ -320,18 +322,50 @@ export class PrototypeStore {
     return (await this.reloadOne(newId))!;
   }
 
-  /** Soft-delete: move the folder into `.design/.trash/`. */
-  async delete(id: string): Promise<{ id: string; trashedTo: string }> {
+  /** Soft-delete: move the folder into the project's `.trash/`. */
+  async delete(id: string): Promise<{ id: string; project: string; trashedTo: string }> {
     this.get(id);
-    await mkdir(this.#ws.trashDir, { recursive: true });
-    const target = path.join(this.#ws.trashDir, `${id}-${Date.now()}`);
+    await mkdir(this.#ctx.trashDir, { recursive: true });
+    const target = path.join(this.#ctx.trashDir, `prototype-${id}-${Date.now()}`);
     await rename(this.dirOf(id), target);
     this.#index.delete(id);
-    return { id, trashedTo: path.relative(this.#ws.root, target) };
+    this.#systemRefs.delete(id);
+    return {
+      id,
+      project: this.#ctx.project,
+      trashedTo: path.relative(this.#ctx.workspace.root, target),
+    };
+  }
+
+  /**
+   * Move a prototype's folder in from another project's store. Links that don't hold in this
+   * project (`variantOf`, `system`) are dropped.
+   */
+  async adopt(
+    from: PrototypeStore,
+    id: string,
+    options: { keepSystem: boolean },
+  ): Promise<Prototype> {
+    const source = from.get(id);
+    if (this.#index.has(id) || (await pathExists(this.dirOf(id))))
+      throw new CoreError(
+        "CONFLICT",
+        `Project ${JSON.stringify(this.#ctx.project)} already has a prototype ${JSON.stringify(id)}`,
+      );
+    await mkdir(this.dir, { recursive: true });
+    await rename(from.dirOf(id), this.dirOf(id));
+    from.#index.delete(id);
+    from.#systemRefs.delete(id);
+    const meta = toFile(source);
+    if (meta.variantOf && !this.#index.has(meta.variantOf)) delete meta.variantOf;
+    if (!options.keepSystem) delete meta.system;
+    meta.updatedAt = nowIso();
+    await writeJson(path.join(this.dirOf(id), PROTOTYPE_META_FILE), meta);
+    return (await this.reloadOne(id))!;
   }
 
   #assertSources(refs: string[] | undefined): void {
-    for (const ref of refs ?? []) this.#ws.getSource(ref);
+    for (const ref of refs ?? []) this.#ctx.workspace.getSource(ref);
   }
 
   async #touch(id: string): Promise<void> {
@@ -352,7 +386,7 @@ export class PrototypeStore {
     if (normalizeRel(relPath) === PROTOTYPE_META_FILE) {
       throw new CoreError(
         "INVALID_INPUT",
-        `${PROTOTYPE_META_FILE} is managed by design-tool; use prototype.update instead`,
+        `${PROTOTYPE_META_FILE} is managed by scratchpad; use prototype.update instead`,
       );
     }
     const abs = safeJoin(dir, relPath);
@@ -366,7 +400,7 @@ export class PrototypeStore {
 
   /** Atomically reserve a prototype folder, picking a unique id unless `exact` is set. */
   async #claimDir(base: string, exact: boolean): Promise<string> {
-    await mkdir(this.#ws.prototypesDir, { recursive: true });
+    await mkdir(this.dir, { recursive: true });
     if (exact) {
       if (!ID_PATTERN.test(base))
         throw new CoreError("INVALID_INPUT", `Invalid prototype id: ${JSON.stringify(base)}`);
@@ -398,7 +432,7 @@ export class PrototypeStore {
   }
 
   async #readFromDisk(id: string): Promise<Prototype | undefined> {
-    const dir = path.join(this.#ws.prototypesDir, id);
+    const dir = path.join(this.dir, id);
     let dirStat;
     try {
       dirStat = await stat(dir);
@@ -457,16 +491,16 @@ export class PrototypeStore {
     } else {
       this.#systemRefs.set(id, await readSystemRefs(path.join(dir, normalizeRel(meta.entry))));
     }
-    return { id, ...meta, ...(issues.length ? { issues } : {}) };
+    return { id, project: this.#ctx.project, ...meta, ...(issues.length ? { issues } : {}) };
   }
 }
 
 function toFile(proto: Prototype): PrototypeFile {
-  const { id: _id, issues: _issues, ...rest } = proto;
+  const { id: _id, project: _project, issues: _issues, ...rest } = proto;
   return rest;
 }
 
-function applyNullable<K extends "description" | "project" | "group" | "variantOf" | "system">(
+function applyNullable<K extends "description" | "group" | "variantOf" | "system">(
   target: PrototypeFile,
   key: K,
   value: string | null | undefined,
@@ -476,7 +510,8 @@ function applyNullable<K extends "description" | "project" | "group" | "variantO
   else target[key] = value as PrototypeFile[K];
 }
 
-const SYSTEM_REF = /\/s\/([a-zA-Z0-9][a-zA-Z0-9._-]*)\/system\.(?:css|js)\b/g;
+/** `../../systems/<id>/system.css` (or .js): a plain HTML prototype loading one of its project's systems. */
+const SYSTEM_REF = /(?:^|[/"'])systems\/([a-zA-Z0-9][a-zA-Z0-9._-]*)\/system\.(?:css|js)\b/g;
 
 async function readSystemRefs(file: string): Promise<string[]> {
   if (!/\.html?$/i.test(file)) return [];

@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { z } from "zod";
 import { CoreError } from "../errors.ts";
 import { FileEncodingSchema } from "../schemas.ts";
+import { REF_PATTERN, refKey } from "../refs.ts";
 import { defineCommand } from "../registry.ts";
 import type { Core } from "../core.ts";
 import { DIST_DIR } from "./store.ts";
@@ -34,19 +35,37 @@ import {
   type DesignSystem,
 } from "./schemas.ts";
 
-const SystemRef = SystemIdSchema.describe("Design system id (folder name under .design/systems/)");
+const SystemRef = z
+  .string()
+  .regex(REF_PATTERN, "Use id or project/id")
+  .describe(
+    "Design system id (its folder name under projects/<project>/systems/), or project/id when several projects have that id",
+  );
 
-function systemUrls(core: Core, id: string) {
-  const base = `${core.urls.sandbox}/s/${encodeURIComponent(id)}`;
+/** Sandbox URL of a system's build output. */
+export function systemBaseUrl(core: Core, system: { project: string; id: string }): string {
+  return `${core.projectSandboxUrl(system.project)}/systems/${encodeURIComponent(system.id)}`;
+}
+
+function systemUrls(core: Core, ref: string) {
+  const system = core.systems.get(ref);
+  const base = systemBaseUrl(core, system);
   return {
     css: `${base}/system.css`,
     js: `${base}/system.js`,
     specimen: `${base}/specimen.html`,
-    browse: `${core.urls.app}/systems/${encodeURIComponent(id)}`,
-    /** Paths to use inside prototypes (served on the same sandbox origin). */
-    prototypeCss: `/s/${id}/system.css`,
-    prototypeJs: `/s/${id}/system.js`,
+    browse: `${core.urls.app}/projects/${encodeURIComponent(system.project)}/systems/${encodeURIComponent(system.id)}`,
+    /** Paths to use in a prototype's entry HTML (`prototypes/<id>/index.html`) in the same project. */
+    prototypeCss: `../../systems/${system.id}/system.css`,
+    prototypeJs: `../../systems/${system.id}/system.js`,
   };
+}
+
+/** Where 'github' / 'claude' / a path puts skills, relative to a project folder. */
+function skillsDir(projectDir: string, target: string): string {
+  if (target === "github") return path.join(projectDir, ".github", "skills");
+  if (target === "claude") return path.join(projectDir, ".claude", "skills");
+  return path.resolve(projectDir, target);
 }
 
 function summarize(c: DesignComponent) {
@@ -92,35 +111,36 @@ export const systemList = defineCommand({
   }),
   handler: async (input, core) => ({
     systems: await Promise.all(
-      core.systems
-        .list()
-        .filter((s) => input.project === undefined || s.project === input.project)
-        .map(async (s) => ({
+      core.systems.list(input.project).map(async (s) => {
+        const ref = refKey(s.project, s.id);
+        return {
           id: s.id,
+          project: s.project,
           name: s.name,
           description: s.description,
           sourceId: s.sourceId,
-          project: s.project,
           kind: s.kind,
           framework: s.framework,
           library: s.library,
           prefix: s.prefix,
-          components: core.systems.components(s.id).length,
-          tokens: (await core.systems.tokens(s.id).catch(() => [])).length,
+          components: core.systems.components(ref).length,
+          tokens: (await core.systems.tokens(ref).catch(() => [])).length,
           skill: skillName(s.id),
-          urls: systemUrls(core, s.id),
+          urls: systemUrls(core, ref),
           issues: s.issues,
-        })),
+        };
+      }),
     ),
   }),
   format: (out) =>
     out.systems.length
       ? out.systems
           .map(
-            (s) => `${s.id.padEnd(20)} ${s.name}  (${s.components} components, ${s.tokens} tokens)`,
+            (s) =>
+              `${`${s.project}/${s.id}`.padEnd(32)} ${s.name}  (${s.components} components, ${s.tokens} tokens)`,
           )
           .join("\n")
-      : "No design systems yet. Create one with `dt system create`.",
+      : "No design systems yet. Create one with `sp system create`.",
 });
 
 export const systemGet = defineCommand({
@@ -131,8 +151,9 @@ export const systemGet = defineCommand({
   kind: "query",
   positional: ["id"],
   input: z.object({ id: SystemRef }),
-  handler: async ({ id }, core) => {
-    const system = core.systems.get(id);
+  handler: async ({ id: input }, core) => {
+    const system = core.systems.get(input);
+    const id = refKey(system.project, system.id);
     const tokens = await core.systems.tokens(id);
     const groups: Record<string, number> = {};
     for (const t of tokens) groups[t.group ?? "other"] = (groups[t.group ?? "other"] ?? 0) + 1;
@@ -142,11 +163,11 @@ export const systemGet = defineCommand({
       urls: systemUrls(core, id),
       include:
         system.kind === "package"
-          ? `prototype.create { framework: "react", system: "${id}" }\n// main.tsx\nimport "@/${(system.styles ?? "src/index.css").replace(/^src\//, "")}";`
-          : `<link rel="stylesheet" href="/s/${id}/system.css" />\n<script type="module" src="/s/${id}/system.js"></script>`,
+          ? `prototype.create { project: "${system.project}", framework: "react", system: "${system.id}" }\n// main.tsx\nimport "@/${(system.styles ?? "src/index.css").replace(/^src\//, "")}";`
+          : `<!-- in prototypes/<id>/index.html of project ${system.project} -->\n<link rel="stylesheet" href="../../systems/${system.id}/system.css" />\n<script type="module" src="../../systems/${system.id}/system.js"></script>`,
       components,
       tokens: { total: tokens.length, groups },
-      skill: skillName(id),
+      skill: skillName(system.id),
       lastBuild: core.lastBuild(id),
     };
   },
@@ -172,9 +193,6 @@ const SystemFields = {
     .nullable()
     .optional()
     .describe("Workspace source (codebase) this system is audited from (null to unset)"),
-  project: SystemIdSchema.nullable()
-    .optional()
-    .describe("Project this system belongs to (null to unassign)"),
   prefix: z
     .string()
     .regex(/^[a-z][a-z0-9]*$/)
@@ -223,7 +241,12 @@ export const systemCreate = defineCommand({
     "Create a new, empty design system. kind 'captured' (default): components codified from a running product as custom elements (follow the design-system-audit skill). kind 'package': an existing library such as shadcn/ui or Primer, configured in the system's folder (a Vite + React project scaffolded for you: package.json, vite.config.ts, src/index.css); run `npm install` there, add the library and its customizations, then describe components with stories.",
   kind: "mutation",
   input: z.object({
-    id: SystemRef,
+    id: SystemIdSchema.describe(
+      "Design system id (its folder name under projects/<project>/systems/)",
+    ),
+    project: SystemIdSchema.optional().describe(
+      "Project it goes into. Required unless the workspace has exactly one project",
+    ),
     ...SystemFields,
     kind: SystemKindSchema.default("captured"),
     framework: FrameworkSchema.optional().describe("Package systems: defaults to react"),
@@ -264,18 +287,17 @@ export const systemCreate = defineCommand({
       ...(sourceId ? { sourceId } : {}),
     };
     const projectId = core.resolveProject(project);
-    const system = await core.systems.create(id, {
+    const system = await core.systems.create(projectId, id, {
       ...input,
-      ...(projectId ? { project: projectId } : {}),
       defaultTheme: input.defaultTheme ?? input.themes[0]!.id,
       themeSelector: input.themeSelector ?? '[data-theme="{theme}"]',
       sheetOrder: input.sheetOrder ?? [],
       themeSheets: input.themeSheets ?? [],
       attribution: input.attribution ?? [],
     });
-    return { system, urls: systemUrls(core, id) };
+    return { system, urls: systemUrls(core, refKey(projectId, id)) };
   },
-  format: (out) => `Created design system ${out.system.id}`,
+  format: (out) => `Created design system ${out.system.project}/${out.system.id}`,
 });
 
 export const systemUpdate = defineCommand({
@@ -286,7 +308,6 @@ export const systemUpdate = defineCommand({
   positional: ["id"],
   input: z.object({ id: SystemRef, ...SystemFields }),
   handler: async ({ id, ...patch }, core) => {
-    if (patch.project) core.projects.get(patch.project);
     if (patch.sourceId) core.workspace.getSource(patch.sourceId);
     return {
       system: await core.systems.update(
@@ -330,7 +351,7 @@ export const systemExportSkill = defineCommand({
   name: "system.exportSkill",
   title: "Export design system skill",
   description:
-    "Install the generated agent skill for a design system where agents load skills: 'github' (.github/skills), 'claude' (.claude/skills), or a folder path relative to the workspace root. Builds first.",
+    "Install the generated agent skill for a design system where agents load skills: 'github' (.github/skills) or 'claude' (.claude/skills) in its project folder, or a folder path (absolute, or relative to the project folder). Builds first.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({
@@ -338,18 +359,16 @@ export const systemExportSkill = defineCommand({
     target: z
       .string()
       .default("github")
-      .describe("'github', 'claude', or a folder path relative to the workspace root"),
+      .describe(
+        "'github', 'claude', or a folder path (absolute, or relative to the project folder)",
+      ),
   }),
   handler: async ({ id, target }, core) => {
-    await core.buildSystem(id);
-    const dir =
-      target === "github"
-        ? path.join(core.workspace.root, ".github", "skills")
-        : target === "claude"
-          ? path.join(core.workspace.root, ".claude", "skills")
-          : path.resolve(core.workspace.root, target);
-    const result = await exportSkill(core.systems, id, dir);
-    return { ...result, relative: path.relative(core.workspace.root, result.path) };
+    const { scope, store, id: local } = core.systems.locate(id);
+    await core.buildSystem(refKey(scope.id, local));
+    const dir = skillsDir(scope.dir, target);
+    const result = await exportSkill(store, local, dir);
+    return { ...result, relative: path.relative(scope.dir, result.path) };
   },
   format: (out) => `Exported skill ${out.name} → ${out.relative || out.path}`,
 });
@@ -546,7 +565,7 @@ export const componentGet = defineCommand({
             )?.toString("utf8") ?? "",
         }
       : undefined;
-    const base = `${core.urls.sandbox}/s/${encodeURIComponent(system)}/specimen.html?component=${encodeURIComponent(component.name)}`;
+    const base = `${systemBaseUrl(core, sys)}/specimen.html?component=${encodeURIComponent(component.name)}`;
     return {
       component,
       snippet,
@@ -718,7 +737,12 @@ export const systemDelete = defineCommand({
   input: z.object({ id: SystemRef }),
   handler: async ({ id }, core) => {
     const result = await core.systems.remove(id);
-    core.events.emit("system.changed", { id, exists: false, paths: [] });
+    core.events.emit("system.changed", {
+      project: result.project,
+      id: result.id,
+      exists: false,
+      paths: [],
+    });
     return result;
   },
   format: (out) => `Moved ${out.id} to ${out.trashedTo}`,
@@ -740,31 +764,30 @@ export const skillsInstall = defineCommand({
   name: "skills.install",
   title: "Install agent skills",
   description:
-    "Install design-tool's agent skills where agents load them: the 'design-system-audit' skill (how to audit a codebase into a design system) and, optionally, the generated skill of every design system in the workspace. Target: 'github' (.github/skills), 'claude' (.claude/skills), or a folder path.",
+    "Install scratchpad's agent skills where agents load them: the 'design-system-audit' skill (how to audit a codebase into a design system) and, optionally, the generated skill of every design system in a project. Target: 'github' (.github/skills) or 'claude' (.claude/skills) in the project folder, or a folder path (absolute, or relative to the project folder).",
   kind: "mutation",
   input: z.object({
+    project: SystemIdSchema.optional().describe(
+      "Project whose systems to export (and where 'github'/'claude' go). Required unless there's exactly one project",
+    ),
     target: z.string().default("github"),
     systems: z
       .boolean()
       .default(true)
       .describe("Also export every design system's generated skill"),
   }),
-  handler: async ({ target, systems }, core) => {
-    const dir =
-      target === "github"
-        ? path.join(core.workspace.root, ".github", "skills")
-        : target === "claude"
-          ? path.join(core.workspace.root, ".claude", "skills")
-          : path.resolve(core.workspace.root, target);
+  handler: async ({ project, target, systems }, core) => {
+    const scope = core.projects.scope(core.resolveProject(project));
+    const dir = skillsDir(scope.dir, target);
     await atomicWrite(path.join(dir, AUDIT_SKILL_NAME, "SKILL.md"), AUDIT_SKILL);
     const installed = [AUDIT_SKILL_NAME];
     if (systems) {
-      for (const system of core.systems.list()) {
-        await core.buildSystem(system.id);
-        installed.push((await exportSkill(core.systems, system.id, dir)).name);
+      for (const system of scope.systems.list()) {
+        await core.buildSystem(refKey(scope.id, system.id));
+        installed.push((await exportSkill(scope.systems, system.id, dir)).name);
       }
     }
-    return { dir: path.relative(core.workspace.root, dir) || dir, installed };
+    return { dir: path.relative(scope.dir, dir) || dir, installed };
   },
   format: (out) => `Installed ${out.installed.join(", ")} → ${out.dir}`,
 });

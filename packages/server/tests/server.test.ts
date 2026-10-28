@@ -1,7 +1,7 @@
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { Core, initWorkspace } from "@design-tool/core";
+import { Core, initWorkspace } from "@beyland/scratchpad-core";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { afterEach, beforeEach, describe, expect, test } from "vite-plus/test";
 import {
@@ -17,7 +17,7 @@ let core: Core;
 
 beforeEach(async () => {
   root = await mkdtemp(path.join(tmpdir(), "dt-server-"));
-  await initWorkspace(root, { name: "Server Test" });
+  await initWorkspace(root, { project: "Server Test" });
   core = await Core.open({ root });
 });
 
@@ -125,7 +125,7 @@ describe("app API", () => {
     await writeFile(path.join(webRoot, "index.html"), "<div id=app></div>");
     await writeFile(path.join(webRoot, "assets", "app.js"), "console.log(1)");
     const app = createApp({ core, webRoot });
-    const page = await app.request("/p/welcome", { headers: HOST });
+    const page = await app.request("/projects/server-test/p/welcome", { headers: HOST });
     expect(await page.text()).toBe("<div id=app></div>");
     const asset = await app.request("/assets/app.js", { headers: HOST });
     expect(asset.headers.get("content-type")).toContain("text/javascript");
@@ -144,26 +144,29 @@ describe("sandbox", () => {
       },
     });
     const sandbox = createSandboxApp({ core });
-    const icon = await sandbox.request("/projects/iconic/icon", { headers: HOST });
+    const icon = await sandbox.request("/projects/iconic/~icon", { headers: HOST });
     expect(icon.status).toBe(200);
     expect(icon.headers.get("content-type")).toContain("image/svg+xml");
     expect(icon.headers.get("content-security-policy")).toContain("default-src 'none'");
-    expect((await sandbox.request("/projects/server-test/icon", { headers: HOST })).status).toBe(
+    expect((await sandbox.request("/projects/server-test/~icon", { headers: HOST })).status).toBe(
       404,
     );
-    expect((await sandbox.request("/projects/missing/icon", { headers: HOST })).status).toBe(404);
+    expect((await sandbox.request("/projects/missing/~icon", { headers: HOST })).status).toBe(404);
   });
 
   test("React prototypes are built on demand; failures render an explanation", async () => {
     await core.run("system.create", { id: "kit", name: "Kit", kind: "package" });
     await core.run("prototype.create", { title: "App", framework: "react" });
     const sandbox = createSandboxApp({ core });
-    const page = await sandbox.request("/p/app/", { headers: HOST });
+    const page = await sandbox.request("/projects/server-test/prototypes/app/", { headers: HOST });
     expect(page.status).toBe(500);
     const html = await page.text();
     expect(html).toContain("build this prototype");
     expect(html).toContain("npm install");
-    expect((await sandbox.request("/p/app/assets/x.js", { headers: HOST })).status).toBe(500);
+    expect(
+      (await sandbox.request("/projects/server-test/prototypes/app/assets/x.js", { headers: HOST }))
+        .status,
+    ).toBe(500);
   });
 
   test("serves design system builds, building on demand", async () => {
@@ -177,42 +180,74 @@ describe("sandbox", () => {
       js: "ds.define('acme-x', class extends ds.Element {});",
     });
     const sandbox = createSandboxApp({ core });
-    const css = await sandbox.request("/s/acme/system.css", { headers: HOST });
+    const css = await sandbox.request("/projects/server-test/systems/acme/system.css", {
+      headers: HOST,
+    });
     expect(css.status).toBe(200);
     expect(css.headers.get("content-type")).toContain("text/css");
     expect(await css.text()).toContain(".acme-x{color:red}");
-    expect((await sandbox.request("/s/acme/specimen.html", { headers: HOST })).status).toBe(200);
     expect(
-      (await sandbox.request("/s/acme/../../workspace.json", { headers: HOST })).status,
+      (await sandbox.request("/projects/server-test/systems/acme/specimen.html", { headers: HOST }))
+        .status,
+    ).toBe(200);
+    expect(
+      (
+        await sandbox.request("/projects/server-test/systems/acme/../../project.json", {
+          headers: HOST,
+        })
+      ).status,
     ).not.toBe(200);
-    expect((await sandbox.request("/s/missing/system.css", { headers: HOST })).status).toBe(404);
+    expect(
+      (await sandbox.request("/projects/server-test/systems/missing/system.css", { headers: HOST }))
+        .status,
+    ).toBe(404);
   });
 
   test("serves prototype files but not metadata or traversal", async () => {
-    await core.prototypes.create({
+    await core.prototypes.create("server-test", {
       title: "Sand",
       html: "<h1>sand</h1>",
       files: [{ path: "css/a b.css", content: "b{}" }],
     });
     const sandbox = createSandboxApp({ core });
-    const page = await sandbox.request("/p/sand/", { headers: HOST });
+    const page = await sandbox.request("/projects/server-test/prototypes/sand/", { headers: HOST });
     expect(page.status).toBe(200);
     expect(page.headers.get("content-type")).toContain("text/html");
     expect(page.headers.get("cache-control")).toBe("no-store");
     // Sandboxed (opaque-origin) frames load fonts and module scripts in CORS mode.
     expect(page.headers.get("access-control-allow-origin")).toBe("*");
     expect(await page.text()).toBe("<h1>sand</h1>");
-    expect(await (await sandbox.request("/p/sand/css/a%20b.css", { headers: HOST })).text()).toBe(
-      "b{}",
-    );
-    expect((await sandbox.request("/p/sand", { headers: HOST })).status).toBe(301);
-    expect((await sandbox.request("/p/sand/prototype.json", { headers: HOST })).status).toBe(404);
     expect(
-      (await sandbox.request("/p/sand/..%2F..%2Fworkspace.json", { headers: HOST })).status,
+      await (
+        await sandbox.request("/projects/server-test/prototypes/sand/css/a%20b.css", {
+          headers: HOST,
+        })
+      ).text(),
+    ).toBe("b{}");
+    expect(
+      (await sandbox.request("/projects/server-test/prototypes/sand", { headers: HOST })).status,
+    ).toBe(301);
+    expect(
+      (
+        await sandbox.request("/projects/server-test/prototypes/sand/prototype.json", {
+          headers: HOST,
+        })
+      ).status,
+    ).toBe(404);
+    expect(
+      (
+        await sandbox.request("/projects/server-test/prototypes/sand/..%2F..%2Fproject.json", {
+          headers: HOST,
+        })
+      ).status,
     ).toBe(400);
-    expect((await sandbox.request("/p/sand/", { headers: { host: "evil.example" } })).status).toBe(
-      403,
-    );
+    expect(
+      (
+        await sandbox.request("/projects/server-test/prototypes/sand/", {
+          headers: { host: "evil.example" },
+        })
+      ).status,
+    ).toBe(403);
   });
 });
 
@@ -229,7 +264,9 @@ describe("running server", () => {
   });
 
   test("reports live URLs and streams change events over SSE", async () => {
-    expect(core.prototypeUrls("welcome").viewer).toBe(`${server.url}/p/welcome`);
+    expect(core.prototypeUrls("welcome").viewer).toBe(
+      `${server.url}/projects/server-test/p/welcome`,
+    );
 
     const controller = new AbortController();
     const response = await fetch(`${server.url}/api/events`, { signal: controller.signal });
@@ -244,8 +281,11 @@ describe("running server", () => {
     };
     await waitFor("event: ready");
 
-    await mkdir(path.join(root, ".design/prototypes/sse-proto"), { recursive: true });
-    await writeFile(path.join(root, ".design/prototypes/sse-proto/index.html"), "<p>hi</p>");
+    await mkdir(path.join(root, "projects/server-test/prototypes/sse-proto"), { recursive: true });
+    await writeFile(
+      path.join(root, "projects/server-test/prototypes/sse-proto/index.html"),
+      "<p>hi</p>",
+    );
     await waitFor('"id":"sse-proto"');
     expect(received).toContain("event: prototype.changed");
     controller.abort();

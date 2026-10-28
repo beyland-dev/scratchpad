@@ -9,20 +9,13 @@ import {
   CoreError,
   builtinCommands,
   systemCommands,
-  findWorkspaceRoot,
-  initWorkspace,
+  defaultWorkspaceRoot,
   isCoreError,
   type CommandDescriptor,
-} from "@design-tool/core";
-import { captureCommands, closeBrowser } from "@design-tool/capture";
+} from "@beyland/scratchpad-core";
+import { captureCommands, closeBrowser } from "@beyland/scratchpad-capture";
 import { commandHelp, parseCommandInput } from "./args.ts";
-import {
-  MCP_CLIENTS,
-  mcpConfigSnippet,
-  stdioLaunch,
-  writeMcpConfig,
-  type McpClient,
-} from "./mcp-config.ts";
+import { MCP_CLIENTS, mcpConfigSnippet, stdioLaunch, type McpClient } from "./mcp-config.ts";
 
 export interface CliIO {
   stdout: (text: string) => void;
@@ -63,7 +56,9 @@ async function openCore(
   const core = await Core.open({ root, watch, commands: captureCommands });
   let sandbox: Promise<{ url: string; close(): Promise<void> }> | undefined;
   core.setSandboxProvider(async () => {
-    sandbox ??= import("@design-tool/server").then(({ startSandbox }) => startSandbox({ core }));
+    sandbox ??= import("@beyland/scratchpad-server").then(({ startSandbox }) =>
+      startSandbox({ core }),
+    );
     return (await sandbox).url;
   });
   const dispose = async () => {
@@ -76,7 +71,7 @@ async function openCore(
 const descriptors = new Map(registry.describe().map((d) => [d.name, d]));
 
 interface Globals {
-  workspace?: string;
+  home?: string;
   json: boolean;
   help: boolean;
   version: boolean;
@@ -94,8 +89,8 @@ function extractGlobals(argv: string[]): Globals {
     if (arg === "--json") globals.json = true;
     else if (arg === "-h" || arg === "--help") globals.help = true;
     else if (arg === "-v" || arg === "--version") globals.version = true;
-    else if (arg === "-w" || arg === "--workspace") globals.workspace = argv[++i];
-    else if (arg.startsWith("--workspace=")) globals.workspace = arg.slice("--workspace=".length);
+    else if (arg === "--home") globals.home = argv[++i];
+    else if (arg.startsWith("--home=")) globals.home = arg.slice("--home=".length);
     else globals.rest.push(arg);
   }
   return globals;
@@ -116,17 +111,9 @@ function resolveCommand(
   return undefined;
 }
 
-async function resolveWorkspace(globals: Globals, io: CliIO): Promise<string> {
-  const explicit = globals.workspace ?? io.env.DT_WORKSPACE;
-  if (explicit) return path.resolve(io.cwd, explicit);
-  const found = await findWorkspaceRoot(io.cwd);
-  if (!found) {
-    throw new CoreError(
-      "NO_WORKSPACE",
-      `No design workspace found in ${io.cwd} or its parents. Run \`dt init\` or pass --workspace <dir>.`,
-    );
-  }
-  return found;
+/** `--home`, else `$SCRATCHPAD_HOME`, else `~/.scratchpad` (created on first use). */
+function resolveWorkspace(globals: Globals, io: CliIO): string {
+  return globals.home ? path.resolve(io.cwd, globals.home) : defaultWorkspaceRoot(io.env);
 }
 
 function mainHelp(): string {
@@ -139,13 +126,11 @@ function mainHelp(): string {
     const usage = `${d.name}${d.positional.length ? ` ${d.positional.map((p) => `<${p}>`).join(" ")}` : ""}`;
     return `  ${usage.padEnd(36)} ${d.title}`;
   });
-  return `dt ${VERSION} — design-tool command line
+  return `scratchpad ${VERSION} — design prototyping with agents
 
-Usage: dt <command> [options]
+Usage: scratchpad <command> [options]   (or: sp <command>)
 
-Workspace:
-  init [dir]                           Create a design workspace (.design/) in dir (default: cwd)
-      --name <name>  --no-example  --mcp <${MCP_CLIENTS.filter((c) => c !== "copilot-cli").join(",")}>
+App:
   serve                                Start the app + sandbox servers and open the browser
       --port <n>  --sandbox-port <n>  --host <host>  --strict-port  --no-open  --dev-origin <url>
   mcp                                  Run the MCP server over stdio (for agent configs)
@@ -156,12 +141,12 @@ Core commands (also exposed over MCP and HTTP):
 ${commandLines.join("\n")}
 
 Global options:
-  -w, --workspace <dir>   Workspace root (default: nearest folder with .design/, or $DT_WORKSPACE)
+  --home <dir>            Workspace folder (default: $SCRATCHPAD_HOME, or ~/.scratchpad)
   --json                  Print machine-readable JSON
-  -h, --help              Show help (also: dt <command> --help)
+  -h, --help              Show help (also: sp <command> --help)
   -v, --version           Show version
 
-Commands can be dotted, spaced, or kebab-cased: \`dt prototype.createVariant\`, \`dt prototype create-variant\`.`;
+Commands can be dotted, spaced, or kebab-cased: \`sp prototype.createVariant\`, \`sp prototype create-variant\`.`;
 }
 
 function printResult(io: CliIO, globals: Globals, value: unknown, human?: string): void {
@@ -185,8 +170,6 @@ export async function main(argv: string[], io: CliIO = defaultIO): Promise<numbe
     }
 
     switch (name) {
-      case "init":
-        return await runInit(rest, globals, io);
       case "serve":
         return await runServe(rest, globals, io);
       case "mcp":
@@ -208,7 +191,7 @@ export async function main(argv: string[], io: CliIO = defaultIO): Promise<numbe
     const resolved = resolveCommand(globals.rest);
     if (!resolved) {
       io.stderr(
-        `Unknown command: ${globals.rest.join(" ")}\nRun \`dt help\` to see available commands.`,
+        `Unknown command: ${globals.rest.join(" ")}\nRun \`sp help\` to see available commands.`,
       );
       return 1;
     }
@@ -217,7 +200,7 @@ export async function main(argv: string[], io: CliIO = defaultIO): Promise<numbe
       return 0;
     }
     const input = await parseCommandInput(resolved.descriptor, resolved.args, io.cwd);
-    const { core, dispose } = await openCore(await resolveWorkspace(globals, io));
+    const { core, dispose } = await openCore(resolveWorkspace(globals, io));
     try {
       const command = core.registry.get(resolved.descriptor.name)!;
       const result = await core.run(command.name, input);
@@ -239,62 +222,9 @@ export async function main(argv: string[], io: CliIO = defaultIO): Promise<numbe
   }
 }
 
-async function runInit(args: string[], globals: Globals, io: CliIO): Promise<number> {
-  const { values, positionals } = parseArgs({
-    args,
-    allowPositionals: true,
-    allowNegative: true,
-    options: {
-      name: { type: "string" },
-      description: { type: "string" },
-      example: { type: "boolean", default: true },
-      mcp: { type: "string" },
-    },
-  });
-  const dir = path.resolve(io.cwd, positionals[0] ?? globals.workspace ?? ".");
-  const result = await initWorkspace(dir, {
-    name: values.name,
-    description: values.description,
-    example: values.example,
-  });
-  const written: string[] = [];
-  const clients = (values.mcp ?? "")
-    .split(",")
-    .map((c) => c.trim())
-    .filter(Boolean);
-  for (const client of clients) {
-    if (!MCP_CLIENTS.includes(client as McpClient))
-      throw new CoreError("INVALID_INPUT", `Unknown MCP client ${client}`);
-    const file = await writeMcpConfig(
-      client as McpClient,
-      result.root,
-      stdioLaunch(result.root, BIN_PATH),
-    );
-    if (file) written.push(path.relative(result.root, file));
-  }
-  printResult(
-    io,
-    globals,
-    { ...result, mcpConfigs: written },
-    [
-      `Created design workspace in ${result.root}`,
-      ...result.created.map((f) => `  + ${f}`),
-      ...written.map((f) => `  + ${f}`),
-      "",
-      "Next steps:",
-      `  dt serve${positionals[0] ? ` -w ${positionals[0]}` : ""}            # open the app`,
-      "  dt source add ../my-product   # register a product codebase as a reference",
-      clients.length ? "" : "  dt mcp-config                 # connect your agent over MCP",
-    ]
-      .filter((l) => l !== "")
-      .join("\n"),
-  );
-  return 0;
-}
-
 function resolveWebRoot(env: NodeJS.ProcessEnv): string | undefined {
   const candidates = [
-    env.DT_WEB_ROOT,
+    env.SCRATCHPAD_WEB_ROOT,
     fileURLToPath(new URL("./web", import.meta.url)),
     fileURLToPath(new URL("../../../apps/web/dist", import.meta.url)),
   ].filter((c): c is string => Boolean(c));
@@ -331,8 +261,8 @@ async function runServe(args: string[], globals: Globals, io: CliIO): Promise<nu
       "allowed-host": { type: "string", multiple: true },
     },
   });
-  const { startServer } = await import("@design-tool/server");
-  const root = await resolveWorkspace(globals, io);
+  const { startServer } = await import("@beyland/scratchpad-server");
+  const root = resolveWorkspace(globals, io);
   const core = await Core.open({ root, watch: true, commands: captureCommands });
   const webRoot = resolveWebRoot(io.env);
   const server = await startServer({
@@ -357,10 +287,10 @@ async function runServe(args: string[], globals: Globals, io: CliIO): Promise<nu
       webRoot: webRoot ?? null,
     },
     [
-      `design-tool — ${core.workspace.config.name}`,
+      "scratchpad",
       `  App:       ${server.url}${webRoot ? "" : "  (web UI not built; run `pnpm build` or `pnpm dev`)"}`,
       `  Sandbox:   ${server.sandboxUrl}`,
-      `  MCP:       ${server.url}/mcp  (or \`dt mcp\` over stdio)`,
+      `  MCP:       ${server.url}/mcp  (or \`sp mcp\` over stdio)`,
       `  Workspace: ${root}`,
       "",
       "Watching for changes. Press Ctrl+C to stop.",
@@ -380,8 +310,8 @@ async function runServe(args: string[], globals: Globals, io: CliIO): Promise<nu
 }
 
 async function runMcp(globals: Globals, io: CliIO): Promise<number> {
-  const { serveStdio } = await import("@design-tool/mcp");
-  const { core, dispose } = await openCore(await resolveWorkspace(globals, io), true);
+  const { serveStdio } = await import("@beyland/scratchpad-mcp");
+  const { core, dispose } = await openCore(resolveWorkspace(globals, io), true);
   try {
     await serveStdio(core);
   } finally {
@@ -391,8 +321,8 @@ async function runMcp(globals: Globals, io: CliIO): Promise<number> {
 }
 
 async function runMcpConfig(args: string[], globals: Globals, io: CliIO): Promise<number> {
-  const root = await resolveWorkspace(globals, io);
-  const launch = stdioLaunch(root, BIN_PATH);
+  const root = resolveWorkspace(globals, io);
+  const launch = stdioLaunch(BIN_PATH, root === defaultWorkspaceRoot({}) ? undefined : root);
   const requested = args[0];
   if (requested && !MCP_CLIENTS.includes(requested as McpClient)) {
     throw new CoreError(
@@ -404,11 +334,11 @@ async function runMcpConfig(args: string[], globals: Globals, io: CliIO): Promis
   printResult(
     io,
     globals,
-    { launch, http: "http://127.0.0.1:7420/mcp (while `dt serve` is running)" },
+    { launch, http: "http://127.0.0.1:7420/mcp (while `sp serve` is running)" },
     [
       ...clients.map((c) => mcpConfigSnippet(c, launch)),
       "",
-      "Alternatively, while `dt serve` is running, point HTTP-capable clients at <app url>/mcp.",
+      "Alternatively, while `sp serve` is running, point HTTP-capable clients at <app url>/mcp.",
     ].join("\n\n"),
   );
   return 0;

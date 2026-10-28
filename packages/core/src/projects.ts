@@ -10,9 +10,21 @@ import {
   type ProjectFile,
   type ProjectIconFormat,
 } from "./schemas.ts";
+import { ProjectScope } from "./scope.ts";
 import type { Workspace } from "./workspace.ts";
 
 export const PROJECT_META_FILE = "project.json";
+export const PROJECT_GITIGNORE = `# scratchpad: generated, local-only files
+.trash/
+.cache/
+systems/*/dist/
+systems/*/dist.*/
+systems/*/skill/
+systems/*/skill.*/
+systems/*/source/
+systems/*/node_modules/
+systems/*/activity.jsonl
+`;
 export const MAX_ICON_BYTES = 1024 * 1024;
 const ICON_FORMATS: ProjectIconFormat[] = ["svg", "png", "webp", "jpg"];
 
@@ -57,10 +69,14 @@ function decodeIcon(icon: ProjectIconInput): DecodedIcon {
   return { format: icon.format, data };
 }
 
-/** Projects live in `.design/projects/<id>/` (project.json plus an optional icon file). */
+/**
+ * Projects live in `projects/<id>/`: project.json, an optional icon, and the project's prototypes,
+ * design systems and reviews. Each project has a {@link ProjectScope} with its stores.
+ */
 export class ProjectStore {
   readonly #ws: Workspace;
   #index = new Map<string, Project>();
+  #scopes = new Map<string, ProjectScope>();
   #iconVersions = new Map<string, string>();
 
   constructor(workspace: Workspace) {
@@ -73,25 +89,57 @@ export class ProjectStore {
     return path.join(this.#ws.projectsDir, id);
   }
 
+  /** Load every project and its contents. */
   async load(): Promise<void> {
     await mkdir(this.#ws.projectsDir, { recursive: true });
     const entries = await readdir(this.#ws.projectsDir, { withFileTypes: true });
     const next = new Map<string, Project>();
+    const scopes = new Map<string, ProjectScope>();
     for (const entry of entries) {
       if (!entry.isDirectory() || !ID_PATTERN.test(entry.name)) continue;
       const project = await this.#readFromDisk(entry.name);
-      if (project) next.set(project.id, project);
+      if (!project) continue;
+      next.set(project.id, project);
+      const scope = new ProjectScope(this.#ws, project.id);
+      await scope.load();
+      scopes.set(project.id, scope);
     }
     this.#index = next;
+    this.#scopes = scopes;
   }
 
-  /** Re-read a single project from disk. Returns undefined if it no longer exists. */
-  async reloadOne(id: string): Promise<Project | undefined> {
-    if (!ID_PATTERN.test(id)) return undefined;
+  /**
+   * Re-read a single project's metadata. A project folder that appeared (e.g. a git clone) gets its
+   * contents loaded; one that disappeared is dropped. `scopeChanged` says whether either happened.
+   */
+  async reloadOne(id: string): Promise<{ project: Project | undefined; scopeChanged: boolean }> {
+    if (!ID_PATTERN.test(id)) return { project: undefined, scopeChanged: false };
     const project = await this.#readFromDisk(id);
-    if (project) this.#index.set(id, project);
-    else this.#index.delete(id);
-    return project;
+    let scopeChanged = false;
+    if (project) {
+      this.#index.set(id, project);
+      if (!this.#scopes.has(id)) {
+        const scope = new ProjectScope(this.#ws, id);
+        await scope.load();
+        this.#scopes.set(id, scope);
+        scopeChanged = true;
+      }
+    } else {
+      this.#index.delete(id);
+      scopeChanged = this.#scopes.delete(id);
+    }
+    return { project, scopeChanged };
+  }
+
+  /** The stores of a project's contents. */
+  scope(id: string): ProjectScope {
+    const scope = this.#scopes.get(id);
+    if (!scope) throw new CoreError("NOT_FOUND", `No project with id ${JSON.stringify(id)}`);
+    return scope;
+  }
+
+  scopes(): ProjectScope[] {
+    return this.list().flatMap((p) => this.#scopes.get(p.id) ?? []);
   }
 
   has(id: string): boolean {
@@ -131,12 +179,13 @@ export class ProjectStore {
     const id = await this.#claimDir(input.id ?? slugify(input.name), input.id !== undefined);
     try {
       if (icon) await this.#writeIcon(id, icon);
+      await atomicWrite(path.join(this.dirOf(id), ".gitignore"), PROJECT_GITIGNORE);
       await writeJson(path.join(this.dirOf(id), PROJECT_META_FILE), meta);
     } catch (error) {
       await rm(this.dirOf(id), { recursive: true, force: true });
       throw error;
     }
-    return (await this.reloadOne(id))!;
+    return (await this.reloadOne(id)).project!;
   }
 
   async update(id: string, patch: UpdateProjectInput): Promise<Project> {
@@ -155,16 +204,17 @@ export class ProjectStore {
     if (patch.icon !== undefined)
       await this.#writeIcon(id, patch.icon ? decodeIcon(patch.icon) : null);
     await writeJson(path.join(this.dirOf(id), PROJECT_META_FILE), ProjectFileSchema.parse(next));
-    return (await this.reloadOne(id))!;
+    return (await this.reloadOne(id)).project!;
   }
 
-  /** Soft-delete: move the folder into `.design/.trash/`. Members keep their `project` field. */
+  /** Soft-delete: move the whole project folder (with its contents) into the workspace trash. */
   async delete(id: string): Promise<{ id: string; trashedTo: string }> {
     this.get(id);
     await mkdir(this.#ws.trashDir, { recursive: true });
     const target = path.join(this.#ws.trashDir, `project-${id}-${Date.now()}`);
     await rename(this.dirOf(id), target);
     this.#index.delete(id);
+    this.#scopes.delete(id);
     return { id, trashedTo: path.relative(this.#ws.root, target) };
   }
 

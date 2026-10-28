@@ -5,9 +5,10 @@ import path from "node:path";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { afterAll, beforeAll, expect, test } from "vite-plus/test";
+import { initWorkspace } from "@beyland/scratchpad-core";
 import { BIN_PATH, main } from "../src/index.ts";
 
-// End-to-end: real processes for `dt serve` and `dt mcp`, talking over HTTP and stdio.
+// End-to-end: real processes for `sp serve` and `sp mcp`, talking over HTTP and stdio.
 
 let dir: string;
 let serve: ChildProcess;
@@ -16,18 +17,18 @@ let serverInfo: { url: string; sandboxUrl: string; mcpUrl: string };
 const silent = { stdout: () => {}, stderr: () => {}, env: {} };
 
 beforeAll(async () => {
-  dir = await mkdtemp(path.join(tmpdir(), "dt-e2e-"));
-  expect(await main(["init", "--name", "E2E"], { ...silent, cwd: dir })).toBe(0);
+  dir = await mkdtemp(path.join(tmpdir(), "sp-e2e-"));
+  await initWorkspace(dir, { project: "E2E" });
   expect(
-    await main(["prototype", "create", "--title", "From CLI", "--html", "<h1>cli</h1>"], {
-      ...silent,
-      cwd: dir,
-    }),
+    await main(
+      ["--home", dir, "prototype", "create", "--title", "From CLI", "--html", "<h1>cli</h1>"],
+      { ...silent, cwd: dir },
+    ),
   ).toBe(0);
 
   serve = spawn(
     process.execPath,
-    [BIN_PATH, "serve", "--json", "--no-open", "--port", "0", "--sandbox-port", "0", "-w", dir],
+    [BIN_PATH, "serve", "--json", "--no-open", "--port", "0", "--sandbox-port", "0", "--home", dir],
     {
       stdio: ["ignore", "pipe", "inherit"],
     },
@@ -43,7 +44,7 @@ beforeAll(async () => {
         // wait for the full JSON payload
       }
     });
-    serve.once("exit", (code) => reject(new Error(`dt serve exited with ${code}`)));
+    serve.once("exit", (code) => reject(new Error(`sp serve exited with ${code}`)));
   });
 });
 
@@ -70,11 +71,11 @@ async function api<T>(name: string, input: unknown = {}): Promise<T> {
 test("an agent over stdio MCP creates prototypes that the running server sees and serves", async () => {
   const client = new Client({ name: "e2e-stdio", version: "0.0.0" });
   await client.connect(
-    new StdioClientTransport({ command: process.execPath, args: [BIN_PATH, "mcp", "-w", dir] }),
+    new StdioClientTransport({ command: process.execPath, args: [BIN_PATH, "mcp", "--home", dir] }),
   );
   try {
     const info = await client.callTool({ name: "workspace_info", arguments: {} });
-    expect(info.structuredContent).toMatchObject({ name: "E2E" });
+    expect(info.structuredContent).toMatchObject({ root: dir, projects: [{ id: "e2e" }] });
 
     const created = await client.callTool({
       name: "prototype_create",
@@ -110,7 +111,7 @@ test("an agent over stdio MCP creates prototypes that the running server sees an
   const urls = await api<{ raw: string; viewer: string }>("prototype.urls", {
     id: "agent-idea-v2",
   });
-  expect(urls.viewer).toBe(`${serverInfo.url}/p/agent-idea-v2`);
+  expect(urls.viewer).toBe(`${serverInfo.url}/projects/e2e/p/agent-idea-v2`);
   expect(urls.raw.startsWith(serverInfo.sandboxUrl)).toBe(true);
   expect(await (await fetch(urls.raw)).text()).toBe("<h1>agent</h1>");
 });

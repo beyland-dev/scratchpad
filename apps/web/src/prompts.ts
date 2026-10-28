@@ -1,6 +1,6 @@
 /** Prompts people hand to an agent after creating something in the UI. */
 
-const START = "Use the design-tool MCP server. Read the design-tool://guide resource first.";
+const START = "Use the scratchpad MCP server. Read the scratchpad://guide resource first.";
 
 export function prototypePrompt(proto: {
   id: string;
@@ -90,7 +90,7 @@ export function starterHtml(
       ${proto.description?.trim() ? `<p class="brief">${escapeHtml(proto.description.trim())}</p>` : ""}
       <section class="card">
         <h2>Next: hand it to an agent</h2>
-        <p>Give this prompt to an agent connected to design-tool over MCP. It replaces this page, and the viewer updates live as it writes files.</p>
+        <p>Give this prompt to an agent connected to scratchpad over MCP. It replaces this page, and the viewer updates live as it writes files.</p>
         <div class="prompt">
           <div class="prompt-head">Prompt <button type="button" id="copy">Copy</button></div>
           <pre id="prompt">${escapeHtml(prompt)}</pre>
@@ -122,20 +122,20 @@ export function starterHtml(
 }
 
 export function systemAuditPrompt(
-  system: { id: string; name: string; prefix: string; project?: string },
+  system: { id: string; name: string; prefix: string; project: string },
   source: { kind: "local" | "git"; location: string; resolvedLocation: string } | undefined,
-  designDir: string | undefined,
+  projectDir: string,
 ): string {
-  const target = `the design system "${system.name}" (id "${system.id}", tag prefix "${system.prefix}"${system.project ? `, project "${system.project}"` : ""})`;
-  const checkout = `${designDir ?? ".design"}/systems/${system.id}/source`;
+  const target = `the design system "${system.name}" (id "${system.id}", tag prefix "${system.prefix}", project "${system.project}")`;
+  const checkout = `${projectDir}/systems/${system.id}/source`;
   const where =
     source?.kind === "local"
       ? `The product's code is in ${source.resolvedLocation}. Read it there and never modify it.`
       : source?.kind === "git"
         ? `The product's code is in ${source.location}. Clone it into ${checkout} (already gitignored, e.g. \`git clone --depth 1 ${source.location} ${checkout}\`) and read it there.`
-        : `It has no source codebase yet: ask me where the product lives (a local folder, a git repo, or a running app). Register it with source_add (CLI: dt source add <path-or-url>) and link it with system_update { id: "${system.id}", sourceId }. A git repo goes in ${checkout} (gitignored).`;
+        : `It has no source codebase yet: ask me where the product lives (a local folder, a git repo, or a running app). Register it with source_add (CLI: sp source add <path-or-url>) and link it with system_update { id: "${system.project}/${system.id}", sourceId }. A git repo goes in ${checkout} (gitignored).`;
   return `${START}
-Then read the design-tool://skills/design-system-audit resource (or use the audit_design_system prompt) and follow it to audit the product into ${target}. It already exists and is empty.
+Then read the scratchpad://skills/design-system-audit resource (or use the audit_design_system prompt) and follow it to audit the product into ${target}. It already exists and is empty.
 ${where}
 - import the product's tokens for every theme,
 - capture reference elements from the running product,
@@ -153,13 +153,13 @@ export function packageSetupPrompt(
   system: {
     id: string;
     name: string;
-    project?: string;
+    project: string;
     library?: { name: string; package?: string; docsUrl?: string };
   },
   source: { kind: "local" | "git"; location: string; resolvedLocation: string } | undefined,
-  designDir: string | undefined,
+  projectDir: string,
 ): string {
-  const dir = `${designDir ?? ".design"}/systems/${system.id}`;
+  const dir = `${projectDir}/systems/${system.id}`;
   const library = system.library?.name ?? "the component library";
   const setup =
     LIBRARY_SETUP[system.library?.package ?? ""]?.(dir) ??
@@ -169,15 +169,15 @@ export function packageSetupPrompt(
       ? `Match the product: read its code in ${source.resolvedLocation} (never modify it) and bring over its customizations: theme variables (src/index.css, light under :root and dark under .dark), fonts, and any customized or wrapped components (into src/components).`
       : source?.kind === "git"
         ? `Match the product: clone ${source.location} into ${dir}/source (gitignored) and bring over its customizations: theme variables (src/index.css, light under :root and dark under .dark), fonts, and any customized or wrapped components (into src/components).`
-        : `It has no source codebase yet: ask me whether the product customizes ${library} (a repo, a folder, or a theme). If so, register it with source_add (CLI: dt source add <path-or-url>), link it with system_update { id: "${system.id}", sourceId }, and bring over its theme variables, fonts and customized components. Otherwise keep the library's defaults.`;
+        : `It has no source codebase yet: ask me whether the product customizes ${library} (a repo, a folder, or a theme). If so, register it with source_add (CLI: sp source add <path-or-url>), link it with system_update { id: "${system.project}/${system.id}", sourceId }, and bring over its theme variables, fonts and customized components. Otherwise keep the library's defaults.`;
   return `${START}
-Set up the design system "${system.name}" (id "${system.id}"${system.project ? `, project "${system.project}"` : ""}): ${library}${system.library?.docsUrl ? ` (docs: ${system.library.docsUrl})` : ""}, used from React prototypes. Its folder ${dir} is a Vite + React + Tailwind project design-tool scaffolded; its node_modules are shared by every prototype that uses it.
+Set up the design system "${system.name}" (id "${system.id}", project "${system.project}"): ${library}${system.library?.docsUrl ? ` (docs: ${system.library.docsUrl})` : ""}, used from React prototypes. Its folder ${dir} is a Vite + React + Tailwind project scratchpad scaffolded; its node_modules are shared by every prototype that uses it.
 1. Install: run \`npm install\` in ${dir}.
 2. ${setup}
 3. ${customize}
-4. Describe each component: write stories/<name>.stories.tsx exporting one React component per example, then component_create { system: "${system.id}", name, tag: "Button", title, description, import, story, docsUrl, examples: [{ title, html: "<the example's JSX>", story: "<export name>" }] }. The first story is the component's card preview, so it should show the component itself.
+4. Describe each component: write stories/<name>.stories.tsx exporting one React component per example, then component_create { system: "${system.project}/${system.id}", name, tag: "Button", title, description, import, story, docsUrl, examples: [{ title, html: "<the example's JSX>", story: "<export name>" }] }. The first story is the component's card preview, so it should show the component itself.
 5. Run system_build and fix any errors. Tokens come from src/index.css automatically.
-Then prototypes use it with prototype_create { framework: "react", system: "${system.id}" }.`;
+Then prototypes use it with prototype_create { project: "${system.project}", framework: "react", system: "${system.id}" }.`;
 }
 
 /** Starting main.tsx of a React prototype made in the app: its brief and the agent prompt, in the design system's own theme. */
@@ -186,7 +186,7 @@ export function starterTsx(proto: { title: string; description?: string }, promp
 import { createRoot } from "react-dom/client";
 import "@/index.css";
 
-// A setup note from design-tool. An agent replaces this file when it builds the prototype.
+// A setup note from scratchpad. An agent replaces this file when it builds the prototype.
 const title = ${JSON.stringify(proto.title)};
 const brief = ${JSON.stringify(proto.description?.trim() ?? "")};
 const prompt = ${JSON.stringify(prompt)};
@@ -215,7 +215,7 @@ function Starter() {
         <section className="mt-7 rounded-xl border bg-card p-5 text-card-foreground">
           <h2 className="font-medium">Next: hand it to an agent</h2>
           <p className="mt-1 mb-4 text-sm text-muted-foreground">
-            Give this prompt to an agent connected to design-tool over MCP. It replaces this page, and the viewer updates live as it writes files.
+            Give this prompt to an agent connected to scratchpad over MCP. It replaces this page, and the viewer updates live as it writes files.
           </p>
           <div className="rounded-lg bg-muted">
             <div className="flex items-center justify-between px-4 pt-2 text-xs font-medium text-muted-foreground">

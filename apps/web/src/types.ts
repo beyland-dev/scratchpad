@@ -6,7 +6,7 @@ import type {
   PrototypeUrls,
   Source,
   WorkspaceUrls,
-} from "@design-tool/core";
+} from "@beyland/scratchpad-core";
 
 export type {
   Prototype,
@@ -14,21 +14,30 @@ export type {
   PrototypeStatus,
   PrototypeUrls,
   Source,
-} from "@design-tool/core";
+} from "@beyland/scratchpad-core";
 
+/**
+ * A prototype as the app holds it. `id` is its workspace-unique `project/id` reference (what the
+ * app keys by and passes to commands), and `localId` its folder name; `variantOf`, `system` and
+ * `resolvedSystem` are qualified the same way.
+ */
 export type PrototypeWithUrls = Prototype & {
+  localId: string;
   urls: PrototypeUrls;
   /** The design system it uses: its `system`, or the one inferred from its HTML or project. */
   resolvedSystem?: string;
 };
 
-export type ProjectSummary = Project & { prototypes: number; systems: number; urls: ProjectUrls };
+export type ProjectSummary = Project & {
+  dir: string;
+  prototypes: number;
+  systems: number;
+  urls: ProjectUrls;
+};
 
 export interface WorkspaceInfo {
-  name: string;
-  description?: string;
   root: string;
-  designDir: string;
+  projects: { id: string; name: string; description?: string; dir: string }[];
   sources: (Source & { resolvedLocation: string })[];
   prototypeCount: number;
   groups: string[];
@@ -42,7 +51,7 @@ export interface PrototypeDetails {
   family: { id: string; title: string; variantOf?: string; status: string }[];
 }
 
-export type { DesignComponent, DesignSystem, Token } from "@design-tool/core";
+export type { DesignComponent, DesignSystem, Token } from "@beyland/scratchpad-core";
 
 export interface ComponentSummary {
   name: string;

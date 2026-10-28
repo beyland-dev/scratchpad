@@ -9,7 +9,7 @@ import {
   extractCssTokens,
   scaffoldPackageSystem,
 } from "./package.ts";
-import type { Workspace } from "../workspace.ts";
+import type { ScopeContext } from "../scope.ts";
 import {
   ComponentFileSchema,
   ComponentNameSchema,
@@ -83,18 +83,21 @@ export interface ComponentQuery {
 
 const MANAGED_COMPONENT_FILES = new Set([COMPONENT_FILE]);
 
+/** The design systems of one project: `projects/<project>/systems/<id>/`. */
 export class SystemStore {
-  readonly #ws: Workspace;
+  readonly #ctx: ScopeContext;
+  readonly dir: string;
   #systems = new Map<string, DesignSystem>();
   #components = new Map<string, Map<string, DesignComponent>>();
   #tokens = new Map<string, Token[]>();
 
-  constructor(workspace: Workspace) {
-    this.#ws = workspace;
+  constructor(context: ScopeContext) {
+    this.#ctx = context;
+    this.dir = path.join(context.dir, SYSTEMS_DIR);
   }
 
-  get dir(): string {
-    return path.join(this.#ws.designDir, SYSTEMS_DIR);
+  get project(): string {
+    return this.#ctx.project;
   }
 
   dirOf(id: string): string {
@@ -135,11 +138,12 @@ export class SystemStore {
         throw new Error(
           parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "),
         );
-      system = { id, ...parsed.data };
+      system = { id, project: this.#ctx.project, ...parsed.data };
     } catch (error) {
       issues.push(`${SYSTEM_FILE}: ${(error as Error).message}`);
       system = {
         id,
+        project: this.#ctx.project,
         version: 1,
         kind: "captured",
         name: id,
@@ -228,7 +232,11 @@ export class SystemStore {
 
   get(id: string): DesignSystem {
     const system = this.#systems.get(id);
-    if (!system) throw new CoreError("NOT_FOUND", `No design system with id ${JSON.stringify(id)}`);
+    if (!system)
+      throw new CoreError(
+        "NOT_FOUND",
+        `No design system ${JSON.stringify(id)} in project ${JSON.stringify(this.#ctx.project)}`,
+      );
     return system;
   }
 
@@ -265,7 +273,7 @@ export class SystemStore {
     patch: Partial<Omit<SystemFile, "version" | "createdAt" | "updatedAt">>,
   ): Promise<DesignSystem> {
     const current = this.get(id);
-    const { id: _id, issues: _issues, ...file } = current;
+    const { id: _id, project: _project, issues: _issues, ...file } = current;
     const next = SystemFileSchema.parse({ ...file, ...patch, updatedAt: nowIso() });
     if (!next.themes.some((t) => t.id === next.defaultTheme)) {
       throw new CoreError(
@@ -282,15 +290,19 @@ export class SystemStore {
     return (await this.reloadSystem(id))!;
   }
 
-  async remove(id: string): Promise<{ id: string; trashedTo: string }> {
+  async remove(id: string): Promise<{ id: string; project: string; trashedTo: string }> {
     this.get(id);
-    await mkdir(this.#ws.trashDir, { recursive: true });
-    const target = path.join(this.#ws.trashDir, `system-${id}-${Date.now()}`);
+    await mkdir(this.#ctx.trashDir, { recursive: true });
+    const target = path.join(this.#ctx.trashDir, `system-${id}-${Date.now()}`);
     await rename(this.dirOf(id), target);
     this.#systems.delete(id);
     this.#components.delete(id);
     this.#tokens.delete(id);
-    return { id, trashedTo: path.relative(this.#ws.root, target) };
+    return {
+      id,
+      project: this.#ctx.project,
+      trashedTo: path.relative(this.#ctx.workspace.root, target),
+    };
   }
 
   /** Write a system-level file (e.g. base.css, assets/font.ttf). */
@@ -306,7 +318,7 @@ export class SystemStore {
     if ([SYSTEM_FILE, TOKENS_FILE, COMPONENTS_DIR, ...GENERATED_DIRS].includes(top)) {
       throw new CoreError(
         "INVALID_INPUT",
-        `${top} is managed by design-tool; use the system/token/component commands instead`,
+        `${top} is managed by scratchpad; use the system/token/component commands instead`,
       );
     }
     const data = Buffer.from(content, encoding);
@@ -612,13 +624,13 @@ export class SystemStore {
     name: string,
   ): Promise<{ name: string; removed: true; trashedTo: string }> {
     const tag = this.component(id, name).tag;
-    await mkdir(this.#ws.trashDir, { recursive: true });
-    const target = path.join(this.#ws.trashDir, `component-${id}-${name}-${Date.now()}`);
+    await mkdir(this.#ctx.trashDir, { recursive: true });
+    const target = path.join(this.#ctx.trashDir, `component-${id}-${name}-${Date.now()}`);
     await rename(this.componentDirOf(id, name), target);
     this.#components.get(id)?.delete(name);
     await this.#touch(id);
     await this.logActivity(id, { kind: "component", title: `Removed <${tag}>`, ref: name });
-    return { name, removed: true, trashedTo: path.relative(this.#ws.root, target) };
+    return { name, removed: true, trashedTo: path.relative(this.#ctx.workspace.root, target) };
   }
 
   async writeComponentFile(
@@ -633,7 +645,7 @@ export class SystemStore {
     if (MANAGED_COMPONENT_FILES.has(normalized)) {
       throw new CoreError(
         "INVALID_INPUT",
-        `${normalized} is managed by design-tool; use component.update instead`,
+        `${normalized} is managed by scratchpad; use component.update instead`,
       );
     }
     const data = Buffer.from(content, encoding);
