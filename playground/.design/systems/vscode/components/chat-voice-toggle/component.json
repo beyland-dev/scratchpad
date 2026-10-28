@@ -1,0 +1,53 @@
+{
+  "tag": "vsc-chat-voice-toggle",
+  "kind": "component",
+  "title": "Chat voice toggle",
+  "category": "chat",
+  "description": "Dictation / Voice Mode segmented toggle in the chat execute toolbar (ChatVoiceInputModeActionViewItem): a reel of icon cells (mic, voice bars) with the listen and mute cells collapsed until Voice Mode starts. Clicking a cell toggles its pressed state and fires `dictation` or `voice`.",
+  "usage": "Rendered by <vsc-chat-input variant=\"session|new-session\"> before Send.",
+  "attributes": [
+    {
+      "name": "dictation",
+      "type": "boolean"
+    },
+    {
+      "name": "voice",
+      "type": "boolean"
+    }
+  ],
+  "slots": [],
+  "states": [
+    {
+      "name": "dictation / voice (events)",
+      "description": "detail: { pressed }",
+      "trigger": "click a cell"
+    }
+  ],
+  "variants": [],
+  "hostDisplay": "block",
+  "hostTag": "li",
+  "cssCaptures": [
+    "agents-session-composer-light",
+    "agents-session-composer-dark"
+  ],
+  "requires": [
+    "vsc-workbench"
+  ],
+  "tokens": [],
+  "uses": [],
+  "sources": [
+    {
+      "path": "src/vs/workbench/contrib/chat/browser/widget/input/chatInputPart.ts"
+    }
+  ],
+  "examples": [
+    {
+      "title": "Default",
+      "html": "<vsc-workbench window=\"agents\"><vsc-session-view style=\"width: 480px\"><vsc-chat-input variant=\"session\"></vsc-chat-input></vsc-session-view></vsc-workbench>"
+    }
+  ],
+  "references": [],
+  "status": "draft",
+  "createdAt": "2026-10-28T01:15:18.715Z",
+  "updatedAt": "2026-10-28T01:15:18.715Z"
+}

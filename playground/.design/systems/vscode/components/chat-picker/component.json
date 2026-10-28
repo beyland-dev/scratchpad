@@ -3,7 +3,7 @@
   "kind": "component",
   "title": "Chat picker",
   "category": "chat",
-  "description": "Dropdown picker in the chat input toolbars: icon + label (agent mode, session target, permissions, …).",
+  "description": "Dropdown picker in the workbench Chat view's input toolbars: icon + label (agent mode, session target, permissions, …). Its module also defines `ds.chatPickers`, the data every Agents window picker opens: harnesses (Copilot, Claude, Codex), environments, recent workspaces, isolation, branches, Copilot modes (Interactive, Plan, Autopilot) and permission levels (Manual, Assisted, Allow all), Claude and Codex approval modes, and each harness's models with effort, context size, speed and pricing, captured from the signed-in product. Helpers: `ds.chatPickers.models(harness)`, `.model(id, harness)`, `.summary(model)` (\"Medium · 272K\"), `.openList(kind, anchor, current, onPick)`.",
   "usage": "Inside <vsc-chat-input> slot=\"toolbar\" or slot=\"secondary\".",
   "attributes": [
     {
@@ -106,13 +106,34 @@
   ],
   "status": "draft",
   "verification": {
-    "status": "verified",
-    "checkedAt": "2026-10-22T21:43:17.029Z",
+    "status": "drift",
+    "checkedAt": "2026-10-28T01:31:53.240Z",
     "compared": 36,
-    "diffs": 0,
+    "diffs": 20,
     "theme": "dark-2026",
-    "summary": []
+    "summary": [
+      "[chat-target-picker-dark] ROOT w: expected 56.72, got 57.81",
+      "[chat-target-picker-dark] monaco-dropdown w: expected 56.72, got 57.81",
+      "[chat-target-picker-dark] monaco-dropdown > dropdown-label w: expected 56.72, got 57.81",
+      "[chat-target-picker-dark] monaco-dropdown > dropdown-label > action-label w: expected 56.72, got 57.81",
+      "[chat-target-picker-dark] monaco-dropdown > dropdown-label > action-label > chat-input-picker-label w: expected 26.72, got 27.81",
+      "[chat-target-picker-light] ROOT w: expected 56.72, got 57.81",
+      "[chat-target-picker-light] monaco-dropdown w: expected 56.72, got 57.81",
+      "[chat-target-picker-light] monaco-dropdown > dropdown-label w: expected 56.72, got 57.81",
+      "[chat-target-picker-light] monaco-dropdown > dropdown-label > action-label w: expected 56.72, got 57.81",
+      "[chat-target-picker-light] monaco-dropdown > dropdown-label > action-label > chat-input-picker-label w: expected 26.72, got 27.81",
+      "[chat-permission-picker-dark] ROOT w: expected 133.39, got 134.08",
+      "[chat-permission-picker-dark] monaco-dropdown w: expected 133.39, got 134.08",
+      "[chat-permission-picker-dark] monaco-dropdown > dropdown-label w: expected 133.39, got 134.08",
+      "[chat-permission-picker-dark] monaco-dropdown > dropdown-label > action-label w: expected 133.39, got 134.08",
+      "[chat-permission-picker-dark] monaco-dropdown > dropdown-label > action-label > chat-input-picker-label w: expected 103.39, got 104.08",
+      "[chat-permission-picker-light] ROOT w: expected 133.39, got 134.08",
+      "[chat-permission-picker-light] monaco-dropdown w: expected 133.39, got 134.08",
+      "[chat-permission-picker-light] monaco-dropdown > dropdown-label w: expected 133.39, got 134.08",
+      "[chat-permission-picker-light] monaco-dropdown > dropdown-label > action-label w: expected 133.39, got 134.08",
+      "[chat-permission-picker-light] monaco-dropdown > dropdown-label > action-label > chat-input-picker-label w: expected 103.39, got 104.08"
+    ]
   },
   "createdAt": "2026-10-22T21:42:49.712Z",
-  "updatedAt": "2026-10-22T21:43:17.029Z"
+  "updatedAt": "2026-10-28T01:38:47.910Z"
 }

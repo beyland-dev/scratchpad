@@ -1,0 +1,44 @@
+/*
+ * Agents window root variables (window="agents"). Element captures don't include these because they are set on
+ * the workbench itself. Copied from src/vs/workbench/contrib/modernUI/browser/media/frostedGlass.css (frosted
+ * menus: the action widget is transparent and its ::before blurs a translucent menu color) and
+ * src/vs/sessions/browser/media/style.css (Agents pickers use the agents panel color as their solid menu color).
+ */
+@supports (backdrop-filter: blur(12px)) and (background-color: color-mix(in srgb, black 92%, transparent)) {
+  @media (prefers-reduced-transparency: no-preference) and (forced-colors: none) {
+    .monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light) {
+      --modern-ui-glass-quick-input-background: color-mix(in srgb, var(--modern-ui-solid-quick-input-background) var(--modern-ui-glass-opacity, 92%), transparent);
+      --modern-ui-glass-menu-background: color-mix(in srgb, var(--modern-ui-solid-menu-background) var(--modern-ui-glass-opacity, 92%), transparent);
+      --modern-ui-glass-hover-background: color-mix(in srgb, var(--vscode-editorHoverWidget-background) var(--modern-ui-glass-opacity, 92%), transparent);
+      --modern-ui-glass-dialog-background: color-mix(in srgb, var(--modern-ui-solid-dialog-background) var(--modern-ui-glass-opacity, 92%), transparent);
+      --modern-ui-glass-notifications-background: color-mix(in srgb, var(--vscode-notifications-background) var(--modern-ui-glass-opacity, 92%), transparent);
+      --modern-ui-solid-dialog-background: var(--vscode-editorWidget-background);
+      --modern-ui-solid-menu-background: var(--vscode-menu-background);
+      --modern-ui-solid-quick-input-background: var(--vscode-quickInput-background);
+    }
+
+    .monaco-workbench.agent-sessions-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light) {
+      --modern-ui-solid-menu-background: var(--vscode-agentsPanel-background);
+      --modern-ui-solid-quick-input-background: var(--vscode-agentsPanel-background);
+    }
+
+    .monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light).monaco-enable-motion .action-widget.action-widget-animated:not(.action-widget-dropdown-closing) {
+      animation: action-widget-scale-open 250ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+      transform-origin: bottom left;
+    }
+
+    .monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light).monaco-enable-motion .context-view.bottom .action-widget.action-widget-animated {
+      transform-origin: top left;
+    }
+  }
+}
+
+/* From src/vs/platform/actionWidget/browser/actionWidget.css (the keyframes aren't part of an element capture). */
+@keyframes action-widget-scale-open {
+  from {
+    transform: scale(0.97);
+  }
+  to {
+    transform: scale(1);
+  }
+}

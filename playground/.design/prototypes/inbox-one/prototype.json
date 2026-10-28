@@ -1,6 +1,6 @@
 {
   "title": "Inbox One",
-  "description": "An exploration of a brand new homepage view for the VS Code agents window. It implements an email style inbox view for agent sessions list and a chat composer. V1 \u2014 three-pane mail: mailbox rail (Inbox, Needs input, In progress, Pinned, Done, workspaces, groups), a session list grouped by attention and date, and a reading pane showing the session thread with inline answers and a reply composer (vsc-chat-input). New Session opens a compose view. Keys: j/k, e done, u unread, p pin, c compose, r reply, /.",
+  "description": "An exploration of a brand new homepage view for the VS Code agents window. It implements an email style inbox view for agent sessions list and a chat composer. V1 \u2014 three panes: a title-bar New button (\u2318N), a mailbox rail (V2's buckets: Ready for you, Working, Ready to merge, On hold, Done), a session list (search, Filter Sessions menu, two-line rows with hover actions) and a reading pane that shows the composer when nothing is selected, or the selected session's full chat (design-system chat parts, question above the composer). Keys: j/k, e done, h hold, m merge, u unread, Delete (Done), \u2318N or c new session, /, 1-5 mailboxes, Esc back. Phones show one pane at a time with the rail as a drawer.",
   "status": "draft",
   "tags": [
     "vscode",

@@ -155,11 +155,11 @@
 
   /* ---- Phone (≤ 640px) ---- */
   @media (max-width: 640px) {
-    /* Title bar: sidebar toggle, session pill (fills the space), theme toggle and avatar. Navigation, run and layout actions are desktop-only. */
+    /* Title bar: sidebar toggle, back, session pill (fills the space) and avatar. Forward, run and layout actions are desktop-only. */
     .tb { gap: 6px; padding: 0 8px; }
     .tb-center { position: static; transform: none; flex: 1; min-width: 0; }
     .tb-center + .grow { display: none; }
-    .tb-nav, .tb-run, .tb-layout { display: none; }
+    .tb-run, .tb-layout, #nav-fwd { display: none; }
     .cc { width: auto; flex: 1; min-width: 0; }
 
     .page { margin: 0 4px 4px; }

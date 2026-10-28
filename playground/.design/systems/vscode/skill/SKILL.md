@@ -1,6 +1,6 @@
 ---
 name: vscode-design-system
-description: Build design-tool prototypes that look exactly like VS Code, using its codified design system — 60 web components (<vsc-chat-view>, <vsc-workbench>, <vsc-notification-toasts>, <vsc-editor>, <vsc-search-view>, <vsc-sidebar>, …) and 3379 theme tokens. Use when creating or editing a prototype that should match VS Code, or when looking up its components, states, tokens, or icons.
+description: Build design-tool prototypes that look exactly like VS Code, using its codified design system — 67 web components (<vsc-chat-view>, <vsc-session-view>, <vsc-workbench>, <vsc-notification-toasts>, <vsc-editor>, <vsc-search-view>, …) and 3379 theme tokens. Use when creating or editing a prototype that should match VS Code, or when looking up its components, states, tokens, or icons.
 ---
 
 # VS Code design system
@@ -72,6 +72,22 @@ Open one page per theme (`?folder=/tmp/dt-vsc/ws&dt-theme=dark` / `dt-theme=ligh
 - Watermark shortcuts rotate between page loads, so dark and light references use different examples.
 - Some states depend on focus (e.g. pane header actions only show while the pane has focus); references ignore those parts.
 
+## Agents window (composer and pickers)
+
+The Agents window composer (`<vsc-chat-input variant="session|new-session">`), its pickers and their popups were captured from the **desktop Agents window** (VS Code - Insiders 1.144.0, commit 131aec7f1ee, signed in), not serve-web:
+
+```sh
+"/Applications/Visual Studio Code - Insiders.app/Contents/MacOS/Code - Insiders" --agents \
+  --user-data-dir=/tmp/dt-insiders/user-data --extensions-dir=/tmp/dt-insiders/ext --remote-debugging-port=9333
+```
+
+- Copy your Insiders `settings.json` into the temp profile (it needs `sessions.chat.experimental.newSessionComposerLayout: true`), set `window.zoomLevel` to 0 and sign in so the pickers load real data. Target `{ cdp: "http://127.0.0.1:9333", page: "Agents" }` with the same `width`/`height` as the window (1440×900).
+- Run captures **one at a time**: parallel CDP sessions can leave a viewport override on the page (the window then reports a tiny `innerWidth`); restart the instance to clear it.
+- Blur the composer and move the mouse away before capturing so it is in its resting state; hide `.new-session-welcome-message` (its phrase rotates).
+- Captures: `agents-session-composer-*`, `agents-new-session-composer-*`, `agents-picker-list-*` (environment), `agents-mode-permissions-list-*`, `agents-model-picker-list-*`, `agents-model-details-*`. List ids are normalized to `list_id_7` (popups) and `list_id_3` (composer); the segmented control's transient `previous-active` class is dropped.
+- `<vsc-workbench window="agents">` adds `agent-sessions-workbench modern-ui-frosted-glass` (and drops `modern-ui`, which the Agents window doesn't carry); its component.css restates the frosted-glass root variables the element captures can't include.
+- **Picker data** lives in `ds.chatPickers.data` (components/chat-picker/component.js): harnesses, environments, recent workspaces, isolation, branches, Copilot modes and permission levels, Claude and Codex approvals, and each harness's models with effort, context size, speed and pricing (from every model's details card). To refresh it, open each picker in the running Agents window and read its rows (`.context-view .monaco-list-row`: title, description, detail, aria-label, toolbar text); scroll the virtualized lists with real wheel input.
+
 ## Components
 
 ### Contexts
@@ -79,7 +95,8 @@ Open one page per theme (`?folder=/tmp/dt-vsc/ws&dt-theme=dark` / `dt-theme=ligh
 | Tag | What | Key attributes | Must be inside |
 |---|---|---|---|
 | `<vsc-chat-view>` | Chat view: The chat view pane (secondary side bar): `.chat-viewpane > .chat-controls-container > .interactive-session`. |  | `vsc-workbench` |
-| `<vsc-workbench>` | Workbench: Root of every VS Code UI: the `.monaco-workbench` element. | theme=dark-2026\\|light-2026 |  |
+| `<vsc-session-view>` | Session view: Agents window session view: the ancestors the Agents composer's CSS is scoped to (`.part.sessionspart … .session-view …`). | variant=session\\|new | `vsc-workbench` |
+| `<vsc-workbench>` | Workbench: Root of every VS Code UI: the `.monaco-workbench` element. | theme=…, window=\\|agents |  |
 | `<vsc-notification-toasts>` | Notification toasts: The workbench's notification toast stack (`.monaco-workbench > .notifications-toasts`): pinned to the bottom-right (or bottom-left / top-right) corner, newest toast on top, at most 3 toasts (NotificationsToasts.MAX_NOTIFICATIONS). | position=bottom-right\\|bottom-left\\|top-right, static | `vsc-workbench` |
 | `<vsc-editor>` | Editor area: The editor part and active editor group (`.part.editor > .content > .editor-group-container`). | empty | `vsc-workbench` |
 | `<vsc-search-view>` | Search view: The Search view container: search widget (`.search-widget > .search-container`) above the results. |  | `vsc-workbench` › `vsc-sidebar` |
@@ -90,8 +107,10 @@ Open one page per theme (`?folder=/tmp/dt-vsc/ws&dt-theme=dark` / `dt-theme=ligh
 | Tag | What | Key attributes | Must be inside |
 |---|---|---|---|
 | `<vsc-chat-markdown>` | Chat markdown: A rendered markdown part of a chat response (`.chat-markdown-part.rendered-markdown`): paragraphs, headings, lists, bold, inline code, tables and code blocks styled like the product's chat renderer. |  | `vsc-workbench` › `vsc-chat-view` › `vsc-chat-response` |
-| `<vsc-chat-model-picker>` | Model picker: Language model picker in the chat input toolbar (split button: model name + configuration). | label=…, badge=… | `vsc-workbench` › `vsc-chat-view` |
-| `<vsc-chat-picker>` | Chat picker: Dropdown picker in the chat input toolbars: icon + label (agent mode, session target, permissions, …). | kind=mode\\|target\\|, icon=…, label=…, disabled | `vsc-workbench` › `vsc-chat-view` |
+| `<vsc-chat-mode-picker>` | Chat mode picker: Copilot's combined Mode and Permissions picker in the Agents window composer: a split button ("Interactive \| Allow all") whose halves open one popup with the Agent mode (Interactive, Plan, Autopilot) or Permissions (Manual, Assisted, Allow all, terminal sandboxing) section expanded. | mode=interactive\\|plan\\|autopilot, permissions=manual\\|assisted\\|allow-all, sandbox, environment=local\\|cloud, disabled | `vsc-workbench` |
+| `<vsc-chat-model-list>` | Chat model list: Model picker popup (widget/input/modelPicker): a tabbed action list with the provider tab bar, the harness's models (featured Copilot Fusion, the recommended models, then a collapsible "Other Models" section), each with its configuration summary ("Medium · 272K"), and the Send Query to Multiple Models footer. | harness=copilot\\|claude\\|codex, model=…, expanded, details=…, notice=…, max-height=… | `vsc-workbench` |
+| `<vsc-chat-model-picker>` | Model picker: Language model picker in the chat input toolbar: a split button, model name + configuration. | label=…, badge=…, model=…, harness=copilot\\|claude\\|codex, icon=…, config=… | `vsc-workbench` |
+| `<vsc-chat-picker>` | Chat picker: Dropdown picker in the workbench Chat view's input toolbars: icon + label (agent mode, session target, permissions, …). | kind=mode\\|target\\|, icon=…, label=…, disabled | `vsc-workbench` › `vsc-chat-view` |
 | `<vsc-chat-question-carousel>` | Chat question carousel: The chat question carousel ("ask user a question" widget): an agent's question with a header (optional carousel message, title, skip and collapse buttons), a scrollable answer area (optional detailed message, numbered single- or multi-select options or a text input, plus a numbered "Enter custom answer" row) and a footer with the submit hint and Submit button. | question=…, message=…, multi, required, no-freeform, no-skip | `vsc-workbench` › `vsc-chat-view` |
 | `<vsc-chat-question-option>` | Chat question option: One answer in a chat question carousel's list (`.chat-question-list-item`): number, label (with optional description), and either a selection check (single-select) or a checkbox (multi-select). | label=…, description=…, selected, index=…, multi | `vsc-workbench` › `vsc-chat-view` › `vsc-chat-question-carousel` |
 | `<vsc-chat-question-summary>` | Chat question summary: An answered question in a chat transcript (`.chat-question-carousel-container.chat-question-carousel-used`): "Question: …" with the chosen answer below on a connector ("Answered: …"). | question=…, answer=… | `vsc-workbench` › `vsc-chat-view` › `vsc-chat-response` |
@@ -100,8 +119,12 @@ Open one page per theme (`?folder=/tmp/dt-vsc/ws&dt-theme=dark` / `dt-theme=ligh
 | `<vsc-chat-submit>` | Send button: Chat send button (arrow up), disabled while the input is empty. | disabled, label=… | `vsc-workbench` › `vsc-chat-view` |
 | `<vsc-chat-tool-call>` | Chat tool call: One completed tool call in a chat response (`.chat-thinking-tool-wrapper`): a compact codicon and a past-tense message, optionally followed by a file pill. | icon=…, file=…, edit, added=…, removed=…, running | `vsc-workbench` › `vsc-chat-view` › `vsc-chat-response` › `vsc-chat-tool-chain` |
 | `<vsc-chat-tool-chain>` | Chat tool chain: A group of consecutive tool calls in a chat response (`.chat-used-context.chat-thinking-box.chat-tool-chain`). |  | `vsc-workbench` › `vsc-chat-view` › `vsc-chat-response` |
+| `<vsc-chat-voice-toggle>` | Chat voice toggle: Dictation / Voice Mode segmented toggle in the chat execute toolbar (ChatVoiceInputModeActionViewItem): a reel of icon cells (mic, voice bars) with the listen and mute cells collapsed until Voice Mode starts. | dictation, voice | `vsc-workbench` |
 | `<vsc-chat-welcome>` | Chat welcome: Empty-state of the chat view: icon, title, message and disclaimer. | heading=…, message=…, icon=… | `vsc-workbench` › `vsc-chat-view` |
+| `<vsc-session-options>` | Session options: New-session options (sessions.chat.experimental.newSessionComposerLayout): the strip of session pickers above the new-session composer: environment, workspace, the repository controls (isolation \| branch) and the harness, plus the collapse toggle. | environment=local\\|cloud, workspace=…, isolation=branch\\|worktree, branch=…, harness=copilot\\|claude\\|codex | `vsc-workbench` |
+| `<vsc-session-picker>` | Session picker: Agents window picker button (`.sessions-chat-picker-slot`): icon + label (+ chevron) that opens the picker's real options in an action list. | kind=environment\\|workspace\\|isolation\\|branch\\|harness\\|claude-approvals\\|codex-modes\\|codex-approvals, value=…, label=…, icon=…, chevron, disabled | `vsc-workbench` |
 | `<vsc-icon>` | Icon (codicon): A codicon glyph from @vscode/codicons (16px icon font). | name=…, spin |  |
+| `<vsc-action-list>` | Action list: Action widget dropdown (`.context-view > .action-widget > .actionList > .monaco-list`): the list every Agents window picker opens. | items=…, label=…, role=listbox\\|menu, item-role=…, widget-class=…, list-class=… | `vsc-workbench` |
 | `<vsc-hover>` | Hover (tooltip): Workbench hover / tooltip, e.g. | text=… | `vsc-workbench` |
 | `<vsc-menu>` | Context menu: Context menu (`.monaco-menu`): items with keybindings, separators, check marks and submenus. | x=…, y=…, label=… | `vsc-workbench` |
 | `<vsc-menu-item>` | Menu item: A context menu entry: check mark, label, keybinding or submenu chevron. | label=…, keys=…, checked, disabled, submenu, focused | `vsc-workbench` › `vsc-menu` |
@@ -142,7 +165,7 @@ Open one page per theme (`?folder=/tmp/dt-vsc/ws&dt-theme=dark` / `dt-theme=ligh
 
 | Tag | What | Key attributes | Must be inside |
 |---|---|---|---|
-| `<vsc-chat-input>` | Chat input: The chat composer: input editor, primary toolbar (add context, agent, model, tools), send button and secondary toolbar (session target, permissions). | placeholder=…, value=…, no-secondary | `vsc-workbench` › `vsc-chat-view` |
+| `<vsc-chat-input>` | Chat input: The chat composer, in three layouts. | variant=\\|session\\|new-session, placeholder=…, value=…, no-secondary, harness=copilot\\|claude\\|codex, model=… | `vsc-workbench` |
 | `<vsc-dialog>` | Dialog: Modal dialog over a dimmed workbench: severity icon, message, detail, buttons (primary last) and close button. | severity=info\\|warning\\|error, message=…, buttons=…, primary=… | `vsc-workbench` |
 | `<vsc-quick-input>` | Quick input (Command Palette / Quick Open): The quick input widget: filter box above a list of <vsc-quick-pick-item>s. | placeholder=…, value=…, position=top\\|static | `vsc-workbench` |
 | `<vsc-settings-editor>` | Settings editor: The Settings editor: search box, scope tabs, Backup and Sync button, table of contents and settings list. | tabs=…, tab=…, toc=…, placeholder=…, focused | `vsc-workbench` |
@@ -163,7 +186,7 @@ Default:
 
 ```html
 <vsc-workbench theme="dark-2026">
-  <vsc-chat-input></vsc-chat-input>
+  <vsc-chat-view><vsc-chat-input></vsc-chat-input></vsc-chat-view>
 </vsc-workbench>
 ```
 

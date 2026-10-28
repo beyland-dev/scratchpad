@@ -3,13 +3,24 @@
   "kind": "pattern",
   "title": "Chat input",
   "category": "chat",
-  "description": "The chat composer: input editor, primary toolbar (add context, agent, model, tools), send button and secondary toolbar (session target, permissions).",
-  "usage": "Inside <vsc-chat-view>. Without children it renders the default toolbars; pass items with slot=\"toolbar\" / slot=\"secondary\" to customize. Typing enables send.",
+  "description": "The chat composer, in three layouts. Default: the workbench Chat view input (toolbar row under the editor: add context, agent, model, tools; send; secondary toolbar: session target, permissions). variant=\"session\": the Agents window composer in an open session, one row with Add Context, the harness's session controls (Copilot: Mode | Permissions; Claude: Approvals; Codex: Agent Mode + Approvals), the model picker (provider icon, model, effort · context), Dictation/Voice and Send, with the context window usage ring at the top right. variant=\"new-session\": the new-session composer (sessions.chat.experimental.newSessionComposerLayout), the session options strip (environment, workspace, isolation | branch, harness) above the same input with the \"Pitch your idea\" placeholder. In the Agents layouts every picker opens its real options (ds.chatPickers: harnesses, environments, workspaces, models with effort/context/pricing, modes and permissions, captured from the signed-in product); choices update the composer and fire `change`.",
+  "usage": "Default layout: inside <vsc-chat-view> (`<vsc-chat-view><vsc-chat-input>`); pass items with slot=\"toolbar\" / slot=\"secondary\" to customize. Agents window: `<vsc-workbench window=\"agents\">` + `<vsc-session-view><vsc-chat-input variant=\"session\">` for an open session, or `<vsc-session-view variant=\"new\"><vsc-chat-input variant=\"new-session\">` for a new one; set harness/model/mode/permissions/environment/workspace to start from a given state. Typing enables send; listen for `change` to react to picker choices.",
   "attributes": [
+    {
+      "name": "variant",
+      "type": "enum",
+      "values": [
+        "",
+        "session",
+        "new-session"
+      ],
+      "default": "",
+      "description": "Layout: empty = workbench Chat view; session = Agents window open session; new-session = Agents window new-session composer"
+    },
     {
       "name": "placeholder",
       "type": "string",
-      "default": "Describe what to build"
+      "description": "Defaults: \"Describe what to build\", \"Chat with Copilot\" (session, per harness), \"Pitch your idea\" (new-session)"
     },
     {
       "name": "value",
@@ -18,7 +29,100 @@
     {
       "name": "no-secondary",
       "type": "boolean",
-      "description": "Hide the default secondary toolbar items"
+      "description": "Hide the default secondary toolbar items (default layout)"
+    },
+    {
+      "name": "harness",
+      "type": "enum",
+      "values": [
+        "copilot",
+        "claude",
+        "codex"
+      ],
+      "default": "copilot",
+      "description": "Agents layouts: which session controls and models to show"
+    },
+    {
+      "name": "model",
+      "type": "string",
+      "description": "Agents layouts: selected model id (defaults to the harness's default, e.g. gpt-5-6-sol-fast-internal-only)"
+    },
+    {
+      "name": "mode",
+      "type": "enum",
+      "values": [
+        "interactive",
+        "plan",
+        "autopilot"
+      ],
+      "default": "interactive",
+      "description": "Copilot agent mode"
+    },
+    {
+      "name": "permissions",
+      "type": "enum",
+      "values": [
+        "manual",
+        "assisted",
+        "allow-all"
+      ],
+      "default": "allow-all",
+      "description": "Copilot permission level"
+    },
+    {
+      "name": "approvals",
+      "type": "string",
+      "description": "Claude (ask, edit, plan, auto, bypass) or Codex (default, auto-review, full) approval mode"
+    },
+    {
+      "name": "agent-mode",
+      "type": "enum",
+      "values": [
+        "interactive",
+        "plan"
+      ],
+      "default": "interactive",
+      "description": "Codex agent mode"
+    },
+    {
+      "name": "environment",
+      "type": "enum",
+      "values": [
+        "local",
+        "cloud"
+      ],
+      "default": "local",
+      "description": "new-session: environment"
+    },
+    {
+      "name": "workspace",
+      "type": "string",
+      "default": "adt",
+      "description": "new-session: workspace id (chat = none)"
+    },
+    {
+      "name": "isolation",
+      "type": "enum",
+      "values": [
+        "branch",
+        "worktree"
+      ],
+      "default": "branch"
+    },
+    {
+      "name": "branch",
+      "type": "string",
+      "default": "main"
+    },
+    {
+      "name": "context-usage",
+      "type": "number",
+      "description": "session: context window usage (0-100) ring"
+    },
+    {
+      "name": "notice",
+      "type": "boolean",
+      "description": "session: show the prompt-cache notice in the model picker"
     }
   ],
   "slots": [
@@ -39,6 +143,16 @@
     {
       "name": "can send",
       "trigger": "non-empty value"
+    },
+    {
+      "name": "change (event)",
+      "description": "detail: the changed setting, e.g. { model }, { mode, permissions }, { harness }, { environment }",
+      "trigger": "pick an option in any Agents picker"
+    },
+    {
+      "name": "add-context (event)",
+      "description": "detail: { kind }",
+      "trigger": "choose an Add Context option"
     }
   ],
   "variants": [],
@@ -49,18 +163,27 @@
     "chat-toolbars-dark",
     "chat-toolbars-light",
     "chat-secondary-toolbar-dark",
-    "chat-secondary-toolbar-light"
+    "chat-secondary-toolbar-light",
+    "agents-session-composer-light",
+    "agents-session-composer-dark",
+    "agents-new-session-composer-light",
+    "agents-new-session-composer-dark"
   ],
   "requires": [
-    "vsc-workbench",
-    "vsc-chat-view"
+    "vsc-workbench"
   ],
   "tokens": [],
   "uses": [
     "vsc-action",
     "vsc-chat-picker",
     "vsc-chat-model-picker",
-    "vsc-chat-submit"
+    "vsc-chat-submit",
+    "vsc-chat-mode-picker",
+    "vsc-session-picker",
+    "vsc-session-options",
+    "vsc-chat-voice-toggle",
+    "vsc-action-list",
+    "vsc-chat-model-list"
   ],
   "sources": [
     {
@@ -68,16 +191,39 @@
     },
     {
       "path": "src/vs/workbench/contrib/chat/browser/widget/media/chat.css"
+    },
+    {
+      "path": "src/vs/sessions/contrib/chat/browser/sharedChatInputComposer.ts",
+      "note": "Agents window composer (session and new-session layouts)"
+    },
+    {
+      "path": "src/vs/sessions/contrib/chat/browser/media/sharedChatInputComposer.css"
     }
   ],
   "examples": [
     {
       "title": "Default",
-      "html": "<vsc-chat-input></vsc-chat-input>"
+      "html": "<vsc-chat-view><vsc-chat-input></vsc-chat-input></vsc-chat-view>"
     },
     {
       "title": "With text",
-      "html": "<vsc-chat-input value=\"Summarize the open pull requests\"></vsc-chat-input>"
+      "html": "<vsc-chat-view><vsc-chat-input value=\"Summarize the open pull requests\"></vsc-chat-input></vsc-chat-view>"
+    },
+    {
+      "title": "Session",
+      "html": "<vsc-workbench window=\"agents\"><vsc-session-view style=\"width: 950px\"><vsc-chat-input variant=\"session\" context-usage=\"12\"></vsc-chat-input></vsc-session-view></vsc-workbench>"
+    },
+    {
+      "title": "New session",
+      "html": "<vsc-workbench window=\"agents\"><vsc-session-view variant=\"new\" style=\"width: 800px\"><vsc-chat-input variant=\"new-session\"></vsc-chat-input></vsc-session-view></vsc-workbench>"
+    },
+    {
+      "title": "Session, Claude harness, context usage",
+      "html": "<vsc-workbench window=\"agents\"><vsc-session-view style=\"width: 950px\"><vsc-chat-input variant=\"session\" harness=\"claude\" model=\"claude-opus-5-5\" context-usage=\"40\"></vsc-chat-input></vsc-session-view></vsc-workbench>"
+    },
+    {
+      "title": "New session, Codex in a worktree",
+      "html": "<vsc-workbench window=\"agents\"><vsc-session-view variant=\"new\" style=\"width: 800px\"><vsc-chat-input variant=\"new-session\" harness=\"codex\" isolation=\"worktree\"></vsc-chat-input></vsc-session-view></vsc-workbench>"
     }
   ],
   "references": [
@@ -124,17 +270,94 @@
       "width": 417,
       "root": ".chat-secondary-toolbar",
       "ignore": []
+    },
+    {
+      "capture": "agents-session-composer-light",
+      "example": 2,
+      "theme": "light-2026",
+      "width": 950,
+      "ignore": [
+        ".interactive-input-editor > *"
+      ]
+    },
+    {
+      "capture": "agents-session-composer-dark",
+      "example": 2,
+      "theme": "dark-2026",
+      "width": 950,
+      "ignore": [
+        ".interactive-input-editor > *"
+      ]
+    },
+    {
+      "capture": "agents-new-session-composer-light",
+      "example": 3,
+      "theme": "light-2026",
+      "width": 800,
+      "ignore": [
+        ".interactive-input-editor > *"
+      ]
+    },
+    {
+      "capture": "agents-new-session-composer-dark",
+      "example": 3,
+      "theme": "dark-2026",
+      "width": 800,
+      "ignore": [
+        ".interactive-input-editor > *"
+      ]
     }
   ],
   "status": "draft",
   "verification": {
-    "status": "verified",
-    "checkedAt": "2026-10-22T21:43:19.747Z",
-    "compared": 184,
-    "diffs": 0,
+    "status": "drift",
+    "checkedAt": "2026-10-28T01:36:52.778Z",
+    "compared": 510,
+    "diffs": 76,
     "theme": "dark-2026",
-    "summary": []
+    "summary": [
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all w: expected 192.11, got 193.89",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar w: expected 192.11, got 193.89",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container w: expected 192.11, got 193.89",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item w: expected 56.72, got 57.81",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown w: expected 56.72, got 57.81",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown > dropdown-label w: expected 56.72, got 57.81",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown > dropdown-label > action-label w: expected 56.72, got 57.81",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown > dropdown-label > action-label > chat-input-picker-label w: expected 26.72, got 27.81",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item x: expected 62.72, got 63.81",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item w: expected 133.39, got 134.08",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item > monaco-dropdown x: expected 62.72, got 63.81",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item > monaco-dropdown w: expected 133.39, got 134.08",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item > monaco-dropdown > dropdown-label x: expected 62.72, got 63.81",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item > monaco-dropdown > dropdown-label w: expected 133.39, got 134.08",
+      "[chat-input-dark] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item > monaco-dropdown > dropdown-label > action-label x: expected 62.72, got 63.81",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all w: expected 192.11, got 193.89",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar w: expected 192.11, got 193.89",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container w: expected 192.11, got 193.89",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item w: expected 56.72, got 57.81",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown w: expected 56.72, got 57.81",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown > dropdown-label w: expected 56.72, got 57.81",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown > dropdown-label > action-label w: expected 56.72, got 57.81",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown > dropdown-label > action-label > chat-input-picker-label w: expected 26.72, got 27.81",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item x: expected 62.72, got 63.81",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item w: expected 133.39, got 134.08",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item > monaco-dropdown x: expected 62.72, got 63.81",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item > monaco-dropdown w: expected 133.39, got 134.08",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item > monaco-dropdown > dropdown-label x: expected 62.72, got 63.81",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item > monaco-dropdown > dropdown-label w: expected 133.39, got 134.08",
+      "[chat-input-light] chat-secondary-toolbar > chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item > monaco-dropdown > dropdown-label > action-label x: expected 62.72, got 63.81",
+      "[chat-secondary-toolbar-dark] chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all w: expected 192.11, got 193.89",
+      "[chat-secondary-toolbar-dark] chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar w: expected 192.11, got 193.89",
+      "[chat-secondary-toolbar-dark] chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container w: expected 192.11, got 193.89",
+      "[chat-secondary-toolbar-dark] chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item w: expected 56.72, got 57.81",
+      "[chat-secondary-toolbar-dark] chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown w: expected 56.72, got 57.81",
+      "[chat-secondary-toolbar-dark] chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown > dropdown-label w: expected 56.72, got 57.81",
+      "[chat-secondary-toolbar-dark] chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown > dropdown-label > action-label w: expected 56.72, got 57.81",
+      "[chat-secondary-toolbar-dark] chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item.chat-session-target-picker-item > monaco-dropdown > dropdown-label > action-label > chat-input-picker-label w: expected 26.72, got 27.81",
+      "[chat-secondary-toolbar-dark] chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item x: expected 62.72, got 63.81",
+      "[chat-secondary-toolbar-dark] chat-responsive-picker-container > chat-secondary-input-toolbar.monaco-toolbar.responsive.responsive-all > monaco-action-bar > actions-container > action-item.chat-input-picker-item w: expected 133.39, got 134.08"
+    ]
   },
   "createdAt": "2026-10-22T21:42:49.717Z",
-  "updatedAt": "2026-10-22T21:43:19.747Z"
+  "updatedAt": "2026-10-28T01:36:52.778Z"
 }

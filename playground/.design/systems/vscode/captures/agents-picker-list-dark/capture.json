@@ -1,0 +1,104 @@
+{
+  "label": "agents-picker-list-dark",
+  "url": "vscode-file://vscode-app/Applications/Visual%20Studio%20Code%20-%20Insiders.app/Contents/Resources/app/out/vs/sessions/electron-browser/sessions.html",
+  "selector": ".context-view .action-widget",
+  "theme": "dark-2026",
+  "capturedAt": "2026-10-28T01:26:40.908Z",
+  "rect": {
+    "x": 406,
+    "y": 443,
+    "w": 250,
+    "h": 170
+  },
+  "parentWidth": 250,
+  "ancestors": [
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "context-view monaco-component bottom left",
+      "w": 250,
+      "h": 170,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "tag": "div",
+      "id": "",
+      "classes": "file-icons-enabled modern-ui-connected-editor-tabs monaco-reduce-motion monaco-workbench agent-sessions-workbench modern-ui-tabs modern-ui-notifications-dialogs mac chromium nomaineditorarea nopanel noauxiliarybar noeditorpane nocustomviewgrid nostatusbar panel-alignment-justify macos-tahoe agents-side-pane-multiple-tabs dock-detail-panel vs-dark vscode-theme-defaults-themes-2026-dark-json modern-ui-frosted-glass",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgb(18, 19, 20)"
+    },
+    {
+      "tag": "body",
+      "id": "",
+      "classes": "",
+      "w": 1440,
+      "h": 900,
+      "display": "block",
+      "bg": "rgba(0, 0, 0, 0)"
+    }
+  ],
+  "inherited": {
+    "color": "rgb(191, 191, 191)",
+    "font-family": "-apple-system, \"system-ui\", sans-serif",
+    "font-size": "13px",
+    "font-weight": "400",
+    "line-height": "18.2px",
+    "letter-spacing": "normal",
+    "-webkit-font-smoothing": "auto",
+    "user-select": "none"
+  },
+  "vars": {
+    "--vscode-scrollbarSlider-background": "rgba(168, 169, 170, 0.52)",
+    "--vscode-scrollbarSlider-hoverBackground": "rgba(168, 169, 170, 0.56)",
+    "--vscode-scrollbarSlider-activeBackground": "rgba(168, 169, 170, 0.61)",
+    "--vscode-cornerRadius-large": "8px",
+    "--vscode-menu-background": "transparent",
+    "--vscode-menu-foreground": "#bfbfbf",
+    "--vscode-shadow-lg": "0 0 12px rgba(0, 0, 0, .14)",
+    "--vscode-editorHoverWidget-border": "#2a2b2c",
+    "--vscode-cornerRadius-medium": "6px",
+    "--vscode-list-hoverForeground": "#bfbfbf",
+    "--vscode-menu-selectionBorder": "#3994bc",
+    "--vscode-list-hoverBackground": "rgba(255, 255, 255, 0.08)",
+    "--vscode-descriptionForeground": "#8c8c8c",
+    "--vscode-codiconFontSize": "16px",
+    "--vscode-spacing-size40": "4px",
+    "--vscode-spacing-size60": "6px",
+    "--vscode-cornerRadius-circle": "9999px",
+    "--vscode-badge-background": "#307e9f",
+    "--vscode-badge-foreground": "#ffffff",
+    "--vscode-fontSize-label2": "11px",
+    "--vscode-icon-foreground": "#8c8c8c",
+    "--vscode-focusBorder": "rgba(57, 148, 188, 0.7)",
+    "--vscode-agentsPanel-background": "#191a1b",
+    "--modern-ui-solid-menu-background": "#191a1b",
+    "--modern-ui-glass-menu-background": "color-mix(in srgb, #191a1b 50%, transparent)",
+    "--modern-ui-glass-background": "color-mix(in srgb, #191a1b 0%, color-mix(in srgb, #191a1b 50%, transparent))",
+    "--vscode-list-focusBackground": "rgba(255, 255, 255, 0.13)",
+    "--vscode-list-focusForeground": "#bfbfbf",
+    "--vscode-list-activeSelectionBackground": "rgba(255, 255, 255, 0.13)",
+    "--vscode-list-activeSelectionForeground": "#ededed",
+    "--vscode-list-activeSelectionIconForeground": "#ffffff",
+    "--vscode-list-inactiveSelectionBackground": "#2c2d2e",
+    "--vscode-list-inactiveSelectionForeground": "#ededed",
+    "--vscode-list-focusOutline": "rgba(57, 148, 188, 0.7)"
+  },
+  "fontFaces": [
+    {
+      "family": "codicon",
+      "css": "@font-face { font-family: codicon; font-display: block; src: url(\"../../media/codicon.ttf\") format(\"truetype\"); }",
+      "urls": [
+        "vscode-file://vscode-app/Applications/Visual%20Studio%20Code%20-%20Insiders.app/Contents/Resources/app/out/media/codicon.ttf"
+      ]
+    }
+  ],
+  "rules": 81,
+  "scale": 2,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}

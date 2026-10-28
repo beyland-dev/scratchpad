@@ -1,6 +1,6 @@
 # VS Code components
 
-60 components. Root context: `<vsc-workbench>`.
+67 components. Root context: `<vsc-workbench>`.
 
 ## `<vsc-chat-view>` — Chat view
 
@@ -20,17 +20,49 @@ The chat view pane (secondary side bar): `.chat-viewpane > .chat-controls-contai
 
 Source: `src/vs/workbench/contrib/chat/browser/widgetHosts/viewPane/chatViewPane.ts`, `src/vs/workbench/contrib/chat/browser/widget/chatWidget.ts`
 
+## `<vsc-session-view>` — Session view
+
+Kind: context · Category: chat · Status: draft
+
+Agents window session view: the ancestors the Agents composer's CSS is scoped to (`.part.sessionspart … .session-view …`). `variant="session"` is an open session's chat (`.chat-view.chat-view-chat.experimental-session-composer > .chat-view-widget > .interactive-session`); `variant="new"` is the new-session view (`.chat-view.chat-view-new > .sessions-chat-widget > .new-chat-widget-container`). These ancestors carry no captured styles of their own, so the view takes the size of its container.
+
+**Usage:** Wrap Agents window composers: `<vsc-workbench window="agents"><vsc-session-view><vsc-chat-input variant="session">` for an open session, `<vsc-session-view variant="new"><vsc-chat-input variant="new-session">` for the new-session view. Give it a width (the composer is 800-880px wide in the product).
+
+**Must be inside:** `<vsc-workbench>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `variant` | `session` \| `new` | `session` |  |
+
+**Slots:**
+- default (children): The composer (<vsc-chat-input variant="session"> or variant="new-session">)
+
+**Example — Open session**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view style="width: 880px"><vsc-chat-input variant="session" context-usage="12"></vsc-chat-input></vsc-session-view></vsc-workbench>
+```
+
+**Example — New session**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view variant="new" style="width: 800px"><vsc-chat-input variant="new-session"></vsc-chat-input></vsc-session-view></vsc-workbench>
+```
+
+Source: `src/vs/sessions/contrib/chat/browser/chatView.ts`, `src/vs/sessions/contrib/chat/browser/newChatWidget.ts`
+
 ## `<vsc-workbench>` — Workbench
 
 Kind: context · Category: foundations · Status: draft · Verification: verified
 
 Root of every VS Code UI: the `.monaco-workbench` element. Applies the theme (token values), platform font, modern-UI flags and the shell background.
 
-**Usage:** Wrap every prototype in exactly one <vsc-workbench theme="dark-2026|light-2026">. Give it a size (e.g. style="width: 1440px; height: 900px") for full-window layouts.
+**Usage:** Wrap every prototype in exactly one <vsc-workbench theme="dark-2026|light-2026">. Give it a size (e.g. style="width: 1440px; height: 900px") for full-window layouts. Add window="agents" for Agents window prototypes (session composers, pickers).
 
 | Attribute | Type | Default | Description |
 |---|---|---|---|
-| `theme` | `dark-2026` \| `light-2026` | `dark-2026` | Color theme |
+| `theme` | string |  | Color theme |
+| `window` | `` \| `agents` |  | `agents`: the Agents window (adds `.agent-sessions-workbench`, which its styles are scoped to) |
 
 **Example — Window**
 
@@ -195,32 +227,133 @@ A rendered markdown part of a chat response (`.chat-markdown-part.rendered-markd
 
 Source: `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatMarkdownContentPart.ts`
 
+## `<vsc-chat-mode-picker>` — Chat mode picker
+
+Kind: component · Category: chat · Status: draft
+
+Copilot's combined Mode and Permissions picker in the Agents window composer: a split button ("Interactive | Allow all") whose halves open one popup with the Agent mode (Interactive, Plan, Autopilot) or Permissions (Manual, Assisted, Allow all, terminal sandboxing) section expanded. The permission summary is colored for Assisted (`.warning`) and Allow all (`.info`); a sandboxed terminal adds a shield. Cloud sessions use the cloud mode descriptions.
+
+**Usage:** Rendered by <vsc-chat-input variant="session|new-session" harness="copilot">.
+
+**Must be inside:** `<vsc-workbench>`
+
+**Composed of:** `<vsc-action-list>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `mode` | `interactive` \| `plan` \| `autopilot` | `interactive` |  |
+| `permissions` | `manual` \| `assisted` \| `allow-all` | `allow-all` |  |
+| `sandbox` | boolean |  |  |
+| `environment` | `local` \| `cloud` | `local` |  |
+| `disabled` | boolean |  |  |
+
+**States:**
+- `change (event)` (choose a mode, permission level or toggle sandboxing): detail: { mode, permissions, sandbox }
+- `configure-permissions (event)` (the Permissions section's gear): 
+
+**Example — Interactive, Allow all**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view style="width: 480px"><vsc-chat-input variant="session"></vsc-chat-input></vsc-session-view></vsc-workbench>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/agentSessions/agentHost/agentHostModePickerPresentation.ts`, `src/vs/workbench/contrib/chat/browser/agentSessions/agentHost/agentHostChatInputPicker.ts`
+
+## `<vsc-chat-model-list>` — Chat model list
+
+Kind: component · Category: chat · Status: draft · Verification: verified
+
+Model picker popup (widget/input/modelPicker): a tabbed action list with the provider tab bar, the harness's models (featured Copilot Fusion, the recommended models, then a collapsible "Other Models" section), each with its configuration summary ("Medium · 272K"), and the Send Query to Multiple Models footer. Choosing a model's summary opens its details: Effort Level, Context Size and Speed as segmented controls, plus collapsible pricing (credits per 1M tokens). Models, effort levels, context sizes and pricing come from ds.chatPickers, captured from the signed-in product: 23 Copilot models, Claude's 8 and Codex's 10. In an open session it shows the prompt-cache notice. Fires `select` and `configure`.
+
+**Usage:** Opened by <vsc-chat-model-picker model=…> (or `ds.openModelList(anchor, { harness, model, details, notice, onSelect, onConfigure })`). Place statically with `x`/`y` for mockups of the open state.
+
+**Must be inside:** `<vsc-workbench>`
+
+**Composed of:** `<vsc-action-list>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `harness` | `copilot` \| `claude` \| `codex` | `copilot` |  |
+| `model` | string |  | Selected model id, e.g. claude-opus-5-5 (defaults to the harness's default) |
+| `expanded` | boolean |  | Other Models section open |
+| `details` | string |  | Model id whose details card is shown |
+| `notice` | string |  | Header notice; empty shows the mid-session prompt-cache notice |
+| `max-height` | number | `480` |  |
+| `position` | `below` \| `above` |  |  |
+| `x` | number |  |  |
+| `y` | number |  |  |
+
+**States:**
+- `expanded` (choose Other Models): 
+- `details` (choose a model's summary): `.showing-details` with the model card
+- `select (event)` (choose a model): 
+- `configure (event)` (change effort, context size or speed): 
+
+**Example — Copilot models**
+
+```html
+<vsc-workbench window="agents"><vsc-chat-model-list harness="copilot" model="gpt-5-6-sol-fast-internal-only"></vsc-chat-model-list></vsc-workbench>
+```
+
+**Example — Model details**
+
+```html
+<vsc-workbench window="agents"><vsc-chat-model-list harness="copilot" model="gpt-5-6-sol-fast-internal-only" details="gpt-5-6-sol-fast-internal-only"></vsc-chat-model-list></vsc-workbench>
+```
+
+**Example — In a session, Other Models expanded**
+
+```html
+<vsc-workbench window="agents"><vsc-chat-model-list harness="copilot" model="claude-opus-5-5" notice expanded max-height="420"></vsc-chat-model-list></vsc-workbench>
+```
+
+**Example — Claude harness**
+
+```html
+<vsc-workbench window="agents"><vsc-chat-model-list harness="claude"></vsc-chat-model-list></vsc-workbench>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/widget/input/modelPicker/modelPickerWidget.ts`, `src/vs/workbench/contrib/chat/browser/widget/input/modelPicker/modelPickerCard.ts`, `src/vs/workbench/contrib/chat/browser/widget/input/modelPicker/media/modelPicker.css`, `src/vs/platform/actionWidget/browser/actionList.ts`
+
 ## `<vsc-chat-model-picker>` — Model picker
 
 Kind: component · Category: chat · Status: draft · Verification: verified
 
-Language model picker in the chat input toolbar (split button: model name + configuration).
+Language model picker in the chat input toolbar: a split button, model name + configuration. With `model` (Agents window layout) it shows the provider icon, the model name and its configuration summary ("Medium · 272K"); the name opens the model list and the summary opens the model's details (effort, context size, speed, pricing). Choosing a model or configuration updates it and fires `change` / `configure`.
 
-**Must be inside:** `<vsc-workbench>` › `<vsc-chat-view>`
+**Must be inside:** `<vsc-workbench>`
+
+**Composed of:** `<vsc-chat-model-list>`
 
 | Attribute | Type | Default | Description |
 |---|---|---|---|
-| `label` | string | `Models` | Model name |
+| `label` | string |  | Model name (default "Models"); derived from `model` when set |
 | `badge` | string |  |  |
+| `model` | string |  | Model id from ds.chatPickers (e.g. claude-opus-5-5): shows its provider icon, name and effort · context summary, and opens the real model list |
+| `harness` | `copilot` \| `claude` \| `codex` | `copilot` |  |
+| `icon` | string |  | Provider codicon, e.g. chat-model-provider-openai |
+| `config` | string |  | Configuration summary, e.g. "High · 1M" |
+| `notice` | boolean |  | Show the mid-session prompt-cache notice in the list |
 
-**Example — In the chat input**
+**Example — Default**
 
 ```html
-<vsc-chat-input></vsc-chat-input>
+<vsc-chat-view><vsc-chat-input></vsc-chat-input></vsc-chat-view>
+```
+
+**Example — Agents window, Claude Opus 5.5**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view style="width: 880px"><vsc-chat-input variant="session" model="claude-opus-5-5"></vsc-chat-input></vsc-session-view></vsc-workbench>
 ```
 
 Source: `src/vs/workbench/contrib/chat/browser/widget/input/modelPicker`
 
 ## `<vsc-chat-picker>` — Chat picker
 
-Kind: component · Category: chat · Status: draft · Verification: verified
+Kind: component · Category: chat · Status: draft · Verification: drift
 
-Dropdown picker in the chat input toolbars: icon + label (agent mode, session target, permissions, …).
+Dropdown picker in the workbench Chat view's input toolbars: icon + label (agent mode, session target, permissions, …). Its module also defines `ds.chatPickers`, the data every Agents window picker opens: harnesses (Copilot, Claude, Codex), environments, recent workspaces, isolation, branches, Copilot modes (Interactive, Plan, Autopilot) and permission levels (Manual, Assisted, Allow all), Claude and Codex approval modes, and each harness's models with effort, context size, speed and pricing, captured from the signed-in product. Helpers: `ds.chatPickers.models(harness)`, `.model(id, harness)`, `.summary(model)` ("Medium · 272K"), `.openList(kind, anchor, current, onPick)`.
 
 **Usage:** Inside <vsc-chat-input> slot="toolbar" or slot="secondary".
 
@@ -533,6 +666,32 @@ A group of consecutive tool calls in a chat response (`.chat-used-context.chat-t
 
 Source: `src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatThinkingContentPart.ts`
 
+## `<vsc-chat-voice-toggle>` — Chat voice toggle
+
+Kind: component · Category: chat · Status: draft
+
+Dictation / Voice Mode segmented toggle in the chat execute toolbar (ChatVoiceInputModeActionViewItem): a reel of icon cells (mic, voice bars) with the listen and mute cells collapsed until Voice Mode starts. Clicking a cell toggles its pressed state and fires `dictation` or `voice`.
+
+**Usage:** Rendered by <vsc-chat-input variant="session|new-session"> before Send.
+
+**Must be inside:** `<vsc-workbench>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `dictation` | boolean |  |  |
+| `voice` | boolean |  |  |
+
+**States:**
+- `dictation / voice (events)` (click a cell): detail: { pressed }
+
+**Example — Default**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view style="width: 480px"><vsc-chat-input variant="session"></vsc-chat-input></vsc-session-view></vsc-workbench>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/widget/input/chatInputPart.ts`
+
 ## `<vsc-chat-welcome>` — Chat welcome
 
 Kind: component · Category: chat · Status: draft · Verification: verified
@@ -560,6 +719,78 @@ Empty-state of the chat view: icon, title, message and disclaimer.
 
 Source: `src/vs/workbench/contrib/chat/browser/viewsWelcome/chatViewWelcomeController.ts`
 
+## `<vsc-session-options>` — Session options
+
+Kind: component · Category: chat · Status: draft
+
+New-session options (sessions.chat.experimental.newSessionComposerLayout): the strip of session pickers above the new-session composer: environment, workspace, the repository controls (isolation | branch) and the harness, plus the collapse toggle. Mirrors `.new-session-workspace-picker-container` in sessionWorkspacePicker.ts. Cloud sessions have no repository controls and show the harness without a picker; a workspace-less chat has no repository either. Every picker opens its real options.
+
+**Usage:** Rendered by <vsc-chat-input variant="new-session">; use it on its own only inside `.new-chat-widget-content.experimental-new-session-composer`.
+
+**Must be inside:** `<vsc-workbench>`
+
+**Composed of:** `<vsc-session-picker>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `environment` | `local` \| `cloud` | `local` |  |
+| `workspace` | string | `adt` | Workspace id from ds.chatPickers.data.workspaces ("chat" = no workspace) |
+| `isolation` | `branch` \| `worktree` | `branch` |  |
+| `branch` | string | `main` |  |
+| `harness` | `copilot` \| `claude` \| `codex` | `copilot` |  |
+
+**States:**
+- `change (event)` (pick an option): detail: { kind, value, option, options }
+- `toggle-options (event)` (click the chevron): 
+
+**Example — Default**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view variant="new" style="width: 800px"><div class="new-chat-widget-content chat-input-stack experimental-new-session-composer"><vsc-session-options></vsc-session-options></div></vsc-session-view></vsc-workbench>
+```
+
+**Example — Cloud**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view variant="new" style="width: 800px"><div class="new-chat-widget-content chat-input-stack experimental-new-session-composer"><vsc-session-options environment="cloud" workspace="vscode"></vsc-session-options></div></vsc-session-view></vsc-workbench>
+```
+
+Source: `src/vs/sessions/contrib/chat/browser/sessionWorkspacePicker.ts`, `src/vs/sessions/contrib/chat/browser/sharedChatInputComposer.ts`
+
+## `<vsc-session-picker>` — Session picker
+
+Kind: component · Category: chat · Status: draft
+
+Agents window picker button (`.sessions-chat-picker-slot`): icon + label (+ chevron) that opens the picker's real options in an action list. Kinds: `environment` (This Computer, Cloud, remote environments), `workspace` (recent folders, Chat, Open Folder…), `isolation` (Branch, New Worktree), `branch`, `harness` (Copilot, Claude, Codex), and the composer's `claude-approvals`, `codex-modes` and `codex-approvals`. Header kinds (environment, workspace, harness) sit in their own one-item toolbar; the workspace picker has a clear (×) button. Options come from ds.chatPickers, captured from the signed-in product. Choosing an option updates the button and fires `change`.
+
+**Usage:** Usually rendered for you by <vsc-session-options> and <vsc-chat-input variant="session|new-session">. Set `kind` and `value` (an option id from ds.chatPickers.data); `label`/`icon` override the option's.
+
+**Must be inside:** `<vsc-workbench>`
+
+**Composed of:** `<vsc-action-list>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `kind` | `environment` \| `workspace` \| `isolation` \| `branch` \| `harness` \| `claude-approvals` \| `codex-modes` \| `codex-approvals` |  |  |
+| `value` | string |  | Selected option id, e.g. local, cloud, vscode, worktree, claude |
+| `label` | string |  |  |
+| `icon` | string |  |  |
+| `chevron` | boolean |  |  |
+| `disabled` | boolean |  |  |
+
+**States:**
+- `open` (click, Enter, Space or ArrowDown): aria-expanded=true while its list is open
+- `disabled` (disabled attribute): 
+- `change (event)` (choose an option): detail: { kind, value, option }
+
+**Example — New-session pickers**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view variant="new" style="width: 800px"><div class="new-chat-widget-content chat-input-stack experimental-new-session-composer"><div class="new-session-workspace-picker-container"><div class="sessions-workspace-category-picker new-chat-session-options"><vsc-session-picker kind="environment" value="local"></vsc-session-picker><vsc-session-picker kind="workspace" value="vscode"></vsc-session-picker><div class="new-chat-session-options-details"><vsc-session-picker kind="harness" value="claude"></vsc-session-picker></div></div></div></div></vsc-session-view></vsc-workbench>
+```
+
+Source: `src/vs/sessions/contrib/chat/browser/sessionEnvironmentPicker.ts`, `src/vs/sessions/contrib/chat/browser/sessionWorkspacePicker.ts`, `src/vs/sessions/contrib/chat/browser/sessionTypePicker.ts`, `src/vs/sessions/contrib/chat/browser/isolationPicker.ts`, `src/vs/sessions/contrib/chat/browser/branchPicker.ts`, `src/vs/sessions/contrib/providers/agentHost/browser/agentHostClaudePermissionModePicker.ts`, `src/vs/sessions/contrib/providers/agentHost/browser/agentHostCodexApprovalsPicker.ts`
+
 ## `<vsc-icon>` — Icon (codicon)
 
 Kind: component · Category: foundations · Status: draft
@@ -580,6 +811,53 @@ A codicon glyph from @vscode/codicons (16px icon font). All 1,100+ icon ids are 
 ```
 
 Source: `src/vs/base/browser/ui/codicons/codicon/codicon.css`, `src/vs/base/common/codiconsLibrary.ts`
+
+## `<vsc-action-list>` — Action list
+
+Kind: component · Category: menus · Status: draft · Verification: verified
+
+Action widget dropdown (`.context-view > .action-widget > .actionList > .monaco-list`): the list every Agents window picker opens. Rows are 24px, 48px with a detail line, separators 8px; rows can carry an icon, badge, description, detail, keybinding, a hover toolbar (e.g. a summary button or a gear) and an inline switch. The width is measured from the widest row and clamped to min-width/max-width, like ActionList.computeMaxWidth. Hover and arrow keys move the highlight; Enter/click fires `select`, Escape or clicking outside fires `dismiss`. Open one anchored to an element with `ds.actionList.open(anchor, { items, onSelect, … })`; the Agents pickers (<vsc-session-picker>, <vsc-chat-mode-picker>, …) use it with their real data from ds.chatPickers. The monaco list's runtime id is normalized to `list_id_7` in the captures.
+
+**Usage:** Usually opened by a picker, not placed by hand: `ds.actionList.open(anchorElement, { items, label, listClass, widgetClass, role, itemRole, minWidth, maxWidth, maxHeight, onSelect(item) /* return true to keep it open */, onToolbar, onToggle, onClose })`. Items: `{ id, label, icon, description, detail, badge, keybinding, checked, focused, disabled, hover, class, custom, role, expanded, toolbar: [{ icon | label, ariaLabel }], toggle }` or `{ type: "separator" }`. Can also be placed statically with an `items` JSON attribute (and `x`/`y`). Needs <vsc-workbench window="agents">.
+
+**Must be inside:** `<vsc-workbench>`
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `items` | string |  | JSON array of items (or set the `items` property) |
+| `label` | string |  | aria-label of the list |
+| `role` | `listbox` \| `menu` | `listbox` |  |
+| `item-role` | string | `option` |  |
+| `widget-class` | string |  | Extra classes on `.action-widget`, e.g. agent-host-mode-permissions-popup |
+| `list-class` | string |  | Extra classes on `.actionList`, e.g. sessions-new-chat-picker-list |
+| `min-width` | number |  |  |
+| `max-width` | number |  |  |
+| `width` | number |  | Fixed width instead of measuring |
+| `max-height` | number |  | Scroll beyond this height |
+| `position` | `below` \| `above` | `below` |  |
+| `x` | number |  |  |
+| `y` | number |  |  |
+
+**States:**
+- `focused` (hover a row or use the arrow keys): `.focused` row; the list has `.element-focused`
+- `disabled` (item.disabled): 
+- `select (event)` (click or Enter on a row): detail: { item, index }
+- `toolbar / toggle (events)` (click a row's toolbar action or switch): 
+- `dismiss (event)` (Escape or click outside): 
+
+**Example — Environment picker**
+
+```html
+<vsc-workbench window="agents"><vsc-action-list label="Environment" list-class="sessions-new-chat-picker-list" min-width="240" items='[{"id":"local","label":"This Computer","icon":"device-desktop","focused":true},{"id":"cloud","label":"Cloud","icon":"cloud","focused":false},{"type":"separator"},{"id":"environments","label":"Environments...","icon":"remote","focused":false},{"id":"tunnels","label":"Tunnels...","icon":"remote","focused":false},{"id":"ssh","label":"SSH...","icon":"remote","focused":false},{"type":"separator"},{"id":"manage","label":"Manage...","icon":"settings-gear","focused":false}]'></vsc-action-list></vsc-workbench>
+```
+
+**Example — Mode and Permissions (Permissions expanded)**
+
+```html
+<vsc-workbench window="agents"><vsc-action-list label="Mode and Permissions Picker" role="menu" item-role="menuitem" widget-class="agent-host-mode-permissions-popup" min-width="300" max-width="300" items='[{"id":"section:mode","label":"Agent mode","icon":"chevron-right","description":"Interactive","custom":true,"class":"agent-host-mode-section","role":"menuitem","expanded":false,"hover":"Enter to Apply","ariaLabel":"Agent mode, Current mode: Interactive","focused":false},{"id":"section:permissions","label":"Permissions","icon":"chevron-down","description":"Allow all","custom":true,"class":"agent-host-mode-permissions info","role":"menuitem","expanded":true,"checked":true,"hover":"Enter to Apply","ariaLabel":"Permissions, Allow all","toolbar":[{"icon":"gear","ariaLabel":"Configure Permissions","id":"configure"}]},{"id":"manual","label":"Manual permissions","icon":"key","detail":"Asks when approval settings don&#39;t apply","custom":false,"role":"menuitemradio","checked":false,"focused":false,"ariaLabel":"Manual permissions, Asks when approval settings don&#39;t apply, Copilot asks before running tools unless your configured settings allow the tool."},{"id":"assisted","label":"Assisted permissions","icon":"sparkle","detail":"Evaluates risk before running tools","badge":"New","custom":true,"class":"agent-host-assisted-permissions","role":"menuitemradio","checked":false,"focused":false,"ariaLabel":"Assisted permissions, New, Evaluates risk before running tools, An LLM judge evaluates each tool call. Tools it doesn&#39;t approve require your approval."},{"id":"allow-all","label":"Allow all","icon":"warning","detail":"Runs tool calls without asking","custom":false,"role":"menuitemradio","checked":true,"focused":true,"ariaLabel":"Allow all, Runs tool calls without asking, Copilot runs all tools without asking for approval."},{"type":"separator"},{"id":"sandbox","label":"Sandboxing for terminal","icon":"shield","toggle":false,"toggleLabel":"Run this session&#39;s terminal commands inside a sandbox that restricts file system and network access. The applied setting is saved for this session and checked against current organization policy when restored.","role":"menuitem","ariaLabel":"Sandboxing for terminal, off"},{"type":"separator"},{"id":"learn-more","label":"Learn more about permissions","icon":"blank","role":"menuitem","hover":"Enter to Apply"}]'></vsc-action-list></vsc-workbench>
+```
+
+Source: `src/vs/platform/actionWidget/browser/actionList.ts`, `src/vs/platform/actionWidget/browser/actionWidget.css`
 
 ## `<vsc-hover>` — Hover (tooltip)
 
@@ -899,7 +1177,7 @@ Source: `src/vs/base/browser/ui/actionbar/actionViewItems.ts`, `src/vs/base/brow
 
 ## `<vsc-button>` — Button
 
-Kind: component · Category: widgets · Status: draft · Verification: verified
+Kind: component · Category: widgets · Status: draft · Verification: drift
 
 Text button (`.monaco-button.monaco-text-button`), primary or secondary, with an optional leading codicon. Colors are applied inline from button tokens, including hover.
 
@@ -1587,21 +1865,34 @@ Source: `src/vs/workbench/browser/parts/editor/editorGroupWatermark.ts`
 
 ## `<vsc-chat-input>` — Chat input
 
-Kind: pattern · Category: chat · Status: draft · Verification: verified
+Kind: pattern · Category: chat · Status: draft · Verification: drift
 
-The chat composer: input editor, primary toolbar (add context, agent, model, tools), send button and secondary toolbar (session target, permissions).
+The chat composer, in three layouts. Default: the workbench Chat view input (toolbar row under the editor: add context, agent, model, tools; send; secondary toolbar: session target, permissions). variant="session": the Agents window composer in an open session, one row with Add Context, the harness's session controls (Copilot: Mode | Permissions; Claude: Approvals; Codex: Agent Mode + Approvals), the model picker (provider icon, model, effort · context), Dictation/Voice and Send, with the context window usage ring at the top right. variant="new-session": the new-session composer (sessions.chat.experimental.newSessionComposerLayout), the session options strip (environment, workspace, isolation | branch, harness) above the same input with the "Pitch your idea" placeholder. In the Agents layouts every picker opens its real options (ds.chatPickers: harnesses, environments, workspaces, models with effort/context/pricing, modes and permissions, captured from the signed-in product); choices update the composer and fire `change`.
 
-**Usage:** Inside <vsc-chat-view>. Without children it renders the default toolbars; pass items with slot="toolbar" / slot="secondary" to customize. Typing enables send.
+**Usage:** Default layout: inside <vsc-chat-view> (`<vsc-chat-view><vsc-chat-input>`); pass items with slot="toolbar" / slot="secondary" to customize. Agents window: `<vsc-workbench window="agents">` + `<vsc-session-view><vsc-chat-input variant="session">` for an open session, or `<vsc-session-view variant="new"><vsc-chat-input variant="new-session">` for a new one; set harness/model/mode/permissions/environment/workspace to start from a given state. Typing enables send; listen for `change` to react to picker choices.
 
-**Must be inside:** `<vsc-workbench>` › `<vsc-chat-view>`
+**Must be inside:** `<vsc-workbench>`
 
-**Composed of:** `<vsc-action>`, `<vsc-chat-picker>`, `<vsc-chat-model-picker>`, `<vsc-chat-submit>`
+**Composed of:** `<vsc-action>`, `<vsc-chat-picker>`, `<vsc-chat-model-picker>`, `<vsc-chat-submit>`, `<vsc-chat-mode-picker>`, `<vsc-session-picker>`, `<vsc-session-options>`, `<vsc-chat-voice-toggle>`, `<vsc-action-list>`, `<vsc-chat-model-list>`
 
 | Attribute | Type | Default | Description |
 |---|---|---|---|
-| `placeholder` | string | `Describe what to build` |  |
+| `variant` | `` \| `session` \| `new-session` | `` | Layout: empty = workbench Chat view; session = Agents window open session; new-session = Agents window new-session composer |
+| `placeholder` | string |  | Defaults: "Describe what to build", "Chat with Copilot" (session, per harness), "Pitch your idea" (new-session) |
 | `value` | string |  |  |
-| `no-secondary` | boolean |  | Hide the default secondary toolbar items |
+| `no-secondary` | boolean |  | Hide the default secondary toolbar items (default layout) |
+| `harness` | `copilot` \| `claude` \| `codex` | `copilot` | Agents layouts: which session controls and models to show |
+| `model` | string |  | Agents layouts: selected model id (defaults to the harness's default, e.g. gpt-5-6-sol-fast-internal-only) |
+| `mode` | `interactive` \| `plan` \| `autopilot` | `interactive` | Copilot agent mode |
+| `permissions` | `manual` \| `assisted` \| `allow-all` | `allow-all` | Copilot permission level |
+| `approvals` | string |  | Claude (ask, edit, plan, auto, bypass) or Codex (default, auto-review, full) approval mode |
+| `agent-mode` | `interactive` \| `plan` | `interactive` | Codex agent mode |
+| `environment` | `local` \| `cloud` | `local` | new-session: environment |
+| `workspace` | string | `adt` | new-session: workspace id (chat = none) |
+| `isolation` | `branch` \| `worktree` | `branch` |  |
+| `branch` | string | `main` |  |
+| `context-usage` | number |  | session: context window usage (0-100) ring |
+| `notice` | boolean |  | session: show the prompt-cache notice in the model picker |
 
 **Slots:**
 - `slot="toolbar"`: Primary toolbar items (<vsc-action menu>, <vsc-chat-picker>, <vsc-chat-model-picker>)
@@ -1610,20 +1901,46 @@ The chat composer: input editor, primary toolbar (add context, agent, model, too
 **States:**
 - `focused` (focus the editor): 
 - `can send` (non-empty value): 
+- `change (event)` (pick an option in any Agents picker): detail: the changed setting, e.g. { model }, { mode, permissions }, { harness }, { environment }
+- `add-context (event)` (choose an Add Context option): detail: { kind }
 
 **Example — Default**
 
 ```html
-<vsc-chat-input></vsc-chat-input>
+<vsc-chat-view><vsc-chat-input></vsc-chat-input></vsc-chat-view>
 ```
 
 **Example — With text**
 
 ```html
-<vsc-chat-input value="Summarize the open pull requests"></vsc-chat-input>
+<vsc-chat-view><vsc-chat-input value="Summarize the open pull requests"></vsc-chat-input></vsc-chat-view>
 ```
 
-Source: `src/vs/workbench/contrib/chat/browser/widget/input/chatInputPart.ts`, `src/vs/workbench/contrib/chat/browser/widget/media/chat.css`
+**Example — Session**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view style="width: 950px"><vsc-chat-input variant="session" context-usage="12"></vsc-chat-input></vsc-session-view></vsc-workbench>
+```
+
+**Example — New session**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view variant="new" style="width: 800px"><vsc-chat-input variant="new-session"></vsc-chat-input></vsc-session-view></vsc-workbench>
+```
+
+**Example — Session, Claude harness, context usage**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view style="width: 950px"><vsc-chat-input variant="session" harness="claude" model="claude-opus-5-5" context-usage="40"></vsc-chat-input></vsc-session-view></vsc-workbench>
+```
+
+**Example — New session, Codex in a worktree**
+
+```html
+<vsc-workbench window="agents"><vsc-session-view variant="new" style="width: 800px"><vsc-chat-input variant="new-session" harness="codex" isolation="worktree"></vsc-chat-input></vsc-session-view></vsc-workbench>
+```
+
+Source: `src/vs/workbench/contrib/chat/browser/widget/input/chatInputPart.ts`, `src/vs/workbench/contrib/chat/browser/widget/media/chat.css`, `src/vs/sessions/contrib/chat/browser/sharedChatInputComposer.ts`, `src/vs/sessions/contrib/chat/browser/media/sharedChatInputComposer.css`
 
 ## `<vsc-dialog>` — Dialog
 

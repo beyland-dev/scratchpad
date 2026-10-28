@@ -116,13 +116,16 @@
   ],
   "status": "draft",
   "verification": {
-    "status": "verified",
-    "checkedAt": "2026-10-22T21:42:53.563Z",
+    "status": "drift",
+    "checkedAt": "2026-10-28T01:31:51.171Z",
     "compared": 12,
-    "diffs": 0,
+    "diffs": 2,
     "theme": "dark-2026",
-    "summary": []
+    "summary": [
+      "[button-primary-dark] span w: expected 110.86, got 110.34",
+      "[button-primary-light] span w: expected 110.86, got 110.34"
+    ]
   },
   "createdAt": "2026-10-22T21:42:49.649Z",
-  "updatedAt": "2026-10-22T21:42:53.563Z"
+  "updatedAt": "2026-10-28T01:31:51.171Z"
 }

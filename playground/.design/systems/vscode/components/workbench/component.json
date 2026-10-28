@@ -4,17 +4,21 @@
   "title": "Workbench",
   "category": "foundations",
   "description": "Root of every VS Code UI: the `.monaco-workbench` element. Applies the theme (token values), platform font, modern-UI flags and the shell background.",
-  "usage": "Wrap every prototype in exactly one <vsc-workbench theme=\"dark-2026|light-2026\">. Give it a size (e.g. style=\"width: 1440px; height: 900px\") for full-window layouts.",
+  "usage": "Wrap every prototype in exactly one <vsc-workbench theme=\"dark-2026|light-2026\">. Give it a size (e.g. style=\"width: 1440px; height: 900px\") for full-window layouts. Add window=\"agents\" for Agents window prototypes (session composers, pickers).",
   "attributes": [
     {
       "name": "theme",
+      "type": "string",
+      "description": "Color theme"
+    },
+    {
+      "name": "window",
       "type": "enum",
       "values": [
-        "dark-2026",
-        "light-2026"
+        "",
+        "agents"
       ],
-      "default": "dark-2026",
-      "description": "Color theme"
+      "description": "`agents`: the Agents window (adds `.agent-sessions-workbench`, which its styles are scoped to)"
     }
   ],
   "slots": [],
@@ -69,5 +73,5 @@
     "summary": []
   },
   "createdAt": "2026-10-22T21:42:49.637Z",
-  "updatedAt": "2026-10-22T21:42:50.415Z"
+  "updatedAt": "2026-10-28T01:16:07.134Z"
 }

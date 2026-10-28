@@ -1,13 +1,15 @@
 // Sample agent sessions for the Inbox One prototypes.
 // state: "input" (needs your input) | "working" | "error" | "review" (finished, ready for review) | "done" (archived)
+// env: "Local" | "Worktree" (this computer) | "Cloud" | a remote agent host name such as "devbox-1"
+// merging: { status } — complete; an agent babysits the PR (reviews, CI) until it merges, then it moves to Done.
+// onHold: still active, but waiting on something outside the session (coworker feedback, research, …)
 window.INBOX_DATA = {
   user: { name: "Hawk", login: "hawkticehurst" },
 
   harnesses: {
-    copilot: { label: "Copilot CLI", icon: "copilot" },
+    copilot: { label: "Copilot", icon: "copilot" },
     claude: { label: "Claude", icon: "claude" },
     codex: { label: "Codex", icon: "openai" },
-    cloud: { label: "Cloud agent", icon: "cloud" },
   },
 
   workspaces: [
@@ -38,6 +40,15 @@ window.INBOX_DATA = {
       checks: [["Unit tests", "pass"], ["Hygiene", "pass"]],
     },
     {
+      id: "d2", state: "working", unread: false, time: "9m", day: "Today",
+      title: "Bisect perf regression in `tsgo --build`",
+      harness: "codex", model: "GPT-6-Codex", workspace: "ts-go", env: "devbox-1", branch: "perf/bisect-build-regression",
+      prompt: "`tsgo --build` on the VS Code repo got ~18% slower this week. Bisect the commits on devbox-1 and find the culprit.",
+      preview: "Bisecting 46 commits, 4 steps left…",
+      steps: [["Reproduce the slowdown on devbox-1 (3 runs each)", "done"], ["Bisect 46 commits between v7.0.0-dev.20261020 and main", "active"], ["Profile the first bad commit", "todo"], ["Summarize findings", "todo"]],
+      files: [],
+    },
+    {
       id: "s2", state: "input", unread: true, time: "14m", day: "Today",
       title: "Fix flaky sessions list drag-and-drop test",
       harness: "claude", model: "Claude Opus 5", workspace: "vscode", env: "Local", branch: "fix/sessions-dnd-flake",
@@ -54,11 +65,25 @@ window.INBOX_DATA = {
     {
       id: "s3", state: "working", unread: false, time: "21m", day: "Today",
       title: "Add repository grouping to the sessions list",
-      harness: "cloud", model: "GPT-6", workspace: "vscode", env: "Cloud", branch: "copilot/repo-grouping", group: "agents-polish",
+      harness: "copilot", model: "GPT-6", workspace: "vscode", env: "Cloud", branch: "copilot/repo-grouping", group: "agents-polish",
       prompt: "Implement Repository grouping for the Sessions list per SESSIONS_LIST.md: group by the GitHub repository of the primary folder, fall back to the workspace section.",
       preview: "Wiring repository sections into ISessionSectionOrderService…",
       steps: [["Read SESSIONS_LIST.md and the grouping model", "done"], ["Add RepositoryGrouping to SessionsList", "done"], ["Wire sections into ISessionSectionOrderService", "active"], ["Disambiguate duplicate repository names", "todo"], ["Add tests and run hygiene", "todo"]],
       files: [["sessions/browser/sessionsList.ts", 118, 22], ["sessions/common/sessionGrouping.ts", 64, 0]],
+    },
+    {
+      id: "d3", state: "input", unread: true, time: "31m", day: "Today",
+      title: "Rebuild native modules for Linux ARM64",
+      harness: "copilot", model: "Claude Sonnet 5", workspace: "vscode", env: "devbox-1", branch: "build/arm64-native-modules", group: "release",
+      prompt: "The Linux ARM64 build fails on native modules after the Electron bump. Rebuild them on devbox-1 and tell me what changed.",
+      preview: "Needs a system package to build @vscode/spdlog from source.",
+      body: [
+        "<code>@vscode/spdlog</code> and <code>native-keymap</code> have no ARM64 prebuilds for this Electron ABI, so they need to build from source on devbox-1.",
+        "The build is missing Kerberos headers. I need to install a system package to continue:",
+      ],
+      question: { text: "Allow terminal command?", command: "sudo apt-get install -y libkrb5-dev", options: ["Allow", "Allow for this session", "Deny"] },
+      files: [["build/npm/postinstall.ts", 12, 3]],
+      checks: [],
     },
     {
       id: "s4", state: "working", unread: false, time: "38m", day: "Today",
@@ -68,6 +93,19 @@ window.INBOX_DATA = {
       preview: "Running baseline diff on 412 conformance tests…",
       steps: [["Locate narrowTypeByInKeyword in checker.ts", "done"], ["Port to internal/checker/flow.go", "done"], ["Run conformance baselines", "active"], ["Accept matching baselines", "todo"]],
       files: [["internal/checker/flow.go", 97, 14]],
+    },
+    {
+      id: "d1", state: "review", unread: true, time: "47m", day: "Today",
+      title: "Profile extension host startup on Linux",
+      harness: "claude", model: "Claude Opus 5", workspace: "vscode", env: "devbox-1", branch: "perf/exthost-startup",
+      prompt: "Extension host startup feels slow on Linux. Profile it on devbox-1 with the default extensions and tell me where the time goes.",
+      preview: "Startup spends 41% of its time resolving extension manifests serially.",
+      body: [
+        "On devbox-1 the extension host takes 1.9s to reach <code>$activateByEvent('*')</code>. 41% of that is <code>ExtensionDescriptionRegistry</code> reading and validating 112 manifests one at a time.",
+        "Parallelizing manifest reads with a concurrency limit of 8 brings it down to 1.2s. I put the change and a startup timer test on the branch.",
+      ],
+      files: [["workbench/services/extensions/common/extensionDescriptionRegistry.ts", 38, 14], ["workbench/services/extensions/test/common/extensionDescriptionRegistry.test.ts", 52, 0]],
+      checks: [["Unit tests", "pass"], ["Perf (startup)", "pass"]],
     },
     {
       id: "s5", state: "review", unread: true, time: "1h", day: "Today",
@@ -97,7 +135,7 @@ window.INBOX_DATA = {
       checks: [["Unit tests", "pass"], ["Leak test", "pass"]],
     },
     {
-      id: "s7", state: "review", unread: true, time: "2:10 PM", day: "Today",
+      id: "s7", state: "review", unread: false, merging: { status: "Waiting on review" }, time: "2:10 PM", day: "Today",
       title: "Update @vscode/codicons to 0.0.48",
       harness: "copilot", model: "Auto", workspace: "copilot-chat", env: "Cloud", branch: "deps/codicons-0.0.48",
       prompt: "Bump codicons and replace the custom sparkle SVGs with the new codicon-chat-sparkle glyphs.",
@@ -110,7 +148,7 @@ window.INBOX_DATA = {
     {
       id: "s8", state: "error", unread: true, time: "11:05 AM", day: "Today",
       title: "Bump Electron to 39",
-      harness: "cloud", model: "GPT-6", workspace: "vscode", env: "Cloud", branch: "copilot/electron-39", group: "release",
+      harness: "copilot", model: "GPT-6", workspace: "vscode", env: "Cloud", branch: "copilot/electron-39", group: "release",
       prompt: "Update Electron to 39.x, fix any type or API breakages, and get the smoke tests green.",
       preview: "Build failed on darwin-arm64: native module @vscode/spdlog has no prebuild for Electron 39.",
       body: [
@@ -121,7 +159,7 @@ window.INBOX_DATA = {
       checks: [["linux-x64", "pass"], ["win32-x64", "pass"], ["darwin-arm64", "fail"]],
     },
     {
-      id: "s9", state: "review", unread: false, pinned: true, time: "Yesterday", day: "Yesterday",
+      id: "s9", state: "review", unread: false, onHold: true, time: "Yesterday", day: "Yesterday",
       title: "Agents window: mobile layout spike",
       harness: "claude", model: "Claude Sonnet 5", workspace: "vscode", env: "Worktree", branch: "spike/agents-mobile", group: "agents-polish",
       prompt: "Spike a narrow-viewport layout for the Agents window: stacked sessions list and chat, bottom sheet for files.",
@@ -131,18 +169,19 @@ window.INBOX_DATA = {
       checks: [["Unit tests", "pass"]],
     },
     {
-      id: "s10", state: "review", unread: false, time: "Yesterday", day: "Yesterday",
+      id: "s10", state: "working", unread: false, merging: { status: "Fixing CI" }, time: "Yesterday", day: "Yesterday",
       title: "Refactor agentsColors.ts into a themable registry",
       harness: "copilot", model: "GPT-6", workspace: "vscode", env: "Local", branch: "agents/colors-registry",
       prompt: "Group the agents window colors so themes can override them as a set.",
       preview: "Grouped 38 colors under agents.*, kept old ids as deprecated aliases.",
       body: ["Grouped 38 colors under the <code>agents.*</code> namespace and kept the old ids as deprecated aliases so existing themes keep working."],
       files: [["workbench/common/agentsColors.ts", 120, 96]],
-      checks: [["Unit tests", "pass"], ["Hygiene", "pass"]],
-      pr: { num: 283980, title: "Agents: themable color registry", status: "Merged" },
+      steps: [["Open PR #283980 and request review", "done"], ["Fix flaky hygiene check on CI", "active"], ["Merge once approved and green", "todo"]],
+      checks: [["Unit tests", "pass"], ["Hygiene", "fail"]],
+      pr: { num: 283980, title: "Agents: themable color registry", status: "Open" },
     },
     {
-      id: "s11", state: "review", unread: false, time: "Mon", day: "Earlier this week", group: "release",
+      id: "s11", state: "review", unread: false, onHold: true, time: "Mon", day: "Earlier this week", group: "release",
       title: "Draft release notes for 1.145",
       harness: "claude", model: "Claude Sonnet 5", workspace: "vscode", env: "Local", branch: "main",
       prompt: "Draft the Agents section of the 1.145 release notes from merged PRs labeled agents-window.",

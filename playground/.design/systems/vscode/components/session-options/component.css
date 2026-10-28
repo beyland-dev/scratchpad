@@ -1,0 +1,9 @@
+/*
+ * Cascade-order fix: in the merged bundle, `.monaco-workbench .codicon[class*="codicon-"] { font-size: 16px }`
+ * (same specificity, from another captured sheet) lands after the toggle's own rule, which the product loads
+ * later. Restate the captured rule one class stronger so the chevron keeps its compact 12px size.
+ */
+/* @capture sessions.desktop.main.css@9632 */
+.monaco-workbench .new-chat-session-options .monaco-button.new-chat-session-options-toggle {
+  font-size: var(--vscode-codiconFontSize-compact);
+}

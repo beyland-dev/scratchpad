@@ -1,0 +1,609 @@
+/*
+ * Captured from vscode-file://vscode-app/Applications/Visual%20Studio%20Code%20-%20Insiders.app/Contents/Resources/app/out/vs/sessions/electron-browser/sessions.html
+ * Selector: .context-view .action-widget
+ * On: 2026-10-28T01:26:40.905Z
+ */
+
+/* @capture sessions.desktop.main.css@23 */
+.monaco-scrollable-element > .invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* @capture sessions.desktop.main.css@26 */
+.monaco-scrollable-element > .shadow {
+  position: absolute;
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@31 */
+.monaco-scrollable-element > .scrollbar {
+  background: var(--vscode-scrollbar-background);
+}
+
+/* @capture sessions.desktop.main.css@32 */
+.monaco-scrollable-element > .scrollbar > .slider {
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+/* @capture sessions.desktop.main.css@33 */
+.monaco-scrollable-element > .scrollbar > .slider:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* @capture sessions.desktop.main.css@34 */
+.monaco-scrollable-element > .scrollbar > .slider.active {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+/* @capture sessions.desktop.main.css@124 */
+.monaco-list {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@125 */
+.monaco-list.mouse-support {
+  user-select: none;
+}
+
+/* @capture sessions.desktop.main.css@126 */
+.monaco-list > .monaco-scrollable-element {
+  height: 100%;
+}
+
+/* @capture sessions.desktop.main.css@127 */
+.monaco-list-rows {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* @capture sessions.desktop.main.css@129 */
+.monaco-list-row {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* @capture sessions.desktop.main.css@130 */
+.monaco-list.mouse-support .monaco-list-row {
+  cursor: pointer;
+  touch-action: none;
+}
+
+/* @capture sessions.desktop.main.css@131 */
+.monaco-list .monaco-scrollable-element > .scrollbar.vertical {
+  z-index: 14;
+}
+
+/* @capture sessions.desktop.main.css@133 */
+.monaco-list.element-focused {
+  outline: 0px !important;
+}
+
+/* @capture sessions.desktop.main.css@414 */
+.monaco-keybinding {
+  display: flex;
+  align-items: center;
+  line-height: 10px;
+}
+
+/* @capture sessions.desktop.main.css@428 */
+.action-widget {
+  font-size: 13px;
+  min-width: 100px;
+  max-width: 80vw;
+  z-index: 40;
+  display: block;
+  width: 100%;
+  border-radius: var(--vscode-cornerRadius-large);
+  background-color: var(--vscode-menu-background);
+  color: var(--vscode-menu-foreground);
+  padding: 4px;
+  box-shadow: var(--vscode-shadow-lg);
+  border: 1px solid var(--vscode-editorHoverWidget-border) !important;
+}
+
+/* @capture sessions.desktop.main.css@436 */
+.action-widget .monaco-list {
+  user-select: none;
+  border: 0px !important;
+}
+
+/* @capture sessions.desktop.main.css@437 */
+.action-widget .monaco-list:focus::before {
+  outline: 0px !important;
+}
+
+/* @capture sessions.desktop.main.css@438 */
+.action-widget .monaco-list .monaco-scrollable-element {
+  overflow: visible;
+}
+
+/* @capture sessions.desktop.main.css@439 */
+.action-widget .monaco-list .monaco-list-row {
+  padding: 0px 12px 0px 6px;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: none;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture sessions.desktop.main.css@440 */
+.action-widget .monaco-list .monaco-list-row.action.focused:not(.option-disabled) {
+  color: var(--vscode-list-hoverForeground);
+  outline: 1px solid var(--vscode-menu-selectionBorder, transparent);
+  outline-offset: -2px;
+  background-color: var(--vscode-list-hoverBackground) !important;
+}
+
+/* @capture sessions.desktop.main.css@441 */
+.action-widget .monaco-list:not(.keyboard-navigation):not(:focus-visible) .monaco-list-row.action.focused:not(.option-disabled) {
+  outline-color: var(--vscode-contrastActiveBorder, transparent);
+}
+
+/* @capture sessions.desktop.main.css@444 */
+.action-widget .monaco-scrollable-element .monaco-list-rows .monaco-list-row.separator {
+  border-top: 1px solid var(--vscode-editorHoverWidget-border);
+  color: var(--vscode-descriptionForeground);
+  font-size: 12px;
+  margin: 4px 6px;
+  width: calc(100% - 12px);
+  cursor: default;
+  user-select: none;
+  border-radius: 0px;
+  pointer-events: none;
+}
+
+/* @capture sessions.desktop.main.css@445 */
+.action-widget .monaco-scrollable-element .monaco-list-rows .monaco-list-row.separator:hover,
+.action-widget .monaco-scrollable-element .monaco-list-rows .monaco-list-row.separator.focused {
+  outline: solid 0px;
+  border-radius: 0px;
+  background-color: transparent !important;
+}
+
+/* @capture sessions.desktop.main.css@449 */
+.action-widget .monaco-list-row.action {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* @capture sessions.desktop.main.css@450 */
+.action-widget .monaco-list-row.action .codicon {
+  font-size: 12px;
+}
+
+/* @capture sessions.desktop.main.css@452 */
+.action-widget .monaco-list-row.action .action-list-label-icon {
+  font-size: var(--vscode-codiconFontSize, 16px);
+  flex: 0 0 var(--vscode-codiconFontSize, 16px);
+}
+
+/* @capture sessions.desktop.main.css@456 */
+.action-widget .monaco-list-row.action:not(.option-disabled) .codicon {
+  color: inherit;
+}
+
+/* @capture sessions.desktop.main.css@457 */
+.action-widget .monaco-list-row.action .title {
+  flex: 1 1 0%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* @capture sessions.desktop.main.css@458 */
+.action-widget .monaco-list-row.action .detail {
+  order: 99;
+  width: 100%;
+  padding-left: 18px;
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--vscode-descriptionForeground);
+  opacity: 0.8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* @capture sessions.desktop.main.css@459 */
+.action-widget .monaco-list .monaco-list-row.action.focused:not(.option-disabled) .detail {
+  color: inherit;
+  opacity: 1;
+}
+
+/* @capture sessions.desktop.main.css@463 */
+.action-widget .monaco-list-row.action .action-item-additional-badges {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: var(--vscode-spacing-size40, 4px);
+}
+
+/* @capture sessions.desktop.main.css@464 */
+.action-widget .monaco-list-row.action .action-item-badge {
+  padding: 0 var(--vscode-spacing-size60, 6px);
+  border-radius: var(--vscode-cornerRadius-circle, 9999px);
+  background-color: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+  font-size: var(--vscode-fontSize-label2, 11px);
+  line-height: 18px;
+  flex-shrink: 0;
+}
+
+/* @capture sessions.desktop.main.css@473 */
+.action-widget .monaco-list .monaco-list-row .description {
+  color: var(--vscode-descriptionForeground);
+  margin-left: 0.5em;
+  font-size: 12px;
+}
+
+/* @capture sessions.desktop.main.css@476 */
+.action-widget .monaco-list-row.action .group-title {
+  color: var(--vscode-descriptionForeground);
+  margin-left: 0.5em;
+  margin-right: 6px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* @capture sessions.desktop.main.css@483 */
+.action-widget .monaco-list-row.action .action-list-item-inline-toggle {
+  order: 100;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 18px;
+  padding-top: 6px;
+  line-height: 16px;
+}
+
+/* @capture sessions.desktop.main.css@486 */
+.action-widget .monaco-list-row.action .action-list-item-toolbar {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@509 */
+.action-widget .actionList {
+  position: relative;
+}
+
+/* @capture sessions.desktop.main.css@510 */
+.action-widget .action-list-submenu-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+/* @capture sessions.desktop.main.css@513 */
+.action-list-submenu-panel {
+  z-index: 50;
+  width: max-content;
+  min-width: 0px;
+  outline: none;
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@530 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture sessions.desktop.main.css@8384 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture sessions.desktop.main.css@8385 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture sessions.desktop.main.css@8393 */
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench [tabindex="-1"]:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture sessions.desktop.main.css@8396 */
+.monaco-workbench [tabindex="0"]:active,
+.monaco-workbench [tabindex="-1"]:active {
+  outline: 0px !important;
+}
+
+/* @capture sessions.desktop.main.css@8403 */
+.monaco-workbench .monaco-list:focus {
+  outline: 0px !important;
+}
+
+/* @capture sessions.desktop.main.css@8411 */
+.agent-sessions-workbench .monaco-scrollable-element > .scrollbar > .slider {
+  background: transparent !important;
+}
+
+/* @capture sessions.desktop.main.css@8412 */
+.agent-sessions-workbench .monaco-scrollable-element > .scrollbar.vertical > .slider::before,
+.agent-sessions-workbench .monaco-scrollable-element > .scrollbar.horizontal > .slider::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: var(--vscode-cornerRadius-circle);
+  background: var(--vscode-scrollbarSlider-background);
+}
+
+/* @capture sessions.desktop.main.css@8413 */
+.agent-sessions-workbench .monaco-scrollable-element > .scrollbar > .slider:hover::before {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* @capture sessions.desktop.main.css@8414 */
+.agent-sessions-workbench .monaco-scrollable-element > .scrollbar > .slider.active::before {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+/* @capture sessions.desktop.main.css@8416 */
+.agent-sessions-workbench .action-widget {
+  --vscode-menu-background: var(--vscode-agentsPanel-background);
+  background-color: var(--vscode-menu-background);
+}
+
+/* @capture sessions.desktop.main.css@8419 */
+.agent-sessions-workbench .action-widget .monaco-scrollable-element > .monaco-list-rows {
+  background-color: var(--vscode-menu-background) !important;
+}
+
+/* @capture sessions.desktop.main.css@9725 */
+.action-widget .sessions-new-chat-picker-list .monaco-list-row.action .codicon {
+  font-size: var(--vscode-codiconFontSize);
+}
+
+/* @capture sessions.desktop.main.css@11622.0.0.2 */
+@supports (backdrop-filter: blur(12px)) and (background-color: color-mix(in srgb,black 92%,transparent)) {
+  @media (prefers-reduced-transparency: no-preference) and (forced-colors: none) {
+    :is(.monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light)) .action-widget {
+      --vscode-menu-background: transparent;
+      --modern-ui-glass-background: color-mix(in srgb, var(--modern-ui-solid-menu-background) var(--vscode-context-view-menu-motion-backdrop-opacity, 0%), var(--modern-ui-glass-menu-background));
+    }
+  }
+}
+
+/* @capture sessions.desktop.main.css@11622.0.0.3 */
+@supports (backdrop-filter: blur(12px)) and (background-color: color-mix(in srgb,black 92%,transparent)) {
+  @media (prefers-reduced-transparency: no-preference) and (forced-colors: none) {
+    :is(.monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light)) .action-widget:not(.action-list-submenu-panel) {
+      position: relative;
+    }
+  }
+}
+
+/* @capture sessions.desktop.main.css@11622.0.0.12 */
+@supports (backdrop-filter: blur(12px)) and (background-color: color-mix(in srgb,black 92%,transparent)) {
+  @media (prefers-reduced-transparency: no-preference) and (forced-colors: none) {
+    :is(.monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light)) .action-widget {
+      isolation: isolate;
+    }
+  }
+}
+
+/* @capture sessions.desktop.main.css@11622.0.0.12.0 */
+@supports (backdrop-filter: blur(12px)) and (background-color: color-mix(in srgb,black 92%,transparent)) {
+  @media (prefers-reduced-transparency: no-preference) and (forced-colors: none) {
+    :is(:is(.monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light)) .quick-input-widget:not(.quick-input-widget-overlay), :is(.monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light)) .action-widget, :is(.monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light)) .monaco-hover, :is(.monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light)) .monaco-dialog-box, :is(.monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light)) .notifications-center, :is(.monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light)) .notifications-toasts .notification-toast.notification-fade-in-done, :is(.monaco-workbench.modern-ui-frosted-glass:not(.hc-black):not(.hc-light)).monaco-reduce-motion .notifications-toasts .notification-toast.notification-fade-in)::before {
+      content: "";
+      position: absolute;
+      inset: 0px;
+      z-index: -1;
+      border-radius: inherit;
+      pointer-events: none;
+      background-color: var(--modern-ui-glass-background);
+      backdrop-filter: blur(12px);
+    }
+  }
+}
+
+/* @capture contributedColorTheme@177 */
+.monaco-workbench .monaco-list-row.selected {
+  --vscode-debug-ansi-terminal-ansiBlack: #939393;
+  --vscode-debug-ansi-terminal-ansiRed: #db6a6a;
+  --vscode-debug-ansi-terminal-ansiGreen: #0dbc79;
+  --vscode-debug-ansi-terminal-ansiYellow: #e5e510;
+  --vscode-debug-ansi-terminal-ansiBlue: #4e8ed3;
+  --vscode-debug-ansi-terminal-ansiMagenta: #c965c9;
+  --vscode-debug-ansi-terminal-ansiCyan: #11a8cd;
+  --vscode-debug-ansi-terminal-ansiWhite: #e5e5e5;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #919191;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #f35e5e;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #23d18b;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #f5f543;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #3b8eea;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #d670d6;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #29b8db;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #e5e5e5;
+}
+
+/* @capture contributedColorTheme@178 */
+.monaco-workbench .monaco-list-row.focused {
+  --vscode-debug-ansi-terminal-ansiBlack: #000000;
+  --vscode-debug-ansi-terminal-ansiRed: #cd3131;
+  --vscode-debug-ansi-terminal-ansiGreen: #0dbc79;
+  --vscode-debug-ansi-terminal-ansiYellow: #e5e510;
+  --vscode-debug-ansi-terminal-ansiBlue: #2472c8;
+  --vscode-debug-ansi-terminal-ansiMagenta: #bc3fbc;
+  --vscode-debug-ansi-terminal-ansiCyan: #11a8cd;
+  --vscode-debug-ansi-terminal-ansiWhite: #e5e5e5;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #666666;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #f14c4c;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #23d18b;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #f5f543;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #3b8eea;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #d670d6;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #29b8db;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #e5e5e5;
+}
+
+/* @capture contributedColorTheme@179 */
+.monaco-workbench .monaco-list:focus .monaco-list-row.focused {
+  --vscode-debug-ansi-terminal-ansiBlack: #000000;
+  --vscode-debug-ansi-terminal-ansiRed: #cd3131;
+  --vscode-debug-ansi-terminal-ansiGreen: #088857;
+  --vscode-debug-ansi-terminal-ansiYellow: #787807;
+  --vscode-debug-ansi-terminal-ansiBlue: #2472c8;
+  --vscode-debug-ansi-terminal-ansiMagenta: #bc3fbc;
+  --vscode-debug-ansi-terminal-ansiCyan: #0d87a5;
+  --vscode-debug-ansi-terminal-ansiWhite: #787878;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #666666;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #d84444;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #15885a;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #818122;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #357fd2;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #ac5aac;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #1c859f;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #787878;
+}
+
+/* @capture contributedColorTheme@180 */
+.monaco-workbench .monaco-list:focus .monaco-list-row.selected {
+  --vscode-debug-ansi-terminal-ansiBlack: #000000;
+  --vscode-debug-ansi-terminal-ansiRed: #cd3131;
+  --vscode-debug-ansi-terminal-ansiGreen: #088857;
+  --vscode-debug-ansi-terminal-ansiYellow: #787807;
+  --vscode-debug-ansi-terminal-ansiBlue: #2472c8;
+  --vscode-debug-ansi-terminal-ansiMagenta: #bc3fbc;
+  --vscode-debug-ansi-terminal-ansiCyan: #0d87a5;
+  --vscode-debug-ansi-terminal-ansiWhite: #787878;
+  --vscode-debug-ansi-terminal-ansiBrightBlack: #666666;
+  --vscode-debug-ansi-terminal-ansiBrightRed: #d84444;
+  --vscode-debug-ansi-terminal-ansiBrightGreen: #15885a;
+  --vscode-debug-ansi-terminal-ansiBrightYellow: #818122;
+  --vscode-debug-ansi-terminal-ansiBrightBlue: #357fd2;
+  --vscode-debug-ansi-terminal-ansiBrightMagenta: #ac5aac;
+  --vscode-debug-ansi-terminal-ansiBrightCyan: #1c859f;
+  --vscode-debug-ansi-terminal-ansiBrightWhite: #787878;
+}
+
+/* @capture codiconStyles@68 */
+.codicon-device-desktop::before {
+  content: "\ea7a";
+}
+
+/* @capture codiconStyles@296 */
+.codicon-remote::before {
+  content: "\eb3a";
+}
+
+/* @capture codiconStyles@318 */
+.codicon-settings-gear::before {
+  content: "\eb51";
+}
+
+/* @capture codiconStyles@417 */
+.codicon-cloud::before {
+  content: "\ebaa";
+}
+
+/* @capture inline-15fgr0i@0 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  background-color: var(--vscode-list-focusBackground);
+}
+
+/* @capture inline-15fgr0i@2 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  color: var(--vscode-list-focusForeground);
+}
+
+/* @capture inline-15fgr0i@3 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+/* @capture inline-15fgr0i@5 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+/* @capture inline-15fgr0i@6 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected .codicon {
+  color: var(--vscode-list-activeSelectionIconForeground);
+}
+
+/* @capture inline-15fgr0i@7 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected.focused {
+  background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+/* @capture inline-15fgr0i@8 */
+.monaco-list.list_id_7:focus .monaco-list-row.selected.focused {
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+/* @capture inline-15fgr0i@9 */
+.monaco-list.list_id_7 .monaco-list-row.focused .codicon {
+  color: var(--vscode-list-inactiveSelectionIconForeground);
+}
+
+/* @capture inline-15fgr0i@10 */
+.monaco-list.list_id_7 .monaco-list-row.focused {
+  background-color: var(--vscode-list-inactiveFocusBackground);
+}
+
+/* @capture inline-15fgr0i@12 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  background-color: var(--vscode-list-inactiveSelectionBackground);
+}
+
+/* @capture inline-15fgr0i@14 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  color: var(--vscode-list-inactiveSelectionForeground);
+}
+
+/* @capture inline-15fgr0i@17 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused.selected {
+  outline: 1px solid var(--vscode-list-focusAndSelectionOutline, var(--vscode-contrastActiveBorder, var(--vscode-list-focusOutline)));
+  outline-offset: -1px;
+}
+
+/* @capture inline-15fgr0i@18 */
+.monaco-list.list_id_7:focus .monaco-list-row.focused {
+  outline: 1px solid var(--vscode-list-focusOutline);
+  outline-offset: -1px;
+}
+
+/* @capture inline-15fgr0i@19 */
+.monaco-list.list_id_7 .monaco-list-row.focused.selected {
+  outline: 1px dotted var(--vscode-contrastActiveBorder, var(--vscode-list-inactiveFocusOutline));
+  outline-offset: -1px;
+}
+
+/* @capture inline-15fgr0i@20 */
+.monaco-list.list_id_7 .monaco-list-row.selected {
+  outline: 1px dotted var(--vscode-contrastActiveBorder);
+  outline-offset: -1px;
+}
+
+/* @capture inline-15fgr0i@21 */
+.monaco-list.list_id_7 .monaco-list-row.focused {
+  outline: 1px dotted var(--vscode-list-inactiveFocusOutline);
+  outline-offset: -1px;
+}

@@ -3,212 +3,250 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Inbox One — Agents window homepage</title>
+<title>Inbox One — Three pane</title>
 <link rel="stylesheet" href="/s/vscode/system.css" />
 <script type="module" src="/s/vscode/system.js"></script>
 <script src="data.js"></script>
 <style>
   html, body { margin: 0; height: 100%; background: #121314; overflow: hidden; }
   #wb {
+    /* Toast insets, as the Agents window sets them (src/vs/sessions/browser/media/workbench.css), widened to 16px so toasts clear the floating panel edge. */
+    --modern-ui-notifications-inline-inset: var(--vscode-spacing-size160);
+    --modern-ui-notifications-block-end-inset: var(--vscode-spacing-size160);
     position: relative; width: 100vw; height: 100vh; display: flex; flex-direction: column;
-    background: var(--vscode-agents-background); color: var(--vscode-foreground);
-    font-size: var(--vscode-agents-fontSize-body1);
+    background: var(--vscode-agents-background); color: var(--vscode-foreground); font-size: var(--vscode-agents-fontSize-body1);
   }
-  /* border-box only on prototype-owned elements: VS Code widgets rely on content-box */
-  :is(.cc, .avatar, .rail, .new-btn, .nav-item, .pill, .list, .search, .chip, .row, .tag, .row-actions, .rd-h, .thread, .bubble, .cmd, .composer, .compose, .starter, .toast) { box-sizing: border-box; }
   #wb button { font: inherit; color: inherit; }
+  /* border-box only on prototype-owned elements: VS Code widgets rely on content-box */
+  :is(.cc, .avatar, .rail, .nav-item, .list, .list-h, .search, .row, .tag, .row-actions, .compose-in) { box-sizing: border-box; }
   .muted { color: var(--vscode-descriptionForeground); }
   .grow { flex: 1; }
   code, .mono { font-family: var(--monaco-monospace-font, ui-monospace, "SF Mono", Menlo, Consolas, monospace); font-size: 12px; }
   code { padding: 1px 4px; border-radius: var(--vscode-cornerRadius-small); background: var(--vscode-textPreformat-background); }
 
-  /* Title bar */
+  /* ---- Title bar (same as V2) ---- */
   .tb { height: 38px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 10px; }
-  .tb-title { font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px; }
-  .tb-center { position: absolute; left: 50%; transform: translateX(-50%); }
-  .cc { width: 380px; height: 26px; display: flex; align-items: center; gap: 6px; padding: 0 8px; border-radius: var(--vscode-cornerRadius-medium);
-        border: 1px solid var(--vscode-commandCenter-border); background: var(--vscode-commandCenter-background); color: var(--vscode-commandCenter-foreground); cursor: text; }
-  .cc span { flex: 1; text-align: center; font-size: 12px; }
-  .kbd { font-size: 11px; padding: 0 4px; line-height: 16px; border-radius: 3px; border: 1px solid var(--vscode-keybindingLabel-border); border-bottom-color: var(--vscode-keybindingLabel-bottomBorder);
-         background: var(--vscode-keybindingLabel-background); color: var(--vscode-keybindingLabel-foreground); }
-  .avatar { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; font-weight: 600;
-            background: var(--vscode-chat-avatarBackground); color: var(--vscode-chat-avatarForeground); border: 1px solid var(--vscode-agentsCard-border); }
+  .tb-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; }
+  /* Session pill, after src/vs/sessions/contrib/sessions/browser/media/sessionsTitleBarWidget.css. */
+  .cc { width: 31vw; max-width: 600px; height: 22px; display: flex; align-items: center; border-radius: var(--vscode-cornerRadius-medium); cursor: pointer;
+        border: 1px solid var(--vscode-commandCenter-border); background: transparent; color: var(--vscode-commandCenter-foreground); }
+  .cc:hover { background: var(--vscode-commandCenter-activeBackground); }
+  .cc-pill { display: flex; align-items: center; gap: 6px; padding: 0 8px; min-width: 0; opacity: 0.6; }
+  .cc-pill .codicon { font-size: var(--vscode-codiconFontSize-compact, 14px) !important; }
+  .cc-label { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tb-left { display: flex; align-items: center; gap: 4px; }
+  /* Compact "New" session button, as NewSessionActionViewItem renders it
+     (src/vs/sessions/contrib/sessions/browser/sessionsActions.ts, media/newSessionActionViewItem.css). */
+  .agent-sessions-compact-new-button.monaco-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 2px 8px; box-sizing: border-box;
+    font-size: var(--vscode-fontSize-label1, 12px); line-height: 18px; border-radius: var(--vscode-cornerRadius-small); cursor: pointer;
+    border: var(--vscode-strokeThickness) solid var(--vscode-agentsNewSessionButton-border, var(--vscode-button-border, transparent));
+    background-color: var(--vscode-agentsNewSessionButton-background, transparent); color: var(--vscode-agentsNewSessionButton-foreground, var(--vscode-foreground));
+    width: auto; min-width: 0; height: auto; white-space: nowrap; }
+  .agent-sessions-compact-new-button.monaco-button:hover { background-color: var(--vscode-agentsNewSessionButton-hoverBackground, var(--vscode-toolbar-hoverBackground)); }
+  .agent-sessions-compact-new-button.monaco-button:focus { outline: 1px solid var(--vscode-focusBorder); outline-offset: -1px !important; }
+  .agent-sessions-compact-new-button.monaco-button:focus:not(:focus-visible) { outline: none; }
+  .agent-sessions-compact-new-button .new-session-button-label { display: inline-flex; align-items: center; gap: 2px; min-width: 0; white-space: nowrap; }
+  .agent-sessions-compact-new-button .new-session-keybinding-hint { display: inline-block; flex-shrink: 0; font-family: var(--monaco-monospace-font); font-size: var(--vscode-fontSize-label3, 10px);
+    line-height: 1; padding: 2px 4px; border: var(--vscode-strokeThickness) solid transparent; border-radius: var(--vscode-cornerRadius-xSmall);
+    background-color: var(--vscode-keybindingLabel-background); color: var(--vscode-keybindingLabel-foreground); box-shadow: none; }
+  .agent-sessions-compact-new-button .new-session-keybinding-hint .monaco-keybinding { display: inline-flex; align-items: center; line-height: 1; }
+  .agent-sessions-compact-new-button .new-session-keybinding-hint .monaco-keybinding-key { margin: 0 1px; padding: 0; min-width: auto; border: 0; background-color: transparent; box-shadow: none; font-size: inherit; }
+  .agent-sessions-compact-new-button .new-session-keybinding-hint .monaco-keybinding-key:first-child { margin-left: 0; }
+  .agent-sessions-compact-new-button .new-session-keybinding-hint .monaco-keybinding-key:last-child { margin-right: 0; }
+  .avatar { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; flex: none; padding: 0; overflow: hidden; cursor: pointer;
+            border: 1px solid var(--vscode-agentsCard-border); background: var(--vscode-chat-avatarBackground); }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  /* Body / floating panels */
-  .body { flex: 1; min-height: 0; display: flex; gap: var(--vscode-agents-layout-floatingPanelGap); padding: 0 6px 6px 0; }
+  /* ---- Three panes: mailbox rail, session list, reading pane ---- */
+  .body { position: relative; flex: 1; min-height: 0; display: flex; gap: var(--vscode-agents-layout-floatingPanelGap); padding: 0 6px 6px 0; }
+  #wb.rail-hidden .body { padding-left: 6px; }
+  #wb.rail-hidden .rail { display: none; }
   .card { background: var(--vscode-agentsPanel-background); color: var(--vscode-agentsPanel-foreground); border: 1px solid var(--vscode-agentsPanel-border);
           border-radius: var(--vscode-cornerRadius-large); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 
-  /* Rail */
-  .rail { width: 228px; flex: none; display: flex; flex-direction: column; padding: 4px 8px 8px; overflow-y: auto; }
-  .new-btn { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; margin-bottom: 10px; width: 100%; cursor: pointer;
-             border-radius: var(--vscode-cornerRadius-medium); border: 1px solid var(--vscode-agentsNewSessionButton-border);
-             background: var(--vscode-agentsNewSessionButton-background); color: var(--vscode-agentsNewSessionButton-foreground); }
-  .new-btn:hover { background: var(--vscode-agentsNewSessionButton-hoverBackground); }
-  .new-btn .grow { text-align: left; }
+  /* Rail: one mailbox per inbox bucket. Counts are plain text, like V2's tabs. */
+  .rail { width: 216px; flex: none; display: flex; flex-direction: column; padding: 0 8px 8px; overflow-y: auto; }
+  .nav-item:focus-visible { outline: 1px solid var(--vscode-focusBorder); outline-offset: -1px; }
   .nav { display: flex; flex-direction: column; gap: 1px; }
-  .nav-item { display: flex; align-items: center; gap: 8px; height: 26px; padding: 0 8px; border-radius: var(--vscode-cornerRadius-medium); cursor: pointer; border: 0; background: none; width: 100%; text-align: left; }
+  .nav-item { display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 8px; width: 100%; border: 0; background: none; text-align: left; cursor: pointer;
+              border-radius: var(--vscode-cornerRadius-medium); color: var(--vscode-foreground); }
   .nav-item:hover { background: var(--vscode-list-hoverBackground); }
-  .nav-item.active { background: var(--vscode-list-activeSelectionBackground); color: var(--vscode-list-activeSelectionForeground); font-weight: 600; }
-  .nav-item .n { font-size: var(--vscode-agents-fontSize-label2); color: var(--vscode-descriptionForeground); font-weight: 400; }
-  .pill { min-width: 18px; height: 16px; padding: 0 5px; border-radius: var(--vscode-cornerRadius-circle); display: inline-grid; place-items: center;
-          font-size: var(--vscode-agents-fontSize-label3); font-weight: 600; background: var(--vscode-agentsBadge-background); color: var(--vscode-agentsBadge-foreground); }
-  .nav-h { font-size: var(--vscode-agents-fontSize-label2); font-weight: 600; color: var(--vscode-descriptionForeground); padding: 14px 8px 4px; display: flex; align-items: center; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; margin: 0 4px; }
-  .rail-foot { margin-top: auto; padding-top: 10px; }
+  .nav-item.active { background: var(--vscode-list-inactiveSelectionBackground); }
+  .nav-item .lbl { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nav-item .n { font-size: var(--vscode-agents-fontSize-label2); color: var(--vscode-descriptionForeground); }
 
-  /* List */
-  .list { width: 432px; flex: none; }
-  .list-h { padding: 12px 10px 8px 16px; display: flex; align-items: center; gap: 8px; }
-  .list-h h1 { margin: 0; font-size: var(--vscode-agents-fontSize-heading2); font-weight: 600; letter-spacing: -0.01em; }
-  .search { margin: 0 12px; height: 28px; display: flex; align-items: center; gap: 6px; padding: 0 8px; border-radius: var(--vscode-cornerRadius-medium);
+  /* Session list */
+  .list { width: 400px; flex: none; }
+  .list-h { display: flex; align-items: center; gap: 4px; padding: 10px 8px 6px 12px; }
+  .search { flex: 1; min-width: 0; height: 26px; display: flex; align-items: center; padding: 0 8px; border-radius: var(--vscode-cornerRadius-medium);
             background: var(--vscode-input-background); border: 1px solid var(--vscode-input-border); color: var(--vscode-input-foreground); }
   .search:focus-within { border-color: var(--vscode-focusBorder); }
-  .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; }
+  .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; font-size: 12px; }
   .search input::placeholder { color: var(--vscode-input-placeholderForeground); }
-  .chips { display: flex; gap: 6px; padding: 10px 12px 6px; flex-wrap: wrap; }
-  .chip { height: 22px; padding: 0 9px; display: inline-flex; align-items: center; gap: 5px; border-radius: var(--vscode-cornerRadius-circle); cursor: pointer;
-          border: 1px solid var(--vscode-agentsCard-border); background: transparent; font-size: 12px; }
-  .chip:hover { background: var(--vscode-list-hoverBackground); }
-  .chip.on { background: var(--vscode-list-activeSelectionBackground); border-color: transparent; color: var(--vscode-list-activeSelectionForeground); }
-  .rows { flex: 1; overflow-y: auto; padding: 0 6px 8px; outline: none; }
-  .day { position: sticky; top: 0; z-index: 2; background: var(--vscode-agentsPanel-background); font-size: var(--vscode-agents-fontSize-label2); font-weight: 600;
-         color: var(--vscode-descriptionForeground); padding: 10px 10px 4px; display: flex; align-items: center; gap: 6px; }
-  .row { position: relative; display: grid; grid-template-columns: 18px 1fr; column-gap: 6px; padding: 9px 10px 10px 6px; border-radius: var(--vscode-cornerRadius-medium); cursor: pointer; }
-  .row + .row { box-shadow: 0 -1px 0 0 var(--vscode-agentsCard-border); }
-  .row:hover, .row:hover + .row { box-shadow: none; }
+  .rows { flex: 1; overflow-y: auto; padding: 2px 6px 8px; }
+  .row { position: relative; display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; padding: 9px 10px 9px 8px;
+         border-radius: var(--vscode-cornerRadius-medium); cursor: pointer; }
+  /* Inset separator so it doesn't run into rounded corners; hidden around hovered/selected rows. */
+  .row::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: 0; height: 1px; background: var(--vscode-agentsCard-border); pointer-events: none; }
+  .row:last-child::after, .row:hover::after, .row.sel::after, .row:has(+ .row:hover)::after, .row:has(+ .row.sel)::after { opacity: 0; }
   .row:hover { background: var(--vscode-list-hoverBackground); }
-  .row.sel { background: var(--vscode-list-activeSelectionBackground); color: var(--vscode-list-activeSelectionForeground); box-shadow: none; }
-  .row.sel + .row { box-shadow: none; }
-  .rows:focus-visible { outline: none; }
-  .rows:focus-visible .row.sel { outline: 1px solid var(--vscode-focusBorder); outline-offset: -1px; }
-  .status { padding-top: 2px; display: flex; justify-content: center; }
-  .udot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; background: var(--vscode-agentsBadge-background); }
-  .rdot { width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; background: var(--vscode-agentSessionReadIndicator-foreground); }
-  .st-input { color: var(--vscode-chat-sessionStateIndicator-needsInputBorder); }
-  .st-working { color: var(--vscode-chat-sessionStateIndicator-inProgressBorder); }
-  .st-error { color: var(--vscode-errorForeground); }
-  .st-done, .tag.st-done { color: var(--vscode-testing-iconPassed); }
-  .tag.st-input { color: var(--vscode-chat-sessionStateIndicator-needsInputBorder); }
-  .tag.st-working { color: var(--vscode-chat-sessionStateIndicator-inProgressBorder); }
-  .tag.st-error { color: var(--vscode-errorForeground); }
-  :is(.st-input, .st-working, .st-error, .st-done, .add, .del, .pr-open, .pr-merged) .codicon { color: inherit !important; }
-  .r-from { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--vscode-descriptionForeground); min-width: 0; }
-  .r-from .codicon, .r-from vsc-icon { font-size: 14px !important; }
-  .r-from .t { margin-left: auto; flex: none; font-size: var(--vscode-agents-fontSize-label2); }
-  .row.unread .r-from { color: var(--vscode-foreground); }
-  .row.unread .r-from .t { color: var(--vscode-foreground); font-weight: 600; }
-  .r-title { margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .row.unread .r-title { font-weight: 600; }
-  .r-prev { margin-top: 2px; font-size: 12px; color: var(--vscode-descriptionForeground); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 17px; }
-  .r-prev b { font-weight: 600; }
-  .r-meta { display: flex; gap: 5px; margin-top: 7px; flex-wrap: wrap; }
+  .row.sel { background: var(--vscode-list-inactiveSelectionBackground); }
+  /* Focus ring on the selected row; the list loses it while typing in a composer, the search box or answering a question. */
+  .row.sel::before { content: ""; position: absolute; inset: 0; border: 1px solid var(--vscode-focusBorder); border-radius: var(--vscode-cornerRadius-medium); pointer-events: none; }
+  #wb:has(:is(input, textarea, [contenteditable]):focus, vsc-chat-question-carousel:focus-within) .row.sel::before { display: none; }
+  .status { display: flex; justify-content: center; height: 18px; align-items: center; }
+  .status > span { display: flex; align-items: center; }
+  .r-l1 { display: flex; align-items: center; gap: 8px; height: 18px; }
+  .r-l1 .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .time { flex: none; font-size: var(--vscode-agents-fontSize-label2); color: var(--vscode-descriptionForeground); white-space: nowrap; }
+  .row.unread .t, .row.unread .time { font-weight: 600; color: var(--vscode-foreground); }
+  .r-l2 { display: flex; align-items: center; gap: 6px; height: 18px; margin-top: 4px; min-width: 0; color: var(--vscode-descriptionForeground); font-size: 12px; white-space: nowrap; }
+  .r-l2 .from { display: flex; align-items: center; gap: 5px; min-width: 0; overflow: hidden; }
+  .r-l2 .from .ws { overflow: hidden; text-overflow: ellipsis; }
+  .r-l2 .from .codicon { font-size: 14px !important; }
+  .tags { display: flex; gap: 5px; margin-left: auto; flex: none; }
+  .row-actions { position: absolute; right: 6px; top: 5px; display: none; padding: 1px; border-radius: var(--vscode-cornerRadius-medium);
+                 background: var(--vscode-agentsPanel-background); border: 1px solid var(--vscode-agentsCard-border); }
+  .row:hover .row-actions { display: flex; }
+  .row:hover .time { visibility: hidden; }
   .tag { height: 18px; display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; border-radius: var(--vscode-cornerRadius-small); font-size: var(--vscode-agents-fontSize-label2);
          border: 1px solid var(--vscode-agentsCard-border); color: var(--vscode-descriptionForeground); white-space: nowrap; }
-  .row.sel .tag { border-color: var(--vscode-agentSessionSelectedBadge-border); }
-  .tag .codicon, .tag vsc-icon { font-size: 12px !important; }
+  .tag .codicon { font-size: 12px !important; }
+  /* Icon wrappers inside tags center the 12px glyph instead of sitting on the 18px line's baseline. */
+  .tag > span:has(> .codicon) { display: inline-flex; align-items: center; }
+  .st-input, .tag.st-input { color: var(--vscode-list-warningForeground); }
+  .st-working, .tag.st-working { color: var(--vscode-textLink-foreground); }
+  .st-error, .tag.st-error { color: var(--vscode-errorForeground); }
+  .st-done, .tag.st-done { color: var(--vscode-testing-iconPassed); }
+  .st-unread { color: var(--vscode-textLink-foreground); }
+  .st-read { color: var(--vscode-agentSessionReadIndicator-foreground); }
   .add { color: var(--vscode-chat-linesAddedForeground); } .del { color: var(--vscode-chat-linesRemovedForeground); }
-  .row-actions { position: absolute; right: 6px; top: 5px; display: none; border-radius: var(--vscode-cornerRadius-medium); background: var(--vscode-agentsPanel-background);
-                 border: 1px solid var(--vscode-agentsCard-border); padding: 1px; box-shadow: 0 2px 6px var(--vscode-widget-shadow); }
-  .row:hover .row-actions { display: flex; }
-  .empty { padding: 48px 24px; text-align: center; color: var(--vscode-descriptionForeground); }
-  .empty vsc-icon { font-size: 28px !important; display: block; margin-bottom: 8px; }
-
-  /* Reader */
-  .reader { flex: 1; min-width: 0; }
-  .rd-h { padding: 14px 16px 12px 24px; border-bottom: 1px solid var(--vscode-agentsPanel-border); }
-  .rd-top { display: flex; align-items: flex-start; gap: 12px; }
-  .rd-top h2 { margin: 0; font-size: var(--vscode-agents-fontSize-heading2); font-weight: 600; line-height: 1.3; flex: 1; min-width: 0; }
-  .rd-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .scroll { flex: 1; overflow-y: auto; }
-  .thread { max-width: 780px; margin: 0 auto; padding: 18px 24px 28px; display: flex; flex-direction: column; gap: 18px; }
-  .msg-h { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .msg-h b { font-weight: 600; }
-  .msg-h .avatar { width: 24px; height: 24px; }
-  .bubble { background: var(--vscode-chat-requestBubbleBackground); border-radius: var(--vscode-cornerRadius-xLarge); padding: 9px 13px; line-height: 1.5; margin-left: 32px; }
-  .msg-body { margin-left: 32px; line-height: 1.55; }
-  .msg-body p { margin: 0 0 10px; }
-  .box { border: 1px solid var(--vscode-agentsCard-border); border-radius: var(--vscode-cornerRadius-large); overflow: hidden; margin-top: 12px; }
-  .box-h { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-weight: 600; background: var(--vscode-chat-statusBackground); }
-  .box-h .muted { font-weight: 400; }
-  .file { display: flex; align-items: center; gap: 8px; padding: 5px 12px; font-size: 12px; cursor: pointer; }
-  .file:hover { background: var(--vscode-list-hoverBackground); }
-  .file .path { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .file .mono { font-size: 11px; }
-  .q { border-left: 3px solid var(--vscode-chat-sessionStateIndicator-needsInputBorder); }
-  .q .box-h { background: transparent; padding-top: 10px; }
-  .q-body { padding: 0 12px 12px; }
-  .cmd { display: block; padding: 8px 10px; margin-bottom: 10px; background: var(--vscode-textCodeBlock-background); border-radius: var(--vscode-cornerRadius-medium); }
-  .opts { display: flex; flex-wrap: wrap; gap: 8px; }
-  .opts vsc-button { width: auto; }
-  .step { display: flex; align-items: center; gap: 8px; padding: 5px 12px; }
-  .step.todo { color: var(--vscode-descriptionForeground); }
-  .bar { height: 2px; background: var(--vscode-agentsCard-border); }
-  .bar > i { display: block; height: 100%; background: var(--vscode-progressBar-background); }
-  .checks { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
-  .pr { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
-  .pr .grow { min-width: 0; }
   .pr-open { color: var(--vscode-charts-green); } .pr-merged { color: var(--vscode-charts-purple); }
-  a.link { color: var(--vscode-textLink-foreground); text-decoration: none; cursor: pointer; }
-  a.link:hover { text-decoration: underline; }
-  .divider { display: flex; align-items: center; gap: 10px; color: var(--vscode-descriptionForeground); font-size: var(--vscode-agents-fontSize-label2); }
-  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--vscode-agentsCard-border); }
-  .composer { flex: none; padding: 4px 24px 14px; }
-  .composer > div { max-width: 780px; margin: 0 auto; }
-  .composer vsc-chat-view, .compose vsc-chat-view { background: transparent; height: auto; }
+  :is(.st-input, .st-working, .st-error, .st-done, .st-unread, .st-read, .add, .del, .pr-open, .pr-merged) .codicon { color: inherit !important; }
+  .empty { padding: 56px 24px; text-align: center; color: var(--vscode-descriptionForeground); line-height: 1.5; }
+  .empty .codicon { font-size: 28px !important; display: block; margin-bottom: 8px; }
 
-  /* Compose */
-  .compose { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 10vh 32px 32px; }
-  .compose > div { width: 100%; max-width: 680px; }
-  .compose h2 { margin: 0 0 6px; font-size: var(--vscode-agents-fontSize-heading1); font-weight: 600; letter-spacing: -0.01em; }
-  .fields { display: grid; grid-template-columns: 84px 1fr; row-gap: 2px; margin: 18px 0 12px; border-top: 1px solid var(--vscode-agentsCard-border); }
-  .fields > * { padding: 7px 0; border-bottom: 1px solid var(--vscode-agentsCard-border); display: flex; align-items: center; gap: 6px; }
-  .fields .k { color: var(--vscode-descriptionForeground); font-size: 12px; }
-  .seg { display: flex; gap: 4px; flex-wrap: wrap; }
-  .starters { margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .starter { text-align: left; padding: 10px 12px; border-radius: var(--vscode-cornerRadius-large); border: 1px solid var(--vscode-agentsCard-border); background: transparent; cursor: pointer; line-height: 1.4; display: flex; gap: 10px; }
-  .starter:hover { background: var(--vscode-list-hoverBackground); }
-  .starter small { display: block; color: var(--vscode-descriptionForeground); font-size: 12px; margin-top: 2px; }
+  /* Reading pane: the composer (nothing selected) or the selected session's full chat. */
+  .reader { flex: 1; min-width: 0; overflow-y: auto; display: block; }
+  .compose[hidden], .session[hidden] { display: none; }
+  .compose { min-height: 100%; display: flex; align-items: center; justify-content: center; }
+  .compose-in { width: 100%; max-width: 760px; padding: 0 24px 12vh; }
+  .compose h1 { margin: 0 0 20px; font-size: var(--vscode-agents-fontSize-heading1); font-weight: 400; letter-spacing: -0.015em; }
+  .compose vsc-chat-view { background: transparent; display: block; margin: 0 -12px; }
 
-  /* Toast */
-  .toast { position: absolute; left: 50%; bottom: 22px; transform: translate(-50%, 20px); opacity: 0; transition: .18s ease; pointer-events: none; z-index: 10;
-           display: flex; align-items: center; gap: 14px; padding: 8px 10px 8px 14px; border-radius: var(--vscode-cornerRadius-large);
-           background: var(--vscode-notifications-background); color: var(--vscode-notifications-foreground); border: 1px solid var(--vscode-notificationToast-border, var(--vscode-widget-border));
-           box-shadow: 0 4px 16px var(--vscode-widget-shadow); }
-  .toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  /* Full session: title bar, transcript and a composer pinned to the bottom of the pane (same as V2's session view). */
+  .session { min-height: 100%; display: flex; flex-direction: column; }
+  .s-head { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; gap: 8px; box-sizing: border-box; width: 100%; max-width: 800px; height: 40px;
+            margin: 0 auto; padding: 0 16px; background: var(--vscode-agentsPanel-background); }
+  .s-status { display: flex; }
+  .s-head h2 { flex: 1; min-width: 0; margin: 0; font-size: 13px; font-weight: 400; line-height: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .s-chat { flex: 1; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 8px; }
+  .s-chat vsc-chat-view, .s-composer vsc-chat-view { background: transparent; display: block; }
+  .s-composer { position: sticky; bottom: 0; z-index: 2; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 12px; background: var(--vscode-agentsPanel-background); }
+  .s-composer vsc-chat-input.interactive-input-part { margin-inline: 16px; }
+  /* A pending question sits 4px above the composer: the card's 8px bottom margin plus the input part's top padding would leave 12px. */
+  .s-ask { margin: 0 16px -8px; }
 
-  @media (max-width: 1180px) { .rail { width: 52px; } .rail .lbl, .rail .n, .rail .nav-h, .rail .kbd, .rail .pill { display: none; } .new-btn { justify-content: center; padding: 0; } .nav-item { justify-content: center; } }
+  /* Menu item under the pointer (VS Code applies these selection colors from JS). */
+  vsc-menu vsc-menu-item.focused > a.action-menu-item { background: var(--vscode-menu-selectionBackground); border-radius: var(--vscode-cornerRadius-medium); }
+  vsc-menu vsc-menu-item.focused > a.action-menu-item, vsc-menu vsc-menu-item.focused > a.action-menu-item > span { color: var(--vscode-menu-selectionForeground) !important; }
+  /* From vs/base/browser/ui/dialog/dialog.css (not part of the captured component CSS). */
+  vsc-dialog.monaco-dialog-modal-block { position: fixed; height: 100%; width: 100%; left: 0; top: 0; z-index: 2575; display: flex; justify-content: center; align-items: center; }
+  vsc-dialog.monaco-dialog-modal-block.dimmed { background: rgba(0, 0, 0, 0.5); }
+
+  @media (max-width: 1100px) { .list { width: 340px; } }
+
+  /* ---- Phone (≤ 640px): one pane at a time ---- */
+  @media (max-width: 640px) {
+    /* Title bar: sidebar toggle, back, session pill (fills the space) and avatar. */
+    .tb { gap: 6px; padding: 0 8px; }
+    .tb-center { position: static; transform: none; flex: 1; min-width: 0; }
+    .tb-center + .grow { display: none; }
+    .tb-run, .tb-layout, #nav-fwd, .agent-sessions-compact-new-button .new-session-keybinding-hint { display: none; }
+    .cc { width: auto; flex: 1; min-width: 0; }
+
+    .body { padding: 0 4px 4px !important; }
+    /* The rail becomes a drawer over the list, opened from the sidebar toggle. */
+    .rail { position: absolute; z-index: 20; top: 0; left: 0; bottom: 0; width: min(280px, 80vw); padding: 8px; background: var(--vscode-agents-background);
+            border-right: 1px solid var(--vscode-agentsPanel-border); box-shadow: 0 0 16px var(--vscode-widget-shadow); }
+    .scrim { position: absolute; inset: 0; z-index: 19; background: rgba(0, 0, 0, 0.35); }
+    #wb.rail-hidden .scrim { display: none; }
+    .list { width: auto; flex: 1; }
+    .reader { display: none; }
+    #wb.reading .list { display: none; }
+    #wb.reading .reader { display: block; }
+    .list-h { padding: 8px 6px 6px 8px; }
+    .search { height: 28px; }
+    .search input { font-size: 13px; }
+
+    /* Rows: status, title and time only (like V2 on phones); actions live in the session's "..." menu. */
+    .rows { padding: 2px 4px 8px; }
+    .row { padding: 12px 8px 12px 6px; }
+    .r-l2, .row:hover .row-actions { display: none; }
+    .row:hover .time { visibility: visible; }
+
+    .compose-in { padding: 0 12px 8vh; }
+    .compose h1 { font-size: 22px; margin-bottom: 14px; }
+
+    /* Toasts span the window width (as in the Agents window phone layout, src/vs/sessions/browser/media/phoneLayout.css). */
+    #toasts { left: 8px; right: 8px; }
+    #toasts .notifications-list-container { width: auto !important; }
+    #toasts .notification-toast { width: auto; }
+  }
+  @media (min-width: 641px) { .scrim { display: none; } }
 </style>
 </head>
 <body>
-<vsc-workbench id="wb" theme="dark-2026">
+<vsc-workbench id="wb" theme="dark-2026" class="nostatusbar">
   <header class="tb">
-    <vsc-toolbar label="Window"><vsc-action icon="layout-sidebar-left" label="Toggle Sidebar" checked></vsc-action></vsc-toolbar>
-    <div class="tb-title"><vsc-icon name="copilot"></vsc-icon>Agents</div>
-    <div class="tb-center"><div class="cc" id="cc"><vsc-icon name="search"></vsc-icon><span>Search sessions, workspaces and commands</span><span class="kbd" style="flex:none">⌘P</span></div></div>
+    <div class="tb-left">
+      <vsc-toolbar label="Window"><vsc-action icon="layout-sidebar-left-off" label="Toggle Sessions Sidebar" id="rail-btn"></vsc-action></vsc-toolbar>
+      <div class="monaco-button monaco-text-button secondary agent-sessions-compact-new-button default-colors" id="new-btn" role="button" tabindex="0" title="New Session (⌘N)" aria-label="New Session (⌘N)">
+        <span class="new-session-button-label">New</span><span class="new-session-keybinding-hint"><div class="monaco-keybinding"><span class="monaco-keybinding-key">⌘</span><span class="monaco-keybinding-key">N</span></div></span>
+      </div>
+    </div>
+    <div class="tb-center">
+      <vsc-toolbar class="tb-nav" label="Session Navigation"><vsc-action icon="arrow-left" label="Go Back" id="nav-back" disabled></vsc-action><vsc-action icon="arrow-right" label="Go Forward" id="nav-fwd" disabled></vsc-action></vsc-toolbar>
+      <div class="cc" role="button" tabindex="0" aria-label="Show Sessions: No workspace"><div class="cc-pill"><span class="codicon codicon-comment-discussion" aria-hidden="true"></span><span class="cc-label">No workspace</span></div></div>
+      <vsc-toolbar class="tb-run" label="Session Actions"><vsc-action icon="play" label="Run" disabled></vsc-action><vsc-action icon="vscode-insiders" label="Open in VS Code - Insiders"></vsc-action></vsc-toolbar>
+    </div>
     <div class="grow"></div>
-    <vsc-toolbar label="Global"><vsc-action icon="bell" label="Notifications"></vsc-action></vsc-toolbar>
-    <div class="avatar" title="hawkticehurst">HT</div>
+    <vsc-toolbar class="tb-layout" label="Layout">
+      <vsc-action icon="layout-panel-off" label="Show Panel (⌘J)"></vsc-action>
+      <vsc-action icon="layout-sidebar-right-off" label="Toggle Side Panel (⌥⌘B)"></vsc-action>
+      <vsc-action icon="radio-tower" label="Remote Access"></vsc-action>
+    </vsc-toolbar>
+    <button class="avatar" title="hawkticehurst" aria-label="Accounts: hawkticehurst"><img src="assets/profile.jpg" alt="" /></button>
   </header>
   <div class="body">
-    <nav class="rail" id="rail" aria-label="Mailboxes"></nav>
+    <nav class="rail" id="rail" aria-label="Mailboxes">
+      <div class="nav" id="nav"></div>
+    </nav>
+    <div class="scrim" id="scrim"></div>
     <section class="card list" aria-label="Sessions">
       <div class="list-h">
-        <h1 id="list-title">Inbox</h1><span class="muted" id="list-count"></span>
-        <div class="grow"></div>
-        <vsc-toolbar label="List actions">
-          <vsc-action icon="check-all" label="Mark All as Read" id="mark-all"></vsc-action>
-          <vsc-action icon="list-filter" label="Filter"></vsc-action>
-          <vsc-action icon="toolbar-more" label="More Actions..."></vsc-action>
+        <label class="search"><input id="q" placeholder="Search" autocomplete="off" /></label>
+        <vsc-toolbar label="Sessions">
+          <vsc-action icon="filter" label="Filter Sessions" id="filter-btn" dropdown></vsc-action>
         </vsc-toolbar>
       </div>
-      <label class="search"><vsc-icon name="search"></vsc-icon><input id="q" placeholder="Search sessions" autocomplete="off" /><span class="kbd">/</span></label>
-      <div class="chips" id="chips"></div>
-      <div class="rows" id="rows" tabindex="0" role="listbox" aria-label="Sessions"></div>
+      <div class="rows" id="rows" role="listbox" aria-label="Sessions"></div>
     </section>
-    <section class="card reader" id="reader" aria-live="polite"></section>
+    <main class="card reader" id="reader">
+      <section class="compose" id="compose" aria-label="New session">
+        <div class="compose-in">
+          <h1 id="greet">Good afternoon, Hawk</h1>
+          <vsc-chat-view><vsc-chat-input id="composer" placeholder="What should agents work on?">
+            <vsc-chat-picker slot="secondary" icon="folder" label="vscode" id="pick-ws"></vsc-chat-picker>
+            <vsc-chat-picker slot="secondary" kind="target" icon="vm-compact" label="Worktree" id="pick-env"></vsc-chat-picker>
+            <vsc-chat-picker slot="secondary" icon="shield-compact" label="Default permissions"></vsc-chat-picker>
+          </vsc-chat-input></vsc-chat-view>
+        </div>
+      </section>
+      <section class="session" id="session" aria-label="Session" hidden></section>
+    </main>
   </div>
-  <div class="toast" id="toast" role="status"><span id="toast-text"></span><a class="link" id="toast-undo">Undo</a></div>
+  <vsc-notification-toasts id="toasts" position="bottom-right"></vsc-notification-toasts>
 </vsc-workbench>
 
 <script type="module">
@@ -219,318 +257,501 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const md = (s) => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
 const icon = (n, extra = "") => `<vsc-icon name="${n}"${extra}></vsc-icon>`;
+const isPhone = () => matchMedia("(max-width: 640px)").matches;
 
 const wb = $("#wb");
 
-const state = { box: "inbox", chip: "all", q: "", sel: "s1", compose: false, sessions: D.sessions.map(s => ({ ...s })), seq: 100 };
+// sel: the session in the reading pane (null = the composer). compose: on phones, the composer is shown instead of the list.
+const state = { box: "ready", q: "", sel: null, lastSel: null, compose: false, rail: innerWidth > 1000,
+                sessions: D.sessions.map(s => ({ ...s })), seq: 100, ws: 0, env: 1, showDone: true };
+const ENVS = [["vm-compact", "Local"], ["worktree", "Worktree"], ["cloud", "Cloud"], ["remote", "devbox-1"]];
 
-const MAILBOXES = [
-  { id: "inbox", label: "Inbox", icon: "inbox", test: s => s.state !== "done" },
-  { id: "input", label: "Needs input", icon: "comment-unresolved", test: s => s.state === "input" },
-  { id: "working", label: "In progress", icon: "session-in-progress", test: s => s.state === "working" },
-  { id: "pinned", label: "Pinned", icon: "pinned", test: s => s.pinned },
-  { id: "done", label: "Done", icon: "archive", test: s => s.state === "done" },
+// Mailboxes are V2's inbox buckets. On-hold sessions live only in On hold until taken off hold, marked done or replied to.
+const BOXES = [
+  { id: "ready", label: "Ready for you", icon: "inbox", test: s => !s.onHold && !s.merging && (s.state === "input" || s.state === "review" || s.state === "error") },
+  { id: "working", label: "Working", icon: "session-in-progress", test: s => !s.onHold && !s.merging && s.state === "working" },
+  { id: "merge", label: "Ready to merge", icon: "git-merge", test: s => !!s.merging && s.state !== "done" },
+  { id: "hold", label: "On hold", icon: "clock", test: s => s.onHold && !s.merging && s.state !== "done" },
+  { id: "done", label: "Done", icon: "check", test: s => s.state === "done" },
 ];
-const boxTest = (id) => {
-  const m = MAILBOXES.find(b => b.id === id);
-  if (m) return m.test;
-  const [kind, key] = id.split(":");
-  return kind === "ws" ? (s => s.workspace === key && s.state !== "done") : (s => s.group === key && s.state !== "done");
+
+// Filter menu (mirrors the Agents window's Filter Sessions menu: unchecked options are excluded).
+// Environments: Local and Worktree both run on This Computer; anything other than Cloud is a remote agent host (e.g. devbox-1).
+const environmentOf = (s) => s.env === "Local" || s.env === "Worktree" ? "local" : s.env === "Cloud" ? "cloud" : s.env;
+const remoteHosts = [...new Set(D.sessions.map(environmentOf).filter(e => e !== "local" && e !== "cloud"))];
+const FILTER_GROUPS = [
+  { id: "env", label: "Environment", options: [["local", "This Computer"], ["cloud", "Cloud"], ...remoteHosts.map(h => [h, h])], value: environmentOf },
+  { id: "ws", label: "Workspace", options: D.workspaces.map(w => [w.id, w.label]), value: s => s.workspace },
+  { id: "harness", label: "Harness", options: Object.entries(H).map(([id, h]) => [id, h.label]), value: s => s.harness },
+];
+const excluded = Object.fromEntries(FILTER_GROUPS.map(g => [g.id, new Set()]));
+const hasFilters = () => FILTER_GROUPS.some(g => excluded[g.id].size) || !state.showDone;
+const visibleBoxes = () => BOXES.filter(b => b.id !== "done" || state.showDone);
+const passesFilters = (s) => FILTER_GROUPS.every(g => !excluded[g.id].has(g.value(s)));
+
+const visible = () => {
+  const t = BOXES.find(x => x.id === state.box).test, q = state.q.toLowerCase();
+  const list = state.sessions.filter(s => t(s) && passesFilters(s) && (!q || [s.title, s.preview, s.branch, WS[s.workspace].label].join(" ").toLowerCase().includes(q)));
+  // In Ready for you, sessions waiting on an answer come first; otherwise by recency.
+  const rank = (s) => state.box === "ready" && s.state === "input" ? 0 : 1;
+  return list.map((s, i) => [s, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([s]) => s);
 };
-const boxLabel = (id) => MAILBOXES.find(b => b.id === id)?.label || (id.startsWith("ws:") ? WS[id.slice(3)].label : D.groups.find(g => "group:" + g.id === id).label);
-const CHIPS = [
-  { id: "all", label: "All" },
-  { id: "unread", label: "Unread", test: s => s.unread },
-  { id: "input", label: "Needs input", test: s => s.state === "input" },
-  { id: "pr", label: "Has PR", test: s => !!s.pr },
-];
 
-function visible() {
-  const t = boxTest(state.box), c = CHIPS.find(x => x.id === state.chip).test || (() => true), q = state.q.toLowerCase();
-  return state.sessions.filter(s => t(s) && c(s) && (!q || [s.title, s.preview, s.branch, WS[s.workspace].label, H[s.harness].label].join(" ").toLowerCase().includes(q)));
-}
-
+// Mirrors SessionsListModelService.getStatusIcon in microsoft/vscode (src/vs/sessions).
 function statusIcon(s) {
-  if (s.state === "input") return `<span class="st-input" title="Needs input">${icon("comment-unresolved")}</span>`;
-  if (s.state === "working") return `<span class="st-working" title="In progress">${icon("loading", " spin")}</span>`;
+  if (s.state === "input") return `<span class="st-input" title="Needs input">${icon("report-question")}</span>`;
+  if (s.state === "working") return `<span class="st-working" title="In progress">${icon("session-in-progress")}</span>`;
   if (s.state === "error") return `<span class="st-error" title="Failed">${icon("error")}</span>`;
-  if (s.state === "done") return `<span class="st-done" title="Done">${icon("pass")}</span>`;
-  return s.unread ? `<span class="udot" title="Unread"></span>` : `<span class="rdot" title="Read"></span>`;
+  if (s.state === "done") return `<span class="st-read" title="Done">${icon("pass-filled")}</span>`;
+  return s.unread ? `<span class="st-unread" title="Unread">${icon("circle-filled")}</span>` : `<span class="st-read" title="Read">${icon("circle-small-filled")}</span>`;
 }
-const diffStat = (s) => { const a = s.files.reduce((n, f) => n + f[1], 0), d = s.files.reduce((n, f) => n + f[2], 0); return { a, d, n: s.files.length }; };
-function metaTags(s) {
+const diffStat = (s) => ({ a: s.files.reduce((n, f) => n + f[1], 0), d: s.files.reduce((n, f) => n + f[2], 0), n: s.files.length });
+function tags(s) {
   const out = [];
-  if (s.state === "input") out.push(`<span class="tag st-input">${icon("comment-unresolved")}Needs input</span>`);
-  if (s.state === "working") { const d = s.steps.filter(x => x[1] === "done").length; out.push(`<span class="tag st-working">Working · ${d + 1}/${s.steps.length}</span>`); }
-  if (s.state === "error") out.push(`<span class="tag st-error">${icon("error")}Build failed</span>`);
+  if (s.merging) out.push(`<span class="tag">${icon("git-merge")}${esc(s.merging.status)}</span>`);
+  else if (s.state === "working") { const d = s.steps.filter(x => x[1] === "done").length; out.push(`<span class="tag st-working">${d + 1}/${s.steps.length}</span>`); }
   if (s.pr) out.push(`<span class="tag"><span class="${s.pr.status === "Merged" ? "pr-merged" : "pr-open"}">${icon("git-pull-request")}</span>#${s.pr.num}</span>`);
   const { a, d, n } = diffStat(s);
-  if (n) out.push(`<span class="tag">${n} file${n > 1 ? "s" : ""} <span class="add">+${a}</span><span class="del">−${d}</span></span>`);
-  if (s.pinned) out.push(`<span class="tag">${icon("pinned")}</span>`);
+  if (n) out.push(`<span class="tag"><span class="add">+${a}</span><span class="del">−${d}</span></span>`);
   return out.join("");
 }
 
+// Hover actions per bucket. "redo" always means "send it back where it came from".
+function rowActions(s) {
+  const a = (ic, label, act) => `<vsc-action icon="${ic}" label="${label}" data-act="${act}"></vsc-action>`;
+  if (s.state === "done") return a("redo", "Restore", "done") + a("trash", "Delete... (Delete)", "delete");
+  if (s.merging) return a("redo", `Move Back to ${s.state === "working" ? "Working" : "Ready for You"} (M)`, "merge") + a("check", "Mark as Done (E)", "done");
+  if (s.onHold) return a("redo", "Take Off Hold (H)", "hold") + a("check", "Mark as Done (E)", "done");
+  return a("clock", "Put On Hold (H)", "hold") + (s.state === "review" ? a("git-merge", "Ready to Merge (M)", "merge") : "") + a("check", "Mark as Done (E)", "done");
+}
+// The session title bar's "..." menu holds the same actions.
+function sessionMenuItems(s) {
+  const i = (label, act) => `<vsc-menu-item label="${label}" data-act="${act}"></vsc-menu-item>`;
+  if (s.state === "done") return i("Restore", "done") + `<vsc-menu-separator></vsc-menu-separator>` + i("Delete...", "delete");
+  if (s.merging) return i(`Move Back to ${s.state === "working" ? "Working" : "Ready for You"}`, "merge") + i("Mark as Done", "done");
+  if (s.onHold) return i("Take Off Hold", "hold") + i("Mark as Done", "done");
+  return i("Put On Hold", "hold") + (s.state === "review" ? i("Ready to Merge", "merge") : "") + i("Mark as Done", "done");
+}
+
+// Ready to merge: an agent babysits the PR; this simulates it merging a little later, which moves the session to Done.
+const MERGE_DELAY_MS = 15000;
+function scheduleMerge(s) {
+  clearTimeout(s._mergeTimer);
+  s._mergeTimer = setTimeout(() => {
+    if (!s.merging || s.state === "done") return;
+    s.merging = null; s.state = "done"; s.unread = false; s.onHold = false; s.time = "now";
+    if (s.pr) s.pr.status = "Merged";
+    render(); toast(`${s.pr ? `#${s.pr.num}` : `"${s.title}"`} merged. Moved to Done.`);
+  }, MERGE_DELAY_MS);
+}
+
+// ---- Rendering ----
+function renderGreeting() {
+  const h = new Date().getHours();
+  $("#greet").textContent = `Good ${h < 12 ? "morning" : h < 18 ? "afternoon" : "evening"}, ${D.user.name}`;
+}
 function renderRail() {
-  const count = (t) => state.sessions.filter(t).length;
-  const unread = state.sessions.filter(s => s.state !== "done" && s.unread).length;
-  const item = (id, ic, label, right) => `<button class="nav-item ${state.box === id && !state.compose ? "active" : ""}" data-box="${id}" title="${esc(label)}">${ic}<span class="lbl grow">${esc(label)}</span>${right || ""}</button>`;
-  $("#rail").innerHTML = `
-    <button class="new-btn" id="new-btn" title="New Session (C)">${icon("new-session")}<span class="lbl grow">New Session</span><span class="kbd">C</span></button>
-    <div class="nav">${MAILBOXES.map(b => item(b.id, icon(b.icon), b.label,
-      b.id === "inbox" ? (unread ? `<span class="pill">${unread}</span>` : "") : `<span class="n">${count(b.test) || ""}</span>`)).join("")}</div>
-    <div class="nav-h"><span class="grow">Workspaces</span></div>
-    <div class="nav">${D.workspaces.map(w => item("ws:" + w.id, `<span class="dot" style="background:${w.color}"></span>`, w.label, `<span class="n">${count(boxTest("ws:" + w.id)) || ""}</span>`)).join("")}</div>
-    <div class="nav-h"><span class="grow">Groups</span></div>
-    <div class="nav">${D.groups.map(g => item("group:" + g.id, icon("folder"), g.label, `<span class="n">${count(boxTest("group:" + g.id)) || ""}</span>`)).join("")}</div>
-    <div class="rail-foot nav">${item("x-auto", icon("history"), "Automations")}${item("x-custom", icon("settings-gear"), "Customizations")}</div>`;
+  $("#nav").innerHTML = visibleBoxes().map(b => {
+    const items = state.sessions.filter(s => b.test(s) && passesFilters(s)), unread = items.filter(s => s.unread).length;
+    const n = b.id === "done" ? "" : b.id === "ready" && unread ? unread : items.length || "";
+    return `<button class="nav-item ${state.box === b.id ? "active" : ""}" data-box="${b.id}" aria-current="${state.box === b.id}">${icon(b.icon)}<span class="lbl">${b.label}</span><span class="n">${n}</span></button>`;
+  }).join("");
 }
-
-function renderChips() {
-  $("#chips").innerHTML = CHIPS.map(c => `<button class="chip ${state.chip === c.id ? "on" : ""}" data-chip="${c.id}">${c.label}</button>`).join("");
+function emptyHtml() {
+  const b = state.box;
+  const msg = state.q || hasFilters() ? "No sessions match your search or filters."
+    : b === "ready" ? "You're all caught up."
+    : b === "working" ? "No agents are working. Start one with New Session."
+    : b === "merge" ? "Nothing waiting to merge. Mark finished work Ready to merge and an agent will babysit it through reviews and CI."
+    : b === "hold" ? "Nothing on hold. Put a session on hold when it's waiting on something outside the agent, like feedback or research."
+    : "Nothing here yet.";
+  return `<div class="empty">${icon(b === "ready" ? "check-all" : b === "hold" ? "clock" : b === "merge" ? "git-merge" : "inbox")}${msg}</div>`;
 }
-
-function rowHtml(s) {
-  const h = H[s.harness], w = WS[s.workspace];
-  const prev = s.state === "input" ? `<b class="st-input">${esc(s.question.text)}</b> ${md(s.preview)}` : md(s.preview);
-  return `<div class="row ${s.unread ? "unread" : ""} ${state.sel === s.id && !state.compose ? "sel" : ""}" data-id="${s.id}" role="option" aria-selected="${state.sel === s.id}">
-    <div class="status">${statusIcon(s)}</div>
-    <div style="min-width:0">
-      <div class="r-from">${icon(h.icon)}<span>${h.label}</span><span class="muted">·</span><span class="dot" style="background:${w.color};margin:0 0 0 1px;width:6px;height:6px"></span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w.label}</span><span class="t">${s.time}</span></div>
-      <div class="r-title">${md(s.title)}</div>
-      <div class="r-prev">${prev}</div>
-      <div class="r-meta">${metaTags(s)}</div>
-    </div>
-    <div class="row-actions"><vsc-toolbar label="Session actions">
-      <vsc-action icon="${s.pinned ? "pinned" : "pin"}" label="${s.pinned ? "Unpin" : "Pin"} (P)" data-act="pin"></vsc-action>
-      <vsc-action icon="${s.unread ? "mail-read" : "mail"}" label="Mark as ${s.unread ? "Read" : "Unread"} (U)" data-act="unread"></vsc-action>
-      <vsc-action icon="${s.state === "done" ? "inbox" : "archive"}" label="${s.state === "done" ? "Move to Inbox" : "Mark as Done (E)"}" data-act="done"></vsc-action>
-    </vsc-toolbar></div>
-  </div>`;
-}
-
 function renderList() {
+  hasFilters() ? $("#filter-btn").setAttribute("checked", "") : $("#filter-btn").removeAttribute("checked");
   const list = visible();
-  $("#list-title").textContent = boxLabel(state.box);
-  const unread = list.filter(s => s.unread).length;
-  $("#list-count").textContent = `${list.length} session${list.length === 1 ? "" : "s"}${unread ? ` · ${unread} unread` : ""}`;
-  if (!list.length) {
-    $("#rows").innerHTML = `<div class="empty">${icon(state.box === "inbox" ? "check-all" : "inbox")}${state.q ? "No sessions match your search." : state.box === "inbox" ? "Inbox zero. Every agent is either done or waiting for a new task." : "Nothing here."}</div>`;
-    return;
-  }
-  const sections = [];
-  const pinned = state.box === "inbox" ? list.filter(s => s.pinned) : [];
-  if (pinned.length) sections.push(["Pinned", pinned]);
-  for (const s of list) {
-    if (pinned.includes(s)) continue;
-    const day = s.state === "input" && state.box === "inbox" ? "Needs your input" : s.day;
-    let sec = sections.find(x => x[0] === day);
-    if (!sec) sections.push(sec = [day, []]);
-    sec[1].push(s);
-  }
-  sections.sort((a, b) => (b[0] === "Needs your input") - (a[0] === "Needs your input") || (b[0] === "Pinned") - (a[0] === "Pinned"));
-  $("#rows").innerHTML = sections.map(([day, items]) => `<div class="day">${day === "Pinned" ? icon("pinned") : day === "Needs your input" ? `<span class="st-input">${icon("comment-unresolved")}</span>` : ""}${day}<span class="grow"></span><span style="font-weight:400">${items.length}</span></div>${items.map(rowHtml).join("")}`).join("");
+  if (!list.length) { $("#rows").innerHTML = emptyHtml(); return; }
+  $("#rows").innerHTML = list.map(s => {
+    const h = H[s.harness], w = WS[s.workspace];
+    return `<div class="row ${s.unread ? "unread" : ""} ${state.sel === s.id ? "sel" : ""}" data-id="${s.id}" role="option" aria-selected="${state.sel === s.id}">
+      <div class="status">${statusIcon(s)}</div>
+      <div style="min-width:0">
+        <div class="r-l1"><span class="t">${md(s.title)}</span><span class="time">${s.time}</span></div>
+        <div class="r-l2"><span class="from">${icon(h.icon)}<span>${h.label}</span><span>·</span><span class="ws" title="${w.repo}">${w.label}</span></span><span class="tags">${tags(s)}</span></div>
+      </div>
+      <div class="row-actions"><vsc-toolbar label="Session actions">${rowActions(s)}</vsc-toolbar></div>
+    </div>`;
+  }).join("");
 }
 
-function filesBox(s) {
-  const { a, d, n } = diffStat(s);
-  if (!n) return "";
-  return `<div class="box"><div class="box-h">${icon("diff")}${n} file${n > 1 ? "s" : ""} changed <span class="add mono">+${a}</span><span class="del mono">−${d}</span><span class="grow"></span><a class="link" style="font-weight:400">Review changes</a></div>
-    ${s.files.map(([p, fa, fd]) => { const i = p.lastIndexOf("/"); return `<div class="file">${icon("file")}<span class="path">${esc(p.slice(i + 1))} <span class="muted">${esc(p.slice(0, i + 1))}</span></span><span class="mono add">+${fa}</span><span class="mono del">−${fd}</span></div>`; }).join("")}</div>`;
-}
-function checksRow(s) {
-  if (!s.checks || !s.checks.length) return "";
-  const ic = { pass: `<span class="st-done">${icon("pass")}</span>`, fail: `<span class="st-error">${icon("error")}</span>`, pending: `<span class="st-working">${icon("loading", " spin")}</span>` };
-  return `<div class="checks">${s.checks.map(([l, st]) => `<span class="tag" style="height:22px;color:var(--vscode-foreground)">${ic[st]}${esc(l)}</span>`).join("")}</div>`;
-}
-function prBox(s) {
-  if (!s.pr) return "";
-  const merged = s.pr.status === "Merged";
-  return `<div class="box"><div class="pr"><span class="${merged ? "pr-merged" : "pr-open"}">${icon(merged ? "git-merge" : "git-pull-request")}</span>
-    <div class="grow"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.pr.title)} <span class="muted" style="font-weight:400">#${s.pr.num}</span></div><div class="muted" style="font-size:12px">${WS[s.workspace].repo} · ${esc(s.branch)}</div></div>
-    <span class="tag ${merged ? "pr-merged" : "pr-open"}">${s.pr.status}</span><a class="link">${icon("link-external")}</a></div></div>`;
-}
-function agentPart(s) {
+// ---- Reading pane: the session's chat rebuilt from its data with the design system's chat parts ----
+const replies = (s) => s.replies || [];
+const stepsTime = (n) => { const t = 14 + (n * 37) % 150; return t < 60 ? `${t}s` : `${Math.floor(t / 60)}m ${t % 60}s`; };
+function transcriptHtml(s) {
+  const out = [`<vsc-chat-request timestamp="${esc(s.time)}">${md(s.prompt)}</vsc-chat-request>`];
+  if (s.body?.length) {
+    // The finished turn: its tool calls collapse behind "Completed N steps", the final answer stays visible.
+    const calls = [
+      ...s.files.map(([p]) => `<vsc-chat-tool-call icon="book-compact" file="${esc(p)}">Read</vsc-chat-tool-call>`),
+      ...s.files.map(([p, a, d]) => `<vsc-chat-tool-call edit icon="pencil" file="${esc(p)}" added="${a}" removed="${d}"></vsc-chat-tool-call>`),
+      ...(s.checks || []).map(([name, st]) => `<vsc-chat-tool-call icon="terminal-compact">${st === "fail" ? "Checks failed on" : "Ran checks on"} <code>${esc(name)}</code></vsc-chat-tool-call>`),
+      ...(s.pr ? [`<vsc-chat-tool-call icon="git-pull-request">Opened pull request <strong>#${s.pr.num}</strong> ${esc(s.pr.title)}</vsc-chat-tool-call>`] : []),
+    ];
+    const { a, d } = diffStat(s), n = calls.length;
+    const summary = n ? ` summary="Completed ${n} step${n > 1 ? "s" : ""} in ${stepsTime(n + s.title.length)}"${a || d ? ` added="${a}" removed="${d}"` : ""}` : "";
+    let parts = n ? `<vsc-chat-tool-chain slot="steps">${calls.join("")}</vsc-chat-tool-chain>` : "";
+    parts += `<vsc-chat-markdown>${s.body.map(p => `<p>${p}</p>`).join("")}</vsc-chat-markdown>`;
+    if (s.question && s.answerIndex != null) parts += `<vsc-chat-question-summary question="${esc(s.question.text)}" answer="${esc(replies(s)[s.answerIndex])}"></vsc-chat-question-summary>`;
+    out.push(`<vsc-chat-response${summary}>${parts}</vsc-chat-response>`);
+  }
+  replies(s).forEach((r, i) => { if (i !== s.answerIndex) out.push(`<vsc-chat-request>${esc(r)}</vsc-chat-request>`); });
   if (s.state === "working") {
-    const done = s.steps.filter(x => x[1] === "done").length;
-    return `<div class="box"><div class="box-h"><span class="st-working">${icon("loading", " spin")}</span>Working <span class="muted">step ${done + 1} of ${s.steps.length}</span><span class="grow"></span><vsc-toolbar label="Run"><vsc-action icon="debug-stop" label="Stop"></vsc-action></vsc-toolbar></div>
-      <div class="bar"><i style="width:${Math.round((done + 0.5) / s.steps.length * 100)}%"></i></div>
-      <div style="padding:4px 0">${s.steps.map(([l, st]) => `<div class="step ${st}">${st === "done" ? `<span class="st-done">${icon("pass")}</span>` : st === "active" ? `<span class="st-working">${icon("loading", " spin")}</span>` : icon("circle-large-outline")}${md(l)}</div>`).join("")}</div></div>`;
+    // Still running: finished steps as tool calls, then the current one with a spinner. Upcoming steps aren't shown yet.
+    out.push(`<vsc-chat-response><vsc-chat-tool-chain>${s.steps.filter(x => x[1] !== "todo").map(([l, st]) =>
+      `<vsc-chat-tool-call icon="tools"${st === "active" ? " running" : ""}>${md(l)}</vsc-chat-tool-call>`).join("")}</vsc-chat-tool-chain></vsc-chat-response>`);
   }
-  let html = (s.body || []).map(p => `<p>${p}</p>`).join("");
-  if (s.state === "input") {
-    html += `<div class="box q"><div class="box-h"><span class="st-input">${icon("comment-unresolved")}</span>${esc(s.question.text)}</div><div class="q-body">
-      ${s.question.command ? `<code class="cmd">$ ${esc(s.question.command)}</code>` : ""}
-      <div class="opts">${s.question.options.map((o, i) => `<vsc-button ${i ? "secondary" : ""} data-answer="${esc(o)}">${esc(o)}</vsc-button>`).join("")}</div></div></div>`;
-  }
-  return html;
+  return out.join("");
 }
-
-function renderReader() {
-  const el = $("#reader");
-  if (state.compose) return renderCompose(el);
-  const s = state.sessions.find(x => x.id === state.sel);
-  if (!s) { el.innerHTML = `<div class="empty" style="margin:auto">${icon("mail")}Select a session to read it.</div>`; return; }
-  const h = H[s.harness], w = WS[s.workspace];
-  const envIcon = { Cloud: "cloud", Worktree: "worktree", Local: "vm" }[s.env];
-  const stateTag = { input: `<span class="tag st-input">${icon("comment-unresolved")}Needs input</span>`, working: `<span class="tag st-working">${icon("loading", " spin")}In progress</span>`, error: `<span class="tag st-error">${icon("error")}Failed</span>`, review: `<span class="tag st-done">${icon("pass")}Ready for review</span>`, done: `<span class="tag st-done">${icon("pass")}Done</span>` }[s.state];
-  el.innerHTML = `
-    <div class="rd-h">
-      <div class="rd-top"><h2>${md(s.title)}</h2>
-        <vsc-toolbar label="Session">
-          <vsc-action icon="${s.pinned ? "pinned" : "pin"}" label="${s.pinned ? "Unpin" : "Pin"} (P)" data-act="pin"></vsc-action>
-          <vsc-action icon="${s.unread ? "mail-read" : "mail"}" label="Mark as ${s.unread ? "Read" : "Unread"} (U)" data-act="unread"></vsc-action>
-          <vsc-action icon="${s.state === "done" ? "inbox" : "archive"}" label="${s.state === "done" ? "Move to Inbox" : "Mark as Done (E)"}" data-act="done"></vsc-action>
-          <vsc-action icon="go-to-file" label="Open Session in Chat"></vsc-action>
-          <vsc-action icon="toolbar-more" label="More Actions..."></vsc-action>
-        </vsc-toolbar></div>
-      <div class="rd-meta">${stateTag}<span class="tag"><span class="dot" style="background:${w.color};margin:0;width:6px;height:6px"></span>${w.label}</span><span class="tag">${icon("git-branch")}${esc(s.branch)}</span><span class="tag">${icon(envIcon)}${s.env}</span></div>
-    </div>
-    <div class="scroll"><div class="thread">
-      <div><div class="msg-h"><div class="avatar">HT</div><b>You</b><span class="muted">to ${h.label}</span></div><div class="bubble">${md(s.prompt)}</div></div>
-      ${(s.replies || []).map(r => `<div><div class="msg-h"><div class="avatar">HT</div><b>You</b><span class="muted">just now</span></div><div class="bubble">${esc(r)}</div></div>`).join("")}
-      <div><div class="msg-h"><div class="avatar">${icon(h.icon)}</div><b>${h.label}</b><span class="muted">${s.model} · ${s.time}</span></div>
-        <div class="msg-body">${agentPart(s)}${filesBox(s)}${checksRow(s)}${prBox(s)}</div></div>
-    </div></div>
-    <div class="composer"><div><vsc-chat-view><vsc-chat-input placeholder="Reply to ${h.label}…" no-secondary>
+// Design-system chat question carousel; the first option starts selected, like the product's auto-select on focus.
+function carouselHtml(s) {
+  return `<vsc-chat-question-carousel question="${esc(s.question.text)}">
+      ${s.question.command ? `<div slot="detail"><pre><code>${esc(s.question.command)}</code></pre></div>` : ""}
+      ${s.question.options.map((o, i) => `<vsc-chat-question-option label="${esc(o)}"${i ? "" : " selected"}></vsc-chat-question-option>`).join("")}
+    </vsc-chat-question-carousel>`;
+}
+function composerHtml(s) {
+  const envIcon = { Cloud: "cloud-compact", Worktree: "worktree-compact", Local: "vm-compact" }[s.env] ?? "remote-compact";
+  return `<vsc-chat-input placeholder="Reply to ${H[s.harness].label}…">
       <vsc-action slot="toolbar" menu icon="add-compact" label="Add Context..."></vsc-action>
       <vsc-chat-picker slot="toolbar" kind="mode" icon="agent-compact" label="Agent"></vsc-chat-picker>
       <vsc-chat-model-picker slot="toolbar" label="${s.model}"></vsc-chat-model-picker>
-    </vsc-chat-input></vsc-chat-view></div></div>`;
-  wireComposer(el, (text) => reply(s, text));
+      <vsc-action slot="toolbar" menu class="toolbar-shrinkable-item" icon="settings-compact" label="Configure Tools..."></vsc-action>
+      <vsc-chat-picker slot="secondary" kind="target" icon="${envIcon}" label="${s.env}"></vsc-chat-picker>
+      <vsc-chat-picker slot="secondary" icon="shield-compact" label="Default permissions"></vsc-chat-picker>
+    </vsc-chat-input>`;
+}
+function renderReader() {
+  const sec = $("#session"), s = state.sessions.find(x => x.id === state.sel);
+  if (!s) state.sel = null;
+  $("#compose").hidden = !!s; sec.hidden = !s;
+  if (!s) { sec.innerHTML = ""; sec._key = null; sec._id = null; return; }
+  const head = `<div class="s-status">${statusIcon(s)}</div><h2>${md(s.title)}</h2>
+    <vsc-toolbar label="Session"><vsc-action icon="ellipsis" label="More Actions..." id="session-more"></vsc-action></vsc-toolbar>`;
+  // Only rebuild the transcript when the conversation changed, so picks in the question card and composer drafts survive other updates.
+  const key = JSON.stringify([s.id, s.state, replies(s), s.answerIndex, s.steps]);
+  if (sec._key === key) { sec.querySelector(".s-head").innerHTML = head; return; }
+  const opening = sec._id !== s.id;
+  sec._key = key; sec._id = s.id;
+  sec.innerHTML = `<div class="s-head">${head}</div><div class="s-chat"><vsc-chat-view>${transcriptHtml(s)}</vsc-chat-view></div>` +
+    (s.state !== "done" ? `<div class="s-composer">${s.state === "input" && s.answerIndex == null ? `<div class="s-ask"><vsc-chat-view>${carouselHtml(s)}</vsc-chat-view></div>` : ""}<vsc-chat-view>${composerHtml(s)}</vsc-chat-view></div>` : "");
+  wireComposer(sec.querySelector(".s-composer"), (t) => reply(s, t));
+  // Like a chat view, open (and follow new turns) at the latest message.
+  requestAnimationFrame(() => $("#reader").scrollTo({ top: $("#reader").scrollHeight, behavior: opening ? "instant" : "smooth" }));
+}
+function renderChrome() {
+  const s = state.sessions.find(x => x.id === state.sel);
+  const label = s ? s.title.replace(/`/g, "") : "No workspace";
+  $(".cc-label").textContent = label;
+  $(".cc").setAttribute("aria-label", `Show Sessions: ${label}`);
+  const canBack = !!s || (isPhone() && state.compose), canFwd = !s && state.sessions.some(x => x.id === state.lastSel);
+  canBack ? $("#nav-back").removeAttribute("disabled") : $("#nav-back").setAttribute("disabled", "");
+  canFwd ? $("#nav-fwd").removeAttribute("disabled") : $("#nav-fwd").setAttribute("disabled", "");
+  wb.classList.toggle("rail-hidden", !state.rail);
+  wb.classList.toggle("reading", !!s || state.compose);
+  $("#rail-btn").setAttribute("label", `${state.rail ? "Hide" : "Show"} Sessions Sidebar`);
+  // Filled while the rail is open, outline when hidden (like the product's layout toggles).
+  $("#rail-btn").setAttribute("icon", state.rail ? "layout-sidebar-left" : "layout-sidebar-left-off");
+}
+function render() { renderGreeting(); renderRail(); renderList(); renderReader(); renderChrome(); }
+
+// ---- Selection and navigation ----
+function select(id, { scroll = true } = {}) {
+  const s = state.sessions.find(x => x.id === id);
+  if (!s) return;
+  closeMenus();
+  state.sel = id; state.compose = false;
+  if (s.unread && s.state !== "working") s.unread = false;
+  render();
+  if (scroll) $(`.row[data-id="${id}"]`)?.scrollIntoView({ block: "nearest" });
+}
+function back() {
+  if (state.sel) { state.lastSel = state.sel; state.sel = null; state.compose = false; }
+  else state.compose = false;
+  render();
+}
+function newSession() {
+  if (state.sel) state.lastSel = state.sel;
+  state.sel = null; state.compose = true;
+  if (isPhone()) state.rail = false;
+  render();
+  requestAnimationFrame(() => $("#composer .dt-editor-text")?.focus());
+}
+function setBox(id) {
+  state.box = id;
+  if (state.sel) state.lastSel = state.sel;
+  state.sel = null; state.compose = false;
+  if (isPhone()) state.rail = false;
+  render();
+  $("#rows").scrollTop = 0;
 }
 
-function renderCompose(el) {
-  const starters = [
-    ["bug", "Fix the top Insiders crash", "From last night's error telemetry"],
-    ["issues", "Triage new agents-window issues", "Label, dedupe and assign"],
-    ["git-pull-request", "Review PR #284112", "Unread badge on sidebar toggle"],
-    ["beaker", "Add tests for SessionsList grouping", "Cover repository and date modes"],
-  ];
-  el.innerHTML = `<div class="compose"><div>
-    <h2>New session</h2><div class="muted">Describe a task. The agent works in the background and reports back to your inbox.</div>
-    <div class="fields">
-      <span class="k">Workspace</span><div class="seg" id="f-ws">${D.workspaces.map((w, i) => `<button class="chip ${i ? "" : "on"}" data-ws="${w.id}"><span class="dot" style="background:${w.color};margin:0;width:6px;height:6px"></span>${w.label}</button>`).join("")}</div>
-      <span class="k">Agent</span><div class="seg" id="f-h">${Object.entries(H).map(([k, h], i) => `<button class="chip ${i ? "" : "on"}" data-h="${k}">${icon(h.icon)}${h.label}</button>`).join("")}</div>
-    </div>
-    <vsc-chat-view><vsc-chat-input id="compose-input" placeholder="Describe what to build"></vsc-chat-input></vsc-chat-view>
-    <div class="starters">${starters.map(([ic, t, d]) => `<button class="starter" data-starter="${esc(t)}">${icon(ic)}<span>${esc(t)}<small>${esc(d)}</small></span></button>`).join("")}</div>
-  </div></div>`;
-  for (const id of ["#f-ws", "#f-h"]) el.querySelector(id).addEventListener("click", (e) => {
-    const b = e.target.closest(".chip"); if (!b) return;
-    el.querySelectorAll(id + " .chip").forEach(c => c.classList.toggle("on", c === b));
-  });
-  el.querySelectorAll("[data-starter]").forEach(b => b.addEventListener("click", () => setComposerText(el, b.dataset.starter)));
-  wireComposer(el, (text) => {
-    const ws = el.querySelector("#f-ws .on").dataset.ws, harness = el.querySelector("#f-h .on").dataset.h;
-    const id = "n" + state.seq++;
-    state.sessions.unshift({
-      id, state: "working", unread: false, time: "now", day: "Today", title: text.length > 64 ? text.slice(0, 62) + "…" : text,
-      harness, model: harness === "codex" ? "GPT-6-Codex" : harness === "claude" ? "Claude Sonnet 5" : "Auto", workspace: ws, env: harness === "cloud" ? "Cloud" : "Worktree",
-      branch: "agents/" + text.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 28).replace(/-$/, ""), prompt: text, preview: "Planning…",
-      steps: [["Understand the task and explore the codebase", "active"], ["Make the change", "todo"], ["Run tests and hygiene", "todo"]], files: [],
-    });
-    state.compose = false; state.box = "inbox"; state.chip = "all"; state.sel = id;
-    render(); toast("Session started. You'll be notified in your inbox when it needs you.");
-  });
-  setTimeout(() => el.querySelector(".dt-editor-text")?.focus(), 50);
-}
-
-function setComposerText(root, text) {
-  const ed = root.querySelector(".dt-editor-text"); if (!ed) return;
-  ed.textContent = text; ed.dispatchEvent(new Event("input")); ed.focus();
-  const r = document.createRange(); r.selectNodeContents(ed); r.collapse(false); getSelection().removeAllRanges(); getSelection().addRange(r);
-}
 function wireComposer(root, onSend) {
+  if (!root) return;
   customElements.whenDefined("vsc-chat-input").then(() => requestAnimationFrame(() => {
     const ed = root.querySelector(".dt-editor-text"), submit = root.querySelector("vsc-chat-submit");
-    if (!ed) return;
-    const send = () => { const t = ed.textContent.trim(); if (t) onSend(t); };
+    if (!ed || ed.dataset.wired) return;
+    ed.dataset.wired = "1";
+    const send = () => { const t = ed.textContent.trim(); if (t) { onSend(t); ed.textContent = ""; ed.dispatchEvent(new Event("input")); } };
     ed.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } });
     submit?.addEventListener("click", send);
   }));
 }
 
-function reply(s, text) {
-  s.replies = [...(s.replies || []), text];
-  s.state = "working"; s.unread = false; s.time = "now"; s.day = "Today"; s.preview = "Working on your reply…";
-  s.steps = [["Read your reply", "done"], ["Continue the task", "active"], ["Run tests and hygiene", "todo"]];
-  render();
-  toast(`Sent to ${H[s.harness].label}.`);
+// Product notifications via the design system's <vsc-notification-toasts> (bottom-right, VS Code's default position).
+// Confirmations use the compact variant: Undo inline, no ✕, auto-dismissed after 5s.
+function toast(text, undoFn, severity = "info") {
+  const t = $("#toasts").show({ severity, message: text, buttons: undoFn ? ["Undo"] : [], compact: true });
+  if (undoFn) t.addEventListener("action", (e) => { if (e.detail.label === "Undo") { undoFn(); render(); } });
+  return t;
 }
 
-let undo = null, toastTimer;
-function toast(text, undoFn) {
-  undo = undoFn || null;
-  $("#toast-text").textContent = text; $("#toast-undo").style.display = undo ? "" : "none";
-  $("#toast").classList.add("show"); clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => $("#toast").classList.remove("show"), 4000);
+// ---- Actions ----
+function reply(s, text) {
+  s.replies = [...replies(s), text];
+  s.state = "working"; s.unread = false; s.onHold = false; clearTimeout(s._mergeTimer); s.merging = null; s.time = "now"; s.preview = "Working on your reply…";
+  s.steps = [["Read your reply", "done"], ["Continue the task", "active"], ["Run tests and hygiene", "todo"]];
+  render(); toast(`Sent to ${H[s.harness].label}. It moved to Working.`);
 }
-$("#toast-undo").addEventListener("click", () => { undo?.(); undo = null; $("#toast").classList.remove("show"); render(); });
+// Answering a question goes back to the agent like a reply; the transcript shows it as the question's answer.
+function answer(s, text) { s.answerIndex = replies(s).length; reply(s, text); }
 
 function act(s, a) {
-  if (a === "pin") s.pinned = !s.pinned;
+  const list = visible(), i = list.indexOf(s), next = list[i + 1] || list[i - 1];
+  // When the selected session leaves the mailbox, the next one opens in the reading pane (phones go back to the list).
+  const leave = () => { if (state.sel === s.id && i !== -1) { state.lastSel = s.id; state.sel = isPhone() ? null : next?.id ?? null; } };
+  const restore = () => { state.sel = s.id; state.compose = false; };
   if (a === "unread") s.unread = !s.unread;
+  if (a === "delete") { confirmDelete(s, leave); return; }
+  if (a === "merge") {
+    if (s.merging) {
+      const was = s.merging;
+      clearTimeout(s._mergeTimer); s.merging = null; leave();
+      toast(`Moved back to ${s.state === "working" ? "Working" : "Ready for you"}.`, () => { s.merging = was; scheduleMerge(s); restore(); });
+    } else {
+      s.merging = { status: s.pr ? "Waiting on checks" : "Opening pull request" }; s.unread = false; s.onHold = false; leave();
+      scheduleMerge(s);
+      toast("Moved to Ready to merge. An agent will see it through to merge.", () => { clearTimeout(s._mergeTimer); s.merging = null; restore(); });
+    }
+  }
+  if (a === "hold") {
+    const was = s.onHold;
+    s.onHold = !was; leave();
+    toast(was ? "Taken off hold." : "Moved to On hold.", () => { s.onHold = was; restore(); });
+  }
   if (a === "done") {
-    const prev = s.state;
-    if (prev === "done") { s.state = "review"; toast("Moved to Inbox."); }
+    const prev = s.state, prevHold = s.onHold;
+    if (prev === "done") { s.state = "review"; leave(); toast("Moved back to Ready for you."); }
     else {
-      const list = visible(), i = list.indexOf(s);
-      s.state = "done"; s.unread = false;
-      if (state.sel === s.id) state.sel = (list[i + 1] || list[i - 1] || {}).id;
-      toast("Marked as done.", () => { s.state = prev; state.sel = s.id; });
+      s.state = "done"; s.unread = false; s.onHold = false; clearTimeout(s._mergeTimer); const prevMerge = s.merging; s.merging = null; leave();
+      toast("Marked as done.", () => { s.state = prev; s.onHold = prevHold; s.merging = prevMerge; if (prevMerge) scheduleMerge(s); restore(); });
     }
   }
   render();
 }
-
-function select(id) {
-  state.sel = id; state.compose = false;
-  const s = state.sessions.find(x => x.id === id);
-  if (s && s.unread && s.state !== "working") s.unread = false;
-  render();
-  $(`.row[data-id="${id}"]`)?.scrollIntoView({ block: "nearest" });
+// Mirrors the Agents window's "Delete..." action: confirm first, then remove the session permanently (no undo).
+let dialog = null;
+function closeDialog() { dialog?.remove(); dialog = null; }
+function confirmDelete(s, leave) {
+  closeDialog();
+  dialog = document.createElement("vsc-dialog");
+  dialog.setAttribute("severity", "warning");
+  dialog.setAttribute("message", "Are you sure you want to delete this session?");
+  dialog.setAttribute("buttons", "Cancel,Delete");
+  dialog.textContent = "This action cannot be undone.";
+  wb.append(dialog);
+  requestAnimationFrame(() => [...dialog?.querySelectorAll(".monaco-button") ?? []].find(b => b.textContent === "Delete")?.focus());
+  dialog.addEventListener("click", (e) => {
+    const btn = e.target.closest(".monaco-button, .codicon-dialog-close"); if (!btn) return;
+    closeDialog();
+    if (btn.textContent !== "Delete") return;
+    leave();
+    if (state.sel === s.id) state.sel = null;
+    state.sessions = state.sessions.filter(x => x !== s);
+    render(); toast("Session deleted.");
+  });
 }
+document.addEventListener("keydown", (e) => {
+  if (!dialog) return;
+  e.stopImmediatePropagation();
+  if (e.key === "Escape") { e.preventDefault(); closeDialog(); }
+  else if (e.key === "Enter" && e.target.closest?.(".monaco-button")) { e.preventDefault(); e.target.click(); }
+}, true);
 
-function render() { renderRail(); renderChips(); renderList(); renderReader(); }
+// ---- Menus (Filter Sessions and the session's "..." menu), built from <vsc-menu> ----
+let menus = [];
+function closeMenus() { menus.forEach(m => m.remove()); menus = []; }
+const relRect = (el) => { const r = el.getBoundingClientRect(), w = wb.getBoundingClientRect(); return { left: r.left - w.left, right: r.right - w.left, top: r.top - w.top, bottom: r.bottom - w.top }; };
+function focusItem(menu, item) { menu.querySelectorAll("vsc-menu-item").forEach(i => i.classList.toggle("focused", i === item)); }
+function createMenu(html, x, y, label) {
+  const m = document.createElement("vsc-menu");
+  m.setAttribute("label", label);
+  m.setAttribute("x", Math.round(x)); m.setAttribute("y", Math.round(y));
+  m.innerHTML = html;
+  wb.append(m);
+  // Keep the menu inside the window (narrow windows): a submenu that would overflow flips to the other side of its parent.
+  requestAnimationFrame(() => {
+    const box = m.querySelector(".monaco-scrollable-element"); if (!box) return;
+    const r = relRect(box), maxX = wb.clientWidth - 8;
+    if (r.right > maxX) {
+      const w = r.right - r.left, parent = m.dataset.flipFrom ? Number(m.dataset.flipFrom) : null;
+      if (parent !== null && parent - w - 2 >= 8) m.setAttribute("x", Math.round(parent - w - 2));
+      else {
+        m.setAttribute("x", Math.round(Math.max(8, maxX - w)));
+        // No room on either side (phones): drop the submenu below its parent menu so the parent stays usable.
+        if (m.dataset.below) m.setAttribute("y", m.dataset.below);
+      }
+    }
+  });
+  return m;
+}
+function openFilterMenu() {
+  closeMenus();
+  const btn = relRect($("#filter-btn"));
+  const root = createMenu(`${FILTER_GROUPS.map(g => `<vsc-menu-item label="${g.label}" submenu data-group="${g.id}"></vsc-menu-item>`).join("")}
+    <vsc-menu-separator></vsc-menu-separator>
+    <vsc-menu-item label="Show Done" data-show-done${state.showDone ? " checked" : ""}></vsc-menu-item>
+    <vsc-menu-separator></vsc-menu-separator>
+    <vsc-menu-item label="Reset Filters" data-reset${hasFilters() ? "" : " disabled"}></vsc-menu-item>`, btn.left, btn.bottom + 4, "Filter Sessions");
+  menus = [root];
+  root.addEventListener("mouseover", (e) => {
+    const item = e.target.closest("vsc-menu-item"); if (!item || item.hasAttribute("disabled")) return;
+    focusItem(root, item);
+    if (item.dataset.group) openSubmenu(item); else closeSubmenu();
+  });
+  root.addEventListener("click", (e) => {
+    if (e.target.closest(".context-view-block")) { closeMenus(); return; }
+    const item = e.target.closest("vsc-menu-item"); if (!item || item.hasAttribute("disabled")) return;
+    if (item.dataset.group) { openSubmenu(item); return; }
+    if (item.hasAttribute("data-show-done")) { setShowDone(!state.showDone); closeMenus(); return; }
+    if (item.hasAttribute("data-reset")) { FILTER_GROUPS.forEach(g => excluded[g.id].clear()); closeMenus(); setShowDone(true); }
+  });
+}
+// Hiding Done removes its mailbox; if it was the open mailbox, fall back to Ready for you.
+function setShowDone(show) {
+  state.showDone = show;
+  if (!show && state.box === "done") { setBox("ready"); return; }
+  renderRail(); renderList();
+}
+function closeSubmenu() { if (menus[1]) { menus[1].remove(); menus.length = 1; } }
+function openSubmenu(parentItem, force) {
+  const group = FILTER_GROUPS.find(g => g.id === parentItem.dataset.group);
+  if (!force && menus[1]?.dataset.group === group.id) return;
+  closeSubmenu();
+  const box = relRect(menus[0].querySelector(".monaco-scrollable-element")), item = relRect(parentItem);
+  const sub = createMenu(group.options.map(([id, label]) => `<vsc-menu-item label="${esc(label)}" data-opt="${id}"${excluded[group.id].has(id) ? "" : " checked"}></vsc-menu-item>`).join(""), box.right + 2, item.top - 4, group.label);
+  sub.dataset.flipFrom = String(Math.round(box.left));
+  sub.dataset.below = String(Math.round(box.bottom + 4));
+  sub.dataset.group = group.id;
+  // Only the root menu's click-catcher should close the menus; the submenu's would cover the root.
+  requestAnimationFrame(() => { const block = sub.querySelector(".context-view-block"); if (block) block.style.display = "none"; });
+  menus[1] = sub;
+  sub.addEventListener("mouseover", (e) => { const i = e.target.closest("vsc-menu-item"); if (i) focusItem(sub, i); });
+  sub.addEventListener("click", (e) => {
+    const i = e.target.closest("vsc-menu-item"); if (!i) return;
+    const set = excluded[group.id], id = i.dataset.opt;
+    set.has(id) ? set.delete(id) : set.add(id);
+    const resetItem = menus[0].querySelector("[data-reset]");
+    hasFilters() ? resetItem.removeAttribute("disabled") : resetItem.setAttribute("disabled", "");
+    renderRail(); renderList();
+    openSubmenu(parentItem, true);
+    focusItem(menus[1], menus[1].querySelector(`[data-opt="${id}"]`));
+  });
+}
+function openSessionMenu(s) {
+  closeMenus();
+  const btn = relRect($("#session-more"));
+  const m = createMenu(sessionMenuItems(s), btn.left, btn.bottom + 4, "Session Actions");
+  menus = [m];
+  // Right-align the menu with the button, like a toolbar overflow menu.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const box = m.querySelector(".monaco-scrollable-element"); if (!box) return;
+    m.setAttribute("x", Math.round(Math.max(8, btn.right - box.getBoundingClientRect().width)));
+  }));
+  m.addEventListener("mouseover", (e) => { const item = e.target.closest("vsc-menu-item"); if (item) focusItem(m, item); });
+  m.addEventListener("click", (e) => {
+    if (e.target.closest(".context-view-block")) { closeMenus(); return; }
+    const item = e.target.closest("vsc-menu-item[data-act]"); if (!item) return;
+    closeMenus(); act(s, item.dataset.act);
+  });
+}
+for (const el of ["#rows", "#reader"]) $(el).addEventListener("scroll", closeMenus, { passive: true });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && menus.length) { e.stopImmediatePropagation(); closeMenus(); } }, true);
 
-$("#rail").addEventListener("click", (e) => {
-  if (e.target.closest("#new-btn")) { state.compose = true; render(); return; }
-  const b = e.target.closest("[data-box]"); if (!b || b.dataset.box.startsWith("x-")) return;
-  state.box = b.dataset.box; state.compose = false; const first = visible()[0]; if (first && !visible().some(s => s.id === state.sel)) state.sel = first.id; render();
-});
-$("#chips").addEventListener("click", (e) => { const b = e.target.closest("[data-chip]"); if (b) { state.chip = b.dataset.chip; render(); } });
+// ---- Events ----
+$("#rail-btn").addEventListener("click", () => { state.rail = !state.rail; renderChrome(); });
+$("#scrim").addEventListener("click", () => { state.rail = false; renderChrome(); });
+$("#new-btn").addEventListener("click", newSession);
+$("#new-btn").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); newSession(); } });
+// ⌘N / Ctrl+N, like the product (browsers may reserve it for a new window, so C works too).
+document.addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "n") { e.preventDefault(); newSession(); } }, true);
+$("#nav").addEventListener("click", (e) => { const b = e.target.closest("[data-box]"); if (b) setBox(b.dataset.box); });
 $("#q").addEventListener("input", (e) => { state.q = e.target.value; renderList(); });
+$("#filter-btn").addEventListener("click", () => { menus.length ? closeMenus() : openFilterMenu(); });
 $("#rows").addEventListener("click", (e) => {
-  const row = e.target.closest(".row"); if (!row) return;
-  const a = e.target.closest("[data-act]");
-  const s = state.sessions.find(x => x.id === row.dataset.id);
-  if (a) { e.stopPropagation(); act(s, a.dataset.act); return; }
-  select(s.id);
+  const a = e.target.closest("[data-act]"), row = e.target.closest(".row");
+  const s = state.sessions.find(x => x.id === row?.dataset.id);
+  if (a && s) { e.stopPropagation(); act(s, a.dataset.act); return; }
+  if (s) select(s.id, { scroll: false });
 });
-$("#reader").addEventListener("click", (e) => {
+$("#session").addEventListener("click", (e) => {
   const s = state.sessions.find(x => x.id === state.sel);
-  const a = e.target.closest("[data-act]"); if (a && s) { act(s, a.dataset.act); return; }
-  const ans = e.target.closest("[data-answer]"); if (ans && s) reply(s, ans.dataset.answer);
+  if (s && e.target.closest("#session-more")) { menus.length ? closeMenus() : openSessionMenu(s); }
 });
-$("#mark-all").addEventListener("click", () => { visible().forEach(s => s.unread = false); render(); toast("Marked all as read."); });
-$("#cc").addEventListener("click", () => $("#q").focus());
+// Answers from the question carousel go back to the agent like a reply; skipping lets it continue with its defaults.
+$("#session").addEventListener("submit", (e) => {
+  const s = state.sessions.find(x => x.id === state.sel);
+  if (s && e.target.localName === "vsc-chat-question-carousel" && e.detail.answer) answer(s, e.detail.answer);
+});
+$("#session").addEventListener("skip", () => {
+  const s = state.sessions.find(x => x.id === state.sel);
+  if (s) answer(s, "Skipped the question");
+});
+$("#nav-back").addEventListener("click", back);
+$("#nav-fwd").addEventListener("click", () => { if (!state.sel && state.lastSel) select(state.lastSel); });
+
+// Workspace and target pickers cycle through options (stand-in for their dropdowns).
+$("#pick-ws").addEventListener("click", () => { state.ws = (state.ws + 1) % D.workspaces.length; $("#pick-ws").setAttribute("label", D.workspaces[state.ws].label); });
+$("#pick-env").addEventListener("click", () => { state.env = (state.env + 1) % ENVS.length; $("#pick-env").setAttribute("icon", ENVS[state.env][0]); $("#pick-env").setAttribute("label", ENVS[state.env][1]); });
+wireComposer($("#compose"), (text) => {
+  const ws = D.workspaces[state.ws].id, env = ENVS[state.env][1];
+  state.sessions.unshift({
+    id: "n" + state.seq++, state: "working", unread: false, time: "now", day: "Today", title: text.length > 64 ? text.slice(0, 62) + "…" : text,
+    harness: "copilot", model: "Auto", workspace: ws, env,
+    branch: "agents/" + text.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 28).replace(/-$/, ""), prompt: text, preview: "Planning…",
+    steps: [["Understand the task and explore the codebase", "active"], ["Make the change", "todo"], ["Run tests and hygiene", "todo"]], files: [],
+  });
+  // Like V2: the composer stays put; only the counts (and the Working list, if open) update.
+  renderRail(); renderList(); toast("Session started. It'll land in Ready for you when it's done.");
+});
 
 document.addEventListener("keydown", (e) => {
-  if (e.target.closest("input, [contenteditable]") || e.metaKey || e.ctrlKey || e.altKey) { if (e.key === "Escape") e.target.blur?.(); return; }
-  const list = visible(), i = list.findIndex(s => s.id === state.sel), s = list[i];
-  const k = e.key;
-  if (k === "j" || k === "ArrowDown") { e.preventDefault(); if (list[i + 1]) select(list[i + 1].id); }
-  else if (k === "k" || k === "ArrowUp") { e.preventDefault(); if (list[i - 1]) select(list[i - 1].id); }
-  else if (k === "e" && s) act(s, "done");
-  else if (k === "u" && s) act(s, "unread");
-  else if (k === "p" && s) act(s, "pin");
-  else if (k === "c") { state.compose = true; render(); }
-  else if (k === "r" && s) { e.preventDefault(); $("#reader .dt-editor-text")?.focus(); }
-  else if (k === "/") { e.preventDefault(); $("#q").focus(); }
-  else if (k === "Escape" && state.compose) { state.compose = false; render(); }
+  if (e.target.closest("input, textarea, [contenteditable], vsc-chat-question-carousel") || e.metaKey || e.ctrlKey || e.altKey) { if (e.key === "Escape") e.target.blur?.(); return; }
+  const list = visible(), i = list.findIndex(s => s.id === state.sel);
+  const cur = state.sessions.find(x => x.id === state.sel);
+  if (e.key === "j" || e.key === "ArrowDown") { e.preventDefault(); const n = i === -1 ? list[0] : list[i + 1]; if (n) select(n.id); }
+  else if (e.key === "k" || e.key === "ArrowUp") { e.preventDefault(); const n = i === -1 ? list[0] : list[i - 1]; if (n) select(n.id); }
+  else if (e.key === "Escape" && (state.sel || state.compose)) { e.preventDefault(); back(); }
+  else if (e.key === "e" && cur) act(cur, "done");
+  else if (e.key === "u" && cur && cur.state !== "done") act(cur, "unread");
+  else if ((e.key === "Delete" || e.key === "Backspace") && cur && cur.state === "done") { e.preventDefault(); act(cur, "delete"); }
+  else if (e.key === "h" && cur && cur.state !== "done" && !cur.merging) act(cur, "hold");
+  else if (e.key === "m" && cur && (cur.merging || cur.state === "review")) act(cur, "merge");
+  else if (e.key === "c") { e.preventDefault(); newSession(); }
+  else if (e.key === "/") { e.preventDefault(); $("#q").focus(); }
+  else if (/^[1-5]$/.test(e.key) && visibleBoxes()[+e.key - 1]) setBox(visibleBoxes()[+e.key - 1].id);
 });
+addEventListener("resize", renderChrome);
 
-const s0 = state.sessions.find(s => s.id === state.sel);
 render();
 </script>
 </body>

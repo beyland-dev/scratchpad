@@ -1,0 +1,2106 @@
+/*
+ * Captured from vscode-file://vscode-app/Applications/Visual%20Studio%20Code%20-%20Insiders.app/Contents/Resources/app/out/vs/sessions/electron-browser/sessions.html
+ * Selector: .new-chat-widget-content.experimental-new-session-composer
+ * On: 2026-10-28T01:27:39.431Z
+ */
+
+/* @capture sessions.desktop.main.css@201 */
+.monaco-action-bar {
+  white-space: nowrap;
+  height: 100%;
+}
+
+/* @capture sessions.desktop.main.css@202 */
+.monaco-action-bar .actions-container {
+  display: flex;
+  margin: 0px auto;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+}
+
+/* @capture sessions.desktop.main.css@204 */
+.monaco-action-bar .action-item {
+  display: block;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+/* @capture sessions.desktop.main.css@205 */
+.monaco-action-bar .action-item.disabled {
+  cursor: default;
+}
+
+/* @capture sessions.desktop.main.css@206 */
+.monaco-action-bar .action-item .codicon {
+  display: block;
+}
+
+/* @capture sessions.desktop.main.css@207 */
+.monaco-action-bar .action-item .codicon {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* @capture sessions.desktop.main.css@208 */
+.monaco-action-bar .action-label {
+  display: flex;
+  font-size: 11px;
+  padding: 3px;
+  border-radius: var(--vscode-cornerRadius-medium);
+}
+
+/* @capture sessions.desktop.main.css@209 */
+.monaco-action-bar .action-item.disabled .action-label:not(.icon),
+.monaco-action-bar .action-item.disabled .action-label:not(.icon)::before,
+.monaco-action-bar .action-item.disabled .action-label:not(.icon):hover {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture sessions.desktop.main.css@214 */
+.monaco-action-bar .action-item .action-label.separator {
+  width: 1px;
+  height: 16px;
+  cursor: default;
+  min-width: 1px;
+  padding: 0px;
+  background-color: var(--vscode-disabledForeground);
+  margin: 5px 4px !important;
+}
+
+/* @capture sessions.desktop.main.css@258 */
+.monaco-toolbar {
+  height: 100%;
+}
+
+/* @capture sessions.desktop.main.css@261.0 */
+:is(.monaco-toolbar.responsive.responsive-last) .monaco-action-bar > .actions-container > .action-item {
+  flex-shrink: 0;
+}
+
+/* @capture sessions.desktop.main.css@261.1 */
+:is(.monaco-toolbar.responsive.responsive-last) .monaco-action-bar > .actions-container > .action-item.toolbar-shrinkable-item {
+  flex-shrink: 1;
+  min-width: var(--vscode-toolbar-action-min-width, 20px);
+}
+
+/* @capture sessions.desktop.main.css@387 */
+.monaco-button.disabled:focus,
+.monaco-button.disabled {
+  opacity: 0.4 !important;
+  cursor: default;
+}
+
+/* @capture sessions.desktop.main.css@530 */
+.codicon[class*="codicon-"] {
+  font: 16px / 1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* @capture sessions.desktop.main.css@2588 */
+.interactive-session {
+  display: flex;
+  flex-direction: column;
+  max-width: 950px;
+  height: 100%;
+  margin: auto;
+  position: relative;
+  --vscode-chat-font-size-body-xs: .846em;
+  --vscode-chat-font-size-body-s: .923em;
+  --vscode-chat-font-size-body-m: 1em;
+  --vscode-chat-font-size-body-l: 1.077em;
+  --vscode-chat-font-size-body-xl: 1.231em;
+  --vscode-chat-font-size-body-xxl: 1.538em;
+}
+
+/* @capture sessions.desktop.main.css@2744 */
+.chat-dnd-overlay {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@2748 */
+.interactive-session .interactive-input-part {
+  --chat-input-radius: var(--vscode-cornerRadius-large);
+}
+
+/* @capture sessions.desktop.main.css@2751 */
+.monaco-workbench .interactive-session .chat-input-container {
+  box-sizing: border-box;
+  cursor: text;
+  background-color: var(--vscode-input-background);
+  border: var(--vscode-strokeThickness) solid var(--vscode-input-border, transparent);
+  --chat-input-own-radius: var(--chat-input-radius, var(--vscode-cornerRadius-large));
+  border-radius: var(--chat-input-stack-radius-top, var(--chat-input-own-radius)) var(--chat-input-stack-radius-top, var(--chat-input-own-radius)) var(--chat-input-own-radius) var(--chat-input-own-radius);
+  padding: 0px 6px 6px;
+  width: 100%;
+  position: relative;
+  transition: box-shadow 0.35s;
+  --chat-input-anim-duration: 4s;
+  --chat-input-working-border-color1: var(--vscode-chat-inputWorkingBorderColor1);
+}
+
+/* @capture sessions.desktop.main.css@2752 */
+.interactive-session .interactive-input-part:not(.compact) .chat-input-container {
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@2754 */
+.monaco-workbench .interactive-session .chat-input-container > .chat-input-working-border {
+  --chat-input-working-border-width: var(--vscode-strokeThickness);
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: var(--chat-input-working-border-width);
+  container-type: size;
+  overflow: clip;
+  mask: linear-gradient(rgb(0, 0, 0) 0px, rgb(0, 0, 0) 0px) content-box exclude, linear-gradient(rgb(0, 0, 0) 0px, rgb(0, 0, 0) 0px);
+  opacity: 0;
+  transition: opacity 0.35s;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* @capture sessions.desktop.main.css@2755 */
+.monaco-workbench .interactive-session .chat-input-container > .chat-input-working-border::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: hypot(calc(100cqw + 2 * var(--chat-input-working-border-width)),calc(100cqh + 2 * var(--chat-input-working-border-width)));
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(from 135deg,transparent 0deg,color-mix(in srgb,var(--chat-input-working-border-color1) 90%,transparent) 20deg,var(--chat-input-working-border-color1) 30deg,color-mix(in srgb,var(--chat-input-working-border-color1) 60%,transparent) 50deg,transparent 90deg,transparent 360deg);
+}
+
+/* @capture sessions.desktop.main.css@2756 */
+.monaco-workbench .interactive-session .chat-input-container > .chat-input-working-border-glow {
+  --chat-input-working-border-width: 2px;
+  filter: blur(1.5px);
+  z-index: 1;
+}
+
+/* @capture sessions.desktop.main.css@2757 */
+.monaco-workbench .interactive-session .chat-input-container > .chat-input-working-border-glow::before {
+  background: conic-gradient(from 135deg,transparent 0deg,color-mix(in srgb,var(--chat-input-working-border-color1) 60%,transparent) 25deg,color-mix(in srgb,var(--chat-input-working-border-color1) 35%,transparent) 50deg,transparent 90deg,transparent 360deg);
+}
+
+/* @capture sessions.desktop.main.css@2771 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar {
+  order: 2;
+  flex-shrink: 0;
+}
+
+/* @capture sessions.desktop.main.css@2772 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .actions-container {
+  gap: var(--vscode-spacing-size40);
+}
+
+/* @capture sessions.desktop.main.css@2773 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button {
+  position: relative;
+  border-radius: var(--vscode-cornerRadius-circle);
+}
+
+/* @capture sessions.desktop.main.css@2774 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button > .action-label {
+  box-sizing: border-box;
+  width: var(--chat-input-control-height);
+  height: var(--chat-input-control-height);
+  justify-content: center;
+  font-size: var(--vscode-codiconFontSize-compact);
+  border-radius: var(--vscode-cornerRadius-circle);
+  transition: background-color 0.25s, color 0.25s;
+}
+
+/* @capture sessions.desktop.main.css@2775 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button > .action-label.codicon-arrow-up-compact::before {
+  display: inline-block;
+  transform: translateY(0.5px);
+}
+
+/* @capture sessions.desktop.main.css@2777 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button:not(.disabled):has(> .action-label:focus-visible) {
+  outline: var(--vscode-strokeThickness) solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+  border-radius: var(--vscode-cornerRadius-circle);
+}
+
+/* @capture sessions.desktop.main.css@2778 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button > .action-label:focus,
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button > .action-label:focus-visible {
+  outline: none;
+}
+
+/* @capture sessions.desktop.main.css@2779 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button:not(.disabled) > .action-label {
+  background: var(--vscode-button-background);
+  transition: background-color 0.12s;
+  color: var(--vscode-button-foreground) !important;
+}
+
+/* @capture sessions.desktop.main.css@2780 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button:not(.disabled) > .action-label:hover,
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button:not(.disabled) > .action-label:focus-visible {
+  background: var(--vscode-button-hoverBackground);
+}
+
+/* @capture sessions.desktop.main.css@2782 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button > .chat-submit-button-label {
+  order: -1;
+  font-size: var(--vscode-fontSize-label1);
+  color: var(--vscode-descriptionForeground);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* @capture sessions.desktop.main.css@2783 */
+.interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item.chat-submit-button:not(.labeled) > .chat-submit-button-label {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@2784 */
+.interactive-session .chat-editing-session {
+  width: 100%;
+  position: relative;
+}
+
+/* @capture sessions.desktop.main.css@2804 */
+.chat-attachments-container {
+  display: flex;
+  flex-flow: wrap;
+  gap: 4px;
+  margin-top: 6px;
+  cursor: default;
+}
+
+/* @capture sessions.desktop.main.css@2809 */
+.interactive-session .interactive-input-part .chat-artifacts-widget-container,
+.interactive-session .interactive-input-part .chat-todo-list-widget-container {
+  width: 100%;
+  position: relative;
+}
+
+/* @capture sessions.desktop.main.css@2810 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget {
+  padding:var(--vscode-spacing-size40);box-sizing:border-box;border:var(--vscode-strokeThickness) solid var(--vscode-input-border, transparent);background-color:var(--vscode-editor-background);border-bottom:none;border-radius:var(--chat-input-stack-radius-top, var(--vscode-cornerRadius-large)) var(--chat-input-stack-radius-top, var(--vscode-cornerRadius-large)) 0 0;flex-direction:column;gap:2px;overflow:hidden;
+}
+
+/* @capture sessions.desktop.main.css@2811 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .todo-list-expand {
+  width: 100%;
+}
+
+/* @capture sessions.desktop.main.css@2812 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .todo-list-expand .monaco-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  justify-content: space-between;
+  width: 100%;
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--vscode-foreground);
+  padding: 0px;
+  min-width: unset;
+}
+
+/* @capture sessions.desktop.main.css@2813 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .todo-list-expand .monaco-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* @capture sessions.desktop.main.css@2814 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .todo-list-expand .todo-list-title-section {
+  padding-left: var(--vscode-spacing-size40);
+  display: flex;
+  align-items: center;
+  flex: 1 1 0%;
+  font-size: var(--vscode-fontSize-label1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 22px;
+}
+
+/* @capture sessions.desktop.main.css@2815 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .todo-list-expand .todo-list-title-section .codicon {
+  font-size: var(--vscode-codiconFontSize);
+  line-height: 22px;
+  flex-shrink: 0;
+}
+
+/* @capture sessions.desktop.main.css@2816 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .todo-clear-button-container {
+  padding-right: 2px;
+  display: flex;
+  align-items: center;
+  height: 22px;
+  opacity: 1;
+}
+
+/* @capture sessions.desktop.main.css@2817 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .todo-clear-button-container .monaco-button {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  padding: 0px;
+  border-radius: var(--vscode-cornerRadius-xSmall);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* @capture sessions.desktop.main.css@2818 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .todo-clear-button-container .monaco-button:hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+/* @capture sessions.desktop.main.css@2819 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .todo-clear-button-container .monaco-button:focus {
+  outline: var(--vscode-strokeThickness) solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+}
+
+/* @capture sessions.desktop.main.css@2821 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .expand-icon {
+  flex-shrink: 0;
+  margin-right: var(--vscode-spacing-size40);
+}
+
+/* @capture sessions.desktop.main.css@2822 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .todo-list-title {
+  font-weight: var(--vscode-fontWeight-regular);
+  font-size: var(--vscode-fontSize-label1);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* @capture sessions.desktop.main.css@2823 */
+.interactive-session .interactive-input-part .chat-todo-list-widget-container .chat-todo-list-widget .todo-list-container {
+  margin-top: 2px;
+  max-height: 136.5px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scroll-padding-top: 24px;
+  scroll-padding-bottom: 24px;
+}
+
+/* @capture sessions.desktop.main.css@2832 */
+.interactive-session .interactive-input-and-side-toolbar {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  position: relative;
+}
+
+/* @capture sessions.desktop.main.css@2833 */
+.interactive-session .chat-input-container.focused {
+  border-color: var(--vscode-focusBorder);
+}
+
+/* @capture sessions.desktop.main.css@2834 */
+.chat-editor-container {
+  padding: 0px 0px 0px 4px;
+}
+
+/* @capture sessions.desktop.main.css@2835 */
+.interactive-session .interactive-input-part:not(.compact) .chat-editor-container {
+  container-type: inline-size;
+}
+
+/* @capture sessions.desktop.main.css@2844 */
+.interactive-session .chat-input-toolbars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+/* @capture sessions.desktop.main.css@2859 */
+.interactive-session .chat-input-toolbars :not(.responsive.chat-input-toolbar) .actions-container:first-child {
+  margin-right: auto;
+}
+
+/* @capture sessions.desktop.main.css@2860 */
+.interactive-session .chat-input-toolbars > .chat-input-toolbar .actions-container:first-child {
+  margin-right: 0px;
+}
+
+/* @capture sessions.desktop.main.css@2861 */
+.interactive-session .chat-input-toolbars > .chat-input-toolbar {
+  order: 0;
+  overflow: hidden;
+  min-width: 0px;
+  flex: 1 1 0px;
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture sessions.desktop.main.css@2861.0 */
+:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .monaco-action-bar .action-item .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture sessions.desktop.main.css@2861.1 */
+:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item {
+  min-width: 0px;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+/* @capture sessions.desktop.main.css@2861.1.0 */
+:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label {
+  min-width: 0px;
+  overflow: visible;
+  position: relative;
+}
+
+/* @capture sessions.desktop.main.css@2861.1.0.0 */
+:is(:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label) .chat-input-picker-label {
+  flex-shrink: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+/* @capture sessions.desktop.main.css@2861.1.0.1 */
+:is(:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label) .model-picker-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  flex-shrink: 0;
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@2861.1.0.2 */
+:is(:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label) .codicon + .chat-input-picker-label {
+  margin-left: var(--vscode-spacing-size60);
+}
+
+/* @capture sessions.desktop.main.css@2861.1.0.3 */
+:is(:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label) .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@2861.1.1.0 */
+:is(:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .action-label.disabled) .codicon {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture sessions.desktop.main.css@2861.1.2 */
+:is(:is(.interactive-session .chat-input-toolbars > .chat-input-toolbar) .chat-input-picker-item) .codicon {
+  flex-shrink: 0;
+}
+
+/* @capture sessions.desktop.main.css@2862 */
+.interactive-session .chat-input-toolbar .chat-input-picker-item .action-label {
+  box-sizing: border-box;
+  height: var(--chat-input-control-height);
+  padding: 0 var(--vscode-spacing-size60);
+  border-radius: var(--vscode-cornerRadius-small);
+  display: flex;
+  align-items: center;
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture sessions.desktop.main.css@2865 */
+.monaco-workbench .interactive-session .chat-input-toolbar .monaco-action-bar .action-item > .action-label.codicon[class*="codicon-"] {
+  justify-content: center;
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@2867 */
+.interactive-session .chat-input-toolbars .monaco-action-bar .actions-container {
+  display: flex;
+  gap: var(--vscode-spacing-size40);
+}
+
+/* @capture sessions.desktop.main.css@2870 */
+.monaco-workbench .interactive-session .chat-input-toolbars .monaco-action-bar .action-item .codicon,
+.monaco-workbench .interactive-session .chat-input-toolbars .action-label .codicon {
+  color: var(--vscode-icon-foreground) !important;
+}
+
+/* @capture sessions.desktop.main.css@2871 */
+.monaco-workbench .interactive-session .chat-input-toolbars .monaco-action-bar .action-item.disabled .codicon,
+.monaco-workbench .interactive-session .chat-input-toolbars .action-label.disabled .codicon {
+  color: var(--vscode-disabledForeground) !important;
+}
+
+/* @capture sessions.desktop.main.css@2872 */
+.interactive-session :is(.chat-input-toolbars, .chat-secondary-toolbar) .monaco-action-bar .action-item .action-label .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+  width: var(--vscode-codiconFontSize-compact);
+  height: var(--vscode-codiconFontSize-compact);
+  line-height: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@2898 */
+.interactive-session .interactive-input-part {
+  margin: 0px 12px;
+  padding: 4px 0px;
+  position: relative;
+}
+
+/* @capture sessions.desktop.main.css@2899 */
+.interactive-session .chat-input-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+/* @capture sessions.desktop.main.css@2900 */
+.interactive-session:not(.chat-floating-persistent-content) .interactive-input-part:not(.chat-input-hidden) > .chat-input-persistent-content {
+  display: contents;
+}
+
+/* @capture sessions.desktop.main.css@2924 */
+.interactive-session .chat-input-container .chat-attached-context {
+  display: contents;
+}
+
+/* @capture sessions.desktop.main.css@2925 */
+.interactive-session .chat-attached-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* @capture sessions.desktop.main.css@3104 */
+.chat-input-overlay {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@3105 */
+.chat-input-overlay.disabled {
+  position: absolute;
+  inset: 0px;
+  background-color: var(--vscode-sideBar-background);
+  opacity: 0.6;
+  display: flex;
+  z-index: 101;
+  user-select: none;
+  cursor: default;
+}
+
+/* @capture sessions.desktop.main.css@3106 */
+.chat-input-overlay.disabled {
+  top: calc(-1 * var(--vscode-chat-persistent-content-height, 0px));
+}
+
+/* @capture sessions.desktop.main.css@3582 */
+.chat-input-surface-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vscode-spacing-size40);
+}
+
+/* @capture sessions.desktop.main.css@3583 */
+.interactive-session .chat-input-surface-stack > .chat-input-surface-stack-slot:empty {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@3585 */
+.chat-input-stack {
+  gap: 0px;
+  --chat-input-stack-radius-outer: var(--chat-input-radius, var(--vscode-cornerRadius-large));
+}
+
+/* @capture sessions.desktop.main.css@3586 */
+.chat-input-stack > * {
+  --chat-input-stack-radius-top: var(--chat-input-stack-radius-outer);
+}
+
+/* @capture sessions.desktop.main.css@3588 */
+.chat-input-stack-slot:not(.chat-input-stack-docked):not(.chat-input-stack-standalone) {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@3589 */
+.chat-input-notice {
+  position:relative;display:flex;flex-direction:column;gap:var(--vscode-spacing-size80);box-sizing:border-box;width:100%;max-width:100%;padding:var(--vscode-spacing-size120);border:var(--vscode-strokeThickness) solid var(--vscode-input-border, var(--vscode-widget-border, transparent));border-bottom:none;border-radius:var(--chat-input-stack-radius-top, var(--vscode-cornerRadius-large)) var(--chat-input-stack-radius-top, var(--vscode-cornerRadius-large)) 0 0;background-color:var(--vscode-agentsChatInput-background, var(--vscode-input-background));color:var(--vscode-foreground);
+}
+
+/* @capture sessions.desktop.main.css@3590 */
+.chat-input-notice:focus-visible {
+  outline: var(--vscode-strokeThickness) solid var(--vscode-focusBorder);
+  outline-offset: calc(-1 * var(--vscode-strokeThickness));
+}
+
+/* @capture sessions.desktop.main.css@3591 */
+.chat-input-notice.chat-input-notice-notification {
+  font-size: var(--vscode-chat-font-size-body-s);
+  font-family: var(--vscode-chat-font-family, inherit);
+  color: var(--vscode-descriptionForeground);
+}
+
+/* @capture sessions.desktop.main.css@3597 */
+.chat-input-notice.chat-input-notice-notification {
+  gap: var(--vscode-spacing-size20);
+  border-color: var(--chat-input-notice-severity);
+  background-color: color-mix(in srgb,var(--chat-input-notice-severity) 6%,var(--vscode-agentsChatInput-background, var(--vscode-input-background)));
+}
+
+/* @capture sessions.desktop.main.css@3671 */
+.monaco-segmented-icon-toggle-container {
+  display: flex;
+  align-items: center;
+}
+
+/* @capture sessions.desktop.main.css@3672 */
+.monaco-segmented-icon-toggle {
+  display: inline-flex;
+  justify-content: center;
+  align-items: stretch;
+  box-sizing: border-box;
+  width: var(--segmented-icon-toggle-width, 56px);
+  height: var(--segmented-icon-toggle-height, 24px);
+  border: 1px solid var(--vscode-input-border, var(--vscode-editorWidget-border));
+  border-radius: var(--segmented-icon-toggle-radius, 8px);
+}
+
+/* @capture sessions.desktop.main.css@3673 */
+.monaco-segmented-icon-toggle-reel {
+  display: flex;
+  align-items: stretch;
+}
+
+/* @capture sessions.desktop.main.css@3674 */
+.monaco-segmented-icon-toggle-cell {
+  position: relative;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: var(--segmented-icon-toggle-cell-width, 27px);
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0px;
+  border-width: medium;
+  border-style: none;
+  border-color: currentcolor;
+  border-image: none;
+  background: transparent;
+  color: var(--vscode-icon-foreground);
+  cursor: pointer;
+  overflow: hidden;
+  transition: width 0.3s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.22s, color 0.2s;
+}
+
+/* @capture sessions.desktop.main.css@3675 */
+.monaco-segmented-icon-toggle-cell > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* @capture sessions.desktop.main.css@3676 */
+.monaco-segmented-icon-toggle-cell::before {
+  content: "";
+  position: absolute;
+  inset: 0px;
+  border-radius: var(--segmented-icon-toggle-cell-radius, 7px);
+  background: transparent;
+  transition: background 0.15s;
+  z-index: 0;
+}
+
+/* @capture sessions.desktop.main.css@3677 */
+.monaco-segmented-icon-toggle-cell:hover::before {
+  background: var(--vscode-toolbar-hoverBackground, transparent);
+}
+
+/* @capture sessions.desktop.main.css@3680 */
+.monaco-segmented-icon-toggle-cell.collapsed {
+  width: 0px;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: width 0.3s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.22s, color 0.2s, visibility linear 0.3s;
+}
+
+/* @capture sessions.desktop.main.css@3681.0 */
+@media (prefers-reduced-motion: reduce) {
+  .monaco-segmented-icon-toggle-cell {
+    transition: none;
+  }
+}
+
+/* @capture sessions.desktop.main.css@3682 */
+.monaco-segmented-icon-toggle-cell:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+/* @capture sessions.desktop.main.css@3683 */
+.monaco-segmented-icon-toggle-container.chat-voice-input-mode-item {
+  --segmented-icon-toggle-height: 22px;
+  --segmented-icon-toggle-radius: var(--vscode-cornerRadius-circle);
+  --segmented-icon-toggle-cell-radius: var(--vscode-cornerRadius-circle);
+}
+
+/* @capture sessions.desktop.main.css@3684 */
+.monaco-segmented-icon-toggle-cell.chat-voice-input-mode-cell:focus-visible {
+  outline: none;
+  border-radius: var(--segmented-icon-toggle-cell-radius);
+  box-shadow: inset 0 0 0 var(--vscode-strokeThickness) var(--vscode-focusBorder);
+}
+
+/* @capture sessions.desktop.main.css@3687 */
+.monaco-workbench:not(.monaco-enable-motion) .chat-voice-input-mode-cell {
+  transition: none;
+}
+
+/* @capture sessions.desktop.main.css@3688 */
+.chat-voice-input-mode-cell.voice {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture sessions.desktop.main.css@3690 */
+.monaco-workbench .chat-voice-input-mode-icon.codicon[class*="codicon-"] {
+  font-size: var(--vscode-codiconFontSize-compact);
+  width: auto;
+  height: auto;
+}
+
+/* @capture sessions.desktop.main.css@3692 */
+.chat-voice-input-mode-cell.voice > .chat-voice-input-mode-spinner {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@3696 */
+.chat-voice-input-mode-cell.dictation {
+  position: relative;
+}
+
+/* @capture sessions.desktop.main.css@3704 */
+.chat-voice-input-mode-bars {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: var(--vscode-codiconFontSize-compact);
+  height: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@3705 */
+.chat-voice-input-mode-bar {
+  width: 1px;
+  border-radius: var(--vscode-cornerRadius-circle);
+  background: currentcolor;
+  transform-origin: center center;
+  transition: height 0.22s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+/* @capture sessions.desktop.main.css@3706 */
+.chat-voice-input-mode-bar:nth-child(1) {
+  height: 6px;
+}
+
+/* @capture sessions.desktop.main.css@3707 */
+.chat-voice-input-mode-bar:nth-child(2) {
+  height: 12px;
+}
+
+/* @capture sessions.desktop.main.css@3708 */
+.chat-voice-input-mode-bar:nth-child(3) {
+  height: 8px;
+}
+
+/* @capture sessions.desktop.main.css@3709 */
+.chat-voice-input-mode-bar:nth-child(4) {
+  height: 4px;
+}
+
+/* @capture sessions.desktop.main.css@3731 */
+.chat-voice-input-mode-cell.dictation {
+  --dictation-mic-glow-radius: var(--vscode-cornerRadius-circle);
+}
+
+/* @capture sessions.desktop.main.css@3735 */
+.voice-glow-slot {
+  position: absolute;
+  inset: 0px;
+  pointer-events: none;
+  opacity: 0;
+  border-radius: inherit;
+  will-change: opacity;
+}
+
+/* @capture sessions.desktop.main.css@3755 */
+.chat-input-picker-split > .chat-input-picker-split-button {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: var(--chat-input-control-height, 22px);
+  min-width: 0px;
+  padding: 0 var(--vscode-spacing-size60);
+  border-radius: var(--vscode-cornerRadius-small);
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  white-space: nowrap;
+}
+
+/* @capture sessions.desktop.main.css@3756 */
+.chat-input-picker-split > .chat-input-picker-split-secondary {
+  position: relative;
+  margin-left: var(--vscode-spacing-size20);
+}
+
+/* @capture sessions.desktop.main.css@3757 */
+.chat-input-picker-split > .chat-input-picker-split-secondary::before {
+  position: absolute;
+  left: calc(-1 * var(--vscode-spacing-size20) / 2);
+  top: 50%;
+  width: var(--vscode-strokeThickness);
+  height: var(--vscode-spacing-size120);
+  background-color: var(--vscode-widget-border, var(--vscode-editorWidget-border, transparent));
+  content: "";
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* @capture sessions.desktop.main.css@3760 */
+.monaco-workbench .chat-input-picker-split-button:focus-visible,
+.monaco-workbench .chat-input-picker-focus-scope :is(.action-label, .monaco-button):focus-visible {
+  outline: var(--vscode-strokeThickness) solid var(--vscode-focusBorder);
+  outline-offset: calc(-1 * var(--vscode-strokeThickness));
+}
+
+/* @capture sessions.desktop.main.css@3761 */
+.monaco-workbench .chat-input-picker-split-button:focus:not(:focus-visible),
+.monaco-workbench .chat-input-picker-focus-scope :is(.action-label, .monaco-button):focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* @capture sessions.desktop.main.css@3762 */
+.chat-input-picker-item.model-picker-item {
+  overflow: visible;
+}
+
+/* @capture sessions.desktop.main.css@3763 */
+.interactive-session .chat-input-toolbar .chat-input-picker-item.model-picker-item .action-label.model-picker-split {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0px;
+}
+
+/* @capture sessions.desktop.main.css@3764 */
+.interactive-session .chat-input-toolbar.monaco-toolbar.responsive .monaco-action-bar > .actions-container > .action-item.model-picker-item {
+  flex-shrink: 1;
+}
+
+/* @capture sessions.desktop.main.css@3765 */
+.interactive-session .chat-input-toolbar .chat-input-picker-item .action-label.model-picker-split {
+  padding: 0px;
+  overflow: visible;
+  position: relative;
+  cursor: default;
+}
+
+/* @capture sessions.desktop.main.css@3769 */
+.chat-input-picker-item .action-label.model-picker-split .model-picker-name {
+  flex: 0 1 auto;
+  min-width: 0px;
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@3771 */
+.chat-input-picker-item .action-label.model-picker-split .model-picker-name .chat-input-picker-label {
+  flex: 0 1 auto;
+  min-width: 0px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* @capture sessions.desktop.main.css@3772 */
+.interactive-session .chat-input-toolbars > .chat-input-toolbar .chat-input-picker-item.model-picker-item .action-label.model-picker-split .model-picker-name .chat-input-picker-label {
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* @capture sessions.desktop.main.css@3776 */
+.chat-input-picker-item .action-label.model-picker-split .model-picker-config-summary {
+  flex: 0 0 auto;
+  color: var(--vscode-descriptionForeground);
+  white-space: nowrap;
+}
+
+/* @capture sessions.desktop.main.css@3777 */
+.chat-input-picker-item .action-label.model-picker-split .model-picker-config {
+  flex-shrink: 0;
+}
+
+/* @capture sessions.desktop.main.css@3778 */
+.chat-input-picker-item .action-label.model-picker-split .model-picker-section .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@3779 */
+.chat-input-picker-item .action-label.model-picker-split .model-picker-section .codicon + .chat-input-picker-label {
+  margin-left: var(--vscode-spacing-size60);
+}
+
+/* @capture sessions.desktop.main.css@3780 */
+.chat-input-picker-item .action-label.model-picker-split.disabled .model-picker-section {
+  cursor: default;
+}
+
+/* @capture sessions.desktop.main.css@3781 */
+.chat-input-picker-item .action-label.model-picker-split.disabled .model-picker-section:hover {
+  background-color: transparent;
+}
+
+/* @capture sessions.desktop.main.css@3782 */
+.chat-input-picker-item .action-label.model-picker-split.disabled .codicon {
+  color: var(--vscode-disabledForeground);
+}
+
+/* @capture sessions.desktop.main.css@4043 */
+.agent-host-mode-permission-summary {
+  min-width: 0px;
+  margin-left: var(--vscode-spacing-size60);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* @capture sessions.desktop.main.css@4044 */
+.agent-host-mode-permission-summary {
+  color: var(--vscode-descriptionForeground);
+  opacity: 0.85;
+}
+
+/* @capture sessions.desktop.main.css@4046 */
+.agent-host-mode-permission-summary.info {
+  color: var(--vscode-problemsInfoIcon-foreground);
+}
+
+/* @capture sessions.desktop.main.css@4060 */
+.sessions-chat-picker-slot .action-label.agent-host-mode-permissions-trigger {
+  display: flex;
+  height: var(--chat-input-control-height);
+  padding: 0px;
+  border-radius: var(--vscode-cornerRadius-small);
+  overflow: visible;
+  background: transparent;
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture sessions.desktop.main.css@4061 */
+.action-label.agent-host-mode-permissions-trigger .agent-host-mode-picker-button > .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+  width: var(--vscode-codiconFontSize-compact);
+  height: var(--vscode-codiconFontSize-compact);
+  line-height: var(--vscode-codiconFontSize-compact);
+  flex-shrink: 0;
+}
+
+/* @capture sessions.desktop.main.css@4063 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item .action-label.agent-host-mode-permissions-trigger:hover:not(.disabled) {
+  outline: none;
+}
+
+/* @capture sessions.desktop.main.css@4064 */
+.agent-host-permissions-button .agent-host-mode-permission-summary {
+  margin-left: 0px;
+}
+
+/* @capture sessions.desktop.main.css@4084 */
+.interactive-session .interactive-input-part > .chat-plan-review-widget-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* @capture sessions.desktop.main.css@4139 */
+.interactive-session .interactive-input-part > .chat-question-carousel-widget-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* @capture sessions.desktop.main.css@4161 */
+.interactive-session .interactive-input-part > .chat-tool-confirmation-carousel-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* @capture sessions.desktop.main.css@4164 */
+.chat-pet-host {
+  position: relative;
+}
+
+/* @capture sessions.desktop.main.css@4254 */
+.chat-input-notification-widget {
+  --chat-input-notification-line-height: 18px;
+}
+
+/* @capture sessions.desktop.main.css@4975 */
+.chat-getting-started-tip-container {
+  width: 100%;
+}
+
+/* @capture sessions.desktop.main.css@8367 */
+.monaco-workbench a {
+  text-decoration: none;
+}
+
+/* @capture sessions.desktop.main.css@8371 */
+.monaco-workbench a:active {
+  color: inherit;
+  background-color: inherit;
+}
+
+/* @capture sessions.desktop.main.css@8384 */
+.monaco-workbench .codicon {
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture sessions.desktop.main.css@8385 */
+.monaco-workbench .codicon[class*="codicon-"] {
+  font-size: 16px;
+}
+
+/* @capture sessions.desktop.main.css@8393 */
+.monaco-workbench a:focus-visible,
+.monaco-workbench [tabindex="0"]:focus,
+.monaco-workbench [tabindex="-1"]:focus,
+.monaco-workbench button:focus {
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
+  opacity: 1;
+}
+
+/* @capture sessions.desktop.main.css@8396 */
+.monaco-workbench [tabindex="0"]:active,
+.monaco-workbench [tabindex="-1"]:active {
+  outline: 0px !important;
+}
+
+/* @capture sessions.desktop.main.css@8405 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-label:not(.disabled):hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+/* @capture sessions.desktop.main.css@8406 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item.active .action-label:not(.disabled) {
+  background-color: var(--vscode-toolbar-activeBackground);
+}
+
+/* @capture sessions.desktop.main.css@8407 */
+.monaco-workbench .monaco-action-bar:not(.vertical) .action-item .action-label:hover:not(.disabled) {
+  outline: 1px dashed var(--vscode-toolbar-hoverOutline);
+  outline-offset: -1px;
+}
+
+/* @capture sessions.desktop.main.css@8408 */
+.agent-sessions-workbench .monaco-action-bar .action-label {
+  border-radius: var(--vscode-cornerRadius-small);
+}
+
+/* @capture sessions.desktop.main.css@8409 */
+.agent-sessions-workbench .monaco-action-bar .action-item .action-label.separator {
+  margin: 0px 4px !important;
+}
+
+/* @capture sessions.desktop.main.css@8959 */
+.monaco-workbench .part.sessionspart .session-view .interactive-session {
+  --vscode-interactive-session-foreground: var(--session-view-foreground) !important;
+}
+
+/* @capture sessions.desktop.main.css@8979 */
+.monaco-workbench .part.sessionspart .interactive-session .chat-input-toolbars > .chat-execute-toolbar .monaco-action-bar .action-item > .action-label.codicon-arrow-up-compact::before {
+  display: inline-block;
+  transform: translateY(0.5px);
+}
+
+/* @capture sessions.desktop.main.css@9570 */
+.agent-sessions-workbench .interactive-session {
+  max-width: none;
+}
+
+/* @capture sessions.desktop.main.css@9590 */
+.monaco-workbench.agent-sessions-workbench .interactive-session .chat-input-container {
+  background-color: var(--vscode-agentsChatInput-background);
+  color: var(--vscode-agentsChatInput-foreground);
+  border-color: var(--vscode-agentsChatInput-border) !important;
+}
+
+/* @capture sessions.desktop.main.css@9591 */
+.agent-sessions-workbench .interactive-session .chat-input-container.focused {
+  border-color: var(--vscode-agentsChatInput-focusBorder, var(--vscode-focusBorder)) !important;
+}
+
+/* @capture sessions.desktop.main.css@9596 */
+.agent-sessions-workbench .part.sessionspart .interactive-session .interactive-input-part {
+  width: 100%;
+  max-width: var(--session-view-centered-content-max-width, 950px);
+  margin: 0px auto;
+  display: inherit;
+  padding: var(--vscode-spacing-size40) var(--session-view-content-horizontal-padding, var(--vscode-spacing-size240));
+  box-sizing: border-box;
+}
+
+/* @capture sessions.desktop.main.css@9600 */
+.agent-sessions-workbench:not(.phone-layout) .interactive-session .chat-input-toolbars {
+  column-gap: var(--vscode-spacing-size80);
+}
+
+/* @capture sessions.desktop.main.css@9607 */
+.new-chat-widget-container.revealed .new-chat-input-container {
+  display: block;
+  margin-top: 0px;
+  animation: 0.35s ease 0.15s 1 normal both running chat-full-welcome-fade-in;
+}
+
+/* @capture sessions.desktop.main.css@9608 */
+.new-session-workspace-picker-container {
+  display: none;
+  width: 100%;
+  max-width: 800px;
+  padding: 0px;
+  box-sizing: border-box;
+  margin-bottom: var(--vscode-spacing-size80);
+}
+
+/* @capture sessions.desktop.main.css@9609 */
+.experimental-new-session-composer .new-session-workspace-picker-container {
+  padding: 0px;
+  margin-top: var(--vscode-spacing-size120);
+  margin-bottom: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9610 */
+.new-chat-widget-container.revealed .new-session-workspace-picker-container {
+  display: block;
+  animation: 0.35s ease 0.1s 1 normal both running chat-full-welcome-fade-in;
+}
+
+/* @capture sessions.desktop.main.css@9613 */
+.new-chat-widget-content .new-session-quick-chat-header {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@9615 */
+.experimental-new-session-composer .new-session-quick-chat-header {
+  justify-content: flex-end;
+  margin-bottom: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9616 */
+.agent-sessions-workbench:not(.phone-layout) .experimental-new-session-composer .new-session-quick-chat-header {
+  width: 100%;
+  margin: var(--vscode-spacing-size120) 0 0;
+  padding: var(--vscode-spacing-size40) var(--vscode-spacing-size80) var(--vscode-spacing-size60);
+  border-radius: var(--vscode-cornerRadius-large);
+}
+
+/* @capture sessions.desktop.main.css@9617 */
+.new-session-workspace-picker-container .sessions-workspace-category-picker.new-chat-session-options {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0px;
+  flex-wrap: nowrap;
+  gap: 0px;
+  padding: var(--vscode-spacing-size60) var(--vscode-spacing-size80);
+  border: var(--vscode-strokeThickness) solid var(--vscode-contrastBorder, transparent);
+  border-radius: var(--vscode-cornerRadius-large);
+}
+
+/* @capture sessions.desktop.main.css@9618 */
+.agent-sessions-workbench:not(.phone-layout) .experimental-new-session-composer .new-session-workspace-picker-container .new-chat-session-options {
+  max-width: calc(100% - 2 * (var(--vscode-spacing-size100) + var(--vscode-strokeThickness)));
+  margin-inline: calc(var(--vscode-spacing-size100) + var(--vscode-strokeThickness));
+}
+
+/* @capture sessions.desktop.main.css@9619 */
+.monaco-workbench.agent-sessions-workbench .sessions-chat-widget .new-chat-widget-content.experimental-new-session-composer .new-chat-session-options {
+  background-color: color-mix(in srgb,var(--vscode-agentsChatInput-background) 75%,var(--session-view-background));
+  border-radius: var(--vscode-cornerRadius-large) var(--vscode-cornerRadius-large) 0 0;
+}
+
+/* @capture sessions.desktop.main.css@9626 */
+.new-chat-session-options .new-chat-session-options-details {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--vscode-spacing-size80);
+  min-width: 0px;
+  width: max-content;
+  margin-left: var(--vscode-spacing-size80);
+  interpolate-size: allow-keywords;
+  overflow: clip;
+  transition: width 0.18s ease-out, margin-left 0.18s ease-out, opacity 0.18s ease-out, display 0.18s allow-discrete;
+}
+
+/* @capture sessions.desktop.main.css@9630 */
+.monaco-reduce-motion .new-chat-session-options .new-chat-session-options-details {
+  transition: none;
+}
+
+/* @capture sessions.desktop.main.css@9631.0 */
+@media (prefers-reduced-motion: reduce) {
+  .new-chat-session-options .new-chat-session-options-details {
+    transition: none;
+  }
+}
+
+/* @capture sessions.desktop.main.css@9632 */
+.new-chat-session-options .monaco-button.new-chat-session-options-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: var(--vscode-spacing-size240);
+  height: var(--vscode-spacing-size240);
+  margin-left: var(--vscode-spacing-size80);
+  padding: 0px;
+  border: 0px;
+  border-radius: var(--vscode-cornerRadius-small);
+  color: var(--vscode-descriptionForeground);
+  font-size: var(--vscode-codiconFontSize-compact);
+  cursor: pointer;
+}
+
+/* @capture sessions.desktop.main.css@9634 */
+.new-chat-session-options .monaco-button.new-chat-session-options-toggle:hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+  color: var(--vscode-foreground);
+}
+
+/* @capture sessions.desktop.main.css@9635 */
+.new-chat-session-options .monaco-button.new-chat-session-options-toggle:focus:not(:focus-visible),
+.new-chat-widget-container .new-chat-session-options .action-label:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* @capture sessions.desktop.main.css@9636 */
+.new-chat-session-options .monaco-button.new-chat-session-options-toggle:focus-visible,
+.new-chat-widget-container .new-chat-session-options .action-label:focus-visible,
+.monaco-workbench .new-chat-widget-container .new-chat-session-options .monaco-action-bar .action-item .action-label:focus-visible {
+  outline: var(--vscode-strokeThickness) solid var(--vscode-focusBorder);
+  outline-offset: calc(-1 * var(--vscode-strokeThickness));
+}
+
+/* @capture sessions.desktop.main.css@9637 */
+.new-chat-widget-container .new-chat-session-options :is(.sessions-chat-picker-slot, .new-chat-repo-config-container) .action-label:not(.separator) {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--vscode-spacing-size60);
+  height: var(--vscode-spacing-size240);
+  min-height: var(--vscode-spacing-size240);
+  padding: var(--vscode-spacing-size20) var(--vscode-spacing-size60);
+  background: transparent;
+  border: var(--vscode-strokeThickness) solid transparent;
+  border-radius: var(--vscode-cornerRadius-small);
+  color: var(--vscode-descriptionForeground);
+  font-size: var(--vscode-fontSize-label1);
+  line-height: var(--vscode-spacing-size160);
+}
+
+/* @capture sessions.desktop.main.css@9639 */
+.new-chat-widget-container .new-chat-session-options :is(.sessions-chat-picker-slot, .new-chat-repo-config-container) .action-label:not([aria-disabled="true"], [aria-readonly="true"]):active,
+.new-chat-session-options .monaco-button.new-chat-session-options-toggle:active {
+  background: var(--vscode-toolbar-activeBackground, var(--vscode-toolbar-hoverBackground));
+}
+
+/* @capture sessions.desktop.main.css@9640 */
+.new-chat-widget-container .new-chat-session-options .new-chat-repo-config-container .monaco-action-bar .actions-container {
+  gap: var(--vscode-spacing-size80);
+}
+
+/* @capture sessions.desktop.main.css@9641 */
+.new-chat-widget-container .new-chat-session-options .new-chat-repo-config-container .action-item {
+  margin: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9642 */
+.new-chat-session-options .action-item.repository-config-separator,
+.new-chat-session-options .sessions-workspace-category-picker-slot .sessions-chat-dropdown-chevron {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@9643 */
+.new-chat-session-options .sessions-chat-dropdown-label {
+  margin-left: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9645 */
+.new-chat-session-options .new-chat-repo-config-container {
+  flex-shrink: 0;
+}
+
+/* @capture sessions.desktop.main.css@9646 */
+.new-chat-session-options > .sessions-chat-picker-slot {
+  min-width: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9647 */
+.new-chat-widget-content {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-self: center;
+}
+
+/* @capture sessions.desktop.main.css@9648 */
+.sessions-chat-widget > .new-chat-widget-container > .new-chat-widget-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* @capture sessions.desktop.main.css@9656 */
+.new-chat-widget-container .new-chat-bottom-container {
+  width: 100%;
+  max-width: 800px;
+  margin-top: var(--vscode-spacing-size40);
+  padding: 0 var(--vscode-spacing-size40);
+  box-sizing: border-box;
+  display: none;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--vscode-spacing-size20);
+  min-height: var(--vscode-spacing-size280);
+  justify-content: space-between;
+}
+
+/* @capture sessions.desktop.main.css@9657 */
+.experimental-new-session-composer .new-chat-bottom-container {
+  justify-content: flex-end;
+}
+
+/* @capture sessions.desktop.main.css@9658 */
+.new-chat-widget-container.revealed .new-chat-bottom-container {
+  display: flex;
+}
+
+/* @capture sessions.desktop.main.css@9659 */
+.new-chat-widget-container.revealed .new-chat-bottom-container.empty {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@9660 */
+.agent-sessions-workbench:not(.phone-layout) .new-chat-widget-container .new-chat-bottom-container {
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@9661 */
+.new-chat-widget-container .new-chat-bottom-container .new-chat-controls-container {
+  display: flex;
+  gap: var(--vscode-spacing-size20);
+  min-width: 0px;
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@9662 */
+.new-chat-widget-container .new-chat-bottom-container .new-chat-secondary-controls-container,
+.new-chat-widget-container .new-chat-repo-config-container {
+  display: flex;
+  align-items: center;
+  gap: var(--vscode-spacing-size20);
+  min-width: 0px;
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@9663.0 */
+:is(.new-chat-widget-container .new-chat-repo-config-container) .monaco-action-bar .actions-container {
+  gap: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9663.1 */
+:is(.new-chat-widget-container .new-chat-repo-config-container) .action-label:not(.separator) {
+  background: transparent;
+}
+
+/* @capture sessions.desktop.main.css@9667 */
+.new-chat-widget-container .new-chat-bottom-container .new-chat-status-toolbar.has-no-actions {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@9668 */
+.new-chat-widget-container .new-chat-bottom-container .new-chat-secondary-controls-container > *,
+.new-chat-widget-container .new-chat-repo-config-container > * {
+  min-width: 0px;
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@9670 */
+.agent-sessions-workbench:not(.phone-layout) .experimental-new-session-composer .new-chat-repo-config-container .monaco-action-bar .action-item.repository-config-separator {
+  min-width: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9671 */
+.experimental-new-session-composer .new-chat-repo-config-container .monaco-action-bar .action-item.repository-config-separator .action-label.separator {
+  background-color: var(--vscode-widget-border, var(--vscode-editorWidget-border, transparent));
+  height: var(--vscode-spacing-size120);
+  margin: 0px !important;
+}
+
+/* @capture sessions.desktop.main.css@9678 */
+.new-chat-widget-container .new-chat-bottom-container .monaco-action-bar .actions-container,
+.experimental-new-session-composer .new-chat-repo-config-container .monaco-action-bar .actions-container {
+  gap: var(--vscode-spacing-size20);
+}
+
+/* @capture sessions.desktop.main.css@9679 */
+.experimental-new-session-composer .new-chat-repo-config-container .action-label {
+  box-sizing: border-box;
+  height: var(--chat-input-control-height);
+  align-items: center;
+  padding: 0 var(--vscode-spacing-size40);
+  font-size: var(--vscode-fontSize-label2, 11px);
+  color: var(--vscode-icon-foreground);
+  background-color: var(--session-view-background);
+}
+
+/* @capture sessions.desktop.main.css@9680 */
+.experimental-new-session-composer .new-chat-repo-config-container .action-label:not(.separator) {
+  background-color: transparent;
+}
+
+/* @capture sessions.desktop.main.css@9681 */
+.experimental-new-session-composer .new-chat-repo-config-container .codicon::before {
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@9687 */
+.new-chat-session-options .new-chat-repo-config-container .monaco-action-bar {
+  height: var(--vscode-spacing-size240);
+}
+
+/* @capture sessions.desktop.main.css@9697 */
+.sessions-workspace-category-picker {
+  display: flex;
+  flex-flow: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--vscode-spacing-size80);
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9698 */
+.experimental-new-session-composer .sessions-workspace-category-picker {
+  justify-content: flex-start;
+  gap: var(--vscode-spacing-size80) !important;
+}
+
+/* @capture sessions.desktop.main.css@9700 */
+.experimental-new-session-composer .sessions-workspace-category-picker .new-chat-session-options-details,
+.experimental-new-session-composer .sessions-workspace-category-picker .new-chat-session-options-toggle {
+  margin-left: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9701 */
+.experimental-new-session-composer .sessions-workspace-category-picker .action-label > .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+  width: var(--vscode-codiconFontSize-compact);
+  height: var(--vscode-codiconFontSize-compact);
+  line-height: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@9702 */
+.new-chat-repository-controls-host {
+  display: contents;
+}
+
+/* @capture sessions.desktop.main.css@9703 */
+.experimental-new-session-composer .sessions-chat-picker-slot.sessions-workspace-category-picker-slot .action-label {
+  min-height: var(--chat-input-control-height);
+  padding: 0 var(--vscode-spacing-size40);
+  background-color: transparent;
+  border-color: transparent;
+  border-radius: var(--vscode-cornerRadius-small);
+  color: var(--vscode-icon-foreground);
+  font-size: var(--vscode-fontSize-label2);
+}
+
+/* @capture sessions.desktop.main.css@9704 */
+.experimental-new-session-composer .sessions-chat-picker-slot.sessions-workspace-category-picker-slot .action-label:hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+  background-image: none;
+  border-color: transparent;
+}
+
+/* @capture sessions.desktop.main.css@9705 */
+.experimental-new-session-composer .sessions-chat-picker-slot.sessions-workspace-category-picker-slot .action-label > .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@9707 */
+.sessions-workspace-category-picker-slot {
+  flex: 0 1 auto;
+}
+
+/* @capture sessions.desktop.main.css@9708 */
+.sessions-chat-picker-slot > .monaco-toolbar,
+.sessions-chat-picker-slot > .monaco-toolbar .action-item {
+  min-width: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9710 */
+.sessions-chat-picker-slot.sessions-workspace-category-picker-slot .action-label {
+  gap: var(--vscode-spacing-size60);
+  min-height: var(--vscode-spacing-size240);
+  padding: var(--vscode-spacing-size20) var(--vscode-spacing-size120);
+  background-color: var(--session-view-background);
+  border: var(--vscode-strokeThickness) solid var(--vscode-commandCenter-inactiveBorder, var(--vscode-widget-border));
+  border-radius: var(--vscode-cornerRadius-circle);
+  box-sizing: border-box;
+  color: var(--vscode-descriptionForeground);
+  font-size: var(--vscode-fontSize-body1);
+  line-height: var(--vscode-spacing-size160);
+}
+
+/* @capture sessions.desktop.main.css@9711 */
+.sessions-chat-picker-slot.sessions-workspace-category-picker-slot .action-label:hover {
+  background-color: var(--session-view-background);
+  background-image: linear-gradient(var(--vscode-toolbar-hoverBackground),var(--vscode-toolbar-hoverBackground));
+  border-color: var(--vscode-commandCenter-activeBorder, var(--vscode-focusBorder));
+  color: var(--vscode-foreground);
+}
+
+/* @capture sessions.desktop.main.css@9712 */
+.sessions-chat-picker-slot.sessions-workspace-category-picker-slot .action-label:focus-visible {
+  outline: var(--vscode-strokeThickness) solid var(--vscode-focusBorder);
+  outline-offset: calc(-1 * var(--vscode-strokeThickness));
+}
+
+/* @capture sessions.desktop.main.css@9713 */
+.sessions-chat-picker-slot.sessions-workspace-category-picker-slot .action-label > .codicon {
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@9714 */
+.sessions-chat-picker-slot.sessions-workspace-category-picker-slot .action-label > .sessions-chat-dropdown-chevron {
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@9715 */
+.experimental-new-session-composer .sessions-chat-picker-slot.sessions-workspace-category-picker-slot .action-label > .sessions-chat-dropdown-chevron {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@9716 */
+.sessions-workspace-picker-trigger.workspace-clearable {
+  position: relative;
+}
+
+/* @capture sessions.desktop.main.css@9717 */
+.sessions-workspace-picker-trigger > .sessions-workspace-clear-button {
+  position: absolute;
+  left: calc(var(--vscode-spacing-size20) + var(--vscode-strokeThickness));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--vscode-spacing-size200);
+  height: var(--vscode-spacing-size200);
+  border-radius: var(--vscode-cornerRadius-small);
+  cursor: pointer;
+  color: var(--vscode-icon-foreground);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* @capture sessions.desktop.main.css@9720 */
+.sessions-workspace-picker-trigger > .monaco-button.sessions-workspace-clear-button.codicon::before {
+  font-size: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@9724 */
+.sessions-workspace-picker-trigger > .sessions-workspace-clear-button:focus-visible {
+  outline: var(--vscode-strokeThickness) solid var(--vscode-focusBorder);
+  outline-offset: var(--vscode-spacing-sizeNone);
+}
+
+/* @capture sessions.desktop.main.css@9728 */
+.sessions-workspace-category-picker > .sessions-chat-picker-slot .sessions-chat-dropdown-label {
+  margin-left: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9729 */
+.sessions-workspace-category-picker .new-chat-repo-config-container .action-label > .codicon:not(.monaco-checkbox) {
+  font-size: var(--vscode-codiconFontSize-compact);
+  width: var(--vscode-codiconFontSize-compact);
+  height: var(--vscode-codiconFontSize-compact);
+  line-height: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@9730 */
+.experimental-new-session-composer .sessions-workspace-category-picker .new-chat-repo-config-container .action-label:not(.separator) {
+  padding-left: var(--vscode-spacing-size60);
+  padding-right: var(--vscode-spacing-size60);
+}
+
+/* @capture sessions.desktop.main.css@9732 */
+.sessions-workspace-category-picker:empty {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@9733 */
+.sessions-chat-dropdown-label {
+  margin-left: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9735 */
+.sessions-chat-picker-slot {
+  display: flex;
+  align-items: center;
+  min-width: 0px;
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@9736 */
+.sessions-chat-picker-slot .action-label {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: var(--chat-input-control-height);
+  padding: 0 var(--vscode-spacing-size60);
+  background-color: transparent;
+  border-width: medium;
+  border-style: none;
+  border-color: currentcolor;
+  border-image: none;
+  color: var(--vscode-icon-foreground);
+  cursor: pointer;
+  touch-action: manipulation;
+  white-space: nowrap;
+  border-radius: var(--vscode-cornerRadius-small);
+  min-width: 0px;
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@9738 */
+.sessions-chat-picker-slot .action-label:not(.agent-host-mode-permissions-trigger):hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+  color: var(--vscode-foreground);
+}
+
+/* @capture sessions.desktop.main.css@9739 */
+.sessions-chat-picker-slot.disabled .action-label {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* @capture sessions.desktop.main.css@9740 */
+.sessions-chat-picker-slot.disabled .action-label:hover {
+  background-color: transparent;
+  color: var(--vscode-icon-foreground);
+}
+
+/* @capture sessions.desktop.main.css@9747 */
+.interactive-input-part .sessions-chat-picker-slot .action-label .codicon {
+  font-size: var(--vscode-codiconFontSize-compact, 12px);
+  flex-shrink: 0;
+  width: auto;
+  height: auto;
+}
+
+/* @capture sessions.desktop.main.css@9754 */
+.sessions-chat-picker-slot .action-label.info {
+  color: var(--vscode-problemsInfoIcon-foreground);
+}
+
+/* @capture sessions.desktop.main.css@9755 */
+.sessions-chat-picker-slot .action-label.info .codicon {
+  color: var(--vscode-problemsInfoIcon-foreground) !important;
+}
+
+/* @capture sessions.desktop.main.css@9758 */
+.new-chat-input-container {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 12px;
+  box-sizing: border-box;
+  display: none;
+  position: relative;
+  z-index: 1;
+}
+
+/* @capture sessions.desktop.main.css@9760 */
+.new-session-feedback-banners {
+  width: 100%;
+  max-width: 800px;
+}
+
+/* @capture sessions.desktop.main.css@9763 */
+.agent-sessions-workbench .new-chat-input-container.sessions-shared-chat-input .sessions-shared-chat-widget .interactive-session .interactive-input-part,
+.new-chat-input-container .interactive-input-part {
+  margin: 0px;
+  padding: 0px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* @capture sessions.desktop.main.css@9765 */
+.new-chat-input-container .chat-input-container {
+  overflow: hidden;
+  border-color: var(--vscode-agentsChatInput-border);
+}
+
+/* @capture sessions.desktop.main.css@9766 */
+.chat-input-picker-item .action-label.disabled,
+.chat-input-picker-item.disabled .action-label {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* @capture sessions.desktop.main.css@9767 */
+.sessions-chat-config-toolbar {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0px;
+  min-width: 0px;
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@9768 */
+.experimental-new-session-composer .sessions-chat-config-toolbar.new-chat-session-controls {
+  flex: 0 0 auto;
+  width: max-content;
+}
+
+/* @capture sessions.desktop.main.css@9769 */
+.experimental-new-session-composer .sessions-chat-config-toolbar.new-chat-session-controls .monaco-toolbar,
+.experimental-new-session-composer .sessions-chat-config-toolbar.new-chat-session-controls .monaco-action-bar,
+.experimental-new-session-composer .sessions-chat-config-toolbar.new-chat-session-controls .monaco-action-bar .actions-container {
+  overflow: visible;
+}
+
+/* @capture sessions.desktop.main.css@9771 */
+.agent-sessions-workbench:not(.phone-layout) .experimental-new-session-composer .chat-input-toolbar .action-item.model-picker-item {
+  margin-left: auto;
+}
+
+/* @capture sessions.desktop.main.css@9772 */
+.sessions-chat-config-toolbar .monaco-toolbar {
+  height: auto;
+  min-width: 0px;
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@9773 */
+.sessions-chat-config-toolbar .monaco-action-bar,
+.sessions-chat-config-toolbar .monaco-action-bar .actions-container {
+  min-width: 0px;
+  overflow: hidden;
+}
+
+/* @capture sessions.desktop.main.css@9774 */
+.sessions-chat-config-toolbar .monaco-action-bar .action-item {
+  display: flex;
+  align-items: center;
+  min-width: 30px;
+  overflow: visible;
+}
+
+/* @capture sessions.desktop.main.css@9781 */
+.sessions-chat-config-toolbar .monaco-action-bar .action-item:not(.compact-picker):not(.model-picker-item) {
+  flex-shrink: 0;
+}
+
+/* @capture sessions.desktop.main.css@9784 */
+.sessions-chat-config-toolbar .action-label {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: var(--chat-input-control-height);
+  padding: 0 var(--vscode-spacing-size60);
+  background-color: transparent;
+  border-width: medium;
+  border-style: none;
+  border-color: currentcolor;
+  border-image: none;
+  border-radius: var(--vscode-cornerRadius-small);
+  cursor: pointer;
+  touch-action: manipulation;
+  color: var(--vscode-icon-foreground);
+  white-space: nowrap;
+  min-width: 30px;
+  overflow: visible;
+}
+
+/* @capture sessions.desktop.main.css@9785 */
+.monaco-workbench .sessions-chat-config-toolbar .action-label:focus {
+  outline: none;
+}
+
+/* @capture sessions.desktop.main.css@9786 */
+.monaco-workbench .sessions-chat-config-toolbar .action-label:focus-visible {
+  outline: var(--vscode-strokeThickness) solid var(--vscode-focusBorder);
+  outline-offset: calc(-1 * var(--vscode-strokeThickness));
+}
+
+/* @capture sessions.desktop.main.css@9787 */
+.sessions-chat-config-toolbar .action-label:not(.agent-host-mode-permissions-trigger):hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+  color: var(--vscode-foreground);
+}
+
+/* @capture sessions.desktop.main.css@9788 */
+.sessions-chat-config-toolbar .action-label {
+  font-size: var(--vscode-fontSize-label2, 11px);
+}
+
+/* @capture sessions.desktop.main.css@9792 */
+.sessions-chat-config-toolbar .monaco-action-bar .action-item .action-label .codicon {
+  font-size: var(--vscode-codiconFontSize-compact, 12px);
+  flex-shrink: 0;
+  width: var(--vscode-codiconFontSize-compact);
+  height: var(--vscode-codiconFontSize-compact);
+  line-height: var(--vscode-codiconFontSize-compact);
+}
+
+/* @capture sessions.desktop.main.css@9794 */
+.sessions-chat-config-toolbar .monaco-action-bar .actions-container {
+  gap: 2px;
+}
+
+/* @capture sessions.desktop.main.css@9797 */
+.sessions-shared-chat-input .sessions-shared-chat-widget .interactive-session {
+  height: auto !important;
+}
+
+/* @capture sessions.desktop.main.css@9798 */
+.sessions-shared-chat-input {
+  --session-view-content-horizontal-padding: 0;
+}
+
+/* @capture sessions.desktop.main.css@9801 */
+.new-chat-bottom-container.sessions-shared-chat-input-controls.empty {
+  display: none;
+}
+
+/* @capture sessions.desktop.main.css@9803 */
+.sessions-shared-chat-input .interactive-session .chat-editor-container {
+  padding-top: 2px;
+}
+
+/* @capture sessions.desktop.main.css@9805 */
+.sessions-shared-chat-input .chat-input-container > .chat-attachments-container {
+  margin-top: 0px;
+  padding-top: 4px;
+}
+
+/* @capture sessions.desktop.main.css@9812 */
+.new-session-prompt-options {
+  border: var(--vscode-strokeThickness) solid var(--vscode-agentsChatInput-border);
+  border-radius: var(--chat-input-stack-radius-top, var(--vscode-cornerRadius-large)) var(--chat-input-stack-radius-top, var(--vscode-cornerRadius-large)) var(--vscode-cornerRadius-large) var(--vscode-cornerRadius-large);
+  box-sizing: border-box;
+  container-type: inline-size;
+  margin-bottom: var(--vscode-spacing-size80);
+  padding: var(--vscode-spacing-size120);
+  width: 100%;
+}
+
+/* @capture sessions.desktop.main.css@9813 */
+.new-session-prompt-options-header {
+  align-items: center;
+  display: flex;
+  margin-bottom: var(--vscode-spacing-size80);
+  min-width: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9814 */
+.new-session-prompt-options-title {
+  color: var(--vscode-agentsChatInput-foreground);
+  flex: 1 1 0%;
+  font-size: var(--vscode-fontSize-heading3);
+  font-weight: var(--vscode-fontWeight-semiBold);
+  line-height: 1.4;
+  margin: 0px;
+  min-width: 0px;
+}
+
+/* @capture sessions.desktop.main.css@9815 */
+.new-session-prompt-options-actions {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* @capture sessions.desktop.main.css@9816 */
+.new-session-prompt-options-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vscode-spacing-size80);
+  width: 100%;
+}
+
+/* @capture sessions.desktop.main.css@9853 */
+.session-input-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* @capture sessions.desktop.main.css@10165 */
+.sessions-chat-agent-host-config {
+  display: flex;
+  align-items: center;
+  gap: var(--vscode-spacing-size20);
+  min-width: 0px;
+}
+
+/* @capture sessions.desktop.main.css@10166 */
+.monaco-workbench .sessions-chat-agent-host-config-host[tabindex]:focus {
+  outline: none;
+}
+
+/* @capture sessions.desktop.main.css@10168 */
+.sessions-chat-agent-host-config a.action-label {
+  touch-action: manipulation;
+}
+
+/* @capture codiconStyles@32 */
+.codicon-warning::before {
+  content: "\ea6c";
+}
+
+/* @capture codiconStyles@58 */
+.codicon-close::before {
+  content: "\ea76";
+}
+
+/* @capture codiconStyles@68 */
+.codicon-device-desktop::before {
+  content: "\ea7a";
+}
+
+/* @capture codiconStyles@86 */
+.codicon-folder::before {
+  content: "\ea83";
+}
+
+/* @capture codiconStyles@160 */
+.codicon-chevron-right::before {
+  content: "\eab6";
+}
+
+/* @capture codiconStyles@172 */
+.codicon-clear-all::before {
+  content: "\eabf";
+}
+
+/* @capture codiconStyles@540 */
+.codicon-copilot::before {
+  content: "\ec1e";
+}
+
+/* @capture codiconStyles@615 */
+.codicon-agent::before {
+  content: "\ec67";
+}
+
+/* @capture codiconStyles@620 */
+.codicon-git-branch-changes::before {
+  content: "\ec6c";
+}
+
+/* @capture codiconStyles@673 */
+.codicon-add-compact::before {
+  content: "\ec9f";
+}
+
+/* @capture codiconStyles@678 */
+.codicon-chevron-down-compact::before {
+  content: "\eca4";
+}
+
+/* @capture codiconStyles@679 */
+.codicon-chevron-left-compact::before {
+  content: "\eca5";
+}
+
+/* @capture codiconStyles@684 */
+.codicon-close-compact::before {
+  content: "\ecaa";
+}
+
+/* @capture codiconStyles@686 */
+.codicon-comment-compact::before {
+  content: "\ecac";
+}
+
+/* @capture codiconStyles@694 */
+.codicon-loading-compact::before {
+  content: "\ecb4";
+}
+
+/* @capture codiconStyles@743 */
+.codicon-person-voice-compact::before {
+  content: "\ece5";
+}
+
+/* @capture codiconStyles@748 */
+.codicon-mic-compact::before {
+  content: "\ecea";
+}
+
+/* @capture codiconStyles@749 */
+.codicon-arrow-up-compact::before {
+  content: "\eceb";
+}
+
+/* @capture codiconStyles@755 */
+.codicon-mic-off-compact::before {
+  content: "\ecf1";
+}
+
+/* @capture codiconStyles@989 */
+.codicon-chat-model-provider-openai::before {
+  content: "\ec81";
+}
+
+/* @capture sessions.desktop.main.css@9611 */
+@keyframes chat-full-welcome-fade-in { 
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0px); }
+}

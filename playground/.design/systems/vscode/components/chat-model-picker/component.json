@@ -3,17 +3,46 @@
   "kind": "component",
   "title": "Model picker",
   "category": "chat",
-  "description": "Language model picker in the chat input toolbar (split button: model name + configuration).",
+  "description": "Language model picker in the chat input toolbar: a split button, model name + configuration. With `model` (Agents window layout) it shows the provider icon, the model name and its configuration summary (\"Medium · 272K\"); the name opens the model list and the summary opens the model's details (effort, context size, speed, pricing). Choosing a model or configuration updates it and fires `change` / `configure`.",
   "attributes": [
     {
       "name": "label",
       "type": "string",
-      "default": "Models",
-      "description": "Model name"
+      "description": "Model name (default \"Models\"); derived from `model` when set"
     },
     {
       "name": "badge",
       "type": "string"
+    },
+    {
+      "name": "model",
+      "type": "string",
+      "description": "Model id from ds.chatPickers (e.g. claude-opus-5-5): shows its provider icon, name and effort · context summary, and opens the real model list"
+    },
+    {
+      "name": "harness",
+      "type": "enum",
+      "values": [
+        "copilot",
+        "claude",
+        "codex"
+      ],
+      "default": "copilot"
+    },
+    {
+      "name": "icon",
+      "type": "string",
+      "description": "Provider codicon, e.g. chat-model-provider-openai"
+    },
+    {
+      "name": "config",
+      "type": "string",
+      "description": "Configuration summary, e.g. \"High · 1M\""
+    },
+    {
+      "name": "notice",
+      "type": "boolean",
+      "description": "Show the mid-session prompt-cache notice in the list"
     }
   ],
   "slots": [],
@@ -23,14 +52,17 @@
   "hostTag": "li",
   "cssCaptures": [
     "chat-model-picker-dark",
-    "chat-model-picker-light"
+    "chat-model-picker-light",
+    "agents-session-composer-light",
+    "agents-session-composer-dark"
   ],
   "requires": [
-    "vsc-workbench",
-    "vsc-chat-view"
+    "vsc-workbench"
   ],
   "tokens": [],
-  "uses": [],
+  "uses": [
+    "vsc-chat-model-list"
+  ],
   "sources": [
     {
       "path": "src/vs/workbench/contrib/chat/browser/widget/input/modelPicker"
@@ -38,8 +70,12 @@
   ],
   "examples": [
     {
-      "title": "In the chat input",
-      "html": "<vsc-chat-input></vsc-chat-input>"
+      "title": "Default",
+      "html": "<vsc-chat-view><vsc-chat-input></vsc-chat-input></vsc-chat-view>"
+    },
+    {
+      "title": "Agents window, Claude Opus 5.5",
+      "html": "<vsc-workbench window=\"agents\"><vsc-session-view style=\"width: 880px\"><vsc-chat-input variant=\"session\" model=\"claude-opus-5-5\"></vsc-chat-input></vsc-session-view></vsc-workbench>"
     }
   ],
   "references": [
@@ -68,5 +104,5 @@
     "summary": []
   },
   "createdAt": "2026-10-22T21:42:49.714Z",
-  "updatedAt": "2026-10-22T21:43:17.580Z"
+  "updatedAt": "2026-10-28T01:16:07.133Z"
 }
