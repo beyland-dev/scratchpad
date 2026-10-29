@@ -68,7 +68,7 @@ describe("project git", () => {
     await core.run("prototype.update", { id: "welcome", status: "review" });
     const commit = await core.run<GitStatus & { committed: boolean }>("project.git.commit", {});
     expect(commit.committed).toBe(true);
-    expect(commit.lastCommit?.subject).toBe("Update prototypes checkout, welcome");
+    expect(commit.lastCommit?.subject).toBe("Syncing prototype changes.");
     expect(commit.ahead).toBe(1);
     expect((await core.run<GitStatus>("project.git.push", {})).ahead).toBe(0);
 
@@ -171,9 +171,18 @@ describe("project git", () => {
         { path: "prototypes/a/index.html", status: " M" },
         { path: "prototypes/a/b.css", status: "??" },
         { path: "systems/ds/tokens.json", status: " M" },
-        { path: "project.json", status: " M" },
+        { path: "reviews/r/review.json", status: " M" },
       ]),
-    ).toBe("Update prototypes a; systems ds; 1 other file");
-    expect(summarizeChanges([])).toBe("Update project");
+    ).toBe("Syncing prototype, design system, and review changes.");
+    expect(
+      summarizeChanges([
+        { path: "project.json", status: " M" },
+        { path: "reviews/r/review.json", status: " M" },
+      ]),
+    ).toBe("Syncing review and project changes.");
+    expect(summarizeChanges([{ path: "README.md", status: " M" }])).toBe(
+      "Syncing project changes.",
+    );
+    expect(summarizeChanges([])).toBe("Syncing project changes.");
   });
 });

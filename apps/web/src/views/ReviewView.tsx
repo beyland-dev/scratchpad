@@ -1,8 +1,9 @@
 import { groupFamilies, versionLabel } from "@beyland/scratchpad-core/family";
 import { useEffect, useState } from "preact/hooks";
-import { useRoute } from "preact-iso";
+import { useLocation, useRoute } from "preact-iso";
 import { call } from "../api.ts";
 import { Icon } from "../components/Icon.tsx";
+import { MenuButton } from "../components/Menu.tsx";
 import { ConfirmDialog, Modal } from "../components/Modal.tsx";
 import { PrototypeThumb } from "../components/PrototypeCard.tsx";
 import { prototypeHref } from "../prototype-theme.ts";
@@ -10,9 +11,12 @@ import {
   changedSinceLastRound,
   familyTitle,
   loaded,
+  NEW_REVIEW_ID,
+  newReviewDraft,
   projectHref,
   prototypes,
   refresh,
+  reviewHref,
   reviewItemPrototype,
   reviews,
   versionLabelOf,
@@ -48,13 +52,39 @@ interface PublishOutcome {
 
 export function ReviewView() {
   const { params } = useRoute();
+  const { route } = useLocation();
   const project = params.project ?? "";
   const id = params.id ?? "";
-  const review = reviews.value.find((r) => r.project === project && r.id === id);
+  const isNew = id === NEW_REVIEW_ID;
+  const seed = newReviewDraft.value;
+  const savedReview = reviews.value.find((r) => r.project === project && r.id === id);
+  const review: Review | undefined =
+    savedReview ??
+    (isNew
+      ? {
+          id,
+          project,
+          title: seed?.project === project ? seed.title : "Untitled review",
+          questions: [],
+          presentation: "both",
+          device: "desktop",
+          items:
+            seed?.project === project
+              ? seed.prototypes.map((prototype, index) => ({
+                  prototype,
+                  label: optionLabel(index),
+                }))
+              : [],
+          rounds: [],
+          createdAt: "",
+          updatedAt: "",
+          urls: { app: "" },
+        }
+      : undefined);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [dialog, setDialog] = useState<"add" | "publish" | "share" | null>(null);
+  const [dialog, setDialog] = useState<"add" | "delete" | "publish" | "share" | null>(null);
   const [git, setGit] = useState<GitStatus | null>(null);
   const [published, setPublished] = useState<PublishOutcome | null>(null);
 
@@ -71,7 +101,7 @@ export function ReviewView() {
       </p>
     );
   const current = draft ?? draftOf(review);
-  const dirty = JSON.stringify(current) !== JSON.stringify(draftOf(review));
+  const dirty = isNew || JSON.stringify(current) !== JSON.stringify(draftOf(review));
   const ref = `${review.project}/${review.id}`;
   const update = (patch: Partial<Draft>) => setDraft({ ...current, ...patch });
   const setItem = (index: number, patch: Partial<ReviewItem>) =>
@@ -86,12 +116,11 @@ export function ReviewView() {
   const last = review.rounds.at(-1);
   const nextRound = (last?.round ?? 0) + 1;
 
-  const save = async () => {
-    if (!dirty) return;
-    await call("review.update", {
-      id: ref,
+  const save = async (): Promise<string> => {
+    if (!dirty) return ref;
+    const intro = current.intro?.trim() || undefined;
+    const input = {
       title: current.title.trim() || "Untitled review",
-      intro: current.intro?.trim() ? current.intro.trim() : null,
       questions: current.questions.map((q) => q.trim()).filter(Boolean),
       presentation: current.presentation,
       device: current.device,
@@ -100,9 +129,23 @@ export function ReviewView() {
         label: it.label.trim() || optionLabel(i),
         ...(it.note?.trim() ? { note: it.note.trim() } : {}),
       })),
-    });
+    };
+    if (isNew) {
+      const { review: created } = await call<{ review: Review }>("review.create", {
+        project,
+        ...input,
+        ...(intro ? { intro } : {}),
+      });
+      newReviewDraft.value = null;
+      await refresh();
+      setDraft(null);
+      route(reviewHref(created), true);
+      return `${created.project}/${created.id}`;
+    }
+    await call("review.update", { id: ref, ...input, intro: intro ?? null });
     await refresh();
     setDraft(null);
+    return ref;
   };
 
   const act = async (label: string, action: () => Promise<void>) => {
@@ -122,8 +165,8 @@ export function ReviewView() {
     const tab = window.open("", "_blank");
     void act("Preparing preview…", async () => {
       try {
-        await save();
-        const { url } = await call<{ url: string }>("review.preview", { id: ref });
+        const target = await save();
+        const { url } = await call<{ url: string }>("review.preview", { id: target });
         if (tab) {
           tab.opener = null;
           tab.location.href = url;
@@ -138,6 +181,7 @@ export function ReviewView() {
   const startPublish = () =>
     void act("Checking…", async () => {
       await save();
+      if (isNew) return;
       const status = await call<GitStatus>("project.git.status", { project });
       setGit(status);
       setDialog(status.remote ? "publish" : "share");
@@ -175,6 +219,18 @@ export function ReviewView() {
           >
             <Icon name="send" size={14} /> {busy ?? `Publish round ${nextRound}`}
           </button>
+          {!isNew && (
+            <MenuButton
+              label="Review options"
+              items={[
+                {
+                  label: "Delete review…",
+                  danger: true,
+                  onSelect: () => setDialog("delete"),
+                },
+              ]}
+            />
+          )}
         </div>
         <p class="review-status muted">
           {last ? (
@@ -199,6 +255,8 @@ export function ReviewView() {
               {changed.size > 0 &&
                 ` · ${changed.size} option${changed.size === 1 ? "" : "s"} changed since`}
             </>
+          ) : isNew ? (
+            "Draft: not saved yet"
           ) : (
             "Draft: not published yet"
           )}
@@ -410,7 +468,11 @@ export function ReviewView() {
             type="button"
             class="button primary"
             disabled={busy !== null}
-            onClick={() => void act("Saving…", save)}
+            onClick={() =>
+              void act("Saving…", async () => {
+                await save();
+              })
+            }
           >
             Save
           </button>
@@ -448,6 +510,30 @@ export function ReviewView() {
             Reviews are published to GitHub Pages from the project's git repo. Use{" "}
             <strong>Share project</strong> in the header to put the project in a repo, then publish
             again.
+          </p>
+        </ConfirmDialog>
+      )}
+      {dialog === "delete" && (
+        <ConfirmDialog
+          title={`Delete “${review.title}”?`}
+          confirmLabel="Delete review"
+          onClose={() => setDialog(null)}
+          onConfirm={async () => {
+            await call("review.delete", { id: ref });
+            await refresh();
+            setDialog(null);
+            route(projectHref(project, "feedback"));
+          }}
+        >
+          <p>
+            The local review moves to the project's <code>.trash/</code>.
+            {review.rounds.length ? (
+              <>
+                {" "}
+                All published rounds and their stable link are also removed from the repo's{" "}
+                <code>gh-pages</code> branch. GitHub Pages might take about a minute to update.
+              </>
+            ) : null}
           </p>
         </ConfirmDialog>
       )}

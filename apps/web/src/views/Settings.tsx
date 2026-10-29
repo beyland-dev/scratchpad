@@ -1,5 +1,13 @@
+import { useState } from "preact/hooks";
+import { call } from "../api.ts";
+import { AgentConnectionGuide } from "../components/ConnectAgent.tsx";
 import { Icon, type IconName } from "../components/Icon.tsx";
+import { ConfirmDialog } from "../components/Modal.tsx";
+import { useCommand } from "../hooks/useCommand.ts";
+import { refresh } from "../store.ts";
 import { setThemePreference, themePreference, type ThemePreference } from "../theme.ts";
+import type { TrashEntry } from "../types.ts";
+import { relativeTime } from "../util.ts";
 
 const THEMES: { id: ThemePreference; label: string; icon: IconName; hint: string }[] = [
   { id: "system", label: "System", icon: "monitor", hint: "Match your OS" },
@@ -46,8 +54,121 @@ export function Settings() {
           </div>
         </div>
       </section>
+
+      <section class="settings-section" aria-labelledby="agents-heading">
+        <h2 id="agents-heading">Agents and product context</h2>
+        <AgentConnectionGuide />
+      </section>
+
+      <TrashSettings />
     </div>
   );
+}
+
+function TrashSettings() {
+  const [revision, setRevision] = useState(0);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<TrashEntry | null>(null);
+  const result = useCommand<{ entries: TrashEntry[] }>("trash.list", {}, [revision]);
+  const entries = result.data?.entries ?? [];
+  const restore = async (entry: TrashEntry) => {
+    setBusy(entry.id);
+    setError(null);
+    try {
+      await call("trash.restore", { id: entry.id });
+      await refresh();
+      setRevision((value) => value + 1);
+    } catch (caught) {
+      setError((caught as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  };
+  return (
+    <section class="settings-section" aria-labelledby="trash-heading">
+      <h2 id="trash-heading">Trash</h2>
+      <p class="settings-section-intro">
+        Deleted content stays recoverable until you permanently remove it.
+      </p>
+      {(result.error || error) && (
+        <p class="error" role="alert">
+          {error ?? result.error}
+        </p>
+      )}
+      {result.loading && !result.data ? (
+        <p class="muted">Loading trash…</p>
+      ) : entries.length ? (
+        <div class="trash-list">
+          {entries.map((entry) => (
+            <div class="trash-row" key={entry.id}>
+              <span class="trash-icon" aria-hidden="true">
+                <Icon name="trash" size={14} />
+              </span>
+              <span class="trash-details">
+                <strong>{entry.label}</strong>
+                <span>
+                  {trashKindLabel(entry.kind)}
+                  {entry.project ? ` · ${entry.project}` : ""}
+                  {` · Deleted ${relativeTime(entry.deletedAt)}`}
+                </span>
+                {entry.issue && <span class="warn">{entry.issue}</span>}
+              </span>
+              <button
+                type="button"
+                class="button small"
+                disabled={!entry.restorable || busy !== null}
+                title={entry.restorable ? "Restore to its original location" : entry.reason}
+                onClick={() => void restore(entry)}
+              >
+                {busy === entry.id ? "Restoring…" : "Restore"}
+              </button>
+              <button
+                type="button"
+                class="button small danger"
+                disabled={busy !== null}
+                onClick={() => setDeleting(entry)}
+              >
+                Delete permanently
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p class="muted">Trash is empty.</p>
+      )}
+      {deleting && (
+        <ConfirmDialog
+          title={`Permanently delete “${deleting.label}”?`}
+          confirmLabel="Delete permanently"
+          onClose={() => setDeleting(null)}
+          onConfirm={async () => {
+            await call("trash.delete", { id: deleting.id });
+            setDeleting(null);
+            setRevision((value) => value + 1);
+          }}
+        >
+          <p>This removes the {trashKindLabel(deleting.kind).toLowerCase()} forever.</p>
+          <p>
+            <strong>This cannot be undone.</strong>
+          </p>
+        </ConfirmDialog>
+      )}
+    </section>
+  );
+}
+
+function trashKindLabel(kind: TrashEntry["kind"]): string {
+  return (
+    {
+      project: "Project",
+      prototype: "Prototype",
+      system: "Design system",
+      review: "Review",
+      component: "Component",
+      unknown: "Unknown item",
+    } satisfies Record<TrashEntry["kind"], string>
+  )[kind];
 }
 
 /** A miniature app window in fixed light or dark colors; System shows both, split diagonally. */

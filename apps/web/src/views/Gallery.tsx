@@ -7,6 +7,7 @@ import { PrototypeCard, familyUpdatedAt } from "../components/PrototypeCard.tsx"
 import { SearchInput } from "../components/SearchInput.tsx";
 import { STATUSES } from "../components/StatusBadge.tsx";
 import {
+  beginReviewDraft,
   byId,
   familyTitle,
   loadError,
@@ -14,10 +15,8 @@ import {
   projectEntries,
   projectIdOf,
   prototypes,
-  reviewHref,
   selection,
 } from "../store.ts";
-import { createReview } from "./Feedback.tsx";
 import type { PrototypeStatus, PrototypeWithUrls } from "../types.ts";
 
 export function Gallery() {
@@ -177,18 +176,18 @@ export function Gallery() {
             type="button"
             class="button"
             title="Package the selected versions as a review to share for feedback"
-            onClick={async () => {
+            onClick={() => {
               const picked = selected
                 .map((id) => byId.value.get(id))
                 .filter((p) => p !== undefined);
               const first = picked[0];
-              const review = await createReview(
+              const href = beginReviewDraft(
                 projectId,
                 first ? `${familyTitle(first)} feedback` : "Untitled review",
                 picked.map((p) => p.localId),
               );
               selection.value = [];
-              route(reviewHref(review));
+              route(href);
             }}
           >
             <Icon name="message" size={14} /> Request feedback

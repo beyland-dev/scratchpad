@@ -35,14 +35,17 @@ export {
 } from "./reviews.ts";
 export {
   exportReview,
+  deletePublishedReview,
   publishReview,
   findReviewApp,
   reviewAppCandidates,
   PUBLISH_BRANCH,
   type ExportResult,
+  type DeletePublishedReviewResult,
   type PublishResult,
 } from "./review-export.ts";
 export { reviewCommands } from "./review-commands.ts";
+export { trashCommands, type TrashEntry, type TrashKind } from "./trash.ts";
 export type { CreateProjectInput, UpdateProjectInput, ProjectIconInput } from "./projects.ts";
 export {
   PrototypeStore,

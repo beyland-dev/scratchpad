@@ -1,10 +1,16 @@
+import { rm } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 import type { Core } from "./core.ts";
 import { CoreError } from "./errors.ts";
 import { REF_PATTERN, parseRef, refKey } from "./refs.ts";
 import { defineCommand } from "./registry.ts";
-import { exportReview, publishReview } from "./review-export.ts";
+import {
+  deletePublishedReview,
+  exportReview,
+  publishReview,
+  PUBLISH_BRANCH,
+} from "./review-export.ts";
 import { ReviewFileSchema, type Review, type ReviewItem } from "./reviews.ts";
 import { SlugSchema } from "./schemas.ts";
 
@@ -164,17 +170,28 @@ export const reviewDelete = defineCommand({
   name: "review.delete",
   title: "Delete review",
   description:
-    "Move a review to its project's trash. Rounds already published stay online until removed from the gh-pages branch.",
+    "Delete every published round from the project's gh-pages branch, then move the local review to the project's trash. If remote cleanup fails, local data is kept.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({ id: ReviewRef }),
   handler: async ({ id }, core) => {
-    const { store, id: local } = core.reviews.locate(id);
+    const { scope, store, id: local } = core.reviews.locate(id);
+    const published = await deletePublishedReview(core, refKey(scope.id, local));
+    await rm(path.join(core.workspace.cacheDir, "review-previews", scope.id, local), {
+      recursive: true,
+      force: true,
+    });
     const result = await store.delete(local);
     core.events.emit("review.changed", { project: result.project, id: local, exists: false });
-    return result;
+    return { ...result, published };
   },
-  format: (out) => `Moved ${out.id} to ${out.trashedTo}`,
+  format: (out) =>
+    [
+      `Moved ${out.id} to ${out.trashedTo}`,
+      ...(out.published.removed
+        ? [`Removed ${out.published.path} from the ${PUBLISH_BRANCH} branch`]
+        : []),
+    ].join("\n"),
 });
 
 export const reviewExport = defineCommand({

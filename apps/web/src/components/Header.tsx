@@ -1,7 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import { useLocation } from "preact-iso";
 import { connected, projectEntries, projectHref, type ProjectSection } from "../store.ts";
-import { ConnectAgentButton } from "./ConnectAgent.tsx";
 import { ProjectGitControl } from "./GitControl.tsx";
 import { useActiveProject } from "./Sidebar.tsx";
 
@@ -49,7 +48,6 @@ export function Header() {
       )}
       <div class="app-header-end">
         {project && <ProjectGitControl key={project.id} project={project.id} />}
-        <ConnectAgentButton />
       </div>
     </header>
   );

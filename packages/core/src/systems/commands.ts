@@ -113,6 +113,7 @@ export const systemList = defineCommand({
     systems: await Promise.all(
       core.systems.list(input.project).map(async (s) => {
         const ref = refKey(s.project, s.id);
+        const components = core.systems.components(ref);
         return {
           id: s.id,
           project: s.project,
@@ -123,7 +124,11 @@ export const systemList = defineCommand({
           framework: s.framework,
           library: s.library,
           prefix: s.prefix,
-          components: core.systems.components(ref).length,
+          components: components.length,
+          previews: components.slice(0, 4).map((component) => ({
+            name: component.name,
+            title: component.title,
+          })),
           tokens: (await core.systems.tokens(ref).catch(() => [])).length,
           skill: skillName(s.id),
           urls: systemUrls(core, ref),

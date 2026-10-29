@@ -97,6 +97,24 @@ describe("reviews", () => {
     expect((await core.run<{ reviews: Review[] }>("review.list", {})).reviews).toHaveLength(1);
   });
 
+  test("delete moves an unpublished review to the project trash", async () => {
+    await create();
+    const preview = path.join(
+      core.workspace.cacheDir,
+      "review-previews/shop/checkout-options/index.html",
+    );
+    await mkdir(path.dirname(preview), { recursive: true });
+    await writeFile(preview, "cached");
+    const deleted = await core.run<{
+      published: { removed: boolean };
+      trashedTo: string;
+    }>("review.delete", { id: "checkout-options" });
+    expect(deleted.published.removed).toBe(false);
+    expect(deleted.trashedTo).toMatch(/^projects\/shop\/\.trash\/review-checkout-options-/);
+    expect(core.projects.scope("shop").reviews.has("checkout-options")).toBe(false);
+    await expect(readFile(preview, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
   test("export writes a self-contained site without internal metadata", async () => {
     await create();
     const out = path.join(tmp, "out");
@@ -156,6 +174,14 @@ describe("reviews", () => {
 
   test("publish needs a shared project, then pushes rounds to gh-pages", async () => {
     await create();
+    await core.run("review.create", {
+      title: "Checkout options",
+      items: [{ prototype: "checkout" }],
+    });
+    await core.run("review.update", {
+      id: "checkout-options-2",
+      title: "Inbox One",
+    });
     await expect(core.run("review.publish", { id: "checkout-options" })).rejects.toMatchObject({
       code: "INVALID_INPUT",
       message: expect.stringContaining("project.git.link"),
@@ -166,10 +192,10 @@ describe("reviews", () => {
 
     const first = await core.run<{ round: { round: number; path: string }; review: Review }>(
       "review.publish",
-      { id: "checkout-options" },
+      { id: "checkout-options-2" },
     );
     expect(first.round.round).toBe(1);
-    expect(first.round.path).toMatch(/^checkout-options-[0-9a-f]{8}\/round-1$/);
+    expect(first.round.path).toMatch(/^inbox-one-2-[0-9a-f]{8}\/round-1$/);
     const slug = first.review.slug!;
     await core.run("prototype.writeFile", {
       id: "checkout",
@@ -177,7 +203,7 @@ describe("reviews", () => {
       content: "<h1>two</h1>",
     });
     const second = await core.run<{ round: { round: number; path: string } }>("review.publish", {
-      id: "checkout-options",
+      id: "checkout-options-2",
     });
     expect(second.round.path).toBe(`${slug}/round-2`);
 
@@ -195,7 +221,54 @@ describe("reviews", () => {
         encoding: "utf8",
       }),
     ).not.toContain(slug);
-    expect(core.reviews.get("checkout-options").rounds.map((r) => r.round)).toEqual([1, 2]);
+    expect(core.reviews.get("checkout-options-2").rounds.map((r) => r.round)).toEqual([1, 2]);
+
+    const deleted = await core.run<{ published: { path?: string; removed: boolean } }>(
+      "review.delete",
+      { id: "checkout-options-2" },
+    );
+    expect(deleted.published).toEqual({ path: slug, removed: true });
+    expect(core.projects.scope("shop").reviews.has("checkout-options-2")).toBe(false);
+    expect(
+      execFileSync("git", [`--git-dir=${remote}`, "ls-tree", "--name-only", "gh-pages", slug], {
+        encoding: "utf8",
+      }),
+    ).toBe("");
+  });
+
+  test("delete keeps local data when published review cleanup cannot push", async () => {
+    await create();
+    const remote = path.join(tmp, "remote.git");
+    execFileSync("git", ["init", "--bare", "-q", "-b", "main", remote]);
+    await core.run("project.git.link", { remote });
+    const published = await core.run<{ review: Review }>("review.publish", {
+      id: "checkout-options",
+    });
+    const slug = published.review.slug!;
+
+    const real = core.gitRunner;
+    core.gitRunner = async (command, args, options) => {
+      if (command === "git" && args[0] === "push" && args.includes("HEAD:gh-pages"))
+        throw new Error("remote: Permission denied");
+      const swapped = args.map((arg) => (arg === "git@github.com:owner/shop.git" ? remote : arg));
+      return real(command, swapped, options);
+    };
+    execFileSync("git", ["remote", "set-url", "origin", "git@github.com:owner/shop.git"], {
+      cwd: core.projects.scope("shop").dir,
+    });
+
+    await expect(core.run("review.delete", { id: "checkout-options" })).rejects.toMatchObject({
+      code: "CONFLICT",
+      message: expect.stringMatching(
+        /Failed to remove.*repository owner.*local data was not deleted/s,
+      ),
+    });
+    expect(core.projects.scope("shop").reviews.has("checkout-options")).toBe(true);
+    expect(
+      execFileSync("git", [`--git-dir=${remote}`, "show", `gh-pages:${slug}/index.html`], {
+        encoding: "utf8",
+      }),
+    ).toContain("round-1");
   });
 
   test("on GitHub, publishing turns on Pages and returns the URLs", async () => {
@@ -235,5 +308,27 @@ describe("reviews", () => {
         "source[branch]=gh-pages",
       ]),
     );
+  });
+
+  test("GitHub publish explains missing branch permissions", async () => {
+    await create();
+    const remote = path.join(tmp, "remote.git");
+    execFileSync("git", ["init", "--bare", "-q", "-b", "main", remote]);
+    await core.run("project.git.link", { remote });
+    const real = core.gitRunner;
+    core.gitRunner = async (command, args, options) => {
+      if (command === "git" && args[0] === "push" && args.includes("HEAD:gh-pages"))
+        throw new Error("remote: Permission denied");
+      const swapped = args.map((arg) => (arg === "git@github.com:owner/shop.git" ? remote : arg));
+      return real(command, swapped, options);
+    };
+    execFileSync("git", ["remote", "set-url", "origin", "git@github.com:owner/shop.git"], {
+      cwd: core.projects.scope("shop").dir,
+    });
+
+    await expect(core.run("review.publish", { id: "checkout-options" })).rejects.toMatchObject({
+      code: "CONFLICT",
+      message: expect.stringMatching(/Failed to publish.*owner\/shop.*repository owner.*gh-pages/s),
+    });
   });
 });

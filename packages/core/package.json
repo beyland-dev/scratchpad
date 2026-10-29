@@ -1,6 +1,6 @@
 {
   "name": "@beyland/scratchpad-core",
-  "version": "0.0.0",
+  "version": "0.3.0",
   "description": "Headless core for Scratchpad: workspace model, file storage, and command registry.",
   "license": "MIT",
   "files": [
@@ -23,7 +23,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "vp pack",
+    "build": "pnpm run build:review && vp pack && node ./scripts/copy-review.mjs",
+    "build:review": "pnpm --filter @beyland/scratchpad-review build",
     "test": "vp test"
   },
   "dependencies": {

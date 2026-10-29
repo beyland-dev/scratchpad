@@ -3,6 +3,7 @@ import { useRoute } from "preact-iso";
 import { DeleteSystemDialog, SystemDialog } from "../components/Dialogs.tsx";
 import { MenuButton } from "../components/Menu.tsx";
 import { Icon } from "../components/Icon.tsx";
+import { Specimen } from "../components/Specimen.tsx";
 import {
   loaded,
   projectEntries,
@@ -46,19 +47,19 @@ export function Systems() {
       {list.length > 0 && (
         <div class="grid system-grid">
           {list.map((s) => (
-            <div class="system-card-wrap" key={s.id}>
-              <a class="system-card" href={systemHref(s.id)}>
-                <div class="card-title">{s.name}</div>
-                {s.description && <p class="summary">{s.description}</p>}
-                <div class="card-meta">
-                  <span class="m">{s.components} components</span>
-                  <span class="m">{s.tokens.toLocaleString()} tokens</span>
+            <article class="card system-visual-card" key={s.id}>
+              <a class="system-card-link" href={systemHref(s.id)}>
+                <SystemVisual system={s} />
+                <div class="card-body">
+                  <span class="card-title" title={s.name}>
+                    {s.name}
+                  </span>
                   {s.issues?.length ? (
-                    <span class="warn-count" title={s.issues.join("\n")}>
-                      <Icon name="alert" size={12} />
-                      {s.issues.length}
+                    <span class="card-issues" title={s.issues.join("\n")}>
+                      <Icon name="alert" size={13} />
                     </span>
                   ) : null}
+                  <span class="card-time">{s.library?.name ?? s.kind}</span>
                 </div>
               </a>
               <MenuButton
@@ -76,7 +77,7 @@ export function Systems() {
                   },
                 ]}
               />
-            </div>
+            </article>
           ))}
         </div>
       )}
@@ -87,6 +88,28 @@ export function Systems() {
       {dialog?.kind === "delete" && (
         <DeleteSystemDialog system={dialog.system} onClose={() => setDialog(null)} />
       )}
+    </div>
+  );
+}
+
+function SystemVisual({ system }: { system: SystemSummary }) {
+  return (
+    <div class="card-folder system-visual" aria-hidden="true">
+      {Array.from({ length: 4 }, (_, index) => {
+        const component = system.previews[index];
+        if (!component) return <span class="folder-cell empty" key={index} />;
+        return (
+          <span class="folder-cell system-preview" key={component.name}>
+            <Specimen
+              system={system.id}
+              component={component.name}
+              fill
+              interactive={false}
+              title={`${component.title} preview`}
+            />
+          </span>
+        );
+      })}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 {
   "name": "@beyland/scratchpad",
-  "version": "0.0.0",
+  "version": "0.3.0",
   "description": "The `Scratchpad` (`sp`) command line: serve the app, run the MCP server, and call any core command.",
   "license": "MIT",
   "bin": {
@@ -27,7 +27,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "vp pack",
+    "build": "pnpm run build:web && vp pack && node ./scripts/copy-web.mjs",
+    "build:web": "pnpm --filter @beyland/scratchpad-web build",
     "dev": "node --watch ./src/bin.ts serve --no-open --dev-origin http://localhost:5173",
     "test": "vp test"
   },
@@ -35,7 +36,8 @@
     "@beyland/scratchpad-capture": "workspace:*",
     "@beyland/scratchpad-core": "workspace:*",
     "@beyland/scratchpad-mcp": "workspace:*",
-    "@beyland/scratchpad-server": "workspace:*"
+    "@beyland/scratchpad-server": "workspace:*",
+    "jsonc-parser": "catalog:"
   },
   "devDependencies": {
     "@modelcontextprotocol/client": "catalog:",

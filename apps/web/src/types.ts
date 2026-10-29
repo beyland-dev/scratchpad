@@ -145,3 +145,16 @@ export interface Review {
   issues?: string[];
   urls: { app: string; latest?: string };
 }
+
+export interface TrashEntry {
+  id: string;
+  kind: "project" | "prototype" | "system" | "review" | "component" | "unknown";
+  itemId: string;
+  label: string;
+  project?: string;
+  system?: string;
+  deletedAt: string;
+  restorable: boolean;
+  reason?: string;
+  issue?: string;
+}

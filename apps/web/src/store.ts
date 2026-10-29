@@ -43,6 +43,12 @@ export const workspace = signal<WorkspaceInfo | null>(null);
 export const prototypes = signal<PrototypeWithUrls[]>([]);
 export const projects = signal<ProjectSummary[]>([]);
 export const reviews = signal<Review[]>([]);
+export const NEW_REVIEW_ID = "__new__";
+export const newReviewDraft = signal<{
+  project: string;
+  title: string;
+  prototypes: string[];
+} | null>(null);
 export const loaded = signal(false);
 export const loadError = signal<string | null>(null);
 export const connected = signal(false);
@@ -65,6 +71,7 @@ export interface SystemSummary {
   library?: { name: string; package?: string; docsUrl?: string };
   prefix: string;
   components: number;
+  previews: { name: string; title: string }[];
   tokens: number;
   skill: string;
   issues?: string[];
@@ -286,6 +293,15 @@ export function systemsListHref(systemRef: string): string {
 
 export function reviewHref(review: { project: string; id: string }): string {
   return `${projectHref(review.project, "feedback")}/${encodeURIComponent(review.id)}`;
+}
+
+export function beginReviewDraft(
+  project: string,
+  title: string,
+  prototypes: string[] = [],
+): string {
+  newReviewDraft.value = { project, title, prototypes };
+  return reviewHref({ project, id: NEW_REVIEW_ID });
 }
 
 /** The prototype an option of a review shows, if it still exists. */

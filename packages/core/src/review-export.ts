@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Core } from "./core.ts";
 import { CoreError } from "./errors.ts";
-import { nowIso, pathExists, walkFiles, writeJson } from "./fs-utils.ts";
+import { nowIso, pathExists, slugify, walkFiles, writeJson } from "./fs-utils.ts";
 import { githubRepoOf } from "./git.ts";
 import { PROTOTYPE_META_FILE, normalizeRel, systemRefsIn } from "./prototypes.ts";
 import { refKey } from "./refs.ts";
@@ -16,6 +16,7 @@ import {
   type ReviewManifestItem,
 } from "./review-manifest.ts";
 import type { Review, ReviewRound } from "./reviews.ts";
+import { ID_PATTERN } from "./schemas.ts";
 import { DIST_DIR } from "./systems/store.ts";
 
 export const PUBLISH_BRANCH = "gh-pages";
@@ -33,7 +34,7 @@ export async function findReviewApp(candidates = reviewAppCandidates()): Promise
   for (const dir of candidates) if (await pathExists(path.join(dir, "index.html"))) return dir;
   throw new CoreError(
     "INVALID_INPUT",
-    "The reviewer app isn't built. Run `pnpm build` in the Scratchpad repo (or set SCRATCHPAD_REVIEW_APP).",
+    "The reviewer app isn't available. Reinstall Scratchpad, run `pnpm build` in a source checkout, or set SCRATCHPAD_REVIEW_APP.",
   );
 }
 
@@ -170,6 +171,17 @@ export interface PublishResult {
   warnings: string[];
 }
 
+export interface DeletePublishedReviewResult {
+  path?: string;
+  removed: boolean;
+}
+
+function publishedSlugBase(review: Pick<Review, "id" | "title">): string {
+  const title = slugify(review.title);
+  const ordinal = /-(\d+)$/.exec(review.id)?.[1];
+  return ordinal && !title.endsWith(`-${ordinal}`) ? `${title}-${ordinal}` : title;
+}
+
 /**
  * Publish a new round of a review to the `gh-pages` branch of its project's remote, under a
  * hard-to-guess path (`<slug>/round-<n>/`, plus `<slug>/` for the latest round). On GitHub, Pages
@@ -186,7 +198,7 @@ export async function publishReview(core: Core, ref: string): Promise<PublishRes
       "Publishing uses the project's git remote: share the project first (project.git.link).",
     );
   const round = (review.rounds.at(-1)?.round ?? 0) + 1;
-  const slug = review.slug ?? `${id}-${randomBytes(4).toString("hex")}`;
+  const slug = review.slug ?? `${publishedSlugBase(review)}-${randomBytes(4).toString("hex")}`;
   const roundPath = `${slug}/round-${round}`;
   const run = core.gitRunner;
   const tmp = await mkdtemp(path.join(os.tmpdir(), "scratchpad-publish-"));
@@ -222,10 +234,18 @@ export async function publishReview(core: Core, ref: string): Promise<PublishRes
     await run("git", ["commit", "--quiet", "-m", `Publish “${review.title}”, round ${round}`], {
       cwd: site,
     });
-    await run("git", ["push", "--quiet", "origin", `HEAD:${PUBLISH_BRANCH}`], { cwd: site });
+    const github = githubRepoOf(status.remote);
+    try {
+      await run("git", ["push", "--quiet", "origin", `HEAD:${PUBLISH_BRANCH}`], { cwd: site });
+    } catch (error) {
+      if (!github) throw error;
+      throw new CoreError(
+        "CONFLICT",
+        `Failed to publish the feedback round to ${github.owner}/${github.name}. Ask the repository owner to grant you permission to push the ${PUBLISH_BRANCH} branch, then try again. ${(error as Error).message}`,
+      );
+    }
 
     let base: string | undefined;
-    const github = githubRepoOf(status.remote);
     if (github) base = await enableGithubPages(core, scope.dir, `${github.owner}/${github.name}`);
     const record: ReviewRound = {
       round,
@@ -243,6 +263,78 @@ export async function publishReview(core: Core, ref: string): Promise<PublishRes
       ...(base ? { latestUrl: `${base}${slug}/` } : {}),
       warnings: result.warnings,
     };
+  } finally {
+    await rm(tmp, { recursive: true, force: true });
+  }
+}
+
+/** Remove every published round and the stable link for one review from its gh-pages branch. */
+export async function deletePublishedReview(
+  core: Core,
+  ref: string,
+): Promise<DeletePublishedReviewResult> {
+  const { scope, store, id } = core.reviews.locate(ref);
+  const review = store.get(id);
+  if (!review.slug || !review.rounds.length) return { removed: false };
+  if (!ID_PATTERN.test(review.slug))
+    throw new CoreError(
+      "INVALID_INPUT",
+      `Review ${JSON.stringify(id)} has an invalid published path. Local data was not deleted.`,
+    );
+
+  const status = await core.git(scope.id).status();
+  if (!status.remote)
+    throw new CoreError(
+      "CONFLICT",
+      `Review ${JSON.stringify(id)} has published rounds, but project ${JSON.stringify(scope.id)} no longer has a git remote. Restore its remote before deleting the review; local data was not deleted.`,
+    );
+
+  const run = core.gitRunner;
+  const tmp = await mkdtemp(path.join(os.tmpdir(), "scratchpad-delete-review-"));
+  const site = path.join(tmp, "site");
+  const github = githubRepoOf(status.remote);
+  const destination = github ? `${github.owner}/${github.name}` : status.remote;
+  try {
+    try {
+      await run(
+        "git",
+        [
+          "clone",
+          "--quiet",
+          "--depth",
+          "1",
+          "--branch",
+          PUBLISH_BRANCH,
+          "--single-branch",
+          "--",
+          status.remote,
+          site,
+        ],
+        { cwd: tmp },
+      );
+    } catch (error) {
+      throw new CoreError(
+        "CONFLICT",
+        `Failed to access published feedback in ${destination}. Ask the repository owner for access to the ${PUBLISH_BRANCH} branch, then try again; local data was not deleted. ${(error as Error).message}`,
+      );
+    }
+
+    const target = path.join(site, review.slug);
+    if (!(await pathExists(target))) return { path: review.slug, removed: false };
+    await rm(target, { recursive: true, force: true });
+    await run("git", ["add", "-A"], { cwd: site });
+    await run("git", ["commit", "--quiet", "-m", `Delete review “${review.title}”`], {
+      cwd: site,
+    });
+    try {
+      await run("git", ["push", "--quiet", "origin", `HEAD:${PUBLISH_BRANCH}`], { cwd: site });
+    } catch (error) {
+      throw new CoreError(
+        "CONFLICT",
+        `Failed to remove the published review from ${destination}. Ask the repository owner to grant you permission to push the ${PUBLISH_BRANCH} branch, then try again; local data was not deleted. ${(error as Error).message}`,
+      );
+    }
+    return { path: review.slug, removed: true };
   } finally {
     await rm(tmp, { recursive: true, force: true });
   }
@@ -273,7 +365,7 @@ async function enableGithubPages(core: Core, cwd: string, repo: string): Promise
     } catch (error) {
       throw new CoreError(
         "CONFLICT",
-        `Published to the ${PUBLISH_BRANCH} branch, but couldn't turn on GitHub Pages for ${repo} (private repos need a paid plan): ${(error as Error).message}`,
+        `Published to the ${PUBLISH_BRANCH} branch, but couldn't turn on GitHub Pages for ${repo}. Ask the repository owner to grant you permission to configure Pages or enable Pages from the ${PUBLISH_BRANCH} branch for you. Private repositories also need a plan that supports Pages. ${(error as Error).message}`,
       );
     }
   }

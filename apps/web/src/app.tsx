@@ -1,5 +1,6 @@
 import { useEffect } from "preact/hooks";
 import { LocationProvider, Route, Router, useLocation } from "preact-iso";
+import { AgentConnectionGuide } from "./components/ConnectAgent.tsx";
 import { ConnectionToast, Header, isImmersive } from "./components/Header.tsx";
 import { NewVariantHost } from "./components/NewVariant.tsx";
 import { Sidebar } from "./components/Sidebar.tsx";
@@ -34,10 +35,16 @@ function ToHomeProject() {
   if (!loaded.value) return <p class="page-message">Loading…</p>;
   if (!target)
     return (
-      <p class="page-message">
-        No projects yet. Create one from the sidebar, or with{" "}
-        <code>sp project create --name "My product"</code>.
-      </p>
+      <div class="page empty-workspace">
+        <div class="page-head">
+          <h1>Connect your first product</h1>
+          <p class="muted">
+            Create a project from the sidebar, then connect an agent and the product codebase it
+            should use as context.
+          </p>
+        </div>
+        <AgentConnectionGuide />
+      </div>
     );
   return null;
 }

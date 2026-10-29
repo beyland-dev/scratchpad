@@ -18,8 +18,17 @@ research platforms, meeting recordings, and handoff. Scratchpad aims to bring th
 
 ## Quickstart
 
-Requirements: Node.js ≥ 22.18, pnpm (the repo pins pnpm 12 via `packageManager`), and git. The
-GitHub CLI (`gh`, signed in) is needed to create GitHub repos and publish reviews to GitHub Pages.
+Requirements: Node.js ≥ 22.18 and git. Install the self-contained CLI from npm, then start the app:
+
+```bash
+npm install --global @beyland/scratchpad
+sp serve                              # opens http://127.0.0.1:7420
+```
+
+The CLI includes the visual UI, HTTP API, MCP server, and isolated prototype server. The GitHub CLI
+(`gh`, signed in) is only needed to create GitHub repos and publish reviews to GitHub Pages.
+
+To run from a source checkout instead:
 
 ```bash
 pnpm install
@@ -52,6 +61,11 @@ pnpm sp mcp-config     # prints user-level snippets for VS Code, Claude Code, Cu
 - **stdio:** `scratchpad mcp`. Recommended; it works without the server running.
 - **HTTP:** `http://127.0.0.1:7420/mcp` while `scratchpad serve` is running.
 
+The stdio command waits silently for an MCP client and uses `~/.scratchpad` by default. Run
+`sp mcp-config vscode --install` to safely merge Scratchpad into the portable VS Code Copilot
+harness configuration at `~/.copilot/mcp-config.json`, with absolute executable paths. Existing
+servers are preserved; an existing conflicting `scratchpad` entry requires `--force`.
+
 Then ask your agent something like:
 
 > Use the Scratchpad MCP server. Read the `scratchpad://guide` resource and call `workspace_info`.
@@ -81,9 +95,9 @@ Prototypes appear in the gallery live as the agent writes them.
 - **Viewer:** a full-window stage with device presets (Desktop / Laptop / Tablet / Mobile), multi-page navigation, a version switcher (V1, V2, … Latest as tabs, or a ‹ V3 · 3/9 › stepper with a list of every version for large families; ← → or 1–9), and an optional details panel (status, group, tags, files).
 - **Variants:** **New variant** in the viewer, or in a card's ⋯ menu, forks a version of the prototype: the new variant starts as a copy of its files, and the app gives you a prompt that asks an agent for the change. For families with several versions, you pick which one to fork.
 - **Compare:** prototypes side by side at the same viewport and theme.
-- **Feedback:** reviews package prototype versions for people outside the app. Label the options (internal names stay private), add an intro and questions, choose one-at-a-time and/or side-by-side, **Preview** exactly what reviewers will see, and **Publish** a round to GitHub Pages from the project's repo. Each round is frozen; a stable link always opens the latest one, and the app shows which options changed since the last round.
+- **Feedback:** reviews package prototype versions for people outside the app. New reviews stay in the browser until their first save. Label the options (internal names stay private), add context and questions, choose one-at-a-time and/or side-by-side, **Preview** exactly what reviewers will see, and **Publish** a round to GitHub Pages from the project's repo. Each round is frozen; a stable link always opens the latest one, and the app shows which options changed since the last round. Deleting a review removes its published rounds from `gh-pages` before moving the local review to trash.
 - **Design systems:** browse components with examples in every theme, explore tokens visually (colors, type scale, spacing, shadows, icons) with per-token details, and watch an audit live (progress, what needs attention, captures with screenshot, DOM, matched CSS and geometry, activity) with verification results.
-- **Settings:** in the sidebar. Choose the app's theme (System, Light or Dark), saved in this browser.
+- **Settings:** in the sidebar. Choose the app's theme, find current agent/product connection commands, and restore or permanently delete content from workspace and project trash.
 - **Live updates:** edits from agents, the CLI, git pulls, or your editor appear immediately. The app only shows the connection status when it's lost.
 - **Sandboxing:** prototypes run in sandboxed iframes on a separate origin (port `7421`), so untrusted agent code can't reach the app or API. Published reviews keep the same sandboxing.
 

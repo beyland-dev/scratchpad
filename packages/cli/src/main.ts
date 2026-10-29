@@ -17,7 +17,13 @@ import {
 } from "@beyland/scratchpad-core";
 import { captureCommands, closeBrowser } from "@beyland/scratchpad-capture";
 import { commandHelp, parseCommandInput } from "./args.ts";
-import { MCP_CLIENTS, mcpConfigSnippet, stdioLaunch, type McpClient } from "./mcp-config.ts";
+import {
+  installCopilotMcpConfig,
+  MCP_CLIENTS,
+  mcpConfigSnippet,
+  stdioLaunch,
+  type McpClient,
+} from "./mcp-config.ts";
 
 export interface CliIO {
   stdout: (text: string) => void;
@@ -139,7 +145,7 @@ App:
   serve                                Start the app + sandbox servers and open the browser
       --port <n>  --sandbox-port <n>  --host <host>  --strict-port  --no-open  --dev-origin <url>
   mcp                                  Run the MCP server over stdio (for agent configs)
-  mcp-config [client]                  Print MCP config snippets (${MCP_CLIENTS.join(", ")})
+  mcp-config [client] [--install]      Print or install MCP config (${MCP_CLIENTS.join(", ")})
   commands                             List core commands with their JSON input schemas
 
 Core commands (also exposed over MCP and HTTP):
@@ -152,6 +158,36 @@ Global options:
   -v, --version           Show version
 
 Commands can be dotted, spaced, or kebab-cased: \`sp prototype.createVariant\`, \`sp prototype create-variant\`.`;
+}
+
+function serveHelp(): string {
+  return `sp serve [options]
+
+Start the self-contained Scratchpad web app, HTTP API, MCP server, and prototype sandbox.
+
+Options:
+  --port <n>             App, API, and MCP port (default: 7420)
+  --sandbox-port <n>     Prototype sandbox port (default: 7421)
+  --host <host>          Host interface (default: 127.0.0.1)
+  --strict-port          Fail instead of trying the next available port
+  --no-open              Do not open the app in a browser
+  --allowed-host <host>  Additional accepted hostname (repeatable)
+  --dev-origin <url>     Additional browser origin for local UI development (repeatable)
+  -h, --help             Show this help`;
+}
+
+function mcpConfigHelp(): string {
+  return `sp mcp-config [client] [options]
+
+Print an MCP configuration snippet, or merge Scratchpad into the portable Copilot config.
+
+Clients: ${MCP_CLIENTS.join(", ")}
+
+Options:
+  --install       Merge into $COPILOT_HOME/mcp-config.json (default: ~/.copilot/mcp-config.json)
+  --name <name>   MCP server name (default: scratchpad)
+  --force         Replace a conflicting server with the same name; requires --install
+  -h, --help      Show this help`;
 }
 
 function printResult(io: CliIO, globals: Globals, value: unknown, human?: string): void {
@@ -176,10 +212,18 @@ export async function main(argv: string[], io: CliIO = defaultIO): Promise<numbe
 
     switch (name) {
       case "serve":
+        if (globals.help) {
+          io.stdout(serveHelp());
+          return 0;
+        }
         return await runServe(rest, globals, io);
       case "mcp":
         return await runMcp(globals, io);
       case "mcp-config":
+        if (globals.help) {
+          io.stdout(mcpConfigHelp());
+          return 0;
+        }
         return await runMcpConfig(rest, globals, io);
       case "commands":
         printResult(
@@ -326,14 +370,48 @@ async function runMcp(globals: Globals, io: CliIO): Promise<number> {
 }
 
 async function runMcpConfig(args: string[], globals: Globals, io: CliIO): Promise<number> {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    strict: true,
+    options: {
+      install: { type: "boolean" },
+      force: { type: "boolean" },
+      name: { type: "string" },
+    },
+  });
+  if (positionals.length > 1)
+    throw new CoreError("INVALID_INPUT", "mcp-config accepts at most one client name");
   const root = resolveWorkspace(globals, io);
   const launch = stdioLaunch(BIN_PATH, root === defaultWorkspaceRoot({}) ? undefined : root);
-  const requested = args[0];
+  const requested = positionals[0] ?? (values.install ? "vscode" : undefined);
   if (requested && !MCP_CLIENTS.includes(requested as McpClient)) {
     throw new CoreError(
       "INVALID_INPUT",
       `Unknown MCP client ${requested}. Choose one of: ${MCP_CLIENTS.join(", ")}`,
     );
+  }
+  if (values.force && !values.install)
+    throw new CoreError("INVALID_INPUT", "--force requires --install");
+  if (values.install) {
+    if (requested !== "vscode" && requested !== "copilot-cli")
+      throw new CoreError(
+        "INVALID_INPUT",
+        `--install supports vscode and copilot-cli; ${requested} uses a different config file`,
+      );
+    const result = await installCopilotMcpConfig(launch, {
+      env: io.env,
+      name: values.name,
+      force: values.force,
+    });
+    const human =
+      result.status === "created"
+        ? `Created ${result.file} with MCP server ${JSON.stringify(result.name)}`
+        : result.status === "updated"
+          ? `Added MCP server ${JSON.stringify(result.name)} to ${result.file}`
+          : `MCP server ${JSON.stringify(result.name)} is already configured in ${result.file}`;
+    printResult(io, globals, { ...result, launch }, human);
+    return 0;
   }
   const clients = requested ? [requested as McpClient] : MCP_CLIENTS;
   printResult(
@@ -342,8 +420,7 @@ async function runMcpConfig(args: string[], globals: Globals, io: CliIO): Promis
     { launch, http: "http://127.0.0.1:7420/mcp (while `sp serve` is running)" },
     [
       ...clients.map((c) => mcpConfigSnippet(c, launch)),
-      "",
-      "Alternatively, while `sp serve` is running, point HTTP-capable clients at <app url>/mcp.",
+      "HTTP alternative (while sp serve is running):\n  <app-url>/mcp",
     ].join("\n\n"),
   );
   return 0;

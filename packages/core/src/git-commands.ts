@@ -12,24 +12,27 @@ const ProjectInput = SlugSchema.optional().describe(
   "Project id. Required unless the workspace has exactly one project",
 );
 
-/** "Update prototypes checkout, inbox; systems vscode" from the changed paths. */
+/** "Syncing prototype, design system, and review changes." from the changed paths. */
 export function summarizeChanges(changes: GitChange[]): string {
-  const groups = new Map<string, Set<string>>();
-  let other = 0;
+  const changed = new Set<"prototype" | "design system" | "review" | "project">();
   for (const change of changes) {
-    const [section, id] = change.path.split("/");
-    if (id && (section === "prototypes" || section === "systems" || section === "reviews")) {
-      const ids = groups.get(section) ?? new Set<string>();
-      ids.add(id);
-      groups.set(section, ids);
-    } else other++;
+    const section = change.path.split("/")[0];
+    if (section === "prototypes") changed.add("prototype");
+    else if (section === "systems") changed.add("design system");
+    else if (section === "reviews") changed.add("review");
+    else changed.add("project");
   }
-  const parts = [...groups].map(([section, ids]) => {
-    const list = [...ids].sort();
-    return `${section} ${list.slice(0, 4).join(", ")}${list.length > 4 ? ` and ${list.length - 4} more` : ""}`;
-  });
-  if (other) parts.push(`${other} other file${other === 1 ? "" : "s"}`);
-  return parts.length ? `Update ${parts.join("; ")}` : "Update project";
+  const categories = ["prototype", "design system", "review", "project"].filter((category) =>
+    changed.has(category as "prototype" | "design system" | "review" | "project"),
+  );
+  if (!categories.length) return "Syncing project changes.";
+  const summary =
+    categories.length === 1
+      ? categories[0]
+      : categories.length === 2
+        ? categories.join(" and ")
+        : `${categories.slice(0, -1).join(", ")}, and ${categories.at(-1)}`;
+  return `Syncing ${summary} changes.`;
 }
 
 function describeStatus(status: GitStatus): string {
@@ -162,7 +165,7 @@ export const gitCommit = defineCommand({
   name: "project.git.commit",
   title: "Commit project changes",
   description:
-    "Commit every change in a project folder. Without a message, one is written from what changed (e.g. 'Update prototypes checkout, inbox').",
+    "Commit every change in a project folder. Without a message, one is written from the kinds of content that changed (e.g. 'Syncing prototype and review changes.').",
   kind: "mutation",
   positional: ["project"],
   input: z.object({ project: ProjectInput, message: z.string().min(1).optional() }),

@@ -1,6 +1,7 @@
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { parse } from "jsonc-parser";
 import { afterEach, beforeEach, describe, expect, test } from "vite-plus/test";
 import { main, type CliIO } from "../src/index.ts";
 
@@ -10,7 +11,10 @@ function io(cwd = dir): CliIO & { out: string[]; err: string[] } {
   const out: string[] = [];
   const err: string[] = [];
   // Never the real ~/.scratchpad.
-  const env = { SCRATCHPAD_HOME: path.join(dir, "home") };
+  const env = {
+    HOME: path.join(dir, "user"),
+    SCRATCHPAD_HOME: path.join(dir, "home"),
+  };
   return { out, err, stdout: (t) => out.push(t), stderr: (t) => err.push(t), cwd, env };
 }
 
@@ -34,6 +38,10 @@ describe("sp", () => {
     expect(help.code).toBe(0);
     expect(help.stdout).toContain("prototype.createVariant");
     expect((await run(["--version"])).stdout).toMatch(/^\d+\.\d+\.\d+/);
+    expect((await run(["serve", "--help"])).stdout).toContain(
+      "Start the self-contained Scratchpad web app",
+    );
+    expect((await run(["mcp-config", "--help"])).stdout).toContain("--install       Merge into");
     expect((await run(["prototype", "create", "--help"])).stdout).toContain(
       "--title <value> (required)",
     );
@@ -137,9 +145,66 @@ describe("sp", () => {
 
   test("mcp-config passes --home only for a non-default workspace", async () => {
     const out = await run(["mcp-config", "vscode", "--json"]);
-    expect(JSON.parse(out.stdout).launch.args).toEqual(
-      expect.arrayContaining(["mcp", "--home", path.join(dir, "home")]),
+    const launch = JSON.parse(out.stdout).launch;
+    expect(launch.command).toBe(process.execPath);
+    expect(launch.args).toEqual(expect.arrayContaining(["mcp", "--home", path.join(dir, "home")]));
+
+    const config = await run(["mcp-config", "vscode"]);
+    expect(config.stdout).toMatch(/^VS Code Copilot harness/);
+    expect(config.stdout).toContain('"mcpServers"');
+    expect(config.stdout).toContain('"tools": [');
+    expect(config.stdout).not.toContain('"type": "stdio"');
+    expect(config.stdout).not.toContain("// VS Code");
+    expect(config.stdout).not.toContain("\n\n\n");
+  });
+
+  test("mcp-config --install creates an idempotent Copilot config", async () => {
+    const installed = await run(["mcp-config", "vscode", "--install", "--json"]);
+    expect(installed.code).toBe(0);
+    expect(JSON.parse(installed.stdout)).toMatchObject({
+      name: "scratchpad",
+      status: "created",
+    });
+    const file = path.join(dir, "user/.copilot/mcp-config.json");
+    const config = JSON.parse(await readFile(file, "utf8"));
+    expect(config.mcpServers.scratchpad).toMatchObject({
+      command: process.execPath,
+      tools: ["*"],
+    });
+
+    const repeated = await run(["mcp-config", "vscode", "--install", "--json"]);
+    expect(JSON.parse(repeated.stdout).status).toBe("unchanged");
+  });
+
+  test("mcp-config --install preserves peers and requires force for conflicts", async () => {
+    const file = path.join(dir, "user/.copilot/mcp-config.json");
+    await mkdir(path.dirname(file), { recursive: true });
+    await writeFile(
+      file,
+      `{
+  // Keep this server and comment.
+  "mcpServers": {
+    "other": { "command": "other" },
+    "scratchpad": { "command": "old" }
+  }
+}
+`,
     );
+
+    const conflict = await run(["mcp-config", "vscode", "--install"]);
+    expect(conflict.code).toBe(1);
+    expect(conflict.stderr).toContain("--force");
+    expect(await readFile(file, "utf8")).toContain('"command": "old"');
+
+    const replaced = await run(["mcp-config", "vscode", "--install", "--force", "--json"]);
+    expect(JSON.parse(replaced.stdout).status).toBe("updated");
+    const text = await readFile(file, "utf8");
+    const config = parse(text) as {
+      mcpServers: Record<string, { command: string }>;
+    };
+    expect(text).toContain("// Keep this server and comment.");
+    expect(config.mcpServers.other).toEqual({ command: "other" });
+    expect(config.mcpServers.scratchpad.command).toBe(process.execPath);
   });
 
   test("source commands", async () => {

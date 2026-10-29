@@ -6,7 +6,7 @@ import { MenuButton } from "../components/Menu.tsx";
 import { ConfirmDialog } from "../components/Modal.tsx";
 import { PrototypeThumb } from "../components/PrototypeCard.tsx";
 import {
-  changedSinceLastRound,
+  beginReviewDraft,
   loaded,
   projectEntries,
   refresh,
@@ -15,29 +15,13 @@ import {
   reviews,
 } from "../store.ts";
 import type { Review } from "../types.ts";
-import { copyText, relativeTime } from "../util.ts";
-
-/** Create an empty review in `project` and open it. */
-export async function createReview(
-  project: string,
-  title: string,
-  prototypes: string[] = [],
-): Promise<Review> {
-  const { review } = await call<{ review: Review }>("review.create", {
-    project,
-    title,
-    items: prototypes.map((prototype) => ({ prototype })),
-  });
-  await refresh();
-  return review;
-}
+import { copyText, editedAgo } from "../util.ts";
 
 /** A project's reviews: prototypes packaged for people to give feedback on. */
 export function Feedback() {
   const { params } = useRoute();
   const { route } = useLocation();
   const projectId = params.project ?? "";
-  const [creating, setCreating] = useState(false);
   if (!loaded.value) return <p class="page-message">Loading…</p>;
   const project = projectEntries.value.find((p) => p.id === projectId);
   if (!project)
@@ -47,22 +31,17 @@ export function Feedback() {
       </p>
     );
   const list = reviews.value.filter((r) => r.project === projectId);
-  const newReview = async () => {
-    setCreating(true);
-    try {
-      route(reviewHref(await createReview(projectId, "Untitled review")));
-    } finally {
-      setCreating(false);
-    }
-  };
-
   return (
     <div class="page">
       <div class="page-head">
         <div class="page-title-row">
           <h1>Feedback</h1>
           <span class="toolbar-spacer" />
-          <button type="button" class="button primary" disabled={creating} onClick={newReview}>
+          <button
+            type="button"
+            class="button primary"
+            onClick={() => route(beginReviewDraft(projectId, "Untitled review"))}
+          >
             <Icon name="plus" size={14} /> New review
           </button>
         </div>
@@ -101,41 +80,21 @@ export function Feedback() {
 
 function ReviewCard({ review }: { review: Review }) {
   const [deleting, setDeleting] = useState(false);
-  const last = review.rounds.at(-1);
-  const changed = changedSinceLastRound(review).size;
-  const thumbs = review.items
-    .slice(0, 3)
-    .map((item) => reviewItemPrototype(review, item))
-    .filter((p) => p !== undefined);
   return (
-    <div class="system-card-wrap review-card-wrap">
-      <a class="system-card review-card" href={reviewHref(review)}>
-        <div class="review-thumbs">
-          {thumbs.length ? (
-            thumbs.map((proto) => (
-              <PrototypeThumb key={proto.id} proto={proto} class="review-thumb" />
-            ))
-          ) : (
-            <span class="review-thumb empty">No prototypes yet</span>
-          )}
-        </div>
-        <div class="card-title">{review.title}</div>
-        <div class="card-meta">
-          <span class="m">
-            {review.items.length} option{review.items.length === 1 ? "" : "s"}
+    <article class="card review-card">
+      <a class="review-card-link" href={reviewHref(review)}>
+        <ReviewFolder review={review} />
+        <div class="card-body">
+          <span class="card-title" title={review.title}>
+            {review.title}
           </span>
-          {last ? (
-            <span class="m">
-              Round {last.round} · {relativeTime(last.publishedAt)}
-            </span>
-          ) : (
-            <span class="m">Draft</span>
-          )}
-          {last && changed > 0 && (
-            <span class="chip review-changed" title="Prototypes changed since the last round">
-              {changed} changed
-            </span>
-          )}
+          <time
+            class="card-time"
+            dateTime={review.updatedAt}
+            title={new Date(review.updatedAt).toLocaleString()}
+          >
+            {editedAgo(review.updatedAt)}
+          </time>
         </div>
       </a>
       <MenuButton
@@ -166,13 +125,41 @@ function ReviewCard({ review }: { review: Review }) {
           }}
         >
           <p>
-            It moves to the project's <code>.trash/</code>.
-            {review.rounds.length
-              ? " Published rounds stay online until removed from the repo's gh-pages branch."
-              : ""}
+            The local review moves to the project's <code>.trash/</code>.
+            {review.rounds.length ? (
+              <>
+                {" "}
+                All published rounds and their stable link are also removed from the repo's{" "}
+                <code>gh-pages</code> branch. GitHub Pages might take about a minute to update.
+              </>
+            ) : null}
           </p>
         </ConfirmDialog>
       )}
+    </article>
+  );
+}
+
+const REVIEW_FOLDER_SLOTS = 4;
+
+function ReviewFolder({ review }: { review: Review }) {
+  const prototypes = review.items
+    .map((item) => reviewItemPrototype(review, item))
+    .filter((prototype) => prototype !== undefined);
+  const hidden = Math.max(0, prototypes.length - REVIEW_FOLDER_SLOTS);
+  return (
+    <div class="card-folder">
+      {Array.from({ length: REVIEW_FOLDER_SLOTS }, (_, index) => {
+        const prototype = prototypes[index];
+        if (!prototype) return <span class="folder-cell empty" key={index} />;
+        const isLast = index === REVIEW_FOLDER_SLOTS - 1 && hidden > 0;
+        return (
+          <div class="folder-cell" key={prototype.id}>
+            <PrototypeThumb proto={prototype} class="folder-thumb" title={prototype.title} />
+            {isLast && <span class="folder-more">+{hidden + 1}</span>}
+          </div>
+        );
+      })}
     </div>
   );
 }

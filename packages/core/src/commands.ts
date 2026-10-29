@@ -19,6 +19,7 @@ import {
 } from "./schemas.ts";
 import { AGENTS_GUIDE_RESOURCE } from "./guide.ts";
 import type { Core } from "./core.ts";
+import { trashCommands } from "./trash.ts";
 
 const IdInput = z
   .string()
@@ -595,4 +596,5 @@ export const builtinCommands = [
   prototypeCreateVariant,
   prototypeDelete,
   prototypeUrls,
+  ...trashCommands,
 ];
