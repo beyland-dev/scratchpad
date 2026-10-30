@@ -2,7 +2,8 @@
 // the Sprue icon and an Applications shortcut over resources/dmg/background.tiff.
 // electron-builder packages the app (--dir); dmgbuild (Python, `pip install dmgbuild`) makes the
 // DMG and writes the window layout directly, so no Finder or GUI session is needed (CI runners
-// have neither). scripts/make-dmg.py wraps it to force the final detach.
+// have neither). scripts/make-dmg.py wraps it so Finder on macOS 26 finds the background, and
+// to force the final detach.
 import { spawnSync } from "node:child_process";
 import { readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -42,6 +43,10 @@ async function buildDmg(arch) {
   run("pnpm", ["exec", "electron-builder", "--dir", "--mac", `--${arch}`, "--publish", "never"]);
 
   const app = path.join(appDir, `${productName}.app`);
+  // Without a Developer ID, sign ad hoc: packaging changes Electron's bundle, so its original
+  // signature no longer matches, and Apple silicon Macs call an invalidly signed app "damaged".
+  run("codesign", ["--force", "--deep", "--sign", "-", app]);
+  run("codesign", ["--verify", "--deep", "--strict", app]);
   const output = path.join(release, `${productName}-${version}-mac-${arch}.dmg`);
   const settings = path.join(release, `dmg-settings-${arch}.py`);
   await rm(output, { force: true });
