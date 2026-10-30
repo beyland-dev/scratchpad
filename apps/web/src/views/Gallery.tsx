@@ -108,7 +108,6 @@ export function Gallery() {
 
   return (
     <div class={`gallery ${selected.length ? "selecting" : ""}`}>
-      <GettingStarted projectId={projectId} />
       <DesignSystemRows
         projectId={projectId}
         creating={creating === "system"}
@@ -187,6 +186,8 @@ export function Gallery() {
           </button>
         </div>
       </div>
+
+      <GettingStarted projectId={projectId} />
 
       {visible.length === 0 && filtersActive && (
         <p class="page-message">

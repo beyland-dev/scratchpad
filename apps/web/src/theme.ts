@@ -8,6 +8,7 @@ export type ColorScheme = "light" | "dark";
  */
 export const THEMES = [
   { id: "light", label: "Light", scheme: "light" },
+  { id: "periwinkle", label: "Periwinkle", scheme: "light" },
   { id: "fog", label: "Fog", scheme: "light" },
   { id: "sand", label: "Sand", scheme: "light" },
   { id: "mint", label: "Mint", scheme: "light" },

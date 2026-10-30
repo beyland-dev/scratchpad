@@ -180,6 +180,23 @@
   --stage: #e3e4e7;
 }
 
+/* Periwinkle: the Classic app icon's pale periwinkle ground and indigo-violet linework. */
+[data-theme="periwinkle"] {
+  color-scheme: light;
+  --bg: #e9e8fb;
+  --surface: #f6f5ff;
+  --surface-2: #dedcf7;
+  --border: #d2cdf0;
+  --border-strong: #b9b1e3;
+  --fg: #231552;
+  --muted: #5d5390;
+  --faint: #8f86bf;
+  --accent: #4b2a9a;
+  --accent-fg: #ffffff;
+  --accent-soft: #d9d0f6;
+  --stage: #dfdef6;
+}
+
 [data-theme="orchid"] {
   color-scheme: light;
   --bg: #faf5fa;
