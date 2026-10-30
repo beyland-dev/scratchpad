@@ -57,6 +57,8 @@ jobs:
           node-version: 22.18.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - if: runner.os == 'macOS'
+        run: python3 -m pip install --user --break-system-packages dmgbuild==1.6.5
       - run: pnpm --filter @beyland/sprue-desktop ${{ matrix.command }}
       - uses: actions/upload-artifact@v7
         with:
