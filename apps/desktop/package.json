@@ -1,6 +1,6 @@
 {
   "name": "@beyland/sprue-desktop",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "description": "Sprue desktop app for macOS, Windows, and Linux.",
   "homepage": "https://github.com/beyland-dev/sprue",
