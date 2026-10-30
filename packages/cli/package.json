@@ -1,6 +1,6 @@
 {
   "name": "@beyland/sprue",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "The `Sprue` (`sp`) command line: serve the app, run the MCP server, and call any core command.",
   "license": "MIT",
   "bin": {
