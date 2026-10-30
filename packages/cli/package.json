@@ -37,7 +37,8 @@
     "@beyland/sprue-core": "workspace:*",
     "@beyland/sprue-mcp": "workspace:*",
     "@beyland/sprue-server": "workspace:*",
-    "jsonc-parser": "catalog:"
+    "jsonc-parser": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@beyland/sprue-web": "workspace:*",

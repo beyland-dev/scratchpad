@@ -1,8 +1,10 @@
 import { useEffect, useState } from "preact/hooks";
 import { useLocation } from "preact-iso";
 import { connected, projectEntries, projectHref, type ProjectSection } from "../store.ts";
+import { Icon } from "./Icon.tsx";
+import { shortcutLabel } from "../keybindings.ts";
 import { ProjectGitControl } from "./GitControl.tsx";
-import { useActiveProject } from "./Sidebar.tsx";
+import { setSidebarExpanded, sidebarExpanded, useActiveProject } from "./Sidebar.tsx";
 
 /** Routes that render their own full-width toolbar instead of the app header. */
 export function isImmersive(path: string): boolean {
@@ -10,8 +12,7 @@ export function isImmersive(path: string): boolean {
 }
 
 const SECTIONS: { id: ProjectSection; label: string }[] = [
-  { id: "prototypes", label: "Prototypes" },
-  { id: "systems", label: "Design systems" },
+  { id: "prototypes", label: "Design" },
   { id: "feedback", label: "Feedback" },
   { id: "handoff", label: "Handoff" },
 ];
@@ -33,11 +34,24 @@ export function Header({
   const active = useActiveProject();
   if (!desktop && isImmersive(path)) return null;
   // App-level pages (settings) aren't part of a project, so they get no section tabs.
-  const project =
-    path === "/settings" ? undefined : projectEntries.value.find((p) => p.id === active);
+  const project = path.startsWith("/settings")
+    ? undefined
+    : projectEntries.value.find((p) => p.id === active);
   const current = sectionOf(path);
   return (
     <header class={`app-header ${desktop ? `desktop-titlebar ${platform ?? ""}` : ""}`}>
+      <div class="app-header-start">
+        <button
+          type="button"
+          class="icon-button"
+          aria-label={sidebarExpanded.value ? "Collapse sidebar" : "Expand sidebar"}
+          aria-expanded={sidebarExpanded.value}
+          title={`${sidebarExpanded.value ? "Collapse" : "Expand"} sidebar ${shortcutLabel("sidebar")}`.trim()}
+          onClick={() => setSidebarExpanded(!sidebarExpanded.value)}
+        >
+          <Icon name={sidebarExpanded.value ? "sidebar-filled" : "sidebar"} size={18} />
+        </button>
+      </div>
       {project && (
         <nav class="app-nav" aria-label="Sections">
           {SECTIONS.map((section) => (

@@ -112,8 +112,8 @@ export function Viewer() {
     return (
       <div class="viewer">
         <p class="page-message">
-          No prototype <code>{params.id}</code>.{" "}
-          <a href={projectHref(params.project ?? "")}>Back to prototypes</a>
+          No design <code>{params.id}</code>.{" "}
+          <a href={projectHref(params.project ?? "")}>Back to design</a>
         </p>
       </div>
     );
@@ -133,7 +133,7 @@ export function Viewer() {
         <a
           href={projectHref(projectIdOf(proto))}
           class="button ghost icon-only"
-          aria-label="Back to prototypes"
+          aria-label="Back to design"
           title="Back"
         >
           <Icon name="arrow-left" />
@@ -170,7 +170,7 @@ export function Viewer() {
           title={
             family.length > 1
               ? `New variant: fork ${versionLabel(familyIndex, family.length)} or another version`
-              : "New variant: fork this prototype"
+              : "New variant: fork this design"
           }
           onClick={() => openNewVariant(id)}
         >
@@ -312,7 +312,7 @@ function DetailsPanel({
   const [copied, setCopied] = useState(false);
 
   return (
-    <aside class="panel" aria-label="Prototype details">
+    <aside class="panel" aria-label="Design details">
       {proto.description && <p class="panel-description">{proto.description}</p>}
 
       {proto.issues?.length ? (

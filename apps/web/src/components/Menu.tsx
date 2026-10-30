@@ -30,11 +30,13 @@ export function MenuPopup({
   onClose,
   label,
   anchor,
+  fitContent = false,
 }: {
   items: MenuItem[];
   position: MenuPosition;
   onClose: () => void;
   label: string;
+  fitContent?: boolean;
   /** The button that opened it: pressing it again toggles (handled by its click), not "outside". */
   anchor?: { current: HTMLElement | null };
 }) {
@@ -75,7 +77,7 @@ export function MenuPopup({
   return (
     <div
       ref={ref}
-      class="menu"
+      class={`menu ${fitContent ? "fit-content" : ""}`}
       role="menu"
       aria-label={label}
       style={{

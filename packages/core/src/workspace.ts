@@ -1,4 +1,5 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
+import { mkdir, readFile, readdir, stat } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { CoreError } from "./errors.ts";
@@ -21,9 +22,91 @@ export const REVIEWS_DIR = "reviews";
 export const TRASH_DIR = ".trash";
 export const CACHE_DIR = ".cache";
 
-/** The workspace root: `$SPRUE_HOME`, else `~/.sprue`. */
+/** Per-user settings kept outside any workspace, since they say where the workspace is. */
+export interface UserSettings {
+  /** Workspace folder chosen in Settings (absolute). */
+  workspace?: string;
+  /** Desktop app icon chosen in Settings (an id like "blue"; unset: the default icon). */
+  appIcon?: string;
+}
+
+/** `$XDG_CONFIG_HOME/sprue/settings.json`, else `~/.config/sprue/settings.json`. */
+export function userSettingsFile(env: NodeJS.ProcessEnv = process.env): string {
+  const base = env.XDG_CONFIG_HOME
+    ? path.resolve(env.XDG_CONFIG_HOME)
+    : path.join(os.homedir(), ".config");
+  return path.join(base, "sprue", "settings.json");
+}
+
+/** Missing or unreadable settings count as none, so a bad file never blocks startup. */
+export function readUserSettings(env: NodeJS.ProcessEnv = process.env): UserSettings {
+  let json: unknown;
+  try {
+    json = JSON.parse(readFileSync(userSettingsFile(env), "utf8"));
+  } catch {
+    return {};
+  }
+  if (!json || typeof json !== "object") return {};
+  const { workspace, appIcon } = json as Record<string, unknown>;
+  return {
+    ...(typeof workspace === "string" && path.isAbsolute(workspace) ? { workspace } : {}),
+    ...(typeof appIcon === "string" && /^[a-z0-9-]+$/.test(appIcon) ? { appIcon } : {}),
+  };
+}
+
+/** Merge `patch` into the saved settings; `undefined` values remove a setting. */
+export async function updateUserSettings(
+  patch: Partial<Record<keyof UserSettings, string | undefined>>,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<UserSettings> {
+  const next: Record<string, string | undefined> = { ...readUserSettings(env), ...patch };
+  for (const key of Object.keys(next)) if (next[key] === undefined) delete next[key];
+  const file = userSettingsFile(env);
+  await mkdir(path.dirname(file), { recursive: true });
+  await writeJson(file, next);
+  return next as UserSettings;
+}
+
+/** `~/.sprue`: where the workspace lives unless moved in Settings or by `$SPRUE_HOME`. */
+export function builtinWorkspaceRoot(): string {
+  return path.join(os.homedir(), HOME_DIR_NAME);
+}
+
+/** The workspace root: `$SPRUE_HOME`, else the folder chosen in Settings, else `~/.sprue`. */
 export function defaultWorkspaceRoot(env: NodeJS.ProcessEnv = process.env): string {
-  return env.SPRUE_HOME ? path.resolve(env.SPRUE_HOME) : path.join(os.homedir(), HOME_DIR_NAME);
+  if (env.SPRUE_HOME) return path.resolve(env.SPRUE_HOME);
+  return readUserSettings(env).workspace ?? builtinWorkspaceRoot();
+}
+
+/** Expand `~` and make absolute; relative paths aren't meaningful for a machine-wide setting. */
+export function resolveWorkspacePath(input: string): string {
+  const trimmed = input.trim();
+  const expanded =
+    trimmed === "~" || trimmed.startsWith("~/") || trimmed.startsWith("~\\")
+      ? path.join(os.homedir(), trimmed.slice(1))
+      : trimmed;
+  if (!path.isAbsolute(expanded))
+    throw new CoreError("INVALID_INPUT", `Use an absolute path (or one starting with ~): ${input}`);
+  return path.resolve(expanded);
+}
+
+/** A workspace can go in a new or empty folder, or point at an existing Sprue workspace. */
+export async function checkWorkspaceFolder(root: string): Promise<{ exists: boolean }> {
+  let info;
+  try {
+    info = await stat(root);
+  } catch {
+    return { exists: false };
+  }
+  if (!info.isDirectory()) throw new CoreError("INVALID_INPUT", `${root} is a file, not a folder.`);
+  if (await pathExists(configFileOf(root))) return { exists: true };
+  const entries = (await readdir(root)).filter((name) => name !== ".DS_Store");
+  if (entries.length)
+    throw new CoreError(
+      "INVALID_INPUT",
+      `${root} isn't empty. Choose an empty folder or an existing Sprue workspace.`,
+    );
+  return { exists: false };
 }
 
 export function configFileOf(root: string): string {

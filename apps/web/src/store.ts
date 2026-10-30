@@ -57,6 +57,11 @@ export const revisions = signal<Record<string, number>>({});
 /** Prototype ids selected in the gallery for comparison. */
 export const selection = signal<string[]>([]);
 
+/** Asks the view that owns a creation dialog to open it (e.g. from the command palette). */
+export const createRequest = signal<
+  { kind: "design" | "system"; project: string } | { kind: "project" } | null
+>(null);
+
 export interface SystemSummary {
   /** `project/id`, see {@link refOf}. */
   id: string;
@@ -286,7 +291,7 @@ export function projectDirOf(project: string): string {
 
 /** The design systems list of the project that `systemRef` (`project/id`) belongs to. */
 export function systemsListHref(systemRef: string): string {
-  return projectHref(splitRef(systemRef).project, "systems");
+  return `${projectHref(splitRef(systemRef).project)}#design-systems`;
 }
 
 // ---- Reviews -----------------------------------------------------------------

@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "preact/hooks";
-import { isTypingTarget } from "../util.ts";
+import { useRef } from "preact/hooks";
+import { bindingParts, keybindings, useShortcut } from "../keybindings.ts";
 import { Icon } from "./Icon.tsx";
 
-/** A search field with a leading icon. Press "/" anywhere on the page to focus it. */
+/** A search field with a leading icon. Its shortcut ("/" by default) focuses it from anywhere. */
 export function SearchInput({
   value,
   onInput,
@@ -13,16 +13,8 @@ export function SearchInput({
   placeholder: string;
 }) {
   const input = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key !== "/" || event.metaKey || event.ctrlKey || isTypingTarget(event.target))
-        return;
-      event.preventDefault();
-      input.current?.focus();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  useShortcut("search", () => input.current?.focus());
+  const keys = bindingParts(keybindings.value.search);
   return (
     <div class="search">
       <Icon name="search" size={15} />
@@ -41,7 +33,7 @@ export function SearchInput({
           }
         }}
       />
-      <kbd aria-hidden="true">/</kbd>
+      {keys.length > 0 && <kbd aria-hidden="true">{keys.join("")}</kbd>}
     </div>
   );
 }

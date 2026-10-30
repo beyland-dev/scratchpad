@@ -62,7 +62,12 @@ export type {
 } from "./prototypes.ts";
 export {
   Workspace,
+  builtinWorkspaceRoot,
   defaultWorkspaceRoot,
+  readUserSettings,
+  updateUserSettings,
+  userSettingsFile,
+  type UserSettings,
   ensureWorkspace,
   readWorkspaceConfig,
   HOME_DIR_NAME,

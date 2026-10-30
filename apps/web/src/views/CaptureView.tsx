@@ -1,4 +1,5 @@
 import { Code } from "../components/Code.tsx";
+import { Icon } from "../components/Icon.tsx";
 import { useEffect, useState } from "preact/hooks";
 import { useRoute } from "preact-iso";
 import { useCommand } from "../hooks/useCommand.ts";
@@ -120,7 +121,10 @@ export function CaptureView() {
     <div class="page capture-page">
       <div class="page-head">
         <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={systemsListHref(id)}>Design systems</a>
+          <a class="crumb-back" href={systemsListHref(id)}>
+            <Icon name="chevron-left" size={14} />
+            Design systems
+          </a>
           <span aria-hidden="true">/</span>
           <a href={systemTabHref(id, "activity", { captures: "all" })}>{sys.system.name}</a>
         </nav>

@@ -20,6 +20,15 @@ import {
 import { AGENTS_GUIDE_RESOURCE } from "./guide.ts";
 import type { Core } from "./core.ts";
 import { trashCommands } from "./trash.ts";
+import {
+  builtinWorkspaceRoot,
+  checkWorkspaceFolder,
+  defaultWorkspaceRoot,
+  readUserSettings,
+  resolveWorkspacePath,
+  userSettingsFile,
+  updateUserSettings,
+} from "./workspace.ts";
 
 const IdInput = z
   .string()
@@ -114,6 +123,66 @@ export const workspaceInfo = defineCommand({
     ]
       .filter(Boolean)
       .join("\n"),
+});
+
+function describeLocation(core: Core) {
+  const next = defaultWorkspaceRoot();
+  return {
+    /** The folder this running Sprue uses. */
+    current: core.workspace.root,
+    /** The folder Sprue uses the next time it starts (without --home). */
+    next,
+    builtin: builtinWorkspaceRoot(),
+    /** Set in Settings (null: the built-in default). */
+    configured: readUserSettings().workspace ?? null,
+    /** $SPRUE_HOME overrides the setting. */
+    env: process.env.SPRUE_HOME ? "SPRUE_HOME" : null,
+    restartRequired: path.resolve(next) !== path.resolve(core.workspace.root),
+    settingsFile: userSettingsFile(),
+  };
+}
+
+export const workspaceLocation = defineCommand({
+  name: "workspace.location",
+  title: "Workspace location",
+  description:
+    "Where the workspace folder is: the one in use now, and the one Sprue uses next time it starts (as chosen in Settings, $SPRUE_HOME, or ~/.sprue).",
+  kind: "query",
+  input: z.object({}),
+  handler: (_input, core) => describeLocation(core),
+  format: (out) =>
+    [
+      `Current: ${out.current}`,
+      out.restartRequired ? `Next start: ${out.next}` : "",
+      out.env ? "Set by $SPRUE_HOME" : "",
+    ]
+      .filter(Boolean)
+      .join("\n"),
+});
+
+export const workspaceSetLocation = defineCommand({
+  name: "workspace.setLocation",
+  title: "Set workspace location",
+  description:
+    "Choose the workspace folder Sprue uses from its next start: a new or empty folder, or an existing Sprue workspace. Files are not moved. Pass null to go back to ~/.sprue.",
+  kind: "mutation",
+  input: z.object({
+    path: z
+      .string()
+      .min(1)
+      .nullable()
+      .describe("Absolute folder path (~ allowed), or null for the default ~/.sprue"),
+  }),
+  positional: ["path"],
+  handler: async (input, core) => {
+    const target = input.path === null ? null : resolveWorkspacePath(input.path);
+    if (target) await checkWorkspaceFolder(target);
+    const isDefault = !target || target === builtinWorkspaceRoot();
+    await updateUserSettings({ workspace: isDefault ? undefined : target });
+    return describeLocation(core);
+  },
+  format: (out) =>
+    out.restartRequired ? `Sprue will use ${out.next} after a restart.` : `Using ${out.current}.`,
 });
 
 export const sourceList = defineCommand({
@@ -579,6 +648,8 @@ export const projectDelete = defineCommand({
 
 export const builtinCommands = [
   workspaceInfo,
+  workspaceLocation,
+  workspaceSetLocation,
   projectList,
   projectGet,
   projectCreate,

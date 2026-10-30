@@ -37,8 +37,8 @@ pnpm build                          # builds the packages, the web UI and the re
 pnpm sp serve                       # opens http://127.0.0.1:7420
 ```
 
-Everything lives in `~/.sprue` (set `SPRUE_HOME` or pass `--home <dir>` to use another
-folder); it's created on first use. Create a project from the sidebar, or:
+Everything lives in `~/.sprue` (choose another folder in Settings, set `SPRUE_HOME`, or pass
+`--home <dir>`); it's created on first use. Create a project from the sidebar, or:
 
 ```bash
 pnpm sp project create --name "Web app"
@@ -55,16 +55,23 @@ pnpm sp source add ~/code/web-app --notes "tokens in src/theme, components in sr
 ### Connect an agent
 
 ```bash
-pnpm sp mcp-config     # prints user-level snippets for VS Code, Claude Code, Cursor, Copilot CLI
+npx -y @beyland/sprue mcp-config <client> --install   # copilot, claude, codex, antigravity, muse, cursor, opencode, pi
+npx -y @beyland/sprue mcp-config                      # or just print every client's snippet
 ```
+
+No global install needed: run from npx, the config launches Sprue through npx too (installing
+globally with `npm install -g @beyland/sprue` gives you a plain `sp` command instead).
 
 - **stdio:** `sp mcp`. Recommended; it works without the server running.
 - **HTTP:** `http://127.0.0.1:7420/mcp` while `sp serve` is running.
 
-The stdio command waits silently for an MCP client and uses `~/.sprue` by default. Run
-`sp mcp-config vscode --install` to safely merge Sprue into the portable VS Code Copilot
-harness configuration at `~/.copilot/mcp-config.json`, with absolute executable paths. Existing
-servers are preserved; an existing conflicting `sprue` entry requires `--force`.
+The stdio command waits silently for an MCP client and uses `~/.sprue` by default.
+`--install` adds Sprue to the client's user-level config with absolute executable paths, so it
+works even when the client doesn't share your shell's `PATH` (re-run it after switching Node
+versions). JSON configs (Copilot's `~/.copilot/mcp-config.json`, used by VS Code, the Copilot app, and the CLI, Cursor,
+Antigravity, Muse Code, OpenCode, Pi) are merged in place, keeping other servers and comments; Claude Code and Codex
+are configured through their own `claude mcp add` / `codex mcp add`. It's idempotent, and a
+different existing `sprue` entry requires `--force`.
 
 Then ask your agent something like:
 
@@ -108,7 +115,7 @@ The CLI is `sprue`, or `sp` for short.
 ```text
 sp serve                     Start app + sandbox servers (--port, --sandbox-port, --host, --no-open)
 sp mcp                       MCP server over stdio
-sp mcp-config [client]       Print MCP config snippets
+sp mcp-config [client]       Print MCP config snippets (--install to add Sprue to the client)
 sp commands                  List core commands with JSON schemas
 
 sp workspace info
@@ -152,6 +159,11 @@ same `~/.sprue` workspace as the CLI:
 pnpm --filter @beyland/sprue-desktop build:standalone
 pnpm --filter @beyland/sprue-desktop start
 ```
+
+The app bundles the `sp` CLI, run by its own runtime (no Node.js needed): **Install 'sp' command
+in PATH** in the command palette (⌘K) links it into `/usr/local/bin` on macOS or `~/.local/bin`
+on Linux, and **Settings → Connections** adds Sprue to an agent's MCP config in one click. Both
+launch Sprue through the app's launcher script, so they keep working as the app updates.
 
 Desktop packaging commands create unsigned artifacts in `apps/desktop/release/`:
 

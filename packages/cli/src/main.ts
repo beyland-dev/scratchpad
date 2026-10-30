@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -16,10 +16,13 @@ import {
   type CommandDescriptor,
 } from "@beyland/sprue-core";
 import { captureCommands, closeBrowser } from "@beyland/sprue-capture";
+import { agentCommands } from "./agent-commands.ts";
 import { commandHelp, parseCommandInput } from "./args.ts";
 import {
-  installCopilotMcpConfig,
+  installMcpConfig,
   MCP_CLIENTS,
+  resolveMcpClient,
+  type Exec,
   mcpConfigSnippet,
   stdioLaunch,
   type McpClient,
@@ -30,13 +33,26 @@ export interface CliIO {
   stderr: (text: string) => void;
   cwd: string;
   env: NodeJS.ProcessEnv;
+  /** Runs client CLIs for `mcp-config --install` (e.g. `claude mcp add`); tests stub it. */
+  exec?: Exec;
 }
+
+const spawnExec: Exec = (command, args) => {
+  const result = spawnSync(command, args, { encoding: "utf8" });
+  return {
+    status: result.status,
+    stdout: result.stdout ?? "",
+    stderr: result.stderr ?? "",
+    error: result.error,
+  };
+};
 
 const defaultIO: CliIO = {
   stdout: (text) => process.stdout.write(text.endsWith("\n") ? text : `${text}\n`),
   stderr: (text) => process.stderr.write(text.endsWith("\n") ? text : `${text}\n`),
   cwd: process.cwd(),
   env: process.env,
+  exec: spawnExec,
 };
 
 const VERSION = (
@@ -120,7 +136,7 @@ function resolveCommand(
   return undefined;
 }
 
-/** `--home`, else `$SPRUE_HOME`, else `~/.sprue` (created on first use). */
+/** `--home`, else `$SPRUE_HOME`, else the folder chosen in Settings, else `~/.sprue` (created on first use). */
 function resolveWorkspace(globals: Globals, io: CliIO): string {
   return globals.home ? path.resolve(io.cwd, globals.home) : defaultWorkspaceRoot(io.env);
 }
@@ -150,7 +166,7 @@ Core commands (also exposed over MCP and HTTP):
 ${commandLines.join("\n")}
 
 Global options:
-  --home <dir>            Workspace folder (default: $SPRUE_HOME, or ~/.sprue)
+  --home <dir>            Workspace folder (default: $SPRUE_HOME, the Settings choice, or ~/.sprue)
   --json                  Print machine-readable JSON
   -h, --help              Show help (also: sp <command> --help)
   -v, --version           Show version
@@ -177,12 +193,21 @@ Options:
 function mcpConfigHelp(): string {
   return `sp mcp-config [client] [options]
 
-Print an MCP configuration snippet, or merge Sprue into the portable Copilot config.
+Print an MCP configuration snippet, or add Sprue to a client's user-level MCP config.
 
 Clients: ${MCP_CLIENTS.join(", ")}
 
 Options:
-  --install       Merge into $COPILOT_HOME/mcp-config.json (default: ~/.copilot/mcp-config.json)
+  --install       Add Sprue to the client's config (default client: copilot)
+                    copilot              ~/.copilot/mcp-config.json ($COPILOT_HOME):
+                                         VS Code, the Copilot app, and the Copilot CLI
+                    antigravity          ~/.gemini/config/mcp_config.json
+                    muse                 ~/.config/muse/settings.json
+                    cursor               ~/.cursor/mcp.json
+                    opencode             ~/.config/opencode/opencode.json
+                    pi                   ~/.pi/agent/mcp.json
+                    claude               runs \`claude mcp add --scope user\`
+                    codex                runs \`codex mcp add\`
   --name <name>   MCP server name (default: sprue)
   --force         Replace a conflicting server with the same name; requires --install
   -h, --help      Show this help`;
@@ -310,7 +335,13 @@ async function runServe(args: string[], globals: Globals, io: CliIO): Promise<nu
   });
   const { startServer } = await import("@beyland/sprue-server");
   const root = resolveWorkspace(globals, io);
-  const core = await Core.open({ root, watch: true, commands: captureCommands });
+  const home = root === defaultWorkspaceRoot({}) ? undefined : root;
+  const launch = stdioLaunch(BIN_PATH, home, { launcher: io.env.SPRUE_CLI_LAUNCHER });
+  const core = await Core.open({
+    root,
+    watch: true,
+    commands: [...captureCommands, ...agentCommands(() => launch)],
+  });
   const webRoot = resolveWebRoot(io.env);
   const server = await startServer({
     core,
@@ -381,33 +412,35 @@ async function runMcpConfig(args: string[], globals: Globals, io: CliIO): Promis
   if (positionals.length > 1)
     throw new CoreError("INVALID_INPUT", "mcp-config accepts at most one client name");
   const root = resolveWorkspace(globals, io);
-  const launch = stdioLaunch(BIN_PATH, root === defaultWorkspaceRoot({}) ? undefined : root);
-  const requested = positionals[0] ?? (values.install ? "vscode" : undefined);
-  if (requested && !MCP_CLIENTS.includes(requested as McpClient)) {
+  const launch = stdioLaunch(BIN_PATH, root === defaultWorkspaceRoot({}) ? undefined : root, {
+    // Set by the desktop app's `sp` launcher script.
+    launcher: io.env.SPRUE_CLI_LAUNCHER,
+  });
+  const name = positionals[0] ?? (values.install ? "copilot" : undefined);
+  const requested = name === undefined ? undefined : resolveMcpClient(name);
+  if (name !== undefined && !requested) {
     throw new CoreError(
       "INVALID_INPUT",
-      `Unknown MCP client ${requested}. Choose one of: ${MCP_CLIENTS.join(", ")}`,
+      `Unknown MCP client ${name}. Choose one of: ${MCP_CLIENTS.join(", ")}`,
     );
   }
   if (values.force && !values.install)
     throw new CoreError("INVALID_INPUT", "--force requires --install");
   if (values.install) {
-    if (requested !== "vscode" && requested !== "copilot-cli")
-      throw new CoreError(
-        "INVALID_INPUT",
-        `--install supports vscode and copilot-cli; ${requested} uses a different config file`,
-      );
-    const result = await installCopilotMcpConfig(launch, {
+    const result = await installMcpConfig(requested as McpClient, launch, {
       env: io.env,
       name: values.name,
       force: values.force,
+      exec: io.exec ?? spawnExec,
     });
+    const server = `MCP server ${JSON.stringify(result.name)}`;
+    const via = result.via ? ` (via ${result.via})` : "";
     const human =
       result.status === "created"
-        ? `Created ${result.file} with MCP server ${JSON.stringify(result.name)}`
+        ? `Added ${server} to ${result.file}${via}`
         : result.status === "updated"
-          ? `Added MCP server ${JSON.stringify(result.name)} to ${result.file}`
-          : `MCP server ${JSON.stringify(result.name)} is already configured in ${result.file}`;
+          ? `Replaced ${server} in ${result.file}${via}`
+          : `${server} is already configured in ${result.file}`;
     printResult(io, globals, { ...result, launch }, human);
     return 0;
   }

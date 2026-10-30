@@ -75,7 +75,7 @@ export function Compare() {
         <a
           href={projectHref(ids[0] ? splitRef(ids[0]).project : (homeProjectId() ?? ""))}
           class="button ghost icon-only"
-          aria-label="Back to prototypes"
+          aria-label="Back to design"
           title="Back"
         >
           <Icon name="arrow-left" />
@@ -85,11 +85,11 @@ export function Compare() {
         {candidates.length > 0 && (
           <select
             class="input add-select"
-            aria-label="Add a prototype"
+            aria-label="Add a design"
             value=""
             onChange={(e) => e.currentTarget.value && update([...ids, e.currentTarget.value])}
           >
-            <option value="">Add prototype…</option>
+            <option value="">Add design…</option>
             {candidates.map((p) => (
               <option value={p.id} key={p.id}>
                 {nameOf(p)}

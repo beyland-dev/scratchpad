@@ -88,7 +88,10 @@ export function ComponentView() {
     <div class="page component-page">
       <div class="page-head">
         <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={systemsListHref(id)}>Design systems</a>
+          <a class="crumb-back" href={systemsListHref(id)}>
+            <Icon name="chevron-left" size={14} />
+            Design systems
+          </a>
           <span aria-hidden="true">/</span>
           <a href={systemTabHref(id, "components", { theme })}>{sys.name}</a>
         </nav>

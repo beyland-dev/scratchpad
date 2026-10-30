@@ -60,7 +60,7 @@ export function Feedback() {
         <div class="empty-state">
           <ol class="review-steps">
             <li>
-              <strong>Pick prototypes.</strong> Select versions in the gallery and choose{" "}
+              <strong>Pick designs.</strong> Select versions on the Design page and choose{" "}
               <em>Request feedback</em>, or start a new review here.
             </li>
             <li>

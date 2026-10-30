@@ -1,8 +1,10 @@
 import { groupFamilies } from "@beyland/sprue-core/family";
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { useLocation, useRoute } from "preact-iso";
 import { PrototypeDialog } from "../components/Dialogs.tsx";
+import { GettingStarted } from "../components/GettingStarted.tsx";
 import { Icon } from "../components/Icon.tsx";
+import { MenuPopup, type MenuPosition } from "../components/Menu.tsx";
 import { PrototypeCard, familyUpdatedAt } from "../components/PrototypeCard.tsx";
 import { SearchInput } from "../components/SearchInput.tsx";
 import { STATUSES } from "../components/StatusBadge.tsx";
@@ -16,8 +18,10 @@ import {
   projectIdOf,
   prototypes,
   selection,
+  createRequest,
 } from "../store.ts";
 import type { PrototypeStatus, PrototypeWithUrls } from "../types.ts";
+import { DesignSystemRows } from "./Systems.tsx";
 
 export function Gallery() {
   const { params } = useRoute();
@@ -26,7 +30,16 @@ export function Gallery() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<PrototypeStatus | "">("");
   const [group, setGroup] = useState("");
-  const [creating, setCreating] = useState(false);
+  const [creating, setCreating] = useState<"design" | "system" | null>(null);
+  // "New design…" / "New design system…" from the command palette.
+  const request = createRequest.value;
+  useEffect(() => {
+    if (!request || request.kind === "project" || request.project !== projectId) return;
+    createRequest.value = null;
+    setCreating(request.kind);
+  }, [request, projectId]);
+  const [createMenu, setCreateMenu] = useState<MenuPosition | null>(null);
+  const createMenuButton = useRef<HTMLButtonElement>(null);
   const project = projectEntries.value.find((p) => p.id === projectId);
   const all = useMemo(
     () => prototypes.value.filter((p) => projectIdOf(p) === projectId),
@@ -78,8 +91,8 @@ export function Gallery() {
         No project <code>{projectId}</code>. <a href="/">Go to your projects</a>
       </p>
     );
-  const dialogs = creating && (
-    <PrototypeDialog projectId={projectId} groups={groups} onClose={() => setCreating(false)} />
+  const dialogs = creating === "design" && (
+    <PrototypeDialog projectId={projectId} groups={groups} onClose={() => setCreating(null)} />
   );
 
   const selected = selection.value;
@@ -95,8 +108,14 @@ export function Gallery() {
 
   return (
     <div class={`gallery ${selected.length ? "selecting" : ""}`}>
+      <GettingStarted projectId={projectId} />
+      <DesignSystemRows
+        projectId={projectId}
+        creating={creating === "system"}
+        onCreatingChange={(next) => setCreating(next ? "system" : null)}
+      />
       <div class="toolbar">
-        <SearchInput value={search} onInput={setSearch} placeholder="Search prototypes" />
+        <SearchInput value={search} onInput={setSearch} placeholder="Search designs" />
         {statusOptions.length > 1 && (
           <div class="segmented" role="group" aria-label="Filter by status">
             <button
@@ -147,9 +166,26 @@ export function Gallery() {
             </button>
           </>
         )}
-        <button type="button" class="button primary" onClick={() => setCreating(true)}>
-          <Icon name="plus" size={14} /> New prototype
-        </button>
+        <div class="design-create-buttons">
+          <button type="button" class="button primary" onClick={() => setCreating("design")}>
+            <Icon name="plus" size={14} /> New design
+          </button>
+          <button
+            ref={createMenuButton}
+            type="button"
+            class="button primary icon-only"
+            aria-label="More new design options"
+            aria-haspopup="menu"
+            aria-expanded={Boolean(createMenu)}
+            onClick={(event) => {
+              if (createMenu) return setCreateMenu(null);
+              const rect = event.currentTarget.getBoundingClientRect();
+              setCreateMenu({ x: rect.right, y: rect.bottom + 4, alignRight: true });
+            }}
+          >
+            <Icon name="chevron-down" size={14} />
+          </button>
+        </div>
       </div>
 
       {visible.length === 0 && filtersActive && (
@@ -208,6 +244,21 @@ export function Gallery() {
             <Icon name="x" />
           </button>
         </div>
+      )}
+      {createMenu && (
+        <MenuPopup
+          label="New design options"
+          position={createMenu}
+          anchor={createMenuButton}
+          fitContent
+          onClose={() => setCreateMenu(null)}
+          items={[
+            {
+              label: "New design system",
+              onSelect: () => setCreating("system"),
+            },
+          ]}
+        />
       )}
       {dialogs}
     </div>

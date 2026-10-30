@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# The `sp` command, run by Sprue's own runtime: no Node.js install needed. "Install 'sp' command
+# in PATH" (command palette) links this script into PATH; it finds the app through the link.
+set -e
+
+source="$0"
+while [ -L "$source" ]; do
+  dir="$(cd -P "$(dirname "$source")" && pwd)"
+  source="$(readlink "$source")"
+  case "$source" in /*) ;; *) source="$dir/$source" ;; esac
+done
+bin="$(cd -P "$(dirname "$source")" && pwd)"
+resources="$(dirname "$bin")"
+
+if [ "$(uname)" = "Darwin" ]; then
+  app="$(dirname "$(dirname "$resources")")"
+  runtime="$app/Contents/MacOS/Sprue"
+else
+  runtime="$(dirname "$resources")/sprue"
+fi
+
+# MCP configs written by `sp mcp-config` launch this script, which keeps working across updates.
+export SPRUE_CLI_LAUNCHER="$bin/sp"
+ELECTRON_RUN_AS_NODE=1 exec "$runtime" "$resources/app.asar/dist/cli.mjs" "$@"

@@ -9,7 +9,7 @@ These conventions apply whether you use the MCP tools or edit files directly.
 
 ## Layout
 
-Everything lives in one folder per machine, \`~/.sprue\` (or \`$SPRUE_HOME\`). Each
+Everything lives in one folder per machine, \`~/.sprue\` (or the folder chosen in Settings, or \`$SPRUE_HOME\`). Each
 project folder is self-contained and is often its own git repo, shared with collaborators.
 
 \`\`\`

@@ -3,14 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/sprue-product-icon.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="color-scheme" content="light dark" />
     <title>Sprue</title>
     <script>
-      // Apply the saved theme before the first paint (see src/theme.ts).
+      // Apply the saved theme and app icon before the first paint (see src/theme.ts, src/icon.ts).
       try {
+        const schemes = {
+          light: "light",
+          fog: "light",
+          sand: "light",
+          mint: "light",
+          orchid: "light",
+          sky: "light",
+          coral: "light",
+          aqua: "light",
+          lime: "light",
+          lemonade: "light",
+          bubblegum: "light",
+          dark: "dark",
+          graphite: "dark",
+          slate: "dark",
+          forest: "dark",
+          midnight: "dark",
+          plum: "dark",
+          ocean: "dark",
+          ember: "dark",
+          neon: "dark",
+          abyss: "dark",
+          voltage: "dark",
+          toxic: "dark",
+          magma: "dark",
+          synthwave: "dark",
+          ultraviolet: "dark",
+          "contrast-dark": "dark",
+          "contrast-light": "light",
+          "contrast-amber": "dark",
+          "contrast-ink": "light",
+        };
         const theme = localStorage.getItem("sprue.theme");
-        if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+        if (schemes[theme]) {
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.dataset.scheme = schemes[theme];
+        }
+        const icon = localStorage.getItem("sprue.icon");
+        if (icon && /^[a-z0-9-]+$/.test(icon))
+          document.querySelector("link[rel~='icon']").href = `/icons/${icon}.png`;
       } catch {}
     </script>
   </head>

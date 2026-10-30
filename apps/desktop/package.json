@@ -11,7 +11,7 @@
     "build": "vp pack && node ./scripts/copy-web.mjs",
     "build:standalone": "pnpm run build:web && pnpm run build",
     "build:web": "pnpm --filter @beyland/sprue-web build",
-    "start": "electron ./dist/main.mjs",
+    "start": "node ./scripts/start.mjs",
     "dist:mac": "pnpm run build:standalone && node ./scripts/build-mac.mjs",
     "dist:win": "pnpm run build:standalone && electron-builder --win nsis --x64 --publish never",
     "dist:linux": "pnpm run build:standalone && electron-builder --linux AppImage deb --x64 --publish never"
@@ -21,10 +21,12 @@
     "@modelcontextprotocol/server": "catalog:",
     "chokidar": "catalog:",
     "hono": "catalog:",
+    "jsonc-parser": "catalog:",
     "playwright-core": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@beyland/sprue": "workspace:*",
     "@beyland/sprue-capture": "workspace:*",
     "@beyland/sprue-core": "workspace:*",
     "@beyland/sprue-mcp": "workspace:*",
@@ -50,14 +52,14 @@
     },
     "mac": {
       "category": "public.app-category.graphics-design",
-      "icon": "../../assets/sprue-product-icon.png",
+      "icon": "resources/app-icon-macos.png",
       "identity": null,
       "target": [
         "dmg"
       ]
     },
     "win": {
-      "icon": "../../assets/sprue-product-icon.png",
+      "icon": "resources/app-icon.png",
       "target": [
         "nsis"
       ]
@@ -68,11 +70,19 @@
     },
     "linux": {
       "category": "Graphics",
-      "icon": "../../assets/sprue-product-icon.png",
+      "icon": "resources/app-icon.png",
       "target": [
         "AppImage",
         "deb"
-      ]
-    }
-  }
+      ],
+      "executableName": "sprue"
+    },
+    "extraResources": [
+      {
+        "from": "resources/bin",
+        "to": "bin"
+      }
+    ]
+  },
+  "productName": "Sprue"
 }

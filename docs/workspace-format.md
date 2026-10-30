@@ -1,7 +1,7 @@
 # Workspace format (v2)
 
-Sprue keeps everything in one folder per machine: `~/.sprue` (override it with
-`$SPRUE_HOME` or `--home <dir>`). It's created on first use. Each project folder inside it is
+Sprue keeps everything in one folder per machine: `~/.sprue` (override it in Settings, which
+saves `~/.config/sprue/settings.json`, or with `$SPRUE_HOME` or `--home <dir>`). It's created on first use. Each project folder inside it is
 self-contained, so it can be its own git repo, shared with collaborators (see [Git](#git)).
 
 ```

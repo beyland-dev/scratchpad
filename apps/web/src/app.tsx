@@ -1,6 +1,7 @@
 import { useEffect } from "preact/hooks";
 import { LocationProvider, Route, Router, useLocation } from "preact-iso";
-import { AgentConnectionGuide } from "./components/ConnectAgent.tsx";
+import { CommandPalette } from "./components/CommandPalette.tsx";
+import { GettingStarted } from "./components/GettingStarted.tsx";
 import { ConnectionToast, Header, isImmersive } from "./components/Header.tsx";
 import { NewVariantHost } from "./components/NewVariant.tsx";
 import { Sidebar } from "./components/Sidebar.tsx";
@@ -9,7 +10,7 @@ import { Compare } from "./views/Compare.tsx";
 import { Feedback } from "./views/Feedback.tsx";
 import { ReviewView } from "./views/ReviewView.tsx";
 import { Handoff } from "./views/Handoff.tsx";
-import { Settings } from "./views/Settings.tsx";
+import { Settings, ShortcutsSettings } from "./views/Settings.tsx";
 import { CaptureView } from "./views/CaptureView.tsx";
 import { ComponentView } from "./views/ComponentView.tsx";
 import { Systems } from "./views/Systems.tsx";
@@ -20,7 +21,7 @@ import { Viewer } from "./views/Viewer.tsx";
 function NotFound() {
   return (
     <p class="page-message">
-      Page not found. <a href="/">Back to prototypes</a>
+      Page not found. <a href="/">Back to design</a>
     </p>
   );
 }
@@ -36,14 +37,7 @@ function ToHomeProject() {
   if (!target)
     return (
       <div class="page empty-workspace">
-        <div class="page-head">
-          <h1>Connect your first product</h1>
-          <p class="muted">
-            Create a project from the sidebar, then connect an agent and the product codebase it
-            should use as context.
-          </p>
-        </div>
-        <AgentConnectionGuide />
+        <GettingStarted />
       </div>
     );
   return null;
@@ -70,6 +64,7 @@ function Shell() {
             <Route path="/projects/:project/feedback/:id" component={ReviewView} />
             <Route path="/projects/:project/handoff" component={Handoff} />
             <Route path="/settings" component={Settings} />
+            <Route path="/settings/shortcuts" component={ShortcutsSettings} />
             <Route path="/projects/:project/p/:id" component={Viewer} />
             <Route path="/compare" component={Compare} />
             <Route path="/projects/:project/systems/:id" component={SystemView} />
@@ -80,6 +75,7 @@ function Shell() {
         </main>
       </div>
       <ConnectionToast />
+      <CommandPalette />
       <NewVariantHost />
     </div>
   );

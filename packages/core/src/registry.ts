@@ -17,6 +17,8 @@ export interface CommandDefinition<I extends z.ZodType = z.ZodType, O = unknown>
   format?(output: O): string;
   /** Input keys that the CLI accepts as positional arguments, in order. */
   positional?: string[];
+  /** App-only (e.g. restarting the desktop app): not offered to agents as an MCP tool. */
+  internal?: boolean;
 }
 
 // oxlint-disable-next-line typescript/no-explicit-any

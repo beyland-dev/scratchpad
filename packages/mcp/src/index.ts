@@ -105,7 +105,8 @@ export function createMcpServer(core: Core): McpServer {
     { name: MCP_SERVER_NAME, version: MCP_SERVER_VERSION },
     { instructions: INSTRUCTIONS },
   );
-  for (const command of core.registry.list()) registerCommand(server, core, command);
+  for (const command of core.registry.list())
+    if (!command.internal) registerCommand(server, core, command);
   server.registerResource(
     "guide",
     AGENTS_GUIDE_RESOURCE,

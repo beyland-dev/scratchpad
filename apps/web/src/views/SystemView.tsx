@@ -117,7 +117,10 @@ export function SystemView() {
     <div class="page system-page">
       <div class="page-head">
         <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={systemsListHref(id)}>Design systems</a>
+          <a class="crumb-back" href={systemsListHref(id)}>
+            <Icon name="chevron-left" size={14} />
+            Design systems
+          </a>
         </nav>
         <div class="page-title-row">
           <h1>{system.name}</h1>
@@ -362,7 +365,7 @@ function UsageTab({ data }: { data: SystemDetails }) {
   return (
     <div class="usage">
       <section>
-        <h2 class="section-heading">Add it to a prototype</h2>
+        <h2 class="section-heading">Add it to a design</h2>
         {isPackage && (
           <p>
             Prototypes that use {system.name} are React prototypes: an <code>index.html</code> shell

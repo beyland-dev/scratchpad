@@ -298,7 +298,7 @@ export function DeleteProjectDialog({
 }) {
   const { route } = useLocation();
   const contents = [
-    project.prototypes && `${project.prototypes} prototype${project.prototypes === 1 ? "" : "s"}`,
+    project.prototypes && `${project.prototypes} design${project.prototypes === 1 ? "" : "s"}`,
     project.systems && `${project.systems} design system${project.systems === 1 ? "" : "s"}`,
   ].filter(Boolean);
   return (
@@ -386,7 +386,7 @@ export function PrototypeDialog({
     }
   });
   return (
-    <Modal title={proto ? "Edit prototype" : "New prototype"} onClose={onClose}>
+    <Modal title={proto ? "Edit design" : "New design"} onClose={onClose}>
       <form onSubmit={submit}>
         <div class="dialog-body">
           <Field
@@ -461,7 +461,7 @@ export function PrototypeDialog({
           )}
         </div>
         <FormActions
-          submitLabel={proto ? "Save" : "Create prototype"}
+          submitLabel={proto ? "Save" : "Create design"}
           busy={busy}
           error={error}
           onCancel={onClose}
@@ -491,7 +491,7 @@ export function DeletePrototypeDialog({
           ? `Delete ${versionLabelOf(proto) ?? "this version"} of “${familyTitle(proto)}”?`
           : `Delete “${proto.title}”?`
       }
-      confirmLabel={versions > 1 ? "Delete this version" : "Delete prototype"}
+      confirmLabel={versions > 1 ? "Delete this version" : "Delete design"}
       onClose={onClose}
       onConfirm={async () => {
         await call("prototype.delete", { id: proto.id });
@@ -763,12 +763,12 @@ export function SystemDialog({
                     [
                       "package",
                       "An existing library",
-                      "shadcn/ui, Primer, … customized for your product. Prototypes are written in React.",
+                      "shadcn/ui, Primer, … customized for your product. Designs are written in React.",
                     ],
                     [
                       "captured",
                       "Capture my product",
-                      "Codify a running product's UI into web components for plain HTML prototypes.",
+                      "Codify a running product's UI into web components for plain HTML designs.",
                     ],
                   ] as const
                 ).map(([value, title, text]) => (
@@ -924,8 +924,8 @@ export function DeleteSystemDialog({
     >
       <p>
         Its {system.components} components, {system.tokens.toLocaleString()} tokens and captures
-        move to the project's <code>.trash/</code>. Prototypes that include its{" "}
-        <code>system.css</code> stop rendering it.
+        move to the project's <code>.trash/</code>. Designs that include its <code>system.css</code>{" "}
+        stop rendering it.
       </p>
     </ConfirmDialog>
   );
@@ -972,7 +972,7 @@ export function ComponentDialog({
             value={usage}
             onInput={setUsage}
             multiline
-            hint="When to use it, for agents building prototypes."
+            hint="When to use it, for agents building designs."
           />
         </div>
         <FormActions
@@ -1010,8 +1010,8 @@ export function DeleteComponentDialog({
     >
       <p>
         Its definition, examples and code move to the project's <code>.trash/</code>, and the system
-        is rebuilt without it. Prototypes using <code>&lt;{component.tag}&gt;</code> will render it
-        as an unknown element.
+        is rebuilt without it. Designs using <code>&lt;{component.tag}&gt;</code> will render it as
+        an unknown element.
       </p>
     </ConfirmDialog>
   );

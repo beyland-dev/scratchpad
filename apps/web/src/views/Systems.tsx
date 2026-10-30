@@ -1,115 +1,69 @@
-import { useState } from "preact/hooks";
-import { useRoute } from "preact-iso";
-import { DeleteSystemDialog, SystemDialog } from "../components/Dialogs.tsx";
-import { MenuButton } from "../components/Menu.tsx";
+import { useEffect } from "preact/hooks";
+import { useLocation, useRoute } from "preact-iso";
+import { SystemDialog } from "../components/Dialogs.tsx";
 import { Icon } from "../components/Icon.tsx";
-import { Specimen } from "../components/Specimen.tsx";
-import {
-  loaded,
-  projectEntries,
-  projectIdOf,
-  systemHref,
-  systems,
-  type SystemSummary,
-} from "../store.ts";
+import { loaded, projectHref, projectIdOf, systemHref, systems } from "../store.ts";
 
 export function Systems() {
   const { params } = useRoute();
+  const { route } = useLocation();
   const projectId = params.project ?? "";
-  const [creating, setCreating] = useState(false);
-  const [dialog, setDialog] = useState<{ kind: "edit" | "delete"; system: SystemSummary } | null>(
-    null,
-  );
-  if (!loaded.value) return <p class="page-message">Loading…</p>;
-  const project = projectEntries.value.find((p) => p.id === projectId);
-  if (!project)
-    return (
-      <p class="page-message">
-        No project <code>{projectId}</code>. <a href="/">Go to your projects</a>
-      </p>
-    );
+  useEffect(() => route(`${projectHref(projectId)}#design-systems`, true), [projectId]);
+  return null;
+}
+
+/** A project's design systems as pinned rows: usually there's exactly one, so no card grid. */
+export function DesignSystemRows({
+  projectId,
+  creating,
+  onCreatingChange,
+}: {
+  projectId: string;
+  creating: boolean;
+  onCreatingChange: (creating: boolean) => void;
+}) {
+  if (!loaded.value) return null;
   const list = systems.value.filter((s) => projectIdOf(s) === projectId);
   return (
-    <div class="page">
-      <div class="page-head">
-        <div class="page-title-row">
-          <h1>Design systems</h1>
-          <span class="toolbar-spacer" />
-          <button type="button" class="button primary" onClick={() => setCreating(true)}>
-            <Icon name="plus" size={14} /> New design system
-          </button>
+    <section class="system-rows" id="design-systems" aria-label="Design systems">
+      {list.map((s) => (
+        <div class="system-row" key={s.id}>
+          <a class="system-row-link" href={systemHref(s.id)}>
+            <SystemThumb />
+            <span class="system-row-text">
+              <span class="system-row-eyebrow">Design system</span>
+              <strong title={s.name}>{s.name}</strong>
+            </span>
+            {s.issues?.length ? (
+              <span class="card-issues" title={s.issues.join("\n")}>
+                <Icon name="alert" size={13} />
+              </span>
+            ) : null}
+            <span class="system-row-stats">
+              {s.components} components · {s.tokens.toLocaleString()} tokens
+            </span>
+            <span class="system-row-arrow" aria-hidden="true">
+              <Icon name="chevron-right" size={16} />
+            </span>
+          </a>
         </div>
-        <p class="muted">
-          Verified components and tokens codified from real products, so agents build prototypes
-          that match.
-        </p>
-      </div>
-      {list.length > 0 && (
-        <div class="grid system-grid">
-          {list.map((s) => (
-            <article class="card system-visual-card" key={s.id}>
-              <a class="system-card-link" href={systemHref(s.id)}>
-                <SystemVisual system={s} />
-                <div class="card-body">
-                  <span class="card-title" title={s.name}>
-                    {s.name}
-                  </span>
-                  {s.issues?.length ? (
-                    <span class="card-issues" title={s.issues.join("\n")}>
-                      <Icon name="alert" size={13} />
-                    </span>
-                  ) : null}
-                  <span class="card-time">{s.library?.name ?? s.kind}</span>
-                </div>
-              </a>
-              <MenuButton
-                class="card-menu"
-                label={`${s.name} options`}
-                items={[
-                  {
-                    label: "Edit details…",
-                    onSelect: () => setDialog({ kind: "edit", system: s }),
-                  },
-                  {
-                    label: "Delete…",
-                    danger: true,
-                    onSelect: () => setDialog({ kind: "delete", system: s }),
-                  },
-                ]}
-              />
-            </article>
-          ))}
-        </div>
+      ))}
+      {list.length === 0 && (
+        <button type="button" class="system-row-add" onClick={() => onCreatingChange(true)}>
+          <Icon name="plus" size={14} />
+          Add a design system
+          <span>Components and tokens keep generated designs on-brand.</span>
+        </button>
       )}
-      {creating && <SystemDialog projectId={projectId} onClose={() => setCreating(false)} />}
-      {dialog?.kind === "edit" && (
-        <SystemDialog system={dialog.system} onClose={() => setDialog(null)} />
-      )}
-      {dialog?.kind === "delete" && (
-        <DeleteSystemDialog system={dialog.system} onClose={() => setDialog(null)} />
-      )}
-    </div>
+      {creating && <SystemDialog projectId={projectId} onClose={() => onCreatingChange(false)} />}
+    </section>
   );
 }
 
-function SystemVisual({ system }: { system: SystemSummary }) {
+function SystemThumb() {
   return (
-    <div class="card-folder system-visual" aria-hidden="true">
-      {Array.from({ length: 4 }, (_, index) => {
-        const component = system.previews[index];
-        if (!component) return <span class="folder-cell empty" key={index} />;
-        return (
-          <span class="folder-cell system-preview" key={component.name}>
-            <Specimen
-              system={system.id}
-              component={component.name}
-              fill
-              interactive={false}
-              title={`${component.title} preview`}
-            />
-          </span>
-        );
-      })}
-    </div>
+    <span class="system-row-thumb" aria-hidden="true">
+      <Icon name="components" size={18} />
+    </span>
   );
 }

@@ -191,7 +191,10 @@ export function ReviewView() {
     <div class="page review-page">
       <div class="page-head">
         <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={projectHref(project, "feedback")}>Feedback</a>
+          <a class="crumb-back" href={projectHref(project, "feedback")}>
+            <Icon name="chevron-left" size={14} />
+            Feedback
+          </a>
         </nav>
         <div class="page-title-row">
           <input
@@ -322,7 +325,7 @@ export function ReviewView() {
                           {editedAgo(proto.updatedAt)}
                         </>
                       ) : (
-                        <>Prototype {item.prototype} no longer exists</>
+                        <>Design {item.prototype} no longer exists</>
                       )}
                       {last && changed.has(item.prototype) && (
                         <span class="chip review-changed">
@@ -663,9 +666,9 @@ function AddPrototypesDialog({
   const toggle = (localId: string) =>
     setPicked((p) => (p.includes(localId) ? p.filter((x) => x !== localId) : [...p, localId]));
   return (
-    <Modal title="Add prototypes" onClose={onClose} wide>
+    <Modal title="Add designs" onClose={onClose} wide>
       <div class="dialog-body">
-        {families.length === 0 && <p class="muted">This project has no prototypes yet.</p>}
+        {families.length === 0 && <p class="muted">This project has no designs yet.</p>}
         <ul class="review-picker">
           {families.map((family) => {
             const latest = family.at(-1)!;

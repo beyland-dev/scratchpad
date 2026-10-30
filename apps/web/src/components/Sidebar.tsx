@@ -2,6 +2,7 @@ import { signal } from "@preact/signals";
 import { useEffect, useState } from "preact/hooks";
 import { useLocation } from "preact-iso";
 import {
+  createRequest,
   homeProjectId,
   projectEntries,
   projectHref,
@@ -9,18 +10,34 @@ import {
   type ProjectEntry,
 } from "../store.ts";
 import { DeleteProjectDialog, ProjectDialog } from "./Dialogs.tsx";
-import { isTypingTarget } from "../util.ts";
+import { ariaKeyshortcuts, shortcutLabel, type ShortcutId } from "../keybindings.ts";
 import { Icon } from "./Icon.tsx";
 import { MenuButton, MenuPopup, type MenuItem } from "./Menu.tsx";
 import { ProjectIcon } from "./ProjectIcon.tsx";
 
 const SIDEBAR_KEY = "sprue.sidebar";
+const SIDEBAR_WIDTH_KEY = "sprue.sidebar.width";
+const MIN_SIDEBAR_WIDTH = 180;
+const MAX_SIDEBAR_WIDTH = 420;
 
-export const sidebarExpanded = signal(localStorage.getItem(SIDEBAR_KEY) !== "collapsed");
+/** Collapsed until someone expands it. */
+export const sidebarExpanded = signal(localStorage.getItem(SIDEBAR_KEY) === "expanded");
+export const sidebarWidth = signal(
+  Math.min(
+    MAX_SIDEBAR_WIDTH,
+    Math.max(MIN_SIDEBAR_WIDTH, Number(localStorage.getItem(SIDEBAR_WIDTH_KEY)) || 248),
+  ),
+);
 
-function setExpanded(expanded: boolean): void {
+export function setSidebarExpanded(expanded: boolean): void {
   localStorage.setItem(SIDEBAR_KEY, expanded ? "expanded" : "collapsed");
   sidebarExpanded.value = expanded;
+}
+
+function setSidebarWidth(width: number): void {
+  const next = Math.min(MAX_SIDEBAR_WIDTH, Math.max(MIN_SIDEBAR_WIDTH, Math.round(width)));
+  localStorage.setItem(SIDEBAR_WIDTH_KEY, String(next));
+  sidebarWidth.value = next;
 }
 
 /** The project the current page belongs to (remembered as "home" for next time). */
@@ -47,7 +64,7 @@ interface Tip {
 
 export function Sidebar() {
   const { path } = useLocation();
-  const onSettings = path === "/settings";
+  const onSettings = path.startsWith("/settings");
   const activeProject = useActiveProject();
   // Settings isn't part of a project, so no project is highlighted there.
   const active = onSettings ? undefined : activeProject;
@@ -59,17 +76,14 @@ export function Sidebar() {
     { kind: "new" } | { kind: "edit" | "delete"; project: ProjectEntry } | null
   >(null);
 
+  // "New project…" from the command palette (or its shortcut).
+  const request = createRequest.value;
   useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key !== "[" || event.metaKey || event.ctrlKey || event.altKey) return;
-      if (isTypingTarget(event.target)) return;
-      event.preventDefault();
-      setTip(null);
-      setExpanded(!sidebarExpanded.value);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
+    if (request?.kind !== "project") return;
+    createRequest.value = null;
+    setTip(null);
+    setDialog({ kind: "new" });
+  }, [request]);
 
   // Collapsed: name + counts for every icon. Expanded: names are visible, so just the counts.
   const tipHandlers = (text: string, sub?: string) => ({
@@ -90,15 +104,40 @@ export function Sidebar() {
       onSelect: () => setDialog({ kind: "delete", project: p }),
     },
   ];
+  const startResize = (event: PointerEvent) => {
+    event.preventDefault();
+    const handle = event.currentTarget as HTMLElement;
+    const startX = event.clientX;
+    const startWidth = sidebarWidth.value;
+    document.body.classList.add("sidebar-resizing");
+    handle.setPointerCapture(event.pointerId);
+    const move = (next: PointerEvent) => setSidebarWidth(startWidth + next.clientX - startX);
+    const stop = () => {
+      document.body.classList.remove("sidebar-resizing");
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", stop);
+      handle.removeEventListener("pointercancel", stop);
+    };
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", stop);
+    handle.addEventListener("pointercancel", stop);
+  };
 
   return (
-    <nav class={`sidebar ${expanded ? "expanded" : "collapsed"}`} aria-label="Projects">
+    <nav
+      class={`sidebar ${expanded ? "expanded" : "collapsed"}`}
+      aria-label="Projects"
+      style={expanded ? `--sidebar-width:${sidebarWidth.value}px` : undefined}
+    >
       <ul class="project-list">
-        {entries.map((p) => {
+        {entries.map((p, index) => {
           const counts = [
-            plural(p.prototypes, "prototype"),
+            plural(p.prototypes, "design"),
             ...(p.systems ? [plural(p.systems, "system")] : []),
           ].join(" · ");
+          const shortcutId = index < 9 ? (`project-${index + 1}` as ShortcutId) : undefined;
+          const shortcut = shortcutId && shortcutLabel(shortcutId);
+          const tipSub = shortcut ? `${counts} · ${shortcut}` : counts;
           const isActive = p.id === active;
           return (
             <li key={p.id} class="project-item">
@@ -107,14 +146,15 @@ export function Sidebar() {
                 class={`project-link ${isActive ? "active" : ""}`}
                 aria-current={isActive ? "page" : undefined}
                 aria-label={`${p.name}, ${counts}`}
+                aria-keyshortcuts={shortcutId && ariaKeyshortcuts(shortcutId)}
                 onContextMenu={(e) => {
                   e.preventDefault();
                   setTip(null);
                   setMenu({ project: p, x: e.clientX, y: e.clientY });
                 }}
-                {...(expanded ? tipHandlers(counts) : tipHandlers(p.name, counts))}
+                {...(expanded ? tipHandlers(tipSub) : tipHandlers(p.name, tipSub))}
               >
-                <ProjectIcon project={p} size={expanded ? 22 : 36} />
+                <ProjectIcon project={p} size={expanded ? 22 : 32} />
                 {expanded && <span class="project-name">{p.name}</span>}
               </a>
               {expanded && (
@@ -135,7 +175,7 @@ export function Sidebar() {
             {...(expanded ? {} : tipHandlers("New project"))}
           >
             <span class="new-project-icon" aria-hidden="true">
-              <Icon name="plus" size={expanded ? 14 : 18} />
+              <Icon name="plus" size={14} />
             </span>
             {expanded && <span class="project-name">New project</span>}
           </button>
@@ -147,33 +187,35 @@ export function Sidebar() {
           href="/settings"
           class={`sidebar-toggle sidebar-settings ${onSettings ? "active" : ""}`}
           aria-label="Settings"
+          aria-keyshortcuts={ariaKeyshortcuts("settings")}
           aria-current={onSettings ? "page" : undefined}
           onClick={() => setTip(null)}
-          {...(expanded ? {} : tipHandlers("Settings"))}
+          {...(expanded
+            ? tipHandlers(shortcutLabel("settings"))
+            : tipHandlers("Settings", shortcutLabel("settings") || undefined))}
         >
           <Icon name="settings" />
           {expanded && <span>Settings</span>}
         </a>
-        <button
-          type="button"
-          class="sidebar-toggle"
-          aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
-          aria-expanded={expanded}
-          onClick={() => {
-            setTip(null);
-            setExpanded(!expanded);
-          }}
-          {...(expanded ? {} : tipHandlers("Expand sidebar", "["))}
-        >
-          <Icon name="sidebar" />
-          {expanded && (
-            <>
-              <span>Collapse</span>
-              <kbd>[</kbd>
-            </>
-          )}
-        </button>
       </div>
+      {expanded && (
+        <div
+          class="sidebar-resizer"
+          role="separator"
+          aria-label="Resize sidebar"
+          aria-orientation="vertical"
+          aria-valuemin={MIN_SIDEBAR_WIDTH}
+          aria-valuemax={MAX_SIDEBAR_WIDTH}
+          aria-valuenow={sidebarWidth.value}
+          tabIndex={0}
+          onPointerDown={startResize}
+          onKeyDown={(event) => {
+            if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+            event.preventDefault();
+            setSidebarWidth(sidebarWidth.value + (event.key === "ArrowRight" ? 10 : -10));
+          }}
+        />
+      )}
 
       {tip && (
         <div
