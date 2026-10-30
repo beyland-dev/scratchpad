@@ -5,6 +5,12 @@
   "description": "Sprue desktop app for macOS, Windows, and Linux.",
   "license": "MIT",
   "author": "Beyland",
+  "homepage": "https://github.com/beyland-dev/sprue",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/beyland-dev/sprue.git",
+    "directory": "apps/desktop"
+  },
   "type": "module",
   "main": "dist/main.mjs",
   "scripts": {
@@ -75,7 +81,8 @@
         "AppImage",
         "deb"
       ],
-      "executableName": "sprue"
+      "executableName": "sprue",
+      "maintainer": "Beyland"
     },
     "extraResources": [
       {
