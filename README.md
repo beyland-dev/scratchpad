@@ -168,9 +168,9 @@ launch Sprue through the app's launcher script, so they keep working as the app 
 Desktop packaging commands create unsigned artifacts in `apps/desktop/release/`:
 
 ```bash
-pnpm --filter @beyland/sprue-desktop dist:mac    # universal macOS DMG
+pnpm --filter @beyland/sprue-desktop dist:mac    # Apple silicon and Intel DMGs (SPRUE_MAC_ARCHS=arm64 for one)
 pnpm --filter @beyland/sprue-desktop dist:win    # x86_64 NSIS .exe installer
-pnpm --filter @beyland/sprue-desktop dist:linux  # x86_64 AppImage and .deb
+pnpm --filter @beyland/sprue-desktop dist:linux  # x86_64 AppImage and .deb (dist:linux:appimage / :deb for one)
 ```
 
 The `Desktop builds` GitHub Actions workflow runs the corresponding build on each operating system

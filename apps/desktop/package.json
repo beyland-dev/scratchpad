@@ -3,9 +3,9 @@
   "version": "0.4.0",
   "private": true,
   "description": "Sprue desktop app for macOS, Windows, and Linux.",
+  "homepage": "https://github.com/beyland-dev/sprue",
   "license": "MIT",
   "author": "Beyland",
-  "homepage": "https://github.com/beyland-dev/sprue",
   "repository": {
     "type": "git",
     "url": "https://github.com/beyland-dev/sprue.git",
@@ -20,7 +20,9 @@
     "start": "node ./scripts/start.mjs",
     "dist:mac": "pnpm run build:standalone && node ./scripts/build-mac.mjs",
     "dist:win": "pnpm run build:standalone && electron-builder --win nsis --x64 --publish never",
-    "dist:linux": "pnpm run build:standalone && electron-builder --linux AppImage deb --x64 --publish never"
+    "dist:linux": "pnpm run build:standalone && electron-builder --linux AppImage deb --x64 --publish never",
+    "dist:linux:appimage": "pnpm run build:standalone && electron-builder --linux AppImage --x64 --publish never",
+    "dist:linux:deb": "pnpm run build:standalone && electron-builder --linux deb --x64 --publish never"
   },
   "dependencies": {
     "@hono/node-server": "catalog:",
