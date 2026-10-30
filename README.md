@@ -1,18 +1,14 @@
 # Sprue
 
-An open-source, local-first workspace for **design prototyping with agents**.
+An open-source, local-first workspace for design prototyping with agents.
 
-Agents create lots of prototypes. People view, compare, and switch between them, then share them
-with others for feedback. Everything is plain files in project folders that can each be a git
-repo, and every capability is available to agents over **MCP**, a **CLI**, and an **HTTP API**.
+Agents create lots of prototypes. People view, compare, and switch between them, then share them with others for feedback. Everything is plain files in project folders that can each be a git repo, and every capability is available to agents over **MCP**, a **CLI**, and an **HTTP API**.
 
-> **Status:** early. The prototype loop, design systems, git-based project sharing, and publishing
-> reviews to GitHub Pages work end to end. See the [roadmap](#roadmap) for what's next.
+> **Status:** early. The prototype loop, design systems, git-based project sharing, and publishing reviews to GitHub Pages work end to end. See the [roadmap](#roadmap) for what's next.
 
 ## Why
 
-Product design work is spread across many tools: prototyping, docs, Slack and Teams threads,
-research platforms, meeting recordings, and handoff. Sprue aims to bring that loop together:
+Product design work is spread across many tools: prototyping, docs, Slack and Teams threads, research platforms, meeting recordings, and handoff. Sprue aims to bring that loop together:
 
 **product codebase (context)** → **many agent-made prototypes** → **feedback from real people** → **iteration** → **handoff to production agents**
 
@@ -25,8 +21,7 @@ npm install --global @beyland/sprue
 sp serve                              # opens http://127.0.0.1:7420
 ```
 
-The CLI includes the visual UI, HTTP API, MCP server, and isolated prototype server. The GitHub CLI
-(`gh`, signed in) is only needed to create GitHub repos and publish reviews to GitHub Pages.
+The CLI includes the visual UI, HTTP API, MCP server, and isolated prototype server. The GitHub CLI (`gh`, signed in) is only needed to create GitHub repos and publish reviews to GitHub Pages.
 
 To run from a source checkout instead:
 
@@ -37,16 +32,14 @@ pnpm build                          # builds the packages, the web UI and the re
 pnpm sp serve                       # opens http://127.0.0.1:7420
 ```
 
-Everything lives in `~/.sprue` (choose another folder in Settings, set `SPRUE_HOME`, or pass
-`--home <dir>`); it's created on first use. Create a project from the sidebar, or:
+Everything lives in `~/.sprue` (choose another folder in Settings, set `SPRUE_HOME`, or pass `--home <dir>`); it's created on first use. Create a project from the sidebar, or:
 
 ```bash
 pnpm sp project create --name "Web app"
 pnpm sp project clone git@github.com:owner/web-app-designs.git   # or start from a shared one
 ```
 
-Register the product codebase as a **read-only reference source**, so agents can match its design
-system:
+Register the product codebase as a **read-only reference source**, so agents can match its design system:
 
 ```bash
 pnpm sp source add ~/code/web-app --notes "tokens in src/theme, components in src/ui"
@@ -59,25 +52,17 @@ npx -y @beyland/sprue mcp-config <client> --install   # copilot, claude, codex, 
 npx -y @beyland/sprue mcp-config                      # or just print every client's snippet
 ```
 
-No global install needed: run from npx, the config launches Sprue through npx too (installing
-globally with `npm install -g @beyland/sprue` gives you a plain `sp` command instead).
+No global install needed: run from npx, the config launches Sprue through npx too (installing globally with `npm install -g @beyland/sprue` gives you a plain `sp` command instead).
 
 - **stdio:** `sp mcp`. Recommended; it works without the server running.
 - **HTTP:** `http://127.0.0.1:7420/mcp` while `sp serve` is running.
 
 The stdio command waits silently for an MCP client and uses `~/.sprue` by default.
-`--install` adds Sprue to the client's user-level config with absolute executable paths, so it
-works even when the client doesn't share your shell's `PATH` (re-run it after switching Node
-versions). JSON configs (Copilot's `~/.copilot/mcp-config.json`, used by VS Code, the Copilot app, and the CLI, Cursor,
-Antigravity, Muse Code, OpenCode, Pi) are merged in place, keeping other servers and comments; Claude Code and Codex
-are configured through their own `claude mcp add` / `codex mcp add`. It's idempotent, and a
-different existing `sprue` entry requires `--force`.
+`--install` adds Sprue to the client's user-level config with absolute executable paths, so it works even when the client doesn't share your shell's `PATH` (re-run it after switching Node versions). JSON configs (Copilot's `~/.copilot/mcp-config.json`, used by VS Code, the Copilot app, and the CLI, Cursor, Antigravity, Muse Code, OpenCode, Pi) are merged in place, keeping other servers and comments; Claude Code and Codex are configured through their own `claude mcp add` / `codex mcp add`. It's idempotent, and a different existing `sprue` entry requires `--force`.
 
 Then ask your agent something like:
 
-> Use the Sprue MCP server. Read the `sprue://guide` resource and call `workspace_info`.
-> Then create 3 prototype variants of a simpler checkout in the right project, grouped as "checkout-redesign", matching
-> our design system from the registered sources. Share the viewer URLs.
+> Use the Sprue MCP server. Read the `sprue://guide` resource and call `workspace_info`. Then create 3 prototype variants of a simpler checkout in the right project, grouped as "checkout-redesign", matching our design system from the registered sources. Share the viewer URLs.
 
 Prototypes appear in the gallery live as the agent writes them.
 
@@ -152,18 +137,14 @@ pnpm sp <args>  # run the CLI from source
 
 ### Desktop app
 
-The Electron shell starts the same local Sprue server and opens the bundled web UI, using the
-same `~/.sprue` workspace as the CLI:
+The Electron shell starts the same local Sprue server and opens the bundled web UI, using the same `~/.sprue` workspace as the CLI:
 
 ```bash
 pnpm --filter @beyland/sprue-desktop build:standalone
 pnpm --filter @beyland/sprue-desktop start
 ```
 
-The app bundles the `sp` CLI, run by its own runtime (no Node.js needed): **Install 'sp' command
-in PATH** in the command palette (⌘K) links it into `/usr/local/bin` on macOS or `~/.local/bin`
-on Linux, and **Settings → Connections** adds Sprue to an agent's MCP config in one click. Both
-launch Sprue through the app's launcher script, so they keep working as the app updates.
+The app bundles the `sp` CLI, run by its own runtime (no Node.js needed): **Install 'sp' command in PATH** in the command palette (⌘K) links it into `/usr/local/bin` on macOS or `~/.local/bin` on Linux, and **Settings → Connections** adds Sprue to an agent's MCP config in one click. Both launch Sprue through the app's launcher script, so they keep working as the app updates.
 
 Desktop packaging commands create unsigned artifacts in `apps/desktop/release/`:
 
@@ -173,11 +154,9 @@ pnpm --filter @beyland/sprue-desktop dist:win    # x86_64 NSIS .exe installer
 pnpm --filter @beyland/sprue-desktop dist:linux  # x86_64 AppImage and .deb (dist:linux:appimage / :deb for one)
 ```
 
-The `Desktop builds` GitHub Actions workflow runs the corresponding build on each operating system
-when manually dispatched or when a `v*` tag is pushed.
+The `Desktop builds` GitHub Actions workflow runs the corresponding build on each operating system when manually dispatched or when a `v*` tag is pushed.
 
-The toolchain is [Vite+](https://viteplus.dev) (`vp`). Packages are consumed as TypeScript source
-during development (Node runs `.ts` natively), and `vp pack` builds `dist/` for publishing.
+The toolchain is [Vite+](https://viteplus.dev) (`vp`). Packages are consumed as TypeScript source during development (Node runs `.ts` natively), and `vp pack` builds `dist/` for publishing.
 
 See [docs/architecture.md](docs/architecture.md), [docs/workspace-format.md](docs/workspace-format.md) and [docs/design-systems.md](docs/design-systems.md).
 
