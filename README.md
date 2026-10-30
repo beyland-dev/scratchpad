@@ -1,10 +1,8 @@
 # Sprue
 
-An open-source, local-first workspace for doing product design with agents.
+Sprue is an open-source, local-first agentic design workspace.
 
-## Why
-
-Product design work is spread across many tools: Figma, prototyping, docs, Slack and Teams threads, research platforms, meeting recordings, and handoff. Sprue aims to condense and consolidate that loop into a single agent-driveable surface.
+Product design work is currently spread across many tools: Figma, prototyping, docs, Slack and Teams threads, research platforms, meeting recordings, and handoff. Sprue aims to condense and consolidate that loop into a single agent-driveable surface.
 
 ## Installation
 
