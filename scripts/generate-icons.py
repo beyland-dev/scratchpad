@@ -21,9 +21,9 @@ DESKTOP = ROOT / "apps" / "desktop" / "resources"
 ICON_LIST = ROOT / "apps" / "web" / "src" / "app-icons.ts"
 DEFAULT = "default"
 # Picker order; icons not listed follow alphabetically.
-ORDER = ["default", "blue", "green", "orange", "chrome", "wood"]
+ORDER = ["default", "blue", "green", "orange", "chrome", "wood", "pearl", "holographic"]
 # Names that aren't just the file name in title case.
-LABELS = {"default": "Classic"}
+LABELS = {"default": "Classic", "holographic": "Holo"}
 SUPERSAMPLE = 4
 
 

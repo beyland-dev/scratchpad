@@ -6,4 +6,6 @@ export const APP_ICON_LIST = [
   { id: "orange", label: "Orange" },
   { id: "chrome", label: "Chrome" },
   { id: "wood", label: "Wood" },
+  { id: "pearl", label: "Pearl" },
+  { id: "holographic", label: "Holo" },
 ] as const;
