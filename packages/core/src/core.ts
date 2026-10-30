@@ -25,11 +25,11 @@ export const DEFAULT_PORT = 7420;
 export const DEFAULT_SANDBOX_PORT = 7421;
 
 export interface OpenCoreOptions {
-  /** Workspace root (`~/.scratchpad` by default, see `defaultWorkspaceRoot`). Created if missing. */
+  /** Workspace root (`~/.sprue` by default, see `defaultWorkspaceRoot`). Created if missing. */
   root: string;
   /** Watch the filesystem for external changes (and rebuild design systems when their sources change). */
   watch?: boolean;
-  /** Extra commands to register (e.g. capture commands from @beyland/scratchpad-capture). */
+  /** Extra commands to register (e.g. capture commands from @beyland/sprue-capture). */
   commands?: AnyCommand[];
   /** Runs git (and gh); replaceable in tests. */
   gitRunner?: Runner;
@@ -313,7 +313,7 @@ export class Core {
               (rel.startsWith("node_modules/") && rel !== "node_modules/.package-lock.json"),
           },
         ]);
-        // The injected script is part of the output too: rebuild when Scratchpad changes it.
+        // The injected script is part of the output too: rebuild when Sprue changes it.
         const signature = `${sources}:${createHash("sha256").update(headScript).digest("hex").slice(0, 16)}`;
         const target = path.join(this.workspace.cacheDir, "builds", scope.id, id);
         await mkdir(path.dirname(target), { recursive: true });
@@ -368,10 +368,7 @@ export class Core {
       onSystemChanged: (project, id, exists) => {
         if (exists)
           this.buildSystem(refKey(project, id)).catch((error: unknown) =>
-            console.error(
-              `[scratchpad] building ${project}/${id} failed:`,
-              (error as Error).message,
-            ),
+            console.error(`[sprue] building ${project}/${id} failed:`, (error as Error).message),
           );
       },
     });

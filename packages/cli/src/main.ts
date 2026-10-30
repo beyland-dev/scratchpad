@@ -14,8 +14,8 @@ import {
   defaultWorkspaceRoot,
   isCoreError,
   type CommandDescriptor,
-} from "@beyland/scratchpad-core";
-import { captureCommands, closeBrowser } from "@beyland/scratchpad-capture";
+} from "@beyland/sprue-core";
+import { captureCommands, closeBrowser } from "@beyland/sprue-capture";
 import { commandHelp, parseCommandInput } from "./args.ts";
 import {
   installCopilotMcpConfig,
@@ -66,9 +66,7 @@ async function openCore(
   const core = await Core.open({ root, watch, commands: captureCommands });
   let sandbox: Promise<{ url: string; close(): Promise<void> }> | undefined;
   core.setSandboxProvider(async () => {
-    sandbox ??= import("@beyland/scratchpad-server").then(({ startSandbox }) =>
-      startSandbox({ core }),
-    );
+    sandbox ??= import("@beyland/sprue-server").then(({ startSandbox }) => startSandbox({ core }));
     return (await sandbox).url;
   });
   const dispose = async () => {
@@ -122,7 +120,7 @@ function resolveCommand(
   return undefined;
 }
 
-/** `--home`, else `$SCRATCHPAD_HOME`, else `~/.scratchpad` (created on first use). */
+/** `--home`, else `$SPRUE_HOME`, else `~/.sprue` (created on first use). */
 function resolveWorkspace(globals: Globals, io: CliIO): string {
   return globals.home ? path.resolve(io.cwd, globals.home) : defaultWorkspaceRoot(io.env);
 }
@@ -137,9 +135,9 @@ function mainHelp(): string {
     const usage = `${d.name}${d.positional.length ? ` ${d.positional.map((p) => `<${p}>`).join(" ")}` : ""}`;
     return `  ${usage.padEnd(36)} ${d.title}`;
   });
-  return `Scratchpad ${VERSION} — design prototyping with agents
+  return `Sprue ${VERSION} — design prototyping with agents
 
-Usage: scratchpad <command> [options]   (or: sp <command>)
+Usage: sp <command> [options]
 
 App:
   serve                                Start the app + sandbox servers and open the browser
@@ -152,7 +150,7 @@ Core commands (also exposed over MCP and HTTP):
 ${commandLines.join("\n")}
 
 Global options:
-  --home <dir>            Workspace folder (default: $SCRATCHPAD_HOME, or ~/.scratchpad)
+  --home <dir>            Workspace folder (default: $SPRUE_HOME, or ~/.sprue)
   --json                  Print machine-readable JSON
   -h, --help              Show help (also: sp <command> --help)
   -v, --version           Show version
@@ -163,7 +161,7 @@ Commands can be dotted, spaced, or kebab-cased: \`sp prototype.createVariant\`, 
 function serveHelp(): string {
   return `sp serve [options]
 
-Start the self-contained Scratchpad web app, HTTP API, MCP server, and prototype sandbox.
+Start the self-contained Sprue web app, HTTP API, MCP server, and prototype sandbox.
 
 Options:
   --port <n>             App, API, and MCP port (default: 7420)
@@ -179,13 +177,13 @@ Options:
 function mcpConfigHelp(): string {
   return `sp mcp-config [client] [options]
 
-Print an MCP configuration snippet, or merge Scratchpad into the portable Copilot config.
+Print an MCP configuration snippet, or merge Sprue into the portable Copilot config.
 
 Clients: ${MCP_CLIENTS.join(", ")}
 
 Options:
   --install       Merge into $COPILOT_HOME/mcp-config.json (default: ~/.copilot/mcp-config.json)
-  --name <name>   MCP server name (default: scratchpad)
+  --name <name>   MCP server name (default: sprue)
   --force         Replace a conflicting server with the same name; requires --install
   -h, --help      Show this help`;
 }
@@ -273,7 +271,7 @@ export async function main(argv: string[], io: CliIO = defaultIO): Promise<numbe
 
 function resolveWebRoot(env: NodeJS.ProcessEnv): string | undefined {
   const candidates = [
-    env.SCRATCHPAD_WEB_ROOT,
+    env.SPRUE_WEB_ROOT,
     fileURLToPath(new URL("./web", import.meta.url)),
     fileURLToPath(new URL("../../../apps/web/dist", import.meta.url)),
   ].filter((c): c is string => Boolean(c));
@@ -310,7 +308,7 @@ async function runServe(args: string[], globals: Globals, io: CliIO): Promise<nu
       "allowed-host": { type: "string", multiple: true },
     },
   });
-  const { startServer } = await import("@beyland/scratchpad-server");
+  const { startServer } = await import("@beyland/sprue-server");
   const root = resolveWorkspace(globals, io);
   const core = await Core.open({ root, watch: true, commands: captureCommands });
   const webRoot = resolveWebRoot(io.env);
@@ -336,7 +334,7 @@ async function runServe(args: string[], globals: Globals, io: CliIO): Promise<nu
       webRoot: webRoot ?? null,
     },
     [
-      "Scratchpad",
+      "Sprue",
       `  App:       ${server.url}${webRoot ? "" : "  (web UI not built; run `pnpm build` or `pnpm dev`)"}`,
       `  Sandbox:   ${server.sandboxUrl}`,
       `  MCP:       ${server.url}/mcp  (or \`sp mcp\` over stdio)`,
@@ -359,7 +357,7 @@ async function runServe(args: string[], globals: Globals, io: CliIO): Promise<nu
 }
 
 async function runMcp(globals: Globals, io: CliIO): Promise<number> {
-  const { serveStdio } = await import("@beyland/scratchpad-mcp");
+  const { serveStdio } = await import("@beyland/sprue-mcp");
   const { core, dispose } = await openCore(resolveWorkspace(globals, io), true);
   try {
     await serveStdio(core);

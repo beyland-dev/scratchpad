@@ -4,7 +4,7 @@ import {
   type ReviewManifest,
   type ReviewManifestItem,
   type ReviewPresentation,
-} from "@beyland/scratchpad-core/review-manifest";
+} from "@beyland/sprue-core/review-manifest";
 
 export const REVIEW_DEVICES: readonly ReviewDevice[] = ["desktop", "laptop", "tablet", "mobile"];
 const PRESENTATIONS: readonly ReviewPresentation[] = ["sequence", "compare", "both"];

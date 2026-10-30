@@ -1,4 +1,4 @@
-import { groupFamilies, versionLabel } from "@beyland/scratchpad-core/family";
+import { groupFamilies, versionLabel } from "@beyland/sprue-core/family";
 import { useEffect, useState } from "preact/hooks";
 import { useLocation, useRoute } from "preact-iso";
 import { call } from "../api.ts";

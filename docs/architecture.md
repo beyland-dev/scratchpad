@@ -1,11 +1,11 @@
 # Architecture
 
-Scratchpad is an **open core with a thin UI**. All behavior lives in a headless core. The web UI,
+Sprue is an **open core with a thin UI**. All behavior lives in a headless core. The web UI,
 HTTP API, MCP server, and CLI are thin adapters over it, so anything a person can do, an agent can do too.
 
 ```
               ┌────────────────────────────────────────────────┐
-              │              @beyland/scratchpad-core          │
+              │              @beyland/sprue-core          │
               │  Workspace · ProjectStore → ProjectScope       │
               │    (prototypes · systems · reviews per project)│
               │  CommandRegistry · EventBus · file watcher     │
@@ -13,8 +13,8 @@ HTTP API, MCP server, and CLI are thin adapters over it, so anything a person ca
               └──────▲────────────────▲─────────────────▲──────┘
                      │                │                 │
        ┌─────────────┴──┐   ┌─────────┴────────┐   ┌────┴────────────────┐
-       │ scratchpad-mcp │   │ scratchpad-server│   │ @beyland/scratchpad │
-       │ tools+resources│   │ Hono: API·SSE·MCP│   │ CLI: `scratchpad`,  │
+       │ sprue-mcp │   │ sprue-server│   │ @beyland/sprue │
+       │ tools+resources│   │ Hono: API·SSE·MCP│   │ CLI: `sprue`,  │
        │ stdio / HTTP   │   │ + sandbox origin │   │ `sp` (generated)    │
        └────────────────┘   └─────────▲────────┘   └─────────────────────┘
                                       │ /api/commands, /api/events
@@ -27,15 +27,15 @@ HTTP API, MCP server, and CLI are thin adapters over it, so anything a person ca
 
 ## Packages
 
-| Package            | Responsibility                                                                                                                                                                                |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/core`    | The workspace (`~/.scratchpad`), per-project storage, the command registry, the event bus, the file watcher, git operations, and review export/publish. No HTTP, no UI.                       |
-| `packages/mcp`     | Builds an `McpServer` from the registry: one tool per command (`prototype.create` → `prototype_create`), plus the `scratchpad://guide` resource. Serves stdio or a web-standard HTTP handler. |
-| `packages/server`  | Hono app server (`/api/commands/:name`, `/api/events` SSE, `/mcp`, built UI) and a separate **sandbox server** for prototype files, design system builds and review previews.                 |
-| `packages/cli`     | The `scratchpad` (`sp`) binary: `serve`, `mcp`, `mcp-config`, plus a subcommand per registry command, with flags derived from its JSON schema.                                                |
-| `packages/capture` | Playwright-based capture and verification of components from running products.                                                                                                                |
-| `apps/web`         | Preact + signals UI. Calls commands over HTTP and live-updates from SSE.                                                                                                                      |
-| `apps/review`      | The static reviewer app copied into every review export: reads `review.json` and shows the options. Relative URLs only, so it works from any host and sub-path.                               |
+| Package            | Responsibility                                                                                                                                                                           |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/core`    | The workspace (`~/.sprue`), per-project storage, the command registry, the event bus, the file watcher, git operations, and review export/publish. No HTTP, no UI.                       |
+| `packages/mcp`     | Builds an `McpServer` from the registry: one tool per command (`prototype.create` → `prototype_create`), plus the `sprue://guide` resource. Serves stdio or a web-standard HTTP handler. |
+| `packages/server`  | Hono app server (`/api/commands/:name`, `/api/events` SSE, `/mcp`, built UI) and a separate **sandbox server** for prototype files, design system builds and review previews.            |
+| `packages/cli`     | The `sprue` (`sp`) binary: `serve`, `mcp`, `mcp-config`, plus a subcommand per registry command, with flags derived from its JSON schema.                                                |
+| `packages/capture` | Playwright-based capture and verification of components from running products.                                                                                                           |
+| `apps/web`         | Preact + signals UI. Calls commands over HTTP and live-updates from SSE.                                                                                                                 |
+| `apps/review`      | The static reviewer app copied into every review export: reads `review.json` and shows the options. Relative URLs only, so it works from any host and sub-path.                          |
 
 ## One command, every surface
 
@@ -61,7 +61,7 @@ only ever see local ids. The web app identifies items by `project/id` too.
 
 ## Files are the source of truth
 
-All state lives in `~/.scratchpad` (see [workspace-format.md](workspace-format.md)). The core keeps an
+All state lives in `~/.sprue` (see [workspace-format.md](workspace-format.md)). The core keeps an
 in-memory index that's rebuilt from disk, and a chokidar watcher re-reads a prototype, system,
 review or project whenever files change under its folder, whoever changed them: the API, the CLI, a
 separate `sp mcp` process, an agent writing files directly, a `git pull` or clone, or an editor.

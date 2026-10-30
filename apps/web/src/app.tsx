@@ -52,11 +52,15 @@ function ToHomeProject() {
 function Shell() {
   const { path } = useLocation();
   const immersive = isImmersive(path);
+  const requestedPlatform = new URLSearchParams(location.search).get("desktop");
+  if (requestedPlatform) sessionStorage.setItem("sprue.desktop", requestedPlatform);
+  const desktopPlatform = requestedPlatform ?? sessionStorage.getItem("sprue.desktop");
   return (
-    <div class="app">
+    <div class={`app ${desktopPlatform ? `desktop-shell ${desktopPlatform}` : ""}`}>
+      {desktopPlatform && <Header desktop platform={desktopPlatform} />}
       {!immersive && <Sidebar />}
       <div class="app-column">
-        <Header />
+        {!desktopPlatform && <Header />}
         <main class="app-main">
           <Router>
             <Route path="/" component={ToHomeProject} />

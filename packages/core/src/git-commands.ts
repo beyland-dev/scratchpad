@@ -144,7 +144,7 @@ export const projectClone = defineCommand({
       throw new CoreError("CONFLICT", `A project with id ${JSON.stringify(id)} already exists`);
     const dir = path.join(core.workspace.projectsDir, id);
     await cloneInto(input.url, dir, core.gitRunner);
-    // A repo that isn't a scratchpad project yet becomes one (left uncommitted for review).
+    // A repo that isn't a Sprue project yet becomes one (left uncommitted for review).
     if (!(await pathExists(path.join(dir, PROJECT_META_FILE)))) {
       const meta: ProjectFile = {
         name: repoName.replace(/[-_.]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),

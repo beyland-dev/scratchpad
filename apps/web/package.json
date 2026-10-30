@@ -1,8 +1,8 @@
 {
-  "name": "@beyland/scratchpad-web",
+  "name": "@beyland/sprue-web",
   "version": "0.0.0",
   "private": true,
-  "description": "Thin Preact UI for Scratchpad.",
+  "description": "Thin Preact UI for Sprue.",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@babel/core": "catalog:",
-    "@beyland/scratchpad-core": "workspace:*",
+    "@beyland/sprue-core": "workspace:*",
     "@preact/preset-vite": "catalog:",
     "@types/node": "catalog:",
     "typescript": "catalog:",

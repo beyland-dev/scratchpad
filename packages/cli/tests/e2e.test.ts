@@ -5,7 +5,7 @@ import path from "node:path";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { afterAll, beforeAll, expect, test } from "vite-plus/test";
-import { initWorkspace } from "@beyland/scratchpad-core";
+import { initWorkspace } from "@beyland/sprue-core";
 import { BIN_PATH, main } from "../src/index.ts";
 
 // End-to-end: real processes for `sp serve` and `sp mcp`, talking over HTTP and stdio.

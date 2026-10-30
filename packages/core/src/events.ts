@@ -37,7 +37,7 @@ export class EventBus {
       try {
         listener(event);
       } catch (error) {
-        console.error("[scratchpad] event listener failed", error);
+        console.error("[sprue] event listener failed", error);
       }
     }
   }

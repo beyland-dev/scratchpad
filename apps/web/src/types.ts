@@ -6,7 +6,7 @@ import type {
   PrototypeUrls,
   Source,
   WorkspaceUrls,
-} from "@beyland/scratchpad-core";
+} from "@beyland/sprue-core";
 
 export type {
   Prototype,
@@ -14,7 +14,7 @@ export type {
   PrototypeStatus,
   PrototypeUrls,
   Source,
-} from "@beyland/scratchpad-core";
+} from "@beyland/sprue-core";
 
 /**
  * A prototype as the app holds it. `id` is its workspace-unique `project/id` reference (what the
@@ -51,7 +51,7 @@ export interface PrototypeDetails {
   family: { id: string; title: string; variantOf?: string; status: string }[];
 }
 
-export type { DesignComponent, DesignSystem, Token } from "@beyland/scratchpad-core";
+export type { DesignComponent, DesignSystem, Token } from "@beyland/sprue-core";
 
 export interface ComponentSummary {
   name: string;
@@ -110,7 +110,7 @@ export interface GitStatus {
   lastCommit?: { hash: string; subject: string; author: string; date: string };
 }
 
-export type { ReviewManifest } from "@beyland/scratchpad-core/review-manifest";
+export type { ReviewManifest } from "@beyland/sprue-core/review-manifest";
 
 export interface ReviewItem {
   /** Prototype id in the review's project (a specific version). */

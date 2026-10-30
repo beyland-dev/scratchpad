@@ -60,4 +60,16 @@ describe("trash", () => {
     await core.run("trash.restore", { id: project!.id });
     expect(core.projects.get("shop").name).toBe("Shop");
   });
+
+  test("empties every trash folder", async () => {
+    await core.run("prototype.create", { title: "Checkout" });
+    await core.run("review.create", { title: "Checkout feedback" });
+    await core.run("prototype.delete", { id: "checkout" });
+    await core.run("review.delete", { id: "checkout-feedback" });
+    expect(await trash()).toHaveLength(2);
+
+    const result = await core.run<{ count: number }>("trash.empty", {});
+    expect(result.count).toBe(2);
+    expect(await trash()).toEqual([]);
+  });
 });

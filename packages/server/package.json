@@ -1,7 +1,7 @@
 {
-  "name": "@beyland/scratchpad-server",
+  "name": "@beyland/sprue-server",
   "version": "0.3.0",
-  "description": "Local HTTP API, live events, and sandboxed prototype server for Scratchpad.",
+  "description": "Local HTTP API, live events, and sandboxed prototype server for Sprue.",
   "license": "MIT",
   "files": [
     "dist"
@@ -23,8 +23,8 @@
     "test": "vp test"
   },
   "dependencies": {
-    "@beyland/scratchpad-core": "workspace:*",
-    "@beyland/scratchpad-mcp": "workspace:*",
+    "@beyland/sprue-core": "workspace:*",
+    "@beyland/sprue-mcp": "workspace:*",
     "@hono/node-server": "catalog:",
     "hono": "catalog:"
   },

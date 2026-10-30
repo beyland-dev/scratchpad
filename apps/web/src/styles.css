@@ -30,6 +30,28 @@
   color-scheme: light dark;
 }
 
+.folder-version {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 1;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  background: rgb(0 0 0 / 0.62);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+  opacity: 0;
+  transition: opacity 120ms var(--ease);
+  pointer-events: none;
+}
+
+.folder-cell:hover .folder-version,
+.folder-cell:focus-within .folder-version {
+  opacity: 1;
+}
+
 :root[data-theme="light"] {
   color-scheme: light;
 }
@@ -135,6 +157,31 @@ h3 {
   height: 100vh;
 }
 
+.desktop-shell {
+  position: relative;
+  padding-top: 38px;
+}
+
+.app-header.desktop-titlebar {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 20;
+  height: 38px;
+  padding: 0 12px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  user-select: none;
+  -webkit-app-region: drag;
+}
+
+.desktop-titlebar.win32 .app-header-end,
+.desktop-titlebar.linux .app-header-end {
+  padding-right: 138px;
+}
+
+.desktop-titlebar :is(a, button, input) {
+  -webkit-app-region: no-drag;
+}
+
 .app-column {
   flex: 1;
   min-width: 0;
@@ -205,42 +252,6 @@ h3 {
 
 .sidebar.expanded {
   width: 248px;
-}
-
-.sidebar-head {
-  flex: none;
-  display: flex;
-  align-items: center;
-  height: var(--header-h);
-  padding: 0 12px;
-  border-bottom: 1px solid var(--border);
-}
-
-.sidebar.collapsed .sidebar-head {
-  justify-content: center;
-  padding: 0;
-}
-
-.sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-  padding: 4px;
-  border-radius: var(--radius-sm);
-  color: var(--fg);
-  font-weight: 600;
-}
-
-.sidebar-brand:hover {
-  text-decoration: none;
-  background: var(--surface-2);
-}
-
-.sidebar-brand span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .project-list {
@@ -519,14 +530,7 @@ h3 {
     width: 64px;
   }
 
-  .sidebar.expanded
-    :is(
-      .project-name,
-      .project-menu,
-      .sidebar-brand span,
-      .sidebar-toggle span,
-      .sidebar-toggle kbd
-    ) {
+  .sidebar.expanded :is(.project-name, .project-menu, .sidebar-toggle span, .sidebar-toggle kbd) {
     display: none;
   }
 }
@@ -3689,6 +3693,21 @@ pre.shiki-code span {
   margin-bottom: 16px;
   font-size: 15px;
   font-weight: 600;
+}
+
+.settings-section-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.settings-section-head h2 {
+  margin: 0;
+}
+
+.settings-section-head > :last-child {
+  margin-left: auto;
 }
 
 .settings-section-intro {

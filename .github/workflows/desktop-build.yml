@@ -1,0 +1,54 @@
+name: Desktop builds
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS DMG
+            os: macos-14
+            command: dist:mac
+            artifact: macos-dmg
+            path: apps/desktop/release/*.dmg
+          - name: Windows NSIS
+            os: windows-2022
+            command: dist:win
+            artifact: windows-nsis
+            path: apps/desktop/release/*.exe
+          - name: Linux x86_64
+            os: ubuntu-24.04
+            command: dist:linux
+            artifact: linux-x86_64
+            path: |
+              apps/desktop/release/*.AppImage
+              apps/desktop/release/*.deb
+    runs-on: ${{ matrix.os }}
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.14.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.18.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @beyland/sprue-desktop ${{ matrix.command }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sprue-${{ matrix.artifact }}
+          path: ${{ matrix.path }}
+          if-no-files-found: error

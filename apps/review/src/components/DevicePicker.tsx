@@ -1,4 +1,4 @@
-import type { ReviewDevice } from "@beyland/scratchpad-core/review-manifest";
+import type { ReviewDevice } from "@beyland/sprue-core/review-manifest";
 import { DEVICES, type Device } from "../../../web/src/util.ts";
 import { isReviewDevice } from "../manifest.ts";
 

@@ -61,7 +61,7 @@ function useTokens(code: string, lang: CodeLang): ThemedToken[][] | null {
     let cancelled = false;
     tokenize(code, lang as Exclude<CodeLang, "text">)
       .then((tokens) => !cancelled && setState({ key, tokens }))
-      .catch((error: unknown) => console.warn("[scratchpad] highlighting failed", error));
+      .catch((error: unknown) => console.warn("[sprue] highlighting failed", error));
     return () => {
       cancelled = true;
     };

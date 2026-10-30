@@ -57,7 +57,7 @@ export async function initWorkspace(
       status: "draft",
       tags: ["example"],
       entry: "index.html",
-      createdBy: { kind: "human", name: "Scratchpad" },
+      createdBy: { kind: "human", name: "Sprue" },
       sourceRefs: [],
       createdAt: now,
       updatedAt: now,

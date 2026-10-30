@@ -13,6 +13,8 @@ catalog:
   "@preact/signals": ^2.11.3
   "@types/node": ^24
   chokidar: ^6.0.0
+  electron: ^45.1.0
+  electron-builder: ^26.18.0
   hono: ^4.13.13
   preact: ^11.0.1
   preact-iso: ^2.12.2
@@ -31,3 +33,6 @@ peerDependencyRules:
     - vite
   allowedVersions:
     vite: "*"
+allowBuilds:
+  electron: true
+  electron-winstaller: true

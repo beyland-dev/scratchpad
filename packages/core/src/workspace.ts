@@ -12,7 +12,7 @@ import {
 } from "./schemas.ts";
 
 /** Name of the folder in the user's home directory that holds everything. */
-export const HOME_DIR_NAME = ".scratchpad";
+export const HOME_DIR_NAME = ".sprue";
 export const CONFIG_FILE = "config.json";
 export const AGENTS_FILE = "AGENTS.md";
 export const PROJECTS_DIR = "projects";
@@ -21,11 +21,9 @@ export const REVIEWS_DIR = "reviews";
 export const TRASH_DIR = ".trash";
 export const CACHE_DIR = ".cache";
 
-/** The workspace root: `$SCRATCHPAD_HOME`, else `~/.scratchpad`. */
+/** The workspace root: `$SPRUE_HOME`, else `~/.sprue`. */
 export function defaultWorkspaceRoot(env: NodeJS.ProcessEnv = process.env): string {
-  return env.SCRATCHPAD_HOME
-    ? path.resolve(env.SCRATCHPAD_HOME)
-    : path.join(os.homedir(), HOME_DIR_NAME);
+  return env.SPRUE_HOME ? path.resolve(env.SPRUE_HOME) : path.join(os.homedir(), HOME_DIR_NAME);
 }
 
 export function configFileOf(root: string): string {
@@ -53,10 +51,7 @@ export async function readWorkspaceConfig(root: string): Promise<WorkspaceConfig
   try {
     raw = await readFile(file, "utf8");
   } catch {
-    throw new CoreError(
-      "NO_WORKSPACE",
-      `No Scratchpad workspace at ${root} (missing ${CONFIG_FILE}).`,
-    );
+    throw new CoreError("NO_WORKSPACE", `No Sprue workspace at ${root} (missing ${CONFIG_FILE}).`);
   }
   let json: unknown;
   try {
@@ -76,7 +71,7 @@ export async function readWorkspaceConfig(root: string): Promise<WorkspaceConfig
 }
 
 /**
- * The workspace: one folder per machine (`~/.scratchpad`) holding machine-local settings and
+ * The workspace: one folder per machine (`~/.sprue`) holding machine-local settings and
  * every project. Each project folder is self-contained and can be its own git repo.
  */
 export class Workspace {
@@ -100,7 +95,7 @@ export class Workspace {
   static async open(root: string): Promise<Workspace> {
     const { root: resolved } = await ensureWorkspace(root);
     await mkdir(path.join(resolved, PROJECTS_DIR), { recursive: true });
-    // The guide is generated: keep it in step with this version of Scratchpad.
+    // The guide is generated: keep it in step with this version of Sprue.
     const guide = path.join(resolved, AGENTS_FILE);
     const text = renderAgentsGuide();
     if ((await readFile(guide, "utf8").catch(() => "")) !== text) await atomicWrite(guide, text);

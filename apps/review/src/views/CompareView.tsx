@@ -1,4 +1,4 @@
-import type { ReviewManifestItem } from "@beyland/scratchpad-core/review-manifest";
+import type { ReviewManifestItem } from "@beyland/sprue-core/review-manifest";
 import { useState } from "preact/hooks";
 import { Icon } from "../../../web/src/components/Icon.tsx";
 import { ThemedFrame } from "../components/ThemedFrame.tsx";

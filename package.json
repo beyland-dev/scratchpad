@@ -1,5 +1,5 @@
 {
-  "name": "scratchpad",
+  "name": "sprue",
   "version": "0.0.0",
   "private": true,
   "description": "Open-source, local-first, agent-drivable design prototyping workspace.",
@@ -11,11 +11,10 @@
     "test": "vp run -r test",
     "check": "vp check",
     "ready": "vp check && vp run -r test && vp run -r build",
-    "sp": "node packages/cli/src/bin.ts",
-    "scratchpad": "node packages/cli/src/bin.ts"
+    "sp": "node packages/cli/src/bin.ts"
   },
   "devDependencies": {
-    "@beyland/scratchpad-core": "workspace:*",
+    "@beyland/sprue-core": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:"

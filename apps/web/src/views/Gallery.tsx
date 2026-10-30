@@ -1,4 +1,4 @@
-import { groupFamilies } from "@beyland/scratchpad-core/family";
+import { groupFamilies } from "@beyland/sprue-core/family";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import { useLocation, useRoute } from "preact-iso";
 import { PrototypeDialog } from "../components/Dialogs.tsx";

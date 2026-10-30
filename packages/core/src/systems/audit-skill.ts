@@ -1,14 +1,14 @@
-/** The generic audit procedure shipped with Scratchpad (installed with `skills.install`). */
+/** The generic audit procedure shipped with Sprue (installed with `skills.install`). */
 export const AUDIT_SKILL_NAME = "design-system-audit";
 
 export const AUDIT_SKILL = `---
 name: ${AUDIT_SKILL_NAME}
-description: Audit an existing product codebase and codify its design system — tokens, foundations, components, states and patterns — into a Scratchpad library of verified web components, then publish an agent skill for building prototypes with it. Use when asked to audit, extract, catalog or codify a codebase's design system, components, styles, tokens or UI patterns, or to extend or fix an existing Scratchpad design system.
+description: Audit an existing product codebase and codify its design system — tokens, foundations, components, states and patterns — into a Sprue library of verified web components, then publish an agent skill for building prototypes with it. Use when asked to audit, extract, catalog or codify a codebase's design system, components, styles, tokens or UI patterns, or to extend or fix an existing Sprue design system.
 ---
 
 # Auditing a codebase into a design system
 
-You turn a real product's UI into a **design system library** in a Scratchpad workspace: themed **tokens**, light-DOM **web components** that render the product's real DOM, styled by its **real CSS**, and a generated **skill** that lets other agents build pixel-accurate prototypes from it.
+You turn a real product's UI into a **design system library** in a Sprue workspace: themed **tokens**, light-DOM **web components** that render the product's real DOM, styled by its **real CSS**, and a generated **skill** that lets other agents build pixel-accurate prototypes from it.
 
 ## Principles
 

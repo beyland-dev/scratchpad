@@ -3,8 +3,8 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import type { AddressInfo } from "node:net";
-import { Core, initWorkspace } from "@beyland/scratchpad-core";
-import { startSandbox } from "@beyland/scratchpad-server";
+import { Core, initWorkspace } from "@beyland/sprue-core";
+import { startSandbox } from "@beyland/sprue-server";
 import { afterAll, beforeAll, describe, expect, test } from "vite-plus/test";
 import { captureCommands, closeBrowser, inferTokenType } from "../src/index.ts";
 

@@ -27,7 +27,7 @@ interface ComponentDetails {
   code?: { css: string; js: string };
 }
 
-const ALL_THEMES_KEY = "dt.component.allThemes";
+const ALL_THEMES_KEY = "sprue.component.allThemes";
 
 export function ComponentView() {
   const { params } = useRoute();

@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import path from "node:path";
 import { isDeepStrictEqual } from "node:util";
-import { CoreError } from "@beyland/scratchpad-core";
+import { CoreError } from "@beyland/sprue-core";
 import { applyEdits, modify, parse, type FormattingOptions, type ParseError } from "jsonc-parser";
 
 export type McpClient = "vscode" | "claude" | "cursor" | "copilot-cli";
@@ -20,7 +20,7 @@ export interface McpConfigInstallResult {
   status: "created" | "updated" | "unchanged";
 }
 
-/** How to launch `scratchpad mcp` from an MCP client config (`--home` only for a non-default workspace). */
+/** How to launch `sp mcp` from an MCP client config (`--home` only for a non-default workspace). */
 export function stdioLaunch(binPath: string, home?: string): StdioLaunch {
   return {
     command: process.execPath,
@@ -65,7 +65,7 @@ const TARGETS: Record<McpClient, ClientConfigTarget> = {
 
 export function mcpConfigSnippet(client: McpClient, launch: StdioLaunch): string {
   const target = TARGETS[client];
-  return `${target.note}\n\n${JSON.stringify({ [target.key]: { scratchpad: target.entry(launch) } }, null, 2)}`;
+  return `${target.note}\n\n${JSON.stringify({ [target.key]: { sprue: target.entry(launch) } }, null, 2)}`;
 }
 
 export function copilotMcpConfigPath(env: NodeJS.ProcessEnv = process.env): string {
@@ -88,7 +88,7 @@ function formattingOptions(text: string): FormattingOptions {
   };
 }
 
-/** Merge a portable Scratchpad server into the user's Copilot MCP config without replacing peers. */
+/** Merge a portable Sprue server into the user's Copilot MCP config without replacing peers. */
 export async function installCopilotMcpConfig(
   launch: StdioLaunch,
   options: {
@@ -98,7 +98,7 @@ export async function installCopilotMcpConfig(
   } = {},
 ): Promise<McpConfigInstallResult> {
   const file = copilotMcpConfigPath(options.env);
-  const name = options.name?.trim() || "scratchpad";
+  const name = options.name?.trim() || "sprue";
   let exists = true;
   let text: string;
   try {
@@ -117,7 +117,7 @@ export async function installCopilotMcpConfig(
   if (errors.length || !isRecord(config))
     throw new CoreError(
       "INVALID_INPUT",
-      `${file} is not a valid JSON object. Fix it before installing the Scratchpad MCP server.`,
+      `${file} is not a valid JSON object. Fix it before installing the Sprue MCP server.`,
     );
   const servers = config.mcpServers;
   if (servers !== undefined && !isRecord(servers))

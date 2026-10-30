@@ -1,0 +1,78 @@
+{
+  "name": "@beyland/sprue-desktop",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Sprue desktop app for macOS, Windows, and Linux.",
+  "license": "MIT",
+  "author": "Beyland",
+  "type": "module",
+  "main": "dist/main.mjs",
+  "scripts": {
+    "build": "vp pack && node ./scripts/copy-web.mjs",
+    "build:standalone": "pnpm run build:web && pnpm run build",
+    "build:web": "pnpm --filter @beyland/sprue-web build",
+    "start": "electron ./dist/main.mjs",
+    "dist:mac": "pnpm run build:standalone && node ./scripts/build-mac.mjs",
+    "dist:win": "pnpm run build:standalone && electron-builder --win nsis --x64 --publish never",
+    "dist:linux": "pnpm run build:standalone && electron-builder --linux AppImage deb --x64 --publish never"
+  },
+  "dependencies": {
+    "@hono/node-server": "catalog:",
+    "@modelcontextprotocol/server": "catalog:",
+    "chokidar": "catalog:",
+    "hono": "catalog:",
+    "playwright-core": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@beyland/sprue-capture": "workspace:*",
+    "@beyland/sprue-core": "workspace:*",
+    "@beyland/sprue-mcp": "workspace:*",
+    "@beyland/sprue-server": "workspace:*",
+    "@beyland/sprue-web": "workspace:*",
+    "@types/node": "catalog:",
+    "electron": "catalog:",
+    "electron-builder": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "build": {
+    "appId": "dev.beyland.sprue",
+    "productName": "Sprue",
+    "artifactName": "Sprue-${version}-${os}-${arch}.${ext}",
+    "asar": true,
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "mac": {
+      "category": "public.app-category.graphics-design",
+      "icon": "../../assets/sprue-product-icon.png",
+      "identity": null,
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "icon": "../../assets/sprue-product-icon.png",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "category": "Graphics",
+      "icon": "../../assets/sprue-product-icon.png",
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
+  }
+}

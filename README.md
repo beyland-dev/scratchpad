@@ -1,4 +1,4 @@
-# Scratchpad
+# Sprue
 
 An open-source, local-first workspace for **design prototyping with agents**.
 
@@ -12,7 +12,7 @@ repo, and every capability is available to agents over **MCP**, a **CLI**, and a
 ## Why
 
 Product design work is spread across many tools: prototyping, docs, Slack and Teams threads,
-research platforms, meeting recordings, and handoff. Scratchpad aims to bring that loop together:
+research platforms, meeting recordings, and handoff. Sprue aims to bring that loop together:
 
 **product codebase (context)** → **many agent-made prototypes** → **feedback from real people** → **iteration** → **handoff to production agents**
 
@@ -21,7 +21,7 @@ research platforms, meeting recordings, and handoff. Scratchpad aims to bring th
 Requirements: Node.js ≥ 22.18 and git. Install the self-contained CLI from npm, then start the app:
 
 ```bash
-npm install --global @beyland/scratchpad
+npm install --global @beyland/sprue
 sp serve                              # opens http://127.0.0.1:7420
 ```
 
@@ -37,7 +37,7 @@ pnpm build                          # builds the packages, the web UI and the re
 pnpm sp serve                       # opens http://127.0.0.1:7420
 ```
 
-Everything lives in `~/.scratchpad` (set `SCRATCHPAD_HOME` or pass `--home <dir>` to use another
+Everything lives in `~/.sprue` (set `SPRUE_HOME` or pass `--home <dir>` to use another
 folder); it's created on first use. Create a project from the sidebar, or:
 
 ```bash
@@ -58,17 +58,17 @@ pnpm sp source add ~/code/web-app --notes "tokens in src/theme, components in sr
 pnpm sp mcp-config     # prints user-level snippets for VS Code, Claude Code, Cursor, Copilot CLI
 ```
 
-- **stdio:** `scratchpad mcp`. Recommended; it works without the server running.
-- **HTTP:** `http://127.0.0.1:7420/mcp` while `scratchpad serve` is running.
+- **stdio:** `sp mcp`. Recommended; it works without the server running.
+- **HTTP:** `http://127.0.0.1:7420/mcp` while `sp serve` is running.
 
-The stdio command waits silently for an MCP client and uses `~/.scratchpad` by default. Run
-`sp mcp-config vscode --install` to safely merge Scratchpad into the portable VS Code Copilot
+The stdio command waits silently for an MCP client and uses `~/.sprue` by default. Run
+`sp mcp-config vscode --install` to safely merge Sprue into the portable VS Code Copilot
 harness configuration at `~/.copilot/mcp-config.json`, with absolute executable paths. Existing
-servers are preserved; an existing conflicting `scratchpad` entry requires `--force`.
+servers are preserved; an existing conflicting `sprue` entry requires `--force`.
 
 Then ask your agent something like:
 
-> Use the Scratchpad MCP server. Read the `scratchpad://guide` resource and call `workspace_info`.
+> Use the Sprue MCP server. Read the `sprue://guide` resource and call `workspace_info`.
 > Then create 3 prototype variants of a simpler checkout in the right project, grouped as "checkout-redesign", matching
 > our design system from the registered sources. Share the viewer URLs.
 
@@ -78,7 +78,7 @@ Prototypes appear in the gallery live as the agent writes them.
 
 | Concept           | What it is                                                                                                                                                                                                                                                            |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Workspace**     | `~/.scratchpad`: machine-local settings (`config.json`) and every project.                                                                                                                                                                                            |
+| **Workspace**     | `~/.sprue`: machine-local settings (`config.json`) and every project.                                                                                                                                                                                                 |
 | **Project**       | A product or effort being designed (e.g. a web app): a self-contained folder (`projects/<id>/`) with its prototypes, design systems and reviews. It can be its own git repo, shared with collaborators.                                                               |
 | **Prototype**     | A self-contained folder of HTML/CSS/JS (`projects/<p>/prototypes/<id>/`) with a `prototype.json` for metadata. Ids are unique per project; commands accept `project/id`.                                                                                              |
 | **Group**         | A free-form exploration name clustering related prototypes (e.g. `checkout-redesign`).                                                                                                                                                                                |
@@ -103,7 +103,7 @@ Prototypes appear in the gallery live as the agent writes them.
 
 ## CLI
 
-The CLI is `scratchpad`, or `sp` for short.
+The CLI is `sprue`, or `sp` for short.
 
 ```text
 sp serve                     Start app + sandbox servers (--port, --sandbox-port, --host, --no-open)
@@ -136,12 +136,33 @@ workspace folder.
 
 ```bash
 pnpm install
-pnpm dev        # Vite dev server (http://localhost:5173) + API server on ~/.scratchpad (or $SCRATCHPAD_HOME)
+pnpm dev        # Vite dev server (http://localhost:5173) + API server on ~/.sprue (or $SPRUE_HOME)
 pnpm test       # all package tests (Vitest via `vp test`)
 pnpm check      # format + lint + type check (`vp check`)
 pnpm ready      # check + test + build
 pnpm sp <args>  # run the CLI from source
 ```
+
+### Desktop app
+
+The Electron shell starts the same local Sprue server and opens the bundled web UI, using the
+same `~/.sprue` workspace as the CLI:
+
+```bash
+pnpm --filter @beyland/sprue-desktop build:standalone
+pnpm --filter @beyland/sprue-desktop start
+```
+
+Desktop packaging commands create unsigned artifacts in `apps/desktop/release/`:
+
+```bash
+pnpm --filter @beyland/sprue-desktop dist:mac    # universal macOS DMG
+pnpm --filter @beyland/sprue-desktop dist:win    # x86_64 NSIS .exe installer
+pnpm --filter @beyland/sprue-desktop dist:linux  # x86_64 AppImage and .deb
+```
+
+The `Desktop builds` GitHub Actions workflow runs the corresponding build on each operating system
+when manually dispatched or when a `v*` tag is pushed.
 
 The toolchain is [Vite+](https://viteplus.dev) (`vp`). Packages are consumed as TypeScript source
 during development (Node runs `.ts` natively), and `vp pack` builds `dist/` for publishing.

@@ -1,7 +1,7 @@
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { Core, initWorkspace } from "@beyland/scratchpad-core";
+import { Core, initWorkspace } from "@beyland/sprue-core";
 import { Client, InMemoryTransport } from "@modelcontextprotocol/client";
 import { afterEach, beforeEach, expect, test } from "vite-plus/test";
 import { createMcpServer, toolNameFor } from "../src/index.ts";
@@ -72,13 +72,13 @@ test("reports errors as tool errors", async () => {
 });
 
 test("serves the workspace guide resource", async () => {
-  const result = await client.readResource({ uri: "scratchpad://guide" });
+  const result = await client.readResource({ uri: "sprue://guide" });
   const first = result.contents[0];
-  expect(first && "text" in first ? first.text : "").toContain("# Scratchpad");
+  expect(first && "text" in first ? first.text : "").toContain("# Sprue");
 });
 
 test("serves the audit skill as a resource and a prompt", async () => {
-  const resource = await client.readResource({ uri: "scratchpad://skills/design-system-audit" });
+  const resource = await client.readResource({ uri: "sprue://skills/design-system-audit" });
   const first = resource.contents[0];
   expect(first && "text" in first ? first.text : "").toContain("name: design-system-audit");
   const prompt = await client.getPrompt({

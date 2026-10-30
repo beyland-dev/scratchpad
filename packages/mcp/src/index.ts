@@ -6,13 +6,13 @@ import {
   renderAgentsGuide,
   type AnyCommand,
   type Core,
-} from "@beyland/scratchpad-core";
+} from "@beyland/sprue-core";
 import { createMcpHandler, McpServer, type McpHttpHandler } from "@modelcontextprotocol/server";
 import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
 
-export const AUDIT_SKILL_RESOURCE = "scratchpad://skills/design-system-audit";
+export const AUDIT_SKILL_RESOURCE = "sprue://skills/design-system-audit";
 
-export const MCP_SERVER_NAME = "scratchpad";
+export const MCP_SERVER_NAME = "sprue";
 export const MCP_SERVER_VERSION = "0.0.0";
 
 /** MCP tool names can't contain dots in many clients, so `prototype.create` becomes `prototype_create`. */
@@ -28,9 +28,10 @@ const DESTRUCTIVE = new Set([
   "component.remove",
   "review.delete",
   "trash.delete",
+  "trash.empty",
 ]);
 
-const INSTRUCTIONS = `Scratchpad manages projects of design prototypes (self-contained HTML folders) and design systems, plus read-only reference sources (product codebases).
+const INSTRUCTIONS = `Sprue manages projects of design prototypes (self-contained HTML folders) and design systems, plus read-only reference sources (product codebases).
 Start with workspace_info, and read the ${AGENTS_GUIDE_RESOURCE} resource for conventions. Ids are unique within a project: pass project/id when several projects have the same id.
 Create alternatives with prototype_createVariant instead of overwriting, and share the returned viewer URL with the user.`;
 
@@ -109,8 +110,8 @@ export function createMcpServer(core: Core): McpServer {
     "guide",
     AGENTS_GUIDE_RESOURCE,
     {
-      title: "Scratchpad guide",
-      description: "Conventions for creating and iterating on prototypes in Scratchpad.",
+      title: "Sprue guide",
+      description: "Conventions for creating and iterating on prototypes in Sprue.",
       mimeType: "text/markdown",
     },
     async (uri) => ({
@@ -128,7 +129,7 @@ export function createMcpServer(core: Core): McpServer {
     AUDIT_SKILL_RESOURCE,
     {
       title: "Design system audit skill",
-      description: "How to audit a codebase into a verified design-system library with Scratchpad.",
+      description: "How to audit a codebase into a verified design-system library with Sprue.",
       mimeType: "text/markdown",
     },
     async (uri) => ({
@@ -140,7 +141,7 @@ export function createMcpServer(core: Core): McpServer {
     {
       title: "Audit a codebase into a design system",
       description:
-        "Start (or continue) auditing a registered source codebase into a Scratchpad design system.",
+        "Start (or continue) auditing a registered source codebase into a Sprue design system.",
       argsSchema: z.object({
         source: z.string().optional().describe("Workspace source id of the codebase"),
         system: z.string().optional().describe("Design system id to create or continue"),

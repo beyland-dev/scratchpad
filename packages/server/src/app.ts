@@ -1,6 +1,6 @@
 import path from "node:path";
-import { isCoreError, type Core, type CoreErrorCode } from "@beyland/scratchpad-core";
-import { createMcpHttpHandler } from "@beyland/scratchpad-mcp";
+import { isCoreError, type Core, type CoreErrorCode } from "@beyland/sprue-core";
+import { createMcpHttpHandler } from "@beyland/sprue-mcp";
 import { Hono } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { streamSSE } from "hono/streaming";
@@ -101,7 +101,7 @@ export function createApp(options: AppOptions): Hono {
           STATUS_BY_CODE[error.code],
         );
       }
-      console.error(`[scratchpad] command ${name} failed`, error);
+      console.error(`[sprue] command ${name} failed`, error);
       return c.json(
         {
           ok: false,
@@ -159,10 +159,10 @@ export function createApp(options: AppOptions): Hono {
   return app;
 }
 
-const MISSING_UI_HTML = `<!doctype html><meta charset="utf-8"><title>Scratchpad</title>
+const MISSING_UI_HTML = `<!doctype html><meta charset="utf-8"><title>Sprue</title>
 <body style="font-family:system-ui;max-width:40rem;margin:4rem auto;padding:0 1rem;line-height:1.5">
-<h1>Scratchpad</h1>
-<p>The API is running, but the web UI hasn't been built. Run <code>pnpm build</code> in the Scratchpad repo,
+<h1>Sprue</h1>
+<p>The API is running, but the web UI hasn't been built. Run <code>pnpm build</code> in the Sprue repo,
 or use <code>pnpm dev</code> for the development UI.</p>
 <p>API: <a href="/api/commands">/api/commands</a> · MCP: <code>/mcp</code></p>
 </body>`;

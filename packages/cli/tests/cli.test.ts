@@ -10,10 +10,10 @@ let dir: string;
 function io(cwd = dir): CliIO & { out: string[]; err: string[] } {
   const out: string[] = [];
   const err: string[] = [];
-  // Never the real ~/.scratchpad.
+  // Never the real ~/.sprue.
   const env = {
     HOME: path.join(dir, "user"),
-    SCRATCHPAD_HOME: path.join(dir, "home"),
+    SPRUE_HOME: path.join(dir, "home"),
   };
   return { out, err, stdout: (t) => out.push(t), stderr: (t) => err.push(t), cwd, env };
 }
@@ -39,7 +39,7 @@ describe("sp", () => {
     expect(help.stdout).toContain("prototype.createVariant");
     expect((await run(["--version"])).stdout).toMatch(/^\d+\.\d+\.\d+/);
     expect((await run(["serve", "--help"])).stdout).toContain(
-      "Start the self-contained Scratchpad web app",
+      "Start the self-contained Sprue web app",
     );
     expect((await run(["mcp-config", "--help"])).stdout).toContain("--install       Merge into");
     expect((await run(["prototype", "create", "--help"])).stdout).toContain(
@@ -162,12 +162,12 @@ describe("sp", () => {
     const installed = await run(["mcp-config", "vscode", "--install", "--json"]);
     expect(installed.code).toBe(0);
     expect(JSON.parse(installed.stdout)).toMatchObject({
-      name: "scratchpad",
+      name: "sprue",
       status: "created",
     });
     const file = path.join(dir, "user/.copilot/mcp-config.json");
     const config = JSON.parse(await readFile(file, "utf8"));
-    expect(config.mcpServers.scratchpad).toMatchObject({
+    expect(config.mcpServers.sprue).toMatchObject({
       command: process.execPath,
       tools: ["*"],
     });
@@ -185,7 +185,7 @@ describe("sp", () => {
   // Keep this server and comment.
   "mcpServers": {
     "other": { "command": "other" },
-    "scratchpad": { "command": "old" }
+    "sprue": { "command": "old" }
   }
 }
 `,
@@ -204,7 +204,7 @@ describe("sp", () => {
     };
     expect(text).toContain("// Keep this server and comment.");
     expect(config.mcpServers.other).toEqual({ command: "other" });
-    expect(config.mcpServers.scratchpad.command).toBe(process.execPath);
+    expect(config.mcpServers.sprue.command).toBe(process.execPath);
   });
 
   test("source commands", async () => {

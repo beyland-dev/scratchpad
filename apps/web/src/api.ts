@@ -18,7 +18,7 @@ export async function call<T>(name: string, input: unknown = {}): Promise<T> {
       body: JSON.stringify(input),
     });
   } catch {
-    throw new ApiError("NETWORK", "Can't reach the Scratchpad server. Is `sp serve` running?");
+    throw new ApiError("NETWORK", "Can't reach the Sprue server. Is `sp serve` running?");
   }
   const body = (await response.json().catch(() => undefined)) as
     | { ok: true; result: T }

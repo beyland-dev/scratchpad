@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { CoreError, type CommandDescriptor } from "@beyland/scratchpad-core";
+import { CoreError, type CommandDescriptor } from "@beyland/sprue-core";
 
 interface JsonSchema {
   type?: string | string[];

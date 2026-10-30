@@ -147,7 +147,9 @@ const FOLDER_SLOTS = 4;
 
 /** Folder-style preview of a variant family: its newest versions in a 2×2 grid, each opening that version. */
 function FamilyFolder({ family }: { family: PrototypeWithUrls[] }) {
-  const newestFirst = family.map((p, i) => ({ proto: p, version: i + 1 })).reverse();
+  const newestFirst = family
+    .map((p, i) => ({ proto: p, version: i + 1, latest: i === family.length - 1 }))
+    .reverse();
   const hidden = Math.max(0, family.length - FOLDER_SLOTS);
   return (
     <div class="card-folder">
@@ -163,6 +165,7 @@ function FamilyFolder({ family }: { family: PrototypeWithUrls[] }) {
               href={thumbHref(item.proto)}
               title={`V${item.version}${item.proto.description ? `: ${item.proto.description}` : ""}`}
             />
+            <span class="folder-version">{item.latest ? "Latest" : `V${item.version}`}</span>
             {isLast && <span class="folder-more">+{hidden + 1}</span>}
           </div>
         );

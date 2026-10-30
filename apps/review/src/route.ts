@@ -1,4 +1,4 @@
-import type { ReviewDevice, ReviewManifest } from "@beyland/scratchpad-core/review-manifest";
+import type { ReviewDevice, ReviewManifest } from "@beyland/sprue-core/review-manifest";
 import { isReviewDevice } from "./manifest.ts";
 
 export type ReviewView = "overview" | "option" | "compare";

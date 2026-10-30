@@ -4,7 +4,7 @@ import { Icon } from "../../../web/src/components/Icon.tsx";
 const PANEL_ID = "questions-panel";
 
 export function Attribution() {
-  return <p class="attribution">Shared with Scratchpad</p>;
+  return <p class="attribution">Shared with Sprue</p>;
 }
 
 /** Shows or hides the questions panel (hidden when the review asks none). */

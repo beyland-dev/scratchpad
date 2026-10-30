@@ -318,7 +318,7 @@ export class SystemStore {
     if ([SYSTEM_FILE, TOKENS_FILE, COMPONENTS_DIR, ...GENERATED_DIRS].includes(top)) {
       throw new CoreError(
         "INVALID_INPUT",
-        `${top} is managed by Scratchpad; use the system/token/component commands instead`,
+        `${top} is managed by Sprue; use the system/token/component commands instead`,
       );
     }
     const data = Buffer.from(content, encoding);
@@ -645,7 +645,7 @@ export class SystemStore {
     if (MANAGED_COMPONENT_FILES.has(normalized)) {
       throw new CoreError(
         "INVALID_INPUT",
-        `${normalized} is managed by Scratchpad; use component.update instead`,
+        `${normalized} is managed by Sprue; use component.update instead`,
       );
     }
     const data = Buffer.from(content, encoding);

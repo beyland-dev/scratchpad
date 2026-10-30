@@ -48,7 +48,7 @@ describe("workspace", () => {
   test("init creates config, guide, a project with its .gitignore, and the example", async () => {
     const config = JSON.parse(await readFile(path.join(root, "config.json"), "utf8"));
     expect(config).toEqual({ version: 2, sources: [] });
-    expect(await readFile(path.join(root, "AGENTS.md"), "utf8")).toContain("# Scratchpad");
+    expect(await readFile(path.join(root, "AGENTS.md"), "utf8")).toContain("# Sprue");
     expect(await readFile(path.join(root, "projects/test/.gitignore"), "utf8")).toContain(
       "systems/*/node_modules/",
     );

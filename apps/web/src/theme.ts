@@ -3,7 +3,7 @@ import { signal } from "@preact/signals";
 export type ThemePreference = "system" | "light" | "dark";
 
 /** Also read by the inline script in index.html, which applies it before the first paint. */
-const THEME_KEY = "dt.theme";
+const THEME_KEY = "sprue.theme";
 
 function read(): ThemePreference {
   const value = localStorage.getItem(THEME_KEY);

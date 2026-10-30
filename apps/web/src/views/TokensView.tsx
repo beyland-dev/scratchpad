@@ -145,7 +145,7 @@ function useSystemFonts(system: string, cssUrl: string, enabled: boolean): boole
             }),
           );
         })
-        .catch((error: unknown) => console.warn("[scratchpad] loading system fonts failed", error));
+        .catch((error: unknown) => console.warn("[sprue] loading system fonts failed", error));
       loadedFonts.set(cssUrl, promise);
     }
     void promise.then(() => !cancelled && setReady(true));

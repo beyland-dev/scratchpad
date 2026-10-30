@@ -82,7 +82,7 @@ export const workspaceInfo = defineCommand({
   name: "workspace.info",
   title: "Workspace info",
   description:
-    "Get an overview of the Scratchpad workspace: projects, reference sources (product codebases), prototype counts, groups, tags, and the app URLs. Call this first to orient yourself.",
+    "Get an overview of the Sprue workspace: projects, reference sources (product codebases), prototype counts, groups, tags, and the app URLs. Call this first to orient yourself.",
   kind: "query",
   input: z.object({}),
   handler: (_input, core) => {
@@ -106,7 +106,7 @@ export const workspaceInfo = defineCommand({
   },
   format: (out) =>
     [
-      `Scratchpad  (${out.root})`,
+      `Sprue  (${out.root})`,
       `${out.projects.length} project(s), ${out.prototypeCount} prototype(s), ${out.sources.length} source(s)`,
       out.projects.length ? `Projects: ${out.projects.map((p) => p.id).join(", ")}` : "",
       `App: ${out.urls.app}`,
@@ -569,7 +569,7 @@ export const projectDelete = defineCommand({
   name: "project.delete",
   title: "Delete project",
   description:
-    "Move a project folder, with all its prototypes and design systems, to the workspace trash (~/.scratchpad/.trash). Recoverable by moving the folder back.",
+    "Move a project folder, with all its prototypes and design systems, to the workspace trash (~/.sprue/.trash). Recoverable by moving the folder back.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({ id: ProjectRef }),

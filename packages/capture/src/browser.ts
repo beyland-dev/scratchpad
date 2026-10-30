@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 import { chromium, type Browser, type BrowserContext, type Page } from "playwright-core";
 import { z } from "zod";
-import { CoreError } from "@beyland/scratchpad-core";
+import { CoreError } from "@beyland/sprue-core";
 
 export const StepSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("goto"), url: z.string() }),

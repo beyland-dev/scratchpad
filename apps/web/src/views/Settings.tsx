@@ -21,7 +21,7 @@ export function Settings() {
     <div class="page settings">
       <div class="page-head">
         <h1>Settings</h1>
-        <p class="muted">Preferences for Scratchpad in this browser.</p>
+        <p class="muted">Preferences for Sprue in this browser.</p>
       </div>
 
       <section class="settings-section" aria-labelledby="appearance-heading">
@@ -70,6 +70,7 @@ function TrashSettings() {
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<TrashEntry | null>(null);
+  const [emptying, setEmptying] = useState(false);
   const result = useCommand<{ entries: TrashEntry[] }>("trash.list", {}, [revision]);
   const entries = result.data?.entries ?? [];
   const restore = async (entry: TrashEntry) => {
@@ -87,7 +88,14 @@ function TrashSettings() {
   };
   return (
     <section class="settings-section" aria-labelledby="trash-heading">
-      <h2 id="trash-heading">Trash</h2>
+      <div class="settings-section-head">
+        <h2 id="trash-heading">Trash</h2>
+        {entries.length > 0 && (
+          <button type="button" class="button small danger" onClick={() => setEmptying(true)}>
+            Empty trash…
+          </button>
+        )}
+      </div>
       <p class="settings-section-intro">
         Deleted content stays recoverable until you permanently remove it.
       </p>
@@ -149,6 +157,26 @@ function TrashSettings() {
           }}
         >
           <p>This removes the {trashKindLabel(deleting.kind).toLowerCase()} forever.</p>
+          <p>
+            <strong>This cannot be undone.</strong>
+          </p>
+        </ConfirmDialog>
+      )}
+      {emptying && (
+        <ConfirmDialog
+          title="Empty trash?"
+          confirmLabel="Delete everything permanently"
+          onClose={() => setEmptying(false)}
+          onConfirm={async () => {
+            await call("trash.empty");
+            setEmptying(false);
+            setRevision((value) => value + 1);
+          }}
+        >
+          <p>
+            This permanently deletes all {entries.length} trashed item
+            {entries.length === 1 ? "" : "s"}.
+          </p>
           <p>
             <strong>This cannot be undone.</strong>
           </p>

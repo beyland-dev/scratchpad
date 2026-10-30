@@ -22,16 +22,22 @@ function sectionOf(path: string): ProjectSection {
   return SECTIONS.find((s) => s.id === match?.[1])?.id ?? "prototypes";
 }
 
-export function Header() {
+export function Header({
+  desktop,
+  platform,
+}: {
+  desktop?: boolean;
+  platform?: string;
+} = {}) {
   const { path } = useLocation();
   const active = useActiveProject();
-  if (isImmersive(path)) return null;
+  if (!desktop && isImmersive(path)) return null;
   // App-level pages (settings) aren't part of a project, so they get no section tabs.
   const project =
     path === "/settings" ? undefined : projectEntries.value.find((p) => p.id === active);
   const current = sectionOf(path);
   return (
-    <header class="app-header">
+    <header class={`app-header ${desktop ? `desktop-titlebar ${platform ?? ""}` : ""}`}>
       {project && (
         <nav class="app-nav" aria-label="Sections">
           {SECTIONS.map((section) => (

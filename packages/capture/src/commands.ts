@@ -8,7 +8,7 @@ import {
   type Core,
   type TokenInput,
   type TokenType,
-} from "@beyland/scratchpad-core";
+} from "@beyland/sprue-core";
 import { installBrowser, settle, TargetSchema, withPage } from "./browser.ts";
 import {
   captureElement,

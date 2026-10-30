@@ -1,4 +1,4 @@
-import type { ReviewManifest } from "@beyland/scratchpad-core/review-manifest";
+import type { ReviewManifest } from "@beyland/sprue-core/review-manifest";
 import type { Navigate } from "./hooks.ts";
 import type { ReviewRoute } from "./route.ts";
 

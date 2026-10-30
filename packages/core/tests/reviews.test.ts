@@ -32,7 +32,7 @@ beforeEach(async () => {
   await mkdir(path.join(app, "assets"), { recursive: true });
   await writeFile(path.join(app, "index.html"), "<!doctype html><title>Reviewer</title>");
   await writeFile(path.join(app, "assets", "app.js"), "console.log(1)");
-  process.env.SCRATCHPAD_REVIEW_APP = app;
+  process.env.SPRUE_REVIEW_APP = app;
   await initWorkspace(path.join(tmp, "home"), { project: "Shop" });
   core = await Core.open({ root: path.join(tmp, "home") });
   await core.run("system.create", { id: "ds", name: "DS", prefix: "ds" });
@@ -52,7 +52,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  delete process.env.SCRATCHPAD_REVIEW_APP;
+  delete process.env.SPRUE_REVIEW_APP;
   await core.close();
   await rm(tmp, { recursive: true, force: true });
 });

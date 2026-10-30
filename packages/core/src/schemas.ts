@@ -36,7 +36,7 @@ export const ServerSettingsSchema = z.object({
 });
 export type ServerSettings = z.infer<typeof ServerSettingsSchema>;
 
-/** Contents of `~/.scratchpad/config.json`: machine-local settings, never committed. */
+/** Contents of `~/.sprue/config.json`: machine-local settings, never committed. */
 export const WorkspaceConfigSchema = z.object({
   version: z.literal(WORKSPACE_FORMAT_VERSION),
   sources: z.array(SourceSchema).default([]),

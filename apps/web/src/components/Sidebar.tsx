@@ -14,7 +14,7 @@ import { Icon } from "./Icon.tsx";
 import { MenuButton, MenuPopup, type MenuItem } from "./Menu.tsx";
 import { ProjectIcon } from "./ProjectIcon.tsx";
 
-const SIDEBAR_KEY = "dt.sidebar";
+const SIDEBAR_KEY = "sprue.sidebar";
 
 export const sidebarExpanded = signal(localStorage.getItem(SIDEBAR_KEY) !== "collapsed");
 
@@ -82,7 +82,6 @@ export function Sidebar() {
     const rect = el.getBoundingClientRect();
     setTip({ text, sub, top: rect.top + rect.height / 2, left: rect.right + 10 });
   };
-  const workspaceName = "Scratchpad";
   const menuItems = (p: ProjectEntry): MenuItem[] => [
     { label: "Edit project…", onSelect: () => setDialog({ kind: "edit", project: p }) },
     {
@@ -94,18 +93,6 @@ export function Sidebar() {
 
   return (
     <nav class={`sidebar ${expanded ? "expanded" : "collapsed"}`} aria-label="Projects">
-      <div class="sidebar-head">
-        <a
-          href="/"
-          class="sidebar-brand"
-          aria-label={workspaceName}
-          {...(expanded ? {} : tipHandlers(workspaceName))}
-        >
-          <img src="/favicon.svg" alt="" width={22} height={22} />
-          {expanded && <span>{workspaceName}</span>}
-        </a>
-      </div>
-
       <ul class="project-list">
         {entries.map((p) => {
           const counts = [

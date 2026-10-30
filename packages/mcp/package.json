@@ -1,7 +1,7 @@
 {
-  "name": "@beyland/scratchpad-mcp",
+  "name": "@beyland/sprue-mcp",
   "version": "0.3.0",
-  "description": "Model Context Protocol server for Scratchpad, generated from the core command registry.",
+  "description": "Model Context Protocol server for Sprue, generated from the core command registry.",
   "license": "MIT",
   "files": [
     "dist"
@@ -23,7 +23,7 @@
     "test": "vp test"
   },
   "dependencies": {
-    "@beyland/scratchpad-core": "workspace:*",
+    "@beyland/sprue-core": "workspace:*",
     "@modelcontextprotocol/server": "catalog:",
     "zod": "catalog:"
   },

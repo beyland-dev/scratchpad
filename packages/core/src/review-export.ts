@@ -24,7 +24,7 @@ export const PUBLISH_BRANCH = "gh-pages";
 /** Where the built reviewer app (apps/review) is found, first match wins. */
 export function reviewAppCandidates(env: NodeJS.ProcessEnv = process.env): string[] {
   return [
-    env.SCRATCHPAD_REVIEW_APP,
+    env.SPRUE_REVIEW_APP,
     fileURLToPath(new URL("./review", import.meta.url)),
     fileURLToPath(new URL("../../../apps/review/dist", import.meta.url)),
   ].filter((c): c is string => Boolean(c));
@@ -34,7 +34,7 @@ export async function findReviewApp(candidates = reviewAppCandidates()): Promise
   for (const dir of candidates) if (await pathExists(path.join(dir, "index.html"))) return dir;
   throw new CoreError(
     "INVALID_INPUT",
-    "The reviewer app isn't available. Reinstall Scratchpad, run `pnpm build` in a source checkout, or set SCRATCHPAD_REVIEW_APP.",
+    "The reviewer app isn't available. Reinstall Sprue, run `pnpm build` in a source checkout, or set SPRUE_REVIEW_APP.",
   );
 }
 
@@ -201,7 +201,7 @@ export async function publishReview(core: Core, ref: string): Promise<PublishRes
   const slug = review.slug ?? `${publishedSlugBase(review)}-${randomBytes(4).toString("hex")}`;
   const roundPath = `${slug}/round-${round}`;
   const run = core.gitRunner;
-  const tmp = await mkdtemp(path.join(os.tmpdir(), "scratchpad-publish-"));
+  const tmp = await mkdtemp(path.join(os.tmpdir(), "sprue-publish-"));
   const site = path.join(tmp, "site");
   try {
     try {
@@ -290,7 +290,7 @@ export async function deletePublishedReview(
     );
 
   const run = core.gitRunner;
-  const tmp = await mkdtemp(path.join(os.tmpdir(), "scratchpad-delete-review-"));
+  const tmp = await mkdtemp(path.join(os.tmpdir(), "sprue-delete-review-"));
   const site = path.join(tmp, "site");
   const github = githubRepoOf(status.remote);
   const destination = github ? `${github.owner}/${github.name}` : status.remote;

@@ -2,7 +2,7 @@
 
 A design system turns a product's real UI into reusable, verified building blocks that agents
 use to make prototypes that look like the product. It lives in its project's folder,
-`~/.scratchpad/projects/<project>/systems/<id>/`, and its prototypes are in the same project:
+`~/.sprue/projects/<project>/systems/<id>/`, and its prototypes are in the same project:
 
 ```text
 projects/vscode/systems/vscode/
@@ -13,7 +13,7 @@ projects/vscode/systems/vscode/
   components/<name>/  component.json (API, examples, references), component.js, component.css
   captures/<label>/   reference captures from the running product (generated, committed)
   activity.jsonl      audit activity log (generated, gitignored)
-  source/             local clone of the system's git source (gitignored; never read by Scratchpad)
+  source/             local clone of the system's git source (gitignored; never read by Sprue)
   dist/               built system.css, system.js, catalog.json, specimen.html (generated, gitignored)
   skill/              generated agent skill (SKILL.md + references; generated, gitignored)
 ```
@@ -118,7 +118,7 @@ projects/acme/systems/acme-ui/
 - **Prototypes:** `prototype.create { framework: "react", system }` creates an `index.html` shell
   loading `main.tsx`. The sandbox builds it on demand with the system's Vite and `node_modules`
   (imports like `@/components/ui/button` resolve to the system), caches the build in
-  `~/.scratchpad/.cache/builds/<project>/<id>/` until its files or the system change, and shows build errors in the
+  `~/.sprue/.cache/builds/<project>/<id>/` until its files or the system change, and shows build errors in the
   viewer. Prototypes still run sandboxed on the separate origin.
 
 Plain-HTML prototypes can still use a package system's look through its CSS variables, but its

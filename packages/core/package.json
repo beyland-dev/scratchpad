@@ -1,7 +1,7 @@
 {
-  "name": "@beyland/scratchpad-core",
+  "name": "@beyland/sprue-core",
   "version": "0.3.0",
-  "description": "Headless core for Scratchpad: workspace model, file storage, and command registry.",
+  "description": "Headless core for Sprue: workspace model, file storage, and command registry.",
   "license": "MIT",
   "files": [
     "dist"
@@ -24,7 +24,7 @@
   },
   "scripts": {
     "build": "pnpm run build:review && vp pack && node ./scripts/copy-review.mjs",
-    "build:review": "pnpm --filter @beyland/scratchpad-review build",
+    "build:review": "pnpm --filter @beyland/sprue-review build",
     "test": "vp test"
   },
   "dependencies": {

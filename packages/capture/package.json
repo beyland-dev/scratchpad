@@ -1,5 +1,5 @@
 {
-  "name": "@beyland/scratchpad-capture",
+  "name": "@beyland/sprue-capture",
   "version": "0.3.0",
   "description": "Capture components, CSS, tokens and screenshots from running apps (Playwright), and verify design-system components against them.",
   "license": "MIT",
@@ -23,12 +23,12 @@
     "test": "vp test"
   },
   "dependencies": {
-    "@beyland/scratchpad-core": "workspace:*",
+    "@beyland/sprue-core": "workspace:*",
     "playwright-core": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@beyland/scratchpad-server": "workspace:*",
+    "@beyland/sprue-server": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:"

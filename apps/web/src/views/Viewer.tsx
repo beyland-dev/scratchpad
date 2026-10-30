@@ -1,4 +1,4 @@
-import { versionLabel } from "@beyland/scratchpad-core/family";
+import { versionLabel } from "@beyland/sprue-core/family";
 import { useEffect, useState } from "preact/hooks";
 import { useLocation, useRoute } from "preact-iso";
 import { call } from "../api.ts";
@@ -37,7 +37,7 @@ import {
 } from "../util.ts";
 
 const STAGE_PADDING = 32;
-const PANEL_KEY = "dt.viewer.details";
+const PANEL_KEY = "sprue.viewer.details";
 
 function useDetails(id: string, revision: number) {
   const [details, setDetails] = useState<PrototypeDetails | null>(null);

@@ -1,4 +1,4 @@
-import type { ReviewManifest } from "@beyland/scratchpad-core/review-manifest";
+import type { ReviewManifest } from "@beyland/sprue-core/review-manifest";
 import { describe, expect, test } from "vite-plus/test";
 import {
   canCompare,

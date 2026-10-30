@@ -79,7 +79,7 @@ export async function watchWorkspace(
             }),
           )
           .catch((error: unknown) =>
-            console.error(`[scratchpad] failed to reload project ${project}`, error),
+            console.error(`[sprue] failed to reload project ${project}`, error),
           );
       }, DEBOUNCE_MS),
     );
@@ -117,7 +117,7 @@ export async function watchWorkspace(
       const proto = await projects.scope(project).prototypes.reloadOne(id);
       events.emit("prototype.changed", { project, id, exists: proto !== undefined, paths });
     } catch (error) {
-      console.error(`[scratchpad] failed to reload prototype ${key}`, error);
+      console.error(`[sprue] failed to reload prototype ${key}`, error);
     }
   };
 
@@ -135,7 +135,7 @@ export async function watchWorkspace(
       events.emit("system.changed", { project, id, exists, paths });
       options.onSystemChanged?.(project, id, exists);
     } catch (error) {
-      console.error(`[scratchpad] failed to reload design system ${key}`, error);
+      console.error(`[sprue] failed to reload design system ${key}`, error);
     }
   };
 
@@ -146,7 +146,7 @@ export async function watchWorkspace(
       const review = await projects.scope(project).reviews.reloadOne(id);
       events.emit("review.changed", { project, id, exists: review !== undefined });
     } catch (error) {
-      console.error(`[scratchpad] failed to reload review ${key}`, error);
+      console.error(`[sprue] failed to reload review ${key}`, error);
     }
   };
 
@@ -156,9 +156,7 @@ export async function watchWorkspace(
       configTimer = setTimeout(() => {
         ws.reload()
           .then(() => events.emit("workspace.changed", {}))
-          .catch((error: unknown) =>
-            console.error("[scratchpad] failed to reload config.json", error),
-          );
+          .catch((error: unknown) => console.error("[sprue] failed to reload config.json", error));
       }, DEBOUNCE_MS);
       return;
     }

@@ -308,7 +308,7 @@ export const trashRestore = defineCommand({
   name: "trash.restore",
   title: "Restore trash entry",
   description:
-    "Move a soft-deleted item out of trash and reload it into Scratchpad. Fails when its original location is occupied.",
+    "Move a soft-deleted item out of trash and reload it into Sprue. Fails when its original location is occupied.",
   kind: "mutation",
   positional: ["id"],
   input: z.object({ id: TrashId }),
@@ -331,4 +331,22 @@ export const trashDelete = defineCommand({
   format: (out) => `Permanently deleted ${out.entry.kind} ${out.entry.label}`,
 });
 
-export const trashCommands = [trashList, trashRestore, trashDelete];
+export const trashEmpty = defineCommand({
+  name: "trash.empty",
+  title: "Empty trash",
+  description:
+    "Permanently delete every item in workspace and project trash. This cannot be undone.",
+  kind: "mutation",
+  input: z.object({}),
+  handler: async (_input, core) => {
+    const entries = await scanTrash(core);
+    await Promise.all(entries.map((entry) => rm(entry.source, { recursive: true, force: false })));
+    return { deleted: entries.map((entry) => entry.entry), count: entries.length };
+  },
+  format: (out) =>
+    out.count
+      ? `Permanently deleted ${out.count} trash item${out.count === 1 ? "" : "s"}`
+      : "Trash is already empty.",
+});
+
+export const trashCommands = [trashList, trashRestore, trashDelete, trashEmpty];

@@ -1,13 +1,13 @@
 # Workspace format (v2)
 
-Scratchpad keeps everything in one folder per machine: `~/.scratchpad` (override it with
-`$SCRATCHPAD_HOME` or `--home <dir>`). It's created on first use. Each project folder inside it is
+Sprue keeps everything in one folder per machine: `~/.sprue` (override it with
+`$SPRUE_HOME` or `--home <dir>`). It's created on first use. Each project folder inside it is
 self-contained, so it can be its own git repo, shared with collaborators (see [Git](#git)).
 
 ```
-~/.scratchpad/
+~/.sprue/
   config.json                     # machine-local settings (below); never committed
-  AGENTS.md                       # conventions for agents (also the MCP resource scratchpad://guide)
+  AGENTS.md                       # conventions for agents (also the MCP resource sprue://guide)
   .cache/                         # derived data: React prototype builds, review previews
   .trash/                         # deleted projects (`project-<id>-<timestamp>`)
   projects/
@@ -51,9 +51,9 @@ directory, with prototypes and systems shared across projects). There's no autom
 ```
 
 - `sources[].kind` is `local` (an absolute path) or `git` (URL). Sources are **read-only
-  references**: Scratchpad never writes to them. They're machine-local, since paths differ between
+  references**: Sprue never writes to them. They're machine-local, since paths differ between
   collaborators.
-- `server` is optional and overrides the default ports and host for `scratchpad serve`.
+- `server` is optional and overrides the default ports and host for `sp serve`.
 
 ## Projects
 

@@ -1,7 +1,7 @@
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { Core, initWorkspace } from "@beyland/scratchpad-core";
+import { Core, initWorkspace } from "@beyland/sprue-core";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { afterEach, beforeEach, describe, expect, test } from "vite-plus/test";
 import {

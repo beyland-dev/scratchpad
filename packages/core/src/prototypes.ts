@@ -386,7 +386,7 @@ export class PrototypeStore {
     if (normalizeRel(relPath) === PROTOTYPE_META_FILE) {
       throw new CoreError(
         "INVALID_INPUT",
-        `${PROTOTYPE_META_FILE} is managed by Scratchpad; use prototype.update instead`,
+        `${PROTOTYPE_META_FILE} is managed by Sprue; use prototype.update instead`,
       );
     }
     const abs = safeJoin(dir, relPath);

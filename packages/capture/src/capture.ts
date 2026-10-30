@@ -6,7 +6,7 @@ import {
   type ComponentReference,
   type Core,
   type DesignComponent,
-} from "@beyland/scratchpad-core";
+} from "@beyland/sprue-core";
 import { rulesToCss } from "./annotate.ts";
 import { settle, withPage, type Target } from "./browser.ts";
 import {

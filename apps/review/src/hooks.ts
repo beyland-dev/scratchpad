@@ -1,7 +1,4 @@
-import {
-  REVIEW_MANIFEST_FILE,
-  type ReviewManifest,
-} from "@beyland/scratchpad-core/review-manifest";
+import { REVIEW_MANIFEST_FILE, type ReviewManifest } from "@beyland/sprue-core/review-manifest";
 import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
 import { ManifestError, parseManifest } from "./manifest.ts";
 import { formatRoute, parseRoute, type ReviewRoute } from "./route.ts";

@@ -14,7 +14,7 @@ import { ProjectScope } from "./scope.ts";
 import type { Workspace } from "./workspace.ts";
 
 export const PROJECT_META_FILE = "project.json";
-export const PROJECT_GITIGNORE = `# scratchpad: generated, local-only files
+export const PROJECT_GITIGNORE = `# sprue: generated, local-only files
 .trash/
 .cache/
 systems/*/dist/

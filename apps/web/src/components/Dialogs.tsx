@@ -315,7 +315,7 @@ export function DeleteProjectDialog({
     >
       <p>
         The project folder{contents.length ? `, with its ${contents.join(" and ")},` : ""} moves to{" "}
-        <code>~/.scratchpad/.trash/</code>, where it can be restored.
+        <code>~/.sprue/.trash/</code>, where it can be restored.
       </p>
     </ConfirmDialog>
   );

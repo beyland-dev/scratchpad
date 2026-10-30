@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/sprue-product-icon.png" />
     <meta name="color-scheme" content="light dark" />
-    <title>Scratchpad</title>
+    <title>Sprue</title>
     <script>
       // Apply the saved theme before the first paint (see src/theme.ts).
       try {
-        const theme = localStorage.getItem("dt.theme");
+        const theme = localStorage.getItem("sprue.theme");
         if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
       } catch {}
     </script>

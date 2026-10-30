@@ -3,7 +3,7 @@ import {
   familyOf as sharedFamilyOf,
   groupFamilies,
   versionLabel,
-} from "@beyland/scratchpad-core/family";
+} from "@beyland/sprue-core/family";
 import { call, subscribe } from "./api.ts";
 import type { ProjectSummary, PrototypeWithUrls, Review, WorkspaceInfo } from "./types.ts";
 
@@ -258,7 +258,7 @@ export const projectEntries = computed<ProjectEntry[]>(() => {
   }));
 });
 
-const LAST_PROJECT_KEY = "dt.lastProject";
+const LAST_PROJECT_KEY = "sprue.lastProject";
 
 export function rememberProject(id: string): void {
   if (localStorage.getItem(LAST_PROJECT_KEY) !== id) localStorage.setItem(LAST_PROJECT_KEY, id);
